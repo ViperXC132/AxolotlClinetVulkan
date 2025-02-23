@@ -22,8 +22,6 @@
 
 package io.github.axolotlclient.mixin;
 
-import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hud.gui.hud.simple.ToggleSprintHud;
 import net.minecraft.client.entity.living.player.LocalClientPlayerEntity;
 import net.minecraft.client.options.KeyBinding;
 import org.spongepowered.asm.mixin.Mixin;
@@ -41,7 +39,9 @@ public abstract class ClientPlayerEntityMixin {
 	 */
 	@Redirect(method = "tickAi", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/options/KeyBinding;isPressed()Z"))
 	private boolean axolotlclient$alwaysPressed(KeyBinding sprintKey) {
-		ToggleSprintHud hud = (ToggleSprintHud) HudManager.getInstance().get(ToggleSprintHud.ID);
-		return hud.getSprintToggled().get() || sprintKey.isPressed();
+		// TODO: implement
+		//ToggleSprintHud hud = (ToggleSprintHud) HudManager.getInstance().get(ToggleSprintHud.ID);
+		//return hud.getSprintToggled().get() || sprintKey.isPressed();
+		return sprintKey.isPressed();
 	}
 }

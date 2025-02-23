@@ -56,7 +56,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 
 	@Inject(method = "shouldRenderNameTag(Lnet/minecraft/entity/living/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$showOwnNametag(LivingEntity livingEntity, CallbackInfoReturnable<Boolean> cir) {
-		if (AxolotlClient.CONFIG.showOwnNametag.get()
+		if (AxolotlClient.config().showOwnNametag.get()
 			&& livingEntity.getNetworkId() == Minecraft.getInstance().player.getNetworkId()
 			&& !PlayerHud.isCurrentlyRendering()) {
 			cir.setReturnValue(true);
@@ -78,21 +78,21 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 
 	@ModifyConstant(method = "setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;FZ)Z", constant = @Constant(floatValue = 1.0f, ordinal = 0))
 	private float axolotlclient$customHitColorRed(float constant) {
-		return AxolotlClient.CONFIG.hitColor.get().getRed() / 255F;
+		return AxolotlClient.config().hitColor.get().getRed() / 255F;
 	}
 
 	@ModifyConstant(method = "setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;FZ)Z", constant = @Constant(floatValue = 0.0f, ordinal = 0))
 	private float axolotlclient$customHitColorGreen(float constant) {
-		return AxolotlClient.CONFIG.hitColor.get().getGreen() / 255F;
+		return AxolotlClient.config().hitColor.get().getGreen() / 255F;
 	}
 
 	@ModifyConstant(method = "setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;FZ)Z", constant = @Constant(floatValue = 0.0f, ordinal = 1))
 	private float axolotlclient$customHitColorBlue(float constant) {
-		return AxolotlClient.CONFIG.hitColor.get().getBlue() / 255F;
+		return AxolotlClient.config().hitColor.get().getBlue() / 255F;
 	}
 
 	@ModifyConstant(method = "setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;FZ)Z", constant = @Constant(floatValue = 0.3f, ordinal = 0))
 	private float axolotlclient$customHitColorAlpha(float constant) {
-		return AxolotlClient.CONFIG.hitColor.get().getAlpha() / 255F;
+		return AxolotlClient.config().hitColor.get().getAlpha() / 255F;
 	}
 }

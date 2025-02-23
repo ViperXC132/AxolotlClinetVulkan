@@ -109,7 +109,7 @@ public class ScreenshotUtils extends AbstractModule {
 
 		category.add(enabled, autoExec, openViewer);
 
-		AxolotlClient.CONFIG.general.add(category);
+		AxolotlClient.config().general.add(category);
 	}
 
 	public Text onScreenshotTaken(Text text, File shot) {

@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.hud.gui.keystrokes;
 
+import io.github.axolotlclient.modules.hud.HudManager;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -75,7 +76,7 @@ public class KeystrokePositioningScreen extends Screen {
 			HudEditScreen.toggleSnapping();
 			buttonWidget.message = I18n.translate("hud.snapping") + ": " +
 				I18n.translate(HudEditScreen.isSnappingEnabled() ? "options.on" : "options.off");
-			AxolotlClient.configManager.save();
+			AxolotlClient.getInstance().saveConfig();
 		}
 	}
 

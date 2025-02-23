@@ -44,7 +44,7 @@ public abstract class PlayerEntityRendererMixin extends LivingEntityRenderer<Cli
 
 	@ModifyArgs(method = "renderNameTag(Lnet/minecraft/client/entity/living/player/ClientPlayerEntity;DDDLjava/lang/String;FD)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;renderNameTag(Lnet/minecraft/entity/Entity;DDDLjava/lang/String;FD)V"))
 	public void axolotlclient$modifiyName(Args args) {
-		if (AxolotlClient.CONFIG != null) {
+		if (AxolotlClient.config() != null) {
 			ClientPlayerEntity player = args.get(0);
 			if (player.getUuid() == Minecraft.getInstance().player.getUuid()
 				&& NickHider.getInstance().hideOwnName.get()) {

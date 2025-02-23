@@ -31,19 +31,61 @@
 		]
 	},
 	"mixins": [
-		"axolotlclient.mixins.json"
+		"axolotlclient.mixins.json",
+		"axolotlclient-bridge.mixins.json"
 	],
 	"custom": {
-		"modmenu:clientsideOnly": true
-	},
-	"depends": {
-		"fabricloader": ">=0.15.0",
-		"minecraft": "1.8.9",
-		"osl-resource-loader": "*",
-		"osl-lifecycle-events": "*",
-		"osl-keybinds": "*",
-		"osl-entrypoints": "*",
-		"axolotlclientconfig": "*",
-		"axolotlclient-common": "*"
+		"modmenu:clientsideOnly": true,
+		"loom:injected_interfaces": {
+			"net/minecraft/unmapped/C_0561170": [
+				"io/github/axolotlclient/bridge/util/AxoIdentifier"
+			],
+			"net/minecraft/unmapped/C_8105098": [
+				"io/github/axolotlclient/bridge/AxoMinecraftClient"
+			],
+			"net/minecraft/unmapped/C_3831727": [
+				"io/github/axolotlclient/bridge/render/AxoTextRenderer"
+			],
+			"net/minecraft/unmapped/C_7799337": [
+				"io/github/axolotlclient/bridge/render/AxoWindow"
+			],
+			"net/minecraft/unmapped/C_0539808": [
+				"io/github/axolotlclient/bridge/entity/AxoEntity"
+			],
+			"net/minecraft/unmapped/C_2454309": [
+				"io/github/axolotlclient/bridge/item/AxoItemStack"
+			],
+			"net/minecraft/unmapped/C_7400754": [
+				"io/github/axolotlclient/bridge/item/AxoPlayerInventory"
+			],
+			"net/minecraft/unmapped/C_9590849": [
+				"io/github/axolotlclient/bridge/entity/AxoPlayer"
+			],
+			"net/minecraft/unmapped/C_3755722": [
+				"io/github/axolotlclient/bridge/item/AxoItem"
+			],
+			"net/minecraft/unmapped/C_5553933": [
+				"io/github/axolotlclient/bridge/world/AxoWorld"
+			],
+			"net/minecraft/unmapped/C_0230498": [
+				"io/github/axolotlclient/bridge/item/AxoEnchant"
+			],
+			"net/minecraft/unmapped/C_7778778": [
+				"io/github/axolotlclient/bridge/key/AxoKeybinding"
+			],
+			"net/minecraft/unmapped/C_1331819": [
+				"io/github/axolotlclient/bridge/key/AxoClientKeybinds"
+			]
+		},
+		"depends": {
+			"fabricloader": ">=0.15.0",
+			"minecraft": "1.8.9",
+			"osl-resource-loader": "*",
+			"osl-lifecycle-events": "*",
+			"osl-keybinds": "*",
+			"osl-entrypoints": "*",
+			"axolotlclientconfig": "*",
+			"axolotlclient-common": "*"
+		}
 	}
 }

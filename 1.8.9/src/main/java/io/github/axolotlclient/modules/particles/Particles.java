@@ -57,7 +57,7 @@ public class Particles extends AbstractModule {
 		cat.add(enabled);
 
 		addParticleOptions();
-		AxolotlClient.CONFIG.rendering.add(cat);
+		AxolotlClient.config().rendering.add(cat);
 	}
 
 	private void addParticleOptions() {

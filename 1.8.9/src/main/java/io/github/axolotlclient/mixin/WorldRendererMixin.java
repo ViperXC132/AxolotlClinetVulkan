@@ -60,7 +60,7 @@ public abstract class WorldRendererMixin {
 	@Inject(method = "renderSky", at = @At("HEAD"), cancellable = true)
 	public void axolotlclient$renderCustomSky(float tickDelta, int anaglyphFilter, CallbackInfo ci) {
 		if (this.world.dimension.isOverworld()) {
-			if (AxolotlClient.CONFIG.customSky.get() && SkyboxManager.getInstance().hasSkyBoxes()) {
+			if (AxolotlClient.config().customSky.get() && SkyboxManager.getInstance().hasSkyBoxes()) {
 				GlStateManager.depthMask(false);
 				this.minecraft.profiler.push("Custom Skies");
 				SkyboxManager.getInstance().renderSkyboxes(tickDelta, world.getRain(tickDelta));
@@ -73,23 +73,23 @@ public abstract class WorldRendererMixin {
 
 	@Redirect(method = "renderClouds", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/dimension/Dimension;getCloudHeight()F"))
 	public float axolotlclient$getCloudHeight(Dimension instance) {
-		return AxolotlClient.CONFIG.cloudHeight.get();
+		return AxolotlClient.config().cloudHeight.get();
 	}
 
 	@ModifyArg(method = "renderBlockOutline", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glLineWidth(F)V"), remap = false)
 	public float axolotlclient$OutlineWidth(float width) {
-		if (AxolotlClient.CONFIG.enableCustomOutlines.get() && AxolotlClient.CONFIG.outlineWidth.get() > 1) {
-			return 1.0F + AxolotlClient.CONFIG.outlineWidth.get();
+		if (AxolotlClient.config().enableCustomOutlines.get() && AxolotlClient.config().outlineWidth.get() > 1) {
+			return 1.0F + AxolotlClient.config().outlineWidth.get();
 		}
 		return width;
 	}
 
 	@Inject(method = "renderBlockOutline", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;color4f(FFFF)V", shift = At.Shift.AFTER))
 	public void axolotlclient$customOutlineColor(PlayerEntity playerEntity, HitResult hitResult, int i, float f, CallbackInfo ci) {
-		if (AxolotlClient.CONFIG.enableCustomOutlines.get()) {
+		if (AxolotlClient.config().enableCustomOutlines.get()) {
 			GlStateManager.clearColor();
 
-			int color = AxolotlClient.CONFIG.outlineColor.get().toInt();
+			int color = AxolotlClient.config().outlineColor.get().toInt();
 			float a = (float) (color >> 24 & 0xFF) / 255.0F;
 			float r = (float) (color >> 16 & 0xFF) / 255.0F;
 			float g = (float) (color >> 8 & 0xFF) / 255.0F;

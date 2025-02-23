@@ -22,13 +22,13 @@
 
 package io.github.axolotlclient.modules.scrollableTooltips;
 
+import io.github.axolotlclient.modules.AbstractModule;
 import java.util.List;
 
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
-import io.github.axolotlclient.modules.AbstractModule;
 import io.github.axolotlclient.util.Util;
 import lombok.Getter;
 import net.minecraft.client.gui.screen.Screen;
@@ -58,7 +58,7 @@ public class ScrollableTooltips extends AbstractModule {
 		category.add(inverse);
 		category.add(alignToBottom);
 
-		AxolotlClient.CONFIG.rendering.add(category);
+		AxolotlClient.config().rendering.add(category);
 	}
 
 	public void onRenderTooltip() {

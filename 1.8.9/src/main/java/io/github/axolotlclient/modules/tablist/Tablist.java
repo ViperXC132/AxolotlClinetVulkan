@@ -56,7 +56,7 @@ public class Tablist extends AbstractModule {
 		tablist.add(numericalPing, showPlayerHeads, shadow, alwaysShowHeadLayer);
 		tablist.add(pingColor0, pingColor1, pingColor2, pingColor3, pingColor4, pingColor5);
 
-		AxolotlClient.CONFIG.rendering.add(tablist);
+		AxolotlClient.config().rendering.add(tablist);
 	}
 
 	public boolean renderNumericPing(int width, int x, int y, PlayerInfo entry) {

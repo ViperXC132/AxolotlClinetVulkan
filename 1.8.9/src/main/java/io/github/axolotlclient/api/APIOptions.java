@@ -106,8 +106,8 @@ public class APIOptions extends Options {
 			}
 		};
 		if (Constants.ENABLED) {
-			AxolotlClient.CONFIG.addCategory(category);
-			AxolotlClient.config.add(privacyAccepted);
+			AxolotlClient.config().addCategory(category);
+			AxolotlClient.hiddenConfig.add(privacyAccepted);
 		}
 	}
 }

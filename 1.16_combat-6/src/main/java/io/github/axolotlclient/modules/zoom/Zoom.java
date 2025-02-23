@@ -26,7 +26,7 @@ import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.FloatOption;
-import io.github.axolotlclient.modules.AbstractModule;
+import io.github.axolotlclient.modules.AbstractModule0;
 import io.github.axolotlclient.util.Util;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;

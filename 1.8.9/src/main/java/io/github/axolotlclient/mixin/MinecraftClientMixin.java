@@ -30,6 +30,7 @@ import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.blur.MenuBlur;
 import io.github.axolotlclient.modules.hud.HudManager;
+import io.github.axolotlclient.modules.hud.HudManager0;
 import io.github.axolotlclient.modules.rpc.DiscordRPC;
 import io.github.axolotlclient.modules.zoom.Zoom;
 import io.github.axolotlclient.util.Util;
@@ -100,7 +101,7 @@ public abstract class MinecraftClientMixin {
 	 */
 	@Inject(method = "initDisplay", at = @At("TAIL"))
 	public void axolotlclient$setWindowTitle(CallbackInfo ci) {
-		if (AxolotlClient.CONFIG.customWindowTitle.get()) {
+		if (AxolotlClient.config().customWindowTitle.get()) {
 			Display.setTitle("AxolotlClient " + this.gameVersion);
 		}
 	}
@@ -118,23 +119,24 @@ public abstract class MinecraftClientMixin {
 	// Don't ask me why we need both here, but otherwise it looks ugly
 	@Redirect(method = "renderMojangLogo", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferBuilder;color(IIII)Lcom/mojang/blaze3d/vertex/BufferBuilder;"))
 	public BufferBuilder axolotlclient$loadingScreenColor(BufferBuilder instance, int red, int green, int blue, int alpha) {
-		return instance.color(AxolotlClient.CONFIG.loadingScreenColor.get().getRed(),
-			AxolotlClient.CONFIG.loadingScreenColor.get().getGreen(),
-			AxolotlClient.CONFIG.loadingScreenColor.get().getBlue(),
-			AxolotlClient.CONFIG.loadingScreenColor.get().getAlpha());
+		return instance.color(AxolotlClient.config().loadingScreenColor.get().getRed(),
+			AxolotlClient.config().loadingScreenColor.get().getGreen(),
+			AxolotlClient.config().loadingScreenColor.get().getBlue(),
+			AxolotlClient.config().loadingScreenColor.get().getAlpha());
 	}
 
 	@Redirect(method = "renderLoadingScreen", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferBuilder;color(IIII)Lcom/mojang/blaze3d/vertex/BufferBuilder;"))
 	public BufferBuilder axolotlclient$loadingScreenBg(BufferBuilder instance, int red, int green, int blue, int alpha) {
-		return instance.color(AxolotlClient.CONFIG.loadingScreenColor.get().getRed(),
-			AxolotlClient.CONFIG.loadingScreenColor.get().getGreen(),
-			AxolotlClient.CONFIG.loadingScreenColor.get().getBlue(),
-			AxolotlClient.CONFIG.loadingScreenColor.get().getAlpha());
+		return instance.color(AxolotlClient.config().loadingScreenColor.get().getRed(),
+			AxolotlClient.config().loadingScreenColor.get().getGreen(),
+			AxolotlClient.config().loadingScreenColor.get().getBlue(),
+			AxolotlClient.config().loadingScreenColor.get().getAlpha());
 	}
 
 	@Inject(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/texture/TextureManager;close(Lnet/minecraft/resource/Identifier;)V"))
 	private void axolotlclient$onLaunch(CallbackInfo ci) {
 		HudManager.getInstance().refreshAllBounds();
+		HudManager0.getInstance().refreshAllBounds();
 		if (!API.getInstance().isSocketConnected() && !Auth.getInstance().getCurrent().isOffline()) {
 			API.getInstance().startup(Auth.getInstance().getCurrent());
 		}
@@ -175,6 +177,7 @@ public abstract class MinecraftClientMixin {
 	public void axolotlclient$onResize(CallbackInfo ci) {
 		Util.window = null;
 		HudManager.getInstance().refreshAllBounds();
+		HudManager0.getInstance().refreshAllBounds();
 	}
 
 	@Inject(method = "openScreen", at = @At("HEAD"))

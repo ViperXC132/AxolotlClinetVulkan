@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.hypixel;
 
+import io.github.axolotlclient.modules.AbstractModule;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +31,6 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.api.Request;
-import io.github.axolotlclient.modules.AbstractModule;
 import io.github.axolotlclient.modules.hypixel.autoboop.AutoBoop;
 import io.github.axolotlclient.modules.hypixel.autogg.AutoGG;
 import io.github.axolotlclient.modules.hypixel.autotip.AutoTip;
@@ -72,7 +72,7 @@ public class HypixelMods extends AbstractModule {
 
 		subModules.forEach(AbstractHypixelMod::init);
 
-		AxolotlClient.CONFIG.addCategory(category);
+		AxolotlClient.config().addCategory(category);
 
 		ResourceLoaderEvents.END_RESOURCE_RELOAD.register(HypixelMessages.getInstance());
 

@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.config.screen;
 
+import io.github.axolotlclient.AxolotlClientCommon;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,7 +70,7 @@ public class CreditsScreen extends Screen {
 
 	@Override
 	public void render(int mouseX, int mouseY, float tickDelta) {
-		if (AxolotlClient.CONFIG.creditsBGM.get() && !minecraft.getSoundManager().isPlaying(bgm)) {
+		if (AxolotlClient.config().creditsBGM.get() && !minecraft.getSoundManager().isPlaying(bgm)) {
 			if (((SoundSystemAccessor) ((SoundManagerAccessor) Minecraft.getInstance().getSoundManager())
 				.getSoundSystem()).getChannelsByEvent().get(bgm) == null) {
 				Minecraft.getInstance().getSoundManager().play(bgm);
@@ -142,11 +143,11 @@ public class CreditsScreen extends Screen {
 				creditOverlay = null;
 			}
 		} else if (button.id == 1) {
-			AxolotlClient.CONFIG.creditsBGM.toggle();
-			AxolotlClient.configManager.save();
+			AxolotlClient.config().creditsBGM.toggle();
+			AxolotlClientCommon.getInstance().saveConfig();
 			stopBGM();
 			button.message = I18n.translate("creditsBGM") + ": "
-				+ I18n.translate(AxolotlClient.CONFIG.creditsBGM.get() ? "options.on" : "options.off");
+				+ I18n.translate(AxolotlClient.config().creditsBGM.get() ? "options.on" : "options.off");
 		}
 	}
 
@@ -156,7 +157,7 @@ public class CreditsScreen extends Screen {
 			new ButtonWidget(0, width / 2 - 75, height - 50 + 22, 150, 20, I18n.translate("back")));
 
 		this.buttons.add(new ButtonWidget(1, 6, this.height - 26, 100, 20, I18n.translate("creditsBGM")
-			+ ": " + I18n.translate(AxolotlClient.CONFIG.creditsBGM.get() ? "options.on" : "options.off")));
+			+ ": " + I18n.translate(AxolotlClient.config().creditsBGM.get() ? "options.on" : "options.off")));
 
 		credits.clear();
 		initCredits();

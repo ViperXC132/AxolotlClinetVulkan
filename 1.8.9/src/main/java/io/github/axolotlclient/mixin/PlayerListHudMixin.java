@@ -83,7 +83,7 @@ public abstract class PlayerListHudMixin extends GuiElement {
 
 	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/TextRenderer;getWidth(Ljava/lang/String;)I", ordinal = 0))
 	public int axolotlclient$moveName(TextRenderer instance, String text) {
-		if (AxolotlClient.CONFIG.showBadges.get() && UserRequest.getOnline(axolotlclient$playerListEntry.getProfile().getId().toString()))
+		if (AxolotlClient.config().showBadges.get() && UserRequest.getOnline(axolotlclient$playerListEntry.getProfile().getId().toString()))
 			return instance.getWidth(text) + 10;
 		return instance.getWidth(text);
 	}
@@ -92,7 +92,7 @@ public abstract class PlayerListHudMixin extends GuiElement {
 	public void axolotlclient$getCoords(Args args) {
 		float x = args.get(1);
 		float y = args.get(2);
-		if (AxolotlClient.CONFIG.showBadges.get()
+		if (AxolotlClient.config().showBadges.get()
 			&& UserRequest.getOnline(axolotlclient$playerListEntry.getProfile().getId().toString())) {
 			axolotlclient$client.getTextureManager().bind(AxolotlClient.badgeIcon);
 			GuiElement.drawTexture((int) x, (int) y, 0, 0, 8, 8, 8, 8);
@@ -104,7 +104,7 @@ public abstract class PlayerListHudMixin extends GuiElement {
 	public void axolotlclient$getCoords2(Args args) {
 		float x = args.get(1);
 		float y = args.get(2);
-		if (AxolotlClient.CONFIG.showBadges.get()
+		if (AxolotlClient.config().showBadges.get()
 			&& UserRequest.getOnline(axolotlclient$playerListEntry.getProfile().getId().toString())) {
 			axolotlclient$client.getTextureManager().bind(AxolotlClient.badgeIcon);
 			GuiElement.drawTexture((int) x, (int) y, 0, 0, 8, 8, 8, 8);

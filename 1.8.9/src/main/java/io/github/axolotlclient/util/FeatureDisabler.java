@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.util;
 
+import io.github.axolotlclient.modules.hud.HudManager0;
+import io.github.axolotlclient.modules.hud.gui0.hud.simple.ToggleSprintHud;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -29,8 +31,6 @@ import java.util.function.Supplier;
 
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.freelook.Freelook;
-import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hud.gui.hud.simple.ToggleSprintHud;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.resource.Identifier;
@@ -48,19 +48,19 @@ public class FeatureDisabler {
 	private static final HashMap<String, ForceableBooleanOption> features = Util.make(() -> {
 		HashMap<String, ForceableBooleanOption> features = new HashMap<>();
 		features.put("freelook", Freelook.getInstance().enabled);
-		features.put("timechanger", AxolotlClient.CONFIG.timeChangerEnabled);
-		features.put("fullbright", AxolotlClient.CONFIG.fullBright);
-		features.put("lowfire", AxolotlClient.CONFIG.lowFire);
+		features.put("timechanger", AxolotlClient.config().timeChangerEnabled);
+		features.put("fullbright", AxolotlClient.config().fullBright);
+		features.put("lowfire", AxolotlClient.config().lowFire);
 		return features;
 	});
 	private static String currentAddress = "";
 
 	@SuppressWarnings("unchecked")
 	public static void init() {
-		setServers(AxolotlClient.CONFIG.lowFire, NONE, "gommehd");
-		setServers(AxolotlClient.CONFIG.timeChangerEnabled, NONE, "gommehd");
+		setServers(AxolotlClient.config().lowFire, NONE, "gommehd");
+		setServers(AxolotlClient.config().timeChangerEnabled, NONE, "gommehd");
 		setServers(Freelook.getInstance().enabled, () -> Freelook.getInstance().needsDisabling(), "hypixel", "mineplex", "gommehd", "nucleoid");
-		setServers(((ToggleSprintHud) HudManager.getInstance().get(ToggleSprintHud.ID)).toggleSneak, NONE, "hypixel");
+		setServers(((ToggleSprintHud) HudManager0.getInstance().get(ToggleSprintHud.ID)).toggleSneak, NONE, "hypixel");
 
 		ClientPlayNetworking.registerListener(channelName.toString().substring(0, 20), (client, handler, buf) -> {
 			List<String> array = (List<String>) GsonHelper.read(buf.readString(32767));

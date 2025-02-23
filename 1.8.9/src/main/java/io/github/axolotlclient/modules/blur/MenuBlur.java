@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.blur;
 
+import io.github.axolotlclient.modules.AbstractModule;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -34,7 +35,6 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
 import io.github.axolotlclient.mixin.ShaderEffectAccessor;
-import io.github.axolotlclient.modules.AbstractModule;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.Util;
 import lombok.Getter;
@@ -79,7 +79,7 @@ public class MenuBlur extends AbstractModule {
 	public void init() {
 		category.add(enabled, strength, fadeTime, bgColor);
 
-		AxolotlClient.CONFIG.rendering.add(category);
+		AxolotlClient.config().rendering.add(category);
 
 		AxolotlClient.runtimeResources.put(shaderLocation, new MenuBlurShader());
 	}

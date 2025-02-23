@@ -107,7 +107,7 @@ tasks.processResources {
 }
 
 tasks.runClient {
-	if (project.property("native_glfw") == "true") {
+	if (project.properties["native_glfw"] == "true") {
 		val glfwPath = project.properties.getOrDefault("native_glfw_path", "/usr/lib/libglfw.so")
 		jvmArgs("-Dorg.lwjgl.glfw.libname=$glfwPath")
 	}

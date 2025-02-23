@@ -32,7 +32,7 @@ import com.mojang.blaze3d.platform.InputUtil;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
-import io.github.axolotlclient.modules.AbstractModule;
+import io.github.axolotlclient.modules.AbstractModule0;
 import io.github.axolotlclient.modules.hud.gui.AbstractHudEntry;
 import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
 import io.github.axolotlclient.modules.hud.gui.hud.*;
@@ -60,7 +60,7 @@ import net.minecraft.util.Identifier;
  * @license GPL-3.0
  */
 
-public class HudManager extends AbstractModule {
+public class HudManager extends AbstractModule0 {
 
 	private final static Path CUSTOM_MODULE_SAVE_PATH = AxolotlClient.resolveConfigFile("custom_hud.json");
 	private final static HudManager INSTANCE = new HudManager();

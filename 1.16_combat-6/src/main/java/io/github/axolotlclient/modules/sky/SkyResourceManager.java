@@ -32,7 +32,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.modules.AbstractModule;
+import io.github.axolotlclient.modules.AbstractModule0;
 import lombok.Getter;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;

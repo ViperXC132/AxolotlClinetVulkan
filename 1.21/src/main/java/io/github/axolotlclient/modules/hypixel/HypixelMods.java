@@ -30,7 +30,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.api.Request;
-import io.github.axolotlclient.modules.AbstractModule;
+import io.github.axolotlclient.modules.AbstractModule0;
 import io.github.axolotlclient.modules.hypixel.autoboop.AutoBoop;
 import io.github.axolotlclient.modules.hypixel.autogg.AutoGG;
 import io.github.axolotlclient.modules.hypixel.autotip.AutoTip;
@@ -42,7 +42,7 @@ import io.github.axolotlclient.util.events.Events;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.minecraft.resource.ResourceType;
 
-public class HypixelMods extends AbstractModule {
+public class HypixelMods extends AbstractModule0 {
 
 	private static final HypixelMods INSTANCE = new HypixelMods();
 	public final EnumOption<HypixelCacheMode> cacheMode = new EnumOption<>("cache_mode", HypixelCacheMode.class,

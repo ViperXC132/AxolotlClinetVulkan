@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.unfocusedFpsLimiter;
 
+import io.github.axolotlclient.modules.AbstractModule;
 import java.util.concurrent.locks.LockSupport;
 
 import io.github.axolotlclient.AxolotlClient;
@@ -29,7 +30,6 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.FloatOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
-import io.github.axolotlclient.modules.AbstractModule;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.sound.SoundCategory;
@@ -67,7 +67,7 @@ public class UnfocusedFpsLimiter extends AbstractModule {
 	public void init() {
 		OptionCategory category = OptionCategory.create("fpsLimiter");
 		category.add(enabled, reduceFPSWhenUnfocused, unfocusedFPS, restoreOnHover, unfocusedVolumeMultiplier, hiddenVolumeMultiplier, runGCOnUnfocus);
-		AxolotlClient.CONFIG.rendering.add(category);
+		AxolotlClient.config().rendering.add(category);
 	}
 
 	public boolean checkForRender() {

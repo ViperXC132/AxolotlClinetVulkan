@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.hud;
 
+import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,11 +62,12 @@ public class HudEditScreen extends Screen {
 
 	static {
 		hudEditScreenCategory.add(snapping);
-		AxolotlClient.config.add(hudEditScreenCategory);
+		AxolotlClient.hiddenConfig.add(hudEditScreenCategory);
 	}
 
 	private final Screen parent;
 	private HudEntry current;
+	private io.github.axolotlclient.modules.hud.gui0.component.HudEntry current0;
 	private DrawPosition offset = null;
 	private boolean mouseDown;
 	private SnappingHelper snap;
@@ -86,7 +88,11 @@ public class HudEditScreen extends Screen {
 			List<Rectangle> bounds = HudManager.getInstance().getAllBounds();
 			bounds.remove(current.getTrueBounds());
 			snap = new SnappingHelper(bounds, current.getTrueBounds());
-		} else if (snap != null) {
+		} else if (snapping.get() && current0 != null) {
+			List<Rectangle> bounds = HudManager0.getInstance().getAllBounds();
+			bounds.remove(current0.getTrueBounds());
+			snap = new SnappingHelper(bounds, current0.getTrueBounds());
+		}  else if (snap != null) {
 			snap = null;
 		}
 	}
@@ -103,9 +109,18 @@ public class HudEditScreen extends Screen {
 		super.render(mouseX, mouseY, delta);
 		GlStateManager.enableTexture();
 
-		Optional<HudEntry> entry = HudManager.getInstance().getEntryXY(mouseX, mouseY);
+		{
+			Optional<HudEntry> entry = HudManager.getInstance().getEntryXY(mouseX, mouseY);
+			entry.ifPresent(abstractHudEntry -> abstractHudEntry.setHovered(true));
+			HudManager.getInstance().renderPlaceholder(delta);
+			if (mouseDown && snap != null) {
+				snap.renderSnaps();
+			}
+		}
+
+		final var entry = HudManager0.getInstance().getEntryXY(mouseX, mouseY);
 		entry.ifPresent(abstractHudEntry -> abstractHudEntry.setHovered(true));
-		HudManager.getInstance().renderPlaceholder(delta);
+		HudManager0.getInstance().renderPlaceholder(AxoRenderContextImpl.getInstance(), delta);
 		if (mouseDown && snap != null) {
 			snap.renderSnaps();
 		}
@@ -113,17 +128,39 @@ public class HudEditScreen extends Screen {
 
 	@Override
 	public void mouseClicked(int mouseX, int mouseY, int button) {
+		// TODO:
 		super.mouseClicked(mouseX, mouseY, button);
-		Optional<HudEntry> entry = HudManager.getInstance().getEntryXY(mouseX, mouseY);
+
+		{
+			Optional<HudEntry> entry = HudManager.getInstance().getEntryXY(mouseX, mouseY);
+			if (button == 0) {
+				mouseDown = true;
+				if (entry.isPresent()) {
+					current = entry.get();
+					offset = new DrawPosition(mouseX - current.getTruePos().x(),
+						mouseY - current.getTruePos().y());
+					updateSnapState();
+				} else {
+					current = null;
+				}
+			} else if (button == 1) {
+				entry.ifPresent(hudEntry -> {
+					Screen screen = ConfigStyles.createScreen(this, hudEntry.getCategory());
+					Minecraft.getInstance().openScreen(screen);
+				});
+			}
+		}
+
+		final var entry = HudManager0.getInstance().getEntryXY(mouseX, mouseY);
 		if (button == 0) {
 			mouseDown = true;
 			if (entry.isPresent()) {
-				current = entry.get();
-				offset = new DrawPosition(mouseX - current.getTruePos().x(),
-					mouseY - current.getTruePos().y());
+				current0 = entry.get();
+				offset = new DrawPosition(mouseX - current0.getTruePos().x(),
+					mouseY - current0.getTruePos().y());
 				updateSnapState();
 			} else {
-				current = null;
+				current0 = null;
 			}
 		} else if (button == 1) {
 			entry.ifPresent(hudEntry -> {
@@ -136,9 +173,10 @@ public class HudEditScreen extends Screen {
 	@Override
 	public void mouseReleased(int mouseX, int mouseY, int button) {
 		if (current != null) {
-			AxolotlClient.configManager.save();
+			AxolotlClient.getInstance().saveConfig();
 		}
 		current = null;
+		current0 = null;
 		snap = null;
 		mouseDown = false;
 		super.mouseReleased(mouseX, mouseY, button);
@@ -146,21 +184,41 @@ public class HudEditScreen extends Screen {
 
 	@Override
 	protected void mouseDragged(int mouseX, int mouseY, int button, long mouseLastClicked) {
-		if (current != null) {
-			current.setX((mouseX - offset.x()) + current.offsetTrueWidth());
-			current.setY(mouseY - offset.y() + current.offsetTrueHeight());
-			if (snap != null) {
-				Integer snapX, snapY;
-				snap.setCurrent(current.getTrueBounds());
-				if ((snapX = snap.getCurrentXSnap()) != null) {
-					current.setX(snapX + current.offsetTrueWidth());
+		{
+			if (current != null) {
+				current.setX((mouseX - offset.x()) + current.offsetTrueWidth());
+				current.setY(mouseY - offset.y() + current.offsetTrueHeight());
+				if (snap != null) {
+					Integer snapX, snapY;
+					snap.setCurrent(current.getTrueBounds());
+					if ((snapX = snap.getCurrentXSnap()) != null) {
+						current.setX(snapX + current.offsetTrueWidth());
+					}
+					if ((snapY = snap.getCurrentYSnap()) != null) {
+						current.setY(snapY + current.offsetTrueHeight());
+					}
 				}
-				if ((snapY = snap.getCurrentYSnap()) != null) {
-					current.setY(snapY + current.offsetTrueHeight());
+				if (current.tickable()) {
+					current.tick();
 				}
 			}
-			if (current.tickable()) {
-				current.tick();
+		}
+
+		if (current0 != null) {
+			current0.setX((mouseX - offset.x()) + current0.offsetTrueWidth());
+			current0.setY(mouseY - offset.y() + current0.offsetTrueHeight());
+			if (snap != null) {
+				Integer snapX, snapY;
+				snap.setCurrent(current0.getTrueBounds());
+				if ((snapX = snap.getCurrentXSnap()) != null) {
+					current0.setX(snapX + current0.offsetTrueWidth());
+				}
+				if ((snapY = snap.getCurrentYSnap()) != null) {
+					current0.setY(snapY + current0.offsetTrueHeight());
+				}
+			}
+			if (current0.tickable()) {
+				current0.tick();
 			}
 		}
 	}
@@ -172,10 +230,10 @@ public class HudEditScreen extends Screen {
 				snapping.toggle();
 				button.message = I18n.translate("hud.snapping") + ": "
 					+ I18n.translate(snapping.get() ? "options.on" : "options.off");
-				AxolotlClient.configManager.save();
+				AxolotlClient.getInstance().saveConfig();
 				break;
 			case 1:
-				Screen screen = ConfigStyles.createScreen(this, AxolotlClient.configManager.getRoot());
+				Screen screen = ConfigStyles.createScreen(this, AxolotlClient.getInstance().getConfigManager().getRoot());
 				Minecraft.getInstance().openScreen(screen);
 				break;
 			case 0:

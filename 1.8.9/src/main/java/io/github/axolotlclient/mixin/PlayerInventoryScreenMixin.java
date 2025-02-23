@@ -34,6 +34,6 @@ public class PlayerInventoryScreenMixin {
 	@WrapWithCondition(method = "checkStatusEffects", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/inventory/menu/PlayerInventoryScreen;x:I"))
 	private boolean noInventoryShift(PlayerInventoryScreen instance, int value) {
 
-		return AxolotlClient.CONFIG.inventoryPotionEffectOffset.get();
+		return AxolotlClient.config().inventoryPotionEffectOffset.get();
 	}
 }

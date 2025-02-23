@@ -37,7 +37,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringArrayOption;
 import io.github.axolotlclient.api.API;
-import io.github.axolotlclient.modules.AbstractModule;
+import io.github.axolotlclient.modules.AbstractModule0;
 import io.github.axolotlclient.util.options.GenericOption;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -48,7 +48,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
-public class ScreenshotUtils extends AbstractModule {
+public class ScreenshotUtils extends AbstractModule0 {
 
 	@Getter
 	private static final ScreenshotUtils Instance = new ScreenshotUtils();
