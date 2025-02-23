@@ -92,9 +92,9 @@ dependencies {
 configurations.configureEach {
 	resolutionStrategy {
 		dependencySubstitution {
-			substitute(module("io.netty:netty-all:4.0.23.Final")).using(module("io.netty:netty-all:4.1.9.Final"))
+			substitute(module("io.netty:netty-all:4.0.23.Final")).using(module("io.netty:netty-all:4.0.56.Final"))
 		}
-		force("io.netty:netty-all:4.1.9.Final")
+		force("io.netty:netty-all:4.0.56.Final")
 	}
 }
 
