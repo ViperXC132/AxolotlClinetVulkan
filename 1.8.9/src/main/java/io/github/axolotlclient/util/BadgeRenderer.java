@@ -44,9 +44,6 @@ public class BadgeRenderer {
 
 		TextRenderer textRenderer = Minecraft.getInstance().textRenderer;
 
-		GlStateManager.enableDepthTest();
-		GlStateManager.depthMask(true);
-
 		int x = -(textRenderer
 			.getWidth(entity.getUuid() == Minecraft.getInstance().player.getUuid()
 				? (NickHider.getInstance().hideOwnName.get() ? NickHider.getInstance().hiddenNameSelf.get()
@@ -62,11 +59,8 @@ public class BadgeRenderer {
 		if (AxolotlClient.CONFIG.customBadge.get())
 			textRenderer.draw(AxolotlClient.CONFIG.badgeText.get(), x, 0, -1, AxolotlClient.CONFIG.useShadows.get());
 		else {
-			GlStateManager.alphaFunc(516, 0.1F);
-			GlStateManager.enableAlphaTest();
 			Minecraft.getInstance().getTextureManager().bind(AxolotlClient.badgeIcon);
 			GuiElement.drawTexture(x, 0, 0, 0, 8, 8, 8, 8);
 		}
-		GlStateManager.disableDepthTest();
 	}
 }
