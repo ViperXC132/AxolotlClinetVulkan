@@ -117,11 +117,7 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
 							textRenderer.drawInBatch(text, x, y, LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.CONFIG.useShadows.get(), matrix4f, vertexConsumers, Font.DisplayMode.NORMAL, LevelHead.getInstance().background.get() ? 127 : 0, light);
 						}
 					} else if (LevelHead.getInstance().enabled.get()) {
-						String text = "Level: " + HypixelAbstractionLayer.getPlayerLevel(String.valueOf(entity.getUUID()), LevelHead.getInstance().mode.get());
-
-						if (LevelHead.getInstance().mode.get().equals(LevelHeadMode.BEDWARS)) {
-							text += "☆";
-						}
+						String text = LevelHead.getInstance().getDisplayString(entity.getStringUUID());
 
 						float x = -textRenderer.width(text) / 2F;
 						float y = c.getString().contains("deadmau5") ? -20 : -10;

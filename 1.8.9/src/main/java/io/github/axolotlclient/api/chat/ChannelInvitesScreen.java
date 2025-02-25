@@ -151,7 +151,7 @@ public class ChannelInvitesScreen extends Screen {
 			@Override
 			public void render(int index, int x, int y, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovere) {
 				drawString(textRenderer, I18n.translate("api.channels.invite.name", invite.channelName()), x + 2, y + 2, -1);
-				drawString(textRenderer, ChatFormatting.ITALIC + I18n.translate("api.channels.invite.from", UUIDHelper.getUsername(invite.fromUuid())), x + 15, y + entryHeight - textRenderer.fontHeight - 1, 0x808080);
+				drawString(textRenderer, ChatFormatting.ITALIC + I18n.translate("api.channels.invite.from", UUIDHelper.tryGetUsername(invite.fromUuid())), x + 15, y + entryHeight - textRenderer.fontHeight - 1, 0x808080);
 			}
 
 			@Override

@@ -120,7 +120,7 @@ public class ChannelInvitesScreen extends Screen {
 			@Override
 			public void render(GuiGraphics graphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
 				graphics.drawString(font, Component.translatable("api.channels.invite.name", invite.channelName()), left + 2, top + 2, -1);
-				graphics.drawString(font, Component.translatable("api.channels.invite.from", UUIDHelper.getUsername(invite.fromUuid())).withStyle(Style.EMPTY.withItalic(true)), left + 15, top + height - font.lineHeight - 1, 0x808080);
+				graphics.drawString(font, Component.translatable("api.channels.invite.from", UUIDHelper.UUID_TO_USERNAME.getBlocking(invite.fromUuid())).withStyle(Style.EMPTY.withItalic(true)), left + 15, top + height - font.lineHeight - 1, 0x808080);
 
 			}
 		}

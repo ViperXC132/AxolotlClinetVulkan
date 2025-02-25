@@ -88,7 +88,7 @@ public class ChannelRequest {
 		}
 		List<String> participants = new ArrayList<>();
 		for (String username : users) {
-			participants.add(UUIDHelper.getUuid(username));
+			participants.add(UUIDHelper.tryGetUuid(username));
 		}
 		return API.getInstance().post(Request.Route.CHANNEL.builder()
 			.field("name", name).field("persistence", persistence.toJson())

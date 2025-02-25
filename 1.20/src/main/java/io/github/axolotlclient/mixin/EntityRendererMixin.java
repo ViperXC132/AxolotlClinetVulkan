@@ -147,12 +147,7 @@ public abstract class EntityRendererMixin<T extends Entity> {
 							light);
 					}
 				} else if (LevelHead.getInstance().enabled.get()) {
-					String text = "Level: " + HypixelAbstractionLayer.getPlayerLevel(String.valueOf(entity.getUuid()), LevelHead.getInstance().mode.get());
-
-					if (LevelHead.getInstance().mode.get().equals(LevelHeadMode.BEDWARS)) {
-						text += "☆";
-					}
-
+					String text = LevelHead.getInstance().getDisplayString(entity.getUuid().toString());
 					float x = -textRenderer.getWidth(text) / 2F;
 					float y = string.getString().contains("deadmau5") ? -20 : -10;
 

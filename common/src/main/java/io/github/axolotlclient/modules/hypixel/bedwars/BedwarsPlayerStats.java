@@ -27,6 +27,7 @@ import java.util.Random;
 
 import io.github.axolotlclient.modules.hypixel.BedwarsData;
 import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
+import java.util.concurrent.CompletableFuture;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -83,11 +84,27 @@ public class BedwarsPlayerStats {
 		return random.nextFloat() * (bound - origin) + origin;
 	}
 
+	public static CompletableFuture<BedwarsPlayerStats> fromAPIAsync(String uuid) {
+		return HypixelAbstractionLayer.getInstance().getBedwarsDataApi().getAsync(uuid)
+			.thenCombine(
+				HypixelAbstractionLayer.getInstance().getBedwarsLevelApi().getAsync(uuid),
+				(stats, level) -> new BedwarsPlayerStats(
+					stats.losses(),
+					stats.wins(),
+					stats.winstreak(),
+					level,
+					stats.finalKills(),
+					stats.finalDeaths(),
+					stats.bedsBroken(),
+					stats.deaths(),
+					stats.kills(),
+					0, 0, 0, 0, 0
+				)
+			);
+	}
+
 	public static BedwarsPlayerStats fromAPI(String uuid) {
-		BedwarsData data = HypixelAbstractionLayer.getBedwarsData(uuid);
-		return new BedwarsPlayerStats(data.losses(), data.wins(), data.winstreak(), HypixelAbstractionLayer.getBedwarsLevel(uuid), data.finalKills(), data.finalDeaths(), data.bedsBroken(),
-			data.deaths(), data.kills(), 0, 0, 0,
-			0, 0);
+		return fromAPIAsync(uuid).join();
 	}
 
 	public void addDeath() {
@@ -117,6 +134,10 @@ public class BedwarsPlayerStats {
 
 	public float getFKDR() {
 		return (float) finalKills / finalDeaths;
+	}
+
+	public float getKDR() {
+		return (float) kills / deaths;
 	}
 
 	public float getBBLR() {

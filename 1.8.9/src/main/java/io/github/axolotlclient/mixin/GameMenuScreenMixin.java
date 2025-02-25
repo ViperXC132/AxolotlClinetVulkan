@@ -106,7 +106,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 			if (HypixelMods.getInstance().cacheMode.get() != null
 				&& Objects.equals(HypixelMods.getInstance().cacheMode.get(),
 				HypixelMods.HypixelApiCacheMode.ON_CLIENT_DISCONNECT.toString())) {
-				HypixelAbstractionLayer.clearPlayerData();
+				HypixelAbstractionLayer.getInstance().clearPlayerData();
 			}
 		} else if (button.id == 234) {
 			minecraft.openScreen(new ChatsSidebar(this));

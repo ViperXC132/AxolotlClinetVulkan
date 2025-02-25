@@ -67,7 +67,7 @@ public class StatusUpdateHandler implements SocketMessageHandler {
 		}
 		Instant started = response.getBody("activity.started", Instant::parse);
 		Status.Activity activity = new Status.Activity(title, description, desc, started);
-		notification("api.friends.activity.update", translate(title) + ": " + translate(description), UUIDHelper.getUsername(uuid));
+		notification("api.friends.activity.update", translate(title) + ": " + translate(description), UUIDHelper.tryGetUsername(uuid));
 		UserRequest.get(uuid).thenAccept(u -> {
 			User user = u.orElseThrow();
 			user.getStatus().setOnline(true);

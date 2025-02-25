@@ -22,143 +22,23 @@
 
 package io.github.axolotlclient.modules.hypixel;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
-
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.Request;
 import io.github.axolotlclient.api.Response;
-import io.github.axolotlclient.modules.hypixel.levelhead.LevelHeadMode;
+import io.github.axolotlclient.util.CachedAPI;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.experimental.UtilityClass;
+import lombok.SneakyThrows;
 
-@UtilityClass
 public class HypixelAbstractionLayer {
-
-	private final Map<String, Map<RequestDataType, Object>> cachedPlayerData = new HashMap<>();
-	private final Map<String, Map<RequestDataType, CompletableFuture<Optional<Object>>>> cachedRequests = new HashMap<>();
-	private final Map<String, Integer> tempValues = new HashMap<>();
-	private Instant ratelimitReset = Instant.now();
-
-	public int getPlayerLevel(String uuid, LevelHeadMode mode) {
-		int value = -1;
-		if (Objects.equals(mode, LevelHeadMode.NETWORK)) {
-			value = getLevel(uuid, RequestDataType.NETWORK_LEVEL);
-		} else if (Objects.equals(mode, LevelHeadMode.BEDWARS)) {
-			value = getLevel(uuid, RequestDataType.BEDWARS_LEVEL);
-		} else if (Objects.equals(mode, LevelHeadMode.SKYWARS)) {
-			int exp = getLevel(uuid, RequestDataType.SKYWARS_EXPERIENCE);
-			if (exp != -1) {
-				value = Math.round(ExpCalculator.getLevelForExp(exp));
-			}
-		}
-		if (value > -1) {
-			tempValues.remove(uuid);
-			return value;
-		}
-		return tempValues.computeIfAbsent(uuid, s -> (int) (new Random().nextGaussian() * 30 + 150));
-	}
-
-	private int getLevel(String uuid, RequestDataType type) {
-		return cache(uuid, type, res -> {
-			Number lvl = res.getBody(type.getId());
-			return lvl.intValue();
-		}, -1);
-	}
-
-	public int getBedwarsLevel(String uuid) {
-		return getLevel(uuid, RequestDataType.BEDWARS_LEVEL);
-	}
-
-	public BedwarsData getBedwarsData(String playerUuid) {
-		return cache(playerUuid, RequestDataType.BEDWARS_DATA, res -> new BedwarsData(
-			res.getBody("final_kills_bedwars"),
-			res.getBody("final_deaths_bedwars"),
-			res.getBody("beds_broken_bedwars"),
-			res.getBody("deaths_bedwars"),
-			res.getBody("kills_bedwars"),
-			res.getBody("losses_bedwars"),
-			res.getBody("wins_bedwars"),
-			res.getBody("winstreak")
-		), BedwarsData.EMPTY);
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T> T cache(String uuid, RequestDataType type, Function<Response, T> func, T absent) {
-		uuid = API.getInstance().sanitizeUUID(uuid);
-		if (!API.getInstance().isAuthenticated()) {
-			return absent;
-		}
-		Map<RequestDataType, Object> map = cachedPlayerData.computeIfAbsent(uuid, s -> new HashMap<>());
-		Map<RequestDataType, CompletableFuture<Optional<Object>>> requests = cachedRequests.computeIfAbsent(uuid, s -> new HashMap<>());
-		if (map.containsKey(type)) {
-			return (T) map.get(type);
-		} else {
-			if (requests.containsKey(type)) {
-				var request = requests.get(type);
-				if (request.isDone()) {
-					requests.remove(type);
-					Optional<T> option = (Optional<T>) request.getNow(Optional.empty());
-					if (option.isPresent()) {
-						T value = option.get();
-						map.put(type, value);
-						return value;
-					}
-				}
-			} else {
-				CompletableFuture<Optional<Object>> request;
-				synchronized (tempValues) {
-					if (Instant.now().isBefore(ratelimitReset)) {
-						return absent;
-					}
-
-					request = getHypixelApiData(uuid, type).thenApply(res -> {
-						if (res.getStatus() == 429) {
-							ratelimitReset = Instant.now().plus(res.firstHeader("RateLimit-Reset").map(Long::parseLong).orElse(2L), ChronoUnit.SECONDS);
-						} else {
-							ratelimitReset = Instant.now().plus(100, ChronoUnit.MILLIS);
-						}
-						if (res.isError()) {
-							return Optional.empty();
-						}
-						return Optional.ofNullable(func.apply(res));
-					});
-				}
-				if (request.isDone()) {
-					Optional<T> option = (Optional<T>) request.getNow(Optional.empty());
-					if (option.isPresent()) {
-						T value = option.get();
-						map.put(type, value);
-						return value;
-					}
-				} else {
-					requests.put(type, request);
-				}
-			}
-		}
-		return absent;
-	}
-
-	private CompletableFuture<Response> getHypixelApiData(String uuid, RequestDataType type) {
-		return API.getInstance().get(Request.Route.HYPIXEL.builder().field("request_type", type.getId()).field("target_player", uuid).build());
-	}
-
-	public void clearPlayerData() {
-		cachedPlayerData.clear();
-	}
-
-	public void handleDisconnectEvents(UUID uuid) {
-		freePlayerData(uuid.toString());
-	}
-
-	private void freePlayerData(String uuid) {
-		cachedPlayerData.remove(uuid);
-	}
-
 	@AllArgsConstructor
 	@Getter
 	private enum RequestDataType {
@@ -167,5 +47,156 @@ public class HypixelAbstractionLayer {
 		SKYWARS_EXPERIENCE("skywars_experience"),
 		BEDWARS_DATA("bedwars_data");
 		private final String id;
+	}
+
+	@Getter
+	private static final HypixelAbstractionLayer instance = new HypixelAbstractionLayer();
+
+	private record Entry<T>(String desc, CompletableFuture<T> res, Function<Response, T> func, Request req) {
+		public void resolve(Response response) {
+			res.complete(func.apply(response));
+		}
+	}
+
+	private final LinkedBlockingQueue<Entry<?>> tasks = new LinkedBlockingQueue<>();
+	private final AtomicBoolean isRunning = new AtomicBoolean(true);
+
+	// TODO: Someone who's better at async algorithms should port this to a scheduled executor service. This implementation is certainly janky and VERY VERY BAD!
+	// TODO: after a request fails {n} times, we should give up...
+	private final Thread worker = new Thread("HypixelAbstractionLayerWorker") {
+		@Override
+		public void run() {
+			AtomicLong timeout = new AtomicLong(System.currentTimeMillis());
+
+			while (isRunning.get()) {
+				Entry<?> task;
+
+				try {
+					task = tasks.take();
+				} catch (InterruptedException e) {
+					continue;
+				}
+
+				try {
+					if (timeout.get() > System.currentTimeMillis()) {
+						Thread.sleep(timeout.get() - System.currentTimeMillis());
+					}
+
+					API.getInstance().getLogger().debug("Performing request for {}", task.desc);
+					API.getInstance().get(task.req).whenComplete((res, err) -> {
+						long delay;
+						// handle rate limit
+						if (res.getStatus() == 429) {
+							delay = Duration.of(
+								res.firstHeader("RateLimit-Reset")
+									.map(Long::parseLong)
+									.orElse(2L),
+								ChronoUnit.SECONDS
+							).toMillis();
+						} else {
+							delay = 100;
+						}
+
+						long newTimeout = System.currentTimeMillis() + delay;
+						timeout.set(newTimeout);
+						API.getInstance().getLogger().debug("Rate limit: backing off until {} (+{}ms)", newTimeout, delay);
+
+						if (err != null || res.getStatus() != 200) {
+							if (err != null) {
+								API.getInstance().getLogger().warn("While performing request: ", err);
+							} else {
+								API.getInstance().getLogger().warn("Bad response ({}): {}", res.getStatus(), res.getBody());
+							}
+							tasks.add(task);
+						} else {
+							try {
+								API.getInstance().getLogger().debug("Resolved request for {}", task.desc);
+								task.resolve(res);
+							} catch (Throwable ex) {
+								API.getInstance().getLogger().warn("Failed to parse response: ", ex);
+								tasks.add(task);
+							}
+						}
+
+						this.interrupt();
+					});
+
+					timeout.getAndSet(System.currentTimeMillis() + Duration.of(2L, ChronoUnit.SECONDS).toMillis());
+				} catch (InterruptedException ignored) {
+					// we need to try again
+					tasks.add(task);
+				}
+			}
+		}
+	};
+
+	private HypixelAbstractionLayer() {
+		worker.start();
+	}
+
+	private <V> CachedAPI<String, V> create(RequestDataType type, Function<Response, V> app) {
+		return new CachedAPI<>(uuid -> {
+			Request request = Request.Route.HYPIXEL
+				.builder()
+				.field("request_type", type.getId())
+				.field("target_player", uuid)
+				.build();
+
+			CompletableFuture<V> future = new CompletableFuture<>();
+			tasks.add(new Entry<>("[%s, %s]".formatted(type, uuid), future, app, request));
+			return future;
+		});
+	}
+
+	private CachedAPI<String, Integer> createLevel(RequestDataType type) {
+		return create(type, res -> res.<Number>getBody(type.getId()).intValue());
+	}
+
+	private void freePlayerData(String uuid) {
+		bedwarsDataApi.invalidate(uuid);
+		networkLevelApi.invalidate(uuid);
+		bedwarsLevelApi.invalidate(uuid);
+		skywardsExpApi.invalidate(uuid);
+	}
+
+	@Getter
+	private final CachedAPI<String, BedwarsData> bedwarsDataApi = create(RequestDataType.BEDWARS_DATA,
+		res -> new BedwarsData(
+			res.<Number>getBody("final_kills_bedwars").intValue(),
+			res.<Number>getBody("final_deaths_bedwars").intValue(),
+			res.<Number>getBody("beds_broken_bedwars").intValue(),
+			res.<Number>getBody("deaths_bedwars").intValue(),
+			res.<Number>getBody("kills_bedwars").intValue(),
+			res.<Number>getBody("losses_bedwars").intValue(),
+			res.<Number>getBody("wins_bedwars").intValue(),
+			res.<Number>getBody("winstreak").intValue()
+		)
+	);
+
+	@Getter
+	private final CachedAPI<String, Integer> networkLevelApi = createLevel(RequestDataType.NETWORK_LEVEL);
+
+	@Getter
+	private final CachedAPI<String, Integer> bedwarsLevelApi = createLevel(RequestDataType.BEDWARS_LEVEL);
+
+	@Getter
+	private final CachedAPI<String, Integer> skywardsExpApi = createLevel(RequestDataType.SKYWARS_EXPERIENCE);
+
+	@SneakyThrows // propagate interrupted exception
+	public void shutdown() {
+		isRunning.set(false);
+		worker.interrupt();
+		worker.join();
+	}
+
+	public void clearPlayerData() {
+		bedwarsDataApi.invalidate();
+		networkLevelApi.invalidate();
+		bedwarsLevelApi.invalidate();
+		skywardsExpApi.invalidate();
+	}
+
+	public void handleDisconnectEvents(UUID uuid) {
+		freePlayerData(uuid.toString());
 	}
 }

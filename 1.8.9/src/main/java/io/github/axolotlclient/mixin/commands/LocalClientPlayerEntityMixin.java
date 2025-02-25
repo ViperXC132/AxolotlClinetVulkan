@@ -20,25 +20,27 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.api.handlers;
+package io.github.axolotlclient.mixin.commands;
 
-import io.github.axolotlclient.api.Response;
-import io.github.axolotlclient.api.util.SocketMessageHandler;
-import io.github.axolotlclient.api.util.UUIDHelper;
+import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.ref.LocalRef;
+import io.github.axolotlclient.commands.ClientCommands;
+import net.minecraft.client.entity.living.player.LocalClientPlayerEntity;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-public class FriendRequestReactionHandler implements SocketMessageHandler {
-	@Override
-	public boolean isApplicable(String target) {
-		return "friend_request_accept".equals(target) || "friend_request_deny".equals(target);
-	}
-
-	@Override
-	public void handle(Response response) {
-		String from = response.getBody("from");
-		if ("friend_request_accept".equals(response.getBody("target"))) {
-			notification("api.friends", "api.friends.request.accepted", UUIDHelper.tryGetUsername(from));
-		} else {
-			notification("api.friends", "api.friends.request.declined", UUIDHelper.tryGetUsername(from));
+@Mixin(LocalClientPlayerEntity.class)
+public abstract class LocalClientPlayerEntityMixin {
+	@Inject(
+		method = "sendChat",
+		at = @At(value = "HEAD"),
+		cancellable = true
+	)
+	private void handleChatEvents(String string, CallbackInfo ci, @Local(argsOnly = true) LocalRef<String> stringRef) {
+		if (ClientCommands.dispatchClient(string)) {
+			ci.cancel();
 		}
 	}
 }

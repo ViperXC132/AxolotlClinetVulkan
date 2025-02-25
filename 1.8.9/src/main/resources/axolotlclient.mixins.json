@@ -62,7 +62,9 @@
 		"TntEntityRendererMixin",
 		"VertexBufferMixin",
 		"WorldRendererAccessor",
-		"WorldRendererMixin"
+		"WorldRendererMixin",
+		"commands.ChatScreenMixin",
+		"commands.LocalClientPlayerEntityMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

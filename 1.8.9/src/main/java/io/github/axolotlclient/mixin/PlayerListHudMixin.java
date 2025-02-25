@@ -175,9 +175,10 @@ public abstract class PlayerListHudMixin extends GuiElement {
 				return;
 			}
 
-			render = String.valueOf(HypixelAbstractionLayer.getPlayerLevel(playerListEntry2
-					.getProfile().getId().toString().replace("-", ""),
-				LevelHeadMode.BEDWARS));
+			String uuid = playerListEntry2.getProfile().getId().toString().replace("-", "");
+			render = LevelHeadMode.BEDWARS.getApi().getAsyncNow(uuid)
+				.map(String::valueOf)
+				.orElse("???");
 		} catch (Exception e) {
 			return;
 		}

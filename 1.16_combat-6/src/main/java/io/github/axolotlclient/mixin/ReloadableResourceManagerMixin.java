@@ -47,7 +47,7 @@ public abstract class ReloadableResourceManagerMixin {
 	@Inject(method = "beginMonitoredReload", at = @At(value = "INVOKE", target = "Lnet/minecraft/resource/ReloadableResourceManagerImpl;beginReloadInner(Ljava/util/concurrent/Executor;Ljava/util/concurrent/Executor;Ljava/util/List;Ljava/util/concurrent/CompletableFuture;)Lnet/minecraft/resource/ResourceReloadMonitor;"))
 	public void axolotlclient$reload(Executor prepareExecutor, Executor applyExecutor, CompletableFuture<Unit> initialStage,
 									 List<ResourcePack> packs, CallbackInfoReturnable<ResourceReloadMonitor> cir) {
-		HypixelAbstractionLayer.clearPlayerData();
+		HypixelAbstractionLayer.getInstance().clearPlayerData();
 
 		PackDisplayHud hud = (PackDisplayHud) HudManager.getInstance().get(PackDisplayHud.ID);
 		if (hud != null) {

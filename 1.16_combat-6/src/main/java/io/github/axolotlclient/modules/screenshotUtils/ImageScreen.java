@@ -88,7 +88,7 @@ public class ImageScreen extends Screen {
 			ImageInstance.Remote r = (ImageInstance.Remote) image;
 			drawCenteredText(graphics, textRenderer, getTitle(), width / 2, 38 / 2 - textRenderer.fontHeight - 2, -1);
 			drawCenteredText(graphics, textRenderer,
-				new TranslatableText("gallery.image.upload_details", UUIDHelper.getUsername(r.uploader()),
+				new TranslatableText("gallery.image.upload_details", UUIDHelper.tryGetUsername(r.uploader()),
 					r.sharedAt().atZone(ZoneId.systemDefault()).format(AxolotlClientCommon.getInstance().formatter)),
 				width / 2, 38 / 2 + 2, -1);
 		} else {
