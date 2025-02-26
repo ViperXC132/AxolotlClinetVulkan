@@ -61,7 +61,6 @@ public class StatsMod implements AbstractHypixelMod {
 					.append(Component.translatable("playerstats.bedwars.beds", stats.getBedsBroken()))
 					.append("\n")
 					.append(Component.translatable("playerstats.bedwars.summary", stats.getWins(), stats.getWinstreak(), stats.getStars()))
-					.append("\n")
 			);
 		})
 	);
