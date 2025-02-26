@@ -26,21 +26,21 @@ import java.util.List;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.api.API;
-import io.github.axolotlclient.commands.ClientCommandInfo;
-import io.github.axolotlclient.commands.ClientCommands;
 import io.github.axolotlclient.commands.PlayerArgument;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsPlayerStats;
 import lombok.Getter;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.text.Formatting;
-import net.minecraft.text.LiteralText;
+import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.minecraft.text.TranslatableText;
+import net.minecraft.util.Formatting;
 
-import static io.github.axolotlclient.commands.ClientCommands.argument;
-import static io.github.axolotlclient.commands.ClientCommands.literal;
+import static net.fabricmc.fabric.api.client.command.v1.ClientCommandManager.argument;
+import static net.fabricmc.fabric.api.client.command.v1.ClientCommandManager.literal;
+
 
 public class StatsMod implements AbstractHypixelMod {
 	private interface Handler {
-		void accept(ClientCommandInfo ctx, String uuid, String username);
+		void accept(FabricClientCommandSource ctx, String uuid, String username);
 	}
 
 	private record Entry(String name, Handler handler) {
@@ -49,14 +49,18 @@ public class StatsMod implements AbstractHypixelMod {
 	private static final List<Entry> HANDLERS = List.of(
 		new Entry("bedwars", (c, uuid, username) -> {
 			final var stats = BedwarsPlayerStats.fromAPI(uuid);
-			c.sendMessageAsync(
+			c.sendFeedback(
 				// TODO: color with rank, prestige
-				I18n.translate("playerstats.bedwars.title", username, stats.getStars()),
-				// TODO: colorize this more
-				I18n.translate("playerstats.bedwars.kdr", stats.getKills(), stats.getDeaths(), stats.getKDR()),
-				I18n.translate("playerstats.bedwars.fkdr", stats.getFinalKills(), stats.getFinalDeaths(), stats.getFKDR()),
-				I18n.translate("playerstats.bedwars.beds", stats.getBedsBroken()),
-				I18n.translate("playerstats.bedwars.summary", stats.getWins(), stats.getWinstreak(), stats.getStars())
+				new TranslatableText("playerstats.bedwars.title", username, stats.getStars()).append("\n")
+					.append(
+						// TODO: colorize this more
+						new TranslatableText("playerstats.bedwars.kdr", stats.getKills(), stats.getDeaths(), stats.getKDR()))
+					.append("\n")
+					.append(new TranslatableText("playerstats.bedwars.fkdr", stats.getFinalKills(), stats.getFinalDeaths(), stats.getFKDR()))
+					.append("\n")
+					.append(new TranslatableText("playerstats.bedwars.beds", stats.getBedsBroken()))
+					.append("\n")
+					.append(new TranslatableText("playerstats.bedwars.summary", stats.getWins(), stats.getWinstreak(), stats.getStars()))
 			);
 		})
 	);
@@ -73,11 +77,11 @@ public class StatsMod implements AbstractHypixelMod {
 		for (Entry handler : HANDLERS) {
 			command.then(literal(handler.name()).then(argument("player", PlayerArgument.player()).executes(c -> {
 				if (!API.getInstance().getApiOptions().enabled.get()) {
-					c.getSource().sendMessage(Formatting.RED + I18n.translate("playerstats.error.api_disabled"));
+					c.getSource().sendError(new TranslatableText("playerstats.error.api_disabled").formatted(Formatting.RED));
 					return -1;
 				}
 				if (!API.getInstance().isAuthenticated()) {
-					c.getSource().sendMessage(Formatting.RED + I18n.translate("playerstats.error.api_unauthenticated"));
+					c.getSource().sendError(new TranslatableText("playerstats.error.api_unauthenticated").formatted(Formatting.RED));
 					return -1;
 				}
 
@@ -85,7 +89,7 @@ public class StatsMod implements AbstractHypixelMod {
 
 				res.uuid().whenCompleteAsync((s, ex) -> {
 					if (s.isEmpty()) {
-						c.getSource().sendMessageAsync(new LiteralText(Formatting.RED + I18n.translate("playerstats.error.unknown_player")));
+						c.getSource().sendFeedback(new TranslatableText("playerstats.error.unknown_player").formatted(Formatting.RED));
 					} else {
 						handler.handler().accept(c.getSource(), s.get(), res.playerName());
 					}
@@ -95,8 +99,8 @@ public class StatsMod implements AbstractHypixelMod {
 			})));
 		}
 
-		final var node = ClientCommands.getDISPATCHER().register(command);
-		ClientCommands.getDISPATCHER().register(literal("pstats").redirect(node));
+		final var node = ClientCommandManager.DISPATCHER.register(command);
+		ClientCommandManager.DISPATCHER.register(literal("pstats").redirect(node));
 	}
 
 	@Override

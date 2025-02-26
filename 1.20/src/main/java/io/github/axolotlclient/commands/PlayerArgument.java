@@ -32,8 +32,8 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.github.axolotlclient.api.util.UUIDHelper;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.handler.ClientPlayNetworkHandler;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.network.ClientPlayNetworkHandler;
 
 public class PlayerArgument implements ArgumentType<PlayerArgument.PlayerInfo> {
 	public record PlayerInfo(String playerName, CompletableFuture<Optional<String>> uuid) {
@@ -49,12 +49,12 @@ public class PlayerArgument implements ArgumentType<PlayerArgument.PlayerInfo> {
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		ClientPlayNetworkHandler handler = Minecraft.getInstance().getNetworkHandler();
+		ClientPlayNetworkHandler handler = MinecraftClient.getInstance().getNetworkHandler();
 		if (handler == null) {
 			return builder.buildFuture();
 		}
 
-		handler.getOnlinePlayers()
+		handler.getPlayerList()
 			.stream()
 			.map(playerInfo -> playerInfo.getProfile().getName())
 			.filter(name -> NAME_REGEX.matcher(name).matches())

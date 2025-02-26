@@ -33,7 +33,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.github.axolotlclient.api.util.UUIDHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.handler.ClientPlayNetworkHandler;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 
 public class PlayerArgument implements ArgumentType<PlayerArgument.PlayerInfo> {
 	public record PlayerInfo(String playerName, CompletableFuture<Optional<String>> uuid) {
@@ -49,7 +49,7 @@ public class PlayerArgument implements ArgumentType<PlayerArgument.PlayerInfo> {
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		ClientPlayNetworkHandler handler = Minecraft.getInstance().getNetworkHandler();
+		ClientPacketListener handler = Minecraft.getInstance().getConnection();
 		if (handler == null) {
 			return builder.buildFuture();
 		}
