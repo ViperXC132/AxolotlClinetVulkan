@@ -22,23 +22,28 @@
 
 package io.github.axolotlclient.modules.hypixel;
 
-import io.github.axolotlclient.api.API;
-import io.github.axolotlclient.api.Request;
-import io.github.axolotlclient.api.Response;
-import io.github.axolotlclient.util.CachedAPI;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
+
+import io.github.axolotlclient.api.API;
+import io.github.axolotlclient.api.Request;
+import io.github.axolotlclient.api.Response;
+import io.github.axolotlclient.util.CachedAPI;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
 public class HypixelAbstractionLayer {
+
+	private static final int MAX_ATTEMPTS = 5;
+
 	@AllArgsConstructor
 	@Getter
 	private enum RequestDataType {
@@ -52,7 +57,7 @@ public class HypixelAbstractionLayer {
 	@Getter
 	private static final HypixelAbstractionLayer instance = new HypixelAbstractionLayer();
 
-	private record Entry<T>(String desc, CompletableFuture<T> res, Function<Response, T> func, Request req) {
+	private record Entry<T>(String desc, CompletableFuture<T> res, Function<Response, T> func, Request req, AtomicInteger attempts) {
 		public void resolve(Response response) {
 			res.complete(func.apply(response));
 		}
@@ -83,6 +88,7 @@ public class HypixelAbstractionLayer {
 					}
 
 					API.getInstance().getLogger().debug("Performing request for {}", task.desc);
+					task.attempts.incrementAndGet();
 					API.getInstance().get(task.req).whenComplete((res, err) -> {
 						long delay;
 						// handle rate limit
@@ -101,20 +107,20 @@ public class HypixelAbstractionLayer {
 						timeout.set(newTimeout);
 						API.getInstance().getLogger().debug("Rate limit: backing off until {} (+{}ms)", newTimeout, delay);
 
-						if (err != null || res.getStatus() != 200) {
+						if (err != null || res.isError()) {
 							if (err != null) {
 								API.getInstance().getLogger().warn("While performing request: ", err);
 							} else {
 								API.getInstance().getLogger().warn("Bad response ({}): {}", res.getStatus(), res.getBody());
 							}
-							tasks.add(task);
+							retry(task);
 						} else {
 							try {
 								API.getInstance().getLogger().debug("Resolved request for {}", task.desc);
 								task.resolve(res);
 							} catch (Throwable ex) {
 								API.getInstance().getLogger().warn("Failed to parse response: ", ex);
-								tasks.add(task);
+								retry(task);
 							}
 						}
 
@@ -124,11 +130,17 @@ public class HypixelAbstractionLayer {
 					timeout.getAndSet(System.currentTimeMillis() + Duration.of(2L, ChronoUnit.SECONDS).toMillis());
 				} catch (InterruptedException ignored) {
 					// we need to try again
-					tasks.add(task);
+					retry(task);
 				}
 			}
 		}
 	};
+
+	private void retry(Entry<?> task) {
+		if (task.attempts.get() < MAX_ATTEMPTS) {
+			tasks.add(task);
+		}
+	}
 
 	private HypixelAbstractionLayer() {
 		worker.start();
@@ -143,7 +155,7 @@ public class HypixelAbstractionLayer {
 				.build();
 
 			CompletableFuture<V> future = new CompletableFuture<>();
-			tasks.add(new Entry<>("[%s, %s]".formatted(type, uuid), future, app, request));
+			tasks.add(new Entry<>("[%s, %s]".formatted(type, uuid), future, app, request, new AtomicInteger()));
 			return future;
 		});
 	}

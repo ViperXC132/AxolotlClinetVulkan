@@ -22,13 +22,14 @@
 
 package io.github.axolotlclient.modules.hypixel;
 
+import java.util.List;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.commands.ClientCommandInfo;
 import io.github.axolotlclient.commands.ClientCommands;
 import io.github.axolotlclient.commands.OfflinePlayerArgument;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsPlayerStats;
-import java.util.List;
 import lombok.Getter;
 import net.minecraft.text.Formatting;
 import net.minecraft.text.LiteralText;
@@ -55,14 +56,14 @@ public class StatsMod implements AbstractHypixelMod {
 					"Kill Death Ratio: %s/%s (%s)".formatted(stats.getKills(), stats.getDeaths(), stats.getKDR()),
 					"Final Kill Death Ratio: %s/%s (%s)".formatted(stats.getFinalKills(), stats.getFinalDeaths(), stats.getFKDR()),
 					"Beads broken: %s".formatted(stats.getBedsBroken()),
-					"Wins %s | WS %s | %s stars".formatted(stats.getWins(), stats.getLosses(), stats.getStars())
+					"Wins %s | WS %s | %s stars".formatted(stats.getWins(), stats.getWinstreak(), stats.getStars())
 				);
 		})
 	);
 
 	@Getter
 	private static StatsMod instance = new StatsMod();
-	@Getter
+
 	private final OptionCategory playerstats = OptionCategory.create("playerstats");
 
 	@Override
