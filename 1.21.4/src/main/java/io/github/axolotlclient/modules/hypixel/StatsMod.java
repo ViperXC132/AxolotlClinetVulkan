@@ -32,6 +32,7 @@ import lombok.Getter;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
@@ -94,7 +95,7 @@ public class StatsMod implements AbstractHypixelMod {
 						} else {
 							handler.handler().accept(c.getSource(), s.get(), res.playerName());
 						}
-					});
+					}, Minecraft.getInstance());
 
 					return 0;
 				})));

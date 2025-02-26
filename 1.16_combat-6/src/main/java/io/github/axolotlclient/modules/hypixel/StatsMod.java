@@ -31,6 +31,7 @@ import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsPlayerStats;
 import lombok.Getter;
 import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
@@ -93,7 +94,7 @@ public class StatsMod implements AbstractHypixelMod {
 					} else {
 						handler.handler().accept(c.getSource(), s.get(), res.playerName());
 					}
-				});
+				}, MinecraftClient.getInstance());
 
 				return 0;
 			})));
