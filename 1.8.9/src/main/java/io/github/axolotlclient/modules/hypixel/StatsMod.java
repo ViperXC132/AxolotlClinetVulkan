@@ -31,6 +31,7 @@ import io.github.axolotlclient.commands.ClientCommands;
 import io.github.axolotlclient.commands.PlayerArgument;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsPlayerStats;
 import lombok.Getter;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.Formatting;
 import net.minecraft.text.LiteralText;
 
@@ -47,17 +48,16 @@ public class StatsMod implements AbstractHypixelMod {
 
 	private static final List<Entry> HANDLERS = List.of(
 		new Entry("bedwars", (c, uuid, username) -> {
-				final var stats = BedwarsPlayerStats.fromAPI(uuid);
-				// TODO: i18n
-				c.sendMessageAsync(
-					// TODO: color with rank, prestige
-					"[Bedwars Stats for %s (%s☆)]".formatted(username, stats.getStars()),
-					// TODO: colorize this more
-					"Kill Death Ratio: %s/%s (%s)".formatted(stats.getKills(), stats.getDeaths(), stats.getKDR()),
-					"Final Kill Death Ratio: %s/%s (%s)".formatted(stats.getFinalKills(), stats.getFinalDeaths(), stats.getFKDR()),
-					"Beads broken: %s".formatted(stats.getBedsBroken()),
-					"Wins %s | WS %s | %s stars".formatted(stats.getWins(), stats.getWinstreak(), stats.getStars())
-				);
+			final var stats = BedwarsPlayerStats.fromAPI(uuid);
+			c.sendMessageAsync(
+				// TODO: color with rank, prestige
+				I18n.translate("playerstats.bedwars.title"),
+				// TODO: colorize this more
+				I18n.translate("playerstats.bedwars.kdr", username, stats.getStars()),
+				I18n.translate("playerstats.bedwars.fkdr", stats.getKills(), stats.getDeaths(), stats.getKDR()),
+				I18n.translate("playerstats.bedwars.beds", stats.getBedsBroken()),
+				I18n.translate("playerstats.bedwars.summary", stats.getWins(), stats.getWinstreak(), stats.getStars())
+			);
 		})
 	);
 
@@ -73,15 +73,18 @@ public class StatsMod implements AbstractHypixelMod {
 		for (Entry handler : HANDLERS) {
 			command.then(literal(handler.name()).then(argument("player", PlayerArgument.player()).executes(c -> {
 				if (!API.getInstance().getApiOptions().enabled.get()) {
-					c.getSource().sendMessage(Formatting.RED + "API is not enabled!");
+					c.getSource().sendMessage(Formatting.RED + I18n.translate("playerstats.error.api_disabled"));
 					return -1;
+				}
+				if (!API.getInstance().isAuthenticated()) {
+					c.getSource().sendMessage(Formatting.RED + I18n.translate("playerstats.error.api_unauthenticated"));
 				}
 
 				final var res = PlayerArgument.get(c, "player");
 
 				res.uuid().whenCompleteAsync((s, ex) -> {
 					if (s.isEmpty()) {
-						c.getSource().sendMessageAsync(new LiteralText(Formatting.RED + "Unknown player!"));
+						c.getSource().sendMessageAsync(new LiteralText(Formatting.RED + I18n.translate("playerstats.error.unknown_player")));
 					} else {
 						handler.handler().accept(c.getSource(), s.get(), res.playerName());
 					}

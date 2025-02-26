@@ -689,5 +689,14 @@
 	"bedwars.enabled.tooltip": "Whether this module is enabled or not.<br>Some functions of this module require the social features to be enabled<br>in order to communicate with the backend and the Hypixel API.",
 	"daycounterhud": "Day Counter HUD",
 	"daycounterhud.days": "%s Days",
-	"keystrokes.animation_time": "Animation Time (Milliseconds)"
+	"keystrokes.animation_time": "Animation Time (Milliseconds)",
+	"playerstats": "Player Statistics",
+	"playerstats.bedwars.title": "[Bedwars Stats for %s (%s☆)]",
+	"playerstats.bedwars.kdr": "Kill Death Ratio: %s/%s (%s)",
+	"playerstats.bedwars.fkdr": "Final Kill Death Ratio: %s/%s (%s)",
+	"playerstats.bedwars.beds": "Beads broken: %s",
+	"playerstats.bedwars.summary": "Wins %s | WS %s | %s stars",
+	"playerstats.error.api_disabled": "API is not enabled!",
+	"playerstats.error.unknown_player": "Unknown Player!",
+	"playerstats.error.api_unauthenticated": "API is not authenticated!"
 }
