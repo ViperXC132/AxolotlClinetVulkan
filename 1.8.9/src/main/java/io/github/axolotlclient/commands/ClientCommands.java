@@ -22,6 +22,10 @@
 
 package io.github.axolotlclient.commands;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+
 import com.google.common.base.Preconditions;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.ArgumentType;
@@ -29,9 +33,6 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandExceptionType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.text.LiteralText;
@@ -79,10 +80,7 @@ public class ClientCommands {
 		Minecraft client = Minecraft.getInstance();
 		ClientCommandInfo source = buildClientSource(client);
 		// cancel if present
-		command = command.trim();
-		if (command.startsWith("/")) {
-			command = command.substring(1);
-		}
+		command = command.trim().substring(1);
 
 		try {
 			DISPATCHER.execute(command, source);

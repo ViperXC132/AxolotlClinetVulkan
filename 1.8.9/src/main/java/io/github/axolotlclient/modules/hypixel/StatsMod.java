@@ -28,7 +28,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.commands.ClientCommandInfo;
 import io.github.axolotlclient.commands.ClientCommands;
-import io.github.axolotlclient.commands.OfflinePlayerArgument;
+import io.github.axolotlclient.commands.PlayerArgument;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsPlayerStats;
 import lombok.Getter;
 import net.minecraft.text.Formatting;
@@ -71,13 +71,13 @@ public class StatsMod implements AbstractHypixelMod {
 		final var command = literal("playerstats");
 
 		for (Entry handler : HANDLERS) {
-			command.then(literal(handler.name()).then(argument("player", OfflinePlayerArgument.player()).executes(c -> {
+			command.then(literal(handler.name()).then(argument("player", PlayerArgument.player()).executes(c -> {
 				if (!API.getInstance().getApiOptions().enabled.get()) {
 					c.getSource().sendMessage(Formatting.RED + "API is not enabled!");
 					return -1;
 				}
 
-				final var res = OfflinePlayerArgument.get(c, "player");
+				final var res = PlayerArgument.get(c, "player");
 
 				res.uuid().whenCompleteAsync((s, ex) -> {
 					if (s.isEmpty()) {

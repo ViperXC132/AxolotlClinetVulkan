@@ -32,7 +32,7 @@ import lombok.Getter;
 public enum LevelHeadMode {
 	NETWORK(HypixelAbstractionLayer.getInstance().getNetworkLevelApi()),
 	BEDWARS(HypixelAbstractionLayer.getInstance().getBedwarsLevelApi()),
-	SKYWARS( HypixelAbstractionLayer.getInstance().getSkywardsExpApi());
+	SKYWARS(HypixelAbstractionLayer.getInstance().getSkywarsExpApi());
 
 	private final CachedAPI<String, Integer> api;
 }

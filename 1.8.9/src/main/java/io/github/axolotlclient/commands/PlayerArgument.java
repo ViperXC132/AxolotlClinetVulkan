@@ -22,20 +22,20 @@
 
 package io.github.axolotlclient.commands;
 
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.regex.Pattern;
+
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.github.axolotlclient.api.util.UUIDHelper;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.regex.Pattern;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.PlayerInfo;
 import net.minecraft.client.network.handler.ClientPlayNetworkHandler;
 
-public class OfflinePlayerArgument implements ArgumentType<OfflinePlayerArgument.OfflinePlayerInfo> {
+public class PlayerArgument implements ArgumentType<PlayerArgument.OfflinePlayerInfo> {
 	public record OfflinePlayerInfo(String playerName, CompletableFuture<Optional<String>> uuid) {
 	}
 
@@ -68,7 +68,7 @@ public class OfflinePlayerArgument implements ArgumentType<OfflinePlayerArgument
 		return context.getArgument(name, OfflinePlayerInfo.class);
 	}
 
-	public static OfflinePlayerArgument player() {
-		return new OfflinePlayerArgument();
+	public static PlayerArgument player() {
+		return new PlayerArgument();
 	}
 }

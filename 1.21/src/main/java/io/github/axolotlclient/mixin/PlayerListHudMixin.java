@@ -29,7 +29,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.api.requests.UserRequest;
-import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
+import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsGame;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsPlayer;
@@ -187,7 +187,7 @@ public abstract class PlayerListHudMixin {
 				return;
 			}
 
-			String uuid = playerListEntry2.getProfile().getId().toString().replace("-", "");
+			String uuid = UUIDHelper.toUndashed(playerListEntry2.getProfile().getId());
 			render = LevelHeadMode.BEDWARS.getApi().getAsyncNow(uuid)
 				.map(String::valueOf)
 				.orElse("???");

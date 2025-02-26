@@ -57,7 +57,8 @@ public class HypixelAbstractionLayer {
 	@Getter
 	private static final HypixelAbstractionLayer instance = new HypixelAbstractionLayer();
 
-	private record Entry<T>(String desc, CompletableFuture<T> res, Function<Response, T> func, Request req, AtomicInteger attempts) {
+	private record Entry<T>(String desc, CompletableFuture<T> res, Function<Response, T> func, Request req,
+							AtomicInteger attempts) {
 		public void resolve(Response response) {
 			res.complete(func.apply(response));
 		}
@@ -168,7 +169,7 @@ public class HypixelAbstractionLayer {
 		bedwarsDataApi.invalidate(uuid);
 		networkLevelApi.invalidate(uuid);
 		bedwarsLevelApi.invalidate(uuid);
-		skywardsExpApi.invalidate(uuid);
+		skywarsExpApi.invalidate(uuid);
 	}
 
 	@Getter
@@ -192,7 +193,8 @@ public class HypixelAbstractionLayer {
 	private final CachedAPI<String, Integer> bedwarsLevelApi = createLevel(RequestDataType.BEDWARS_LEVEL);
 
 	@Getter
-	private final CachedAPI<String, Integer> skywardsExpApi = createLevel(RequestDataType.SKYWARS_EXPERIENCE);
+	private final CachedAPI<String, Integer> skywarsExpApi = create(RequestDataType.SKYWARS_EXPERIENCE,
+		res -> Math.round(ExpCalculator.getLevelForExp(res.<Number>getBody(RequestDataType.SKYWARS_EXPERIENCE.getId()).intValue())));
 
 	@SneakyThrows // propagate interrupted exception
 	public void shutdown() {
@@ -205,7 +207,7 @@ public class HypixelAbstractionLayer {
 		bedwarsDataApi.invalidate();
 		networkLevelApi.invalidate();
 		bedwarsLevelApi.invalidate();
-		skywardsExpApi.invalidate();
+		skywarsExpApi.invalidate();
 	}
 
 	public void handleDisconnectEvents(UUID uuid) {

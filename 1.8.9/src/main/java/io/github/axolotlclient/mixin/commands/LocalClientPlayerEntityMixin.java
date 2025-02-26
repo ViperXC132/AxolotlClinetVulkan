@@ -22,8 +22,6 @@
 
 package io.github.axolotlclient.mixin.commands;
 
-import com.llamalad7.mixinextras.sugar.Local;
-import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import io.github.axolotlclient.commands.ClientCommands;
 import net.minecraft.client.entity.living.player.LocalClientPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,7 +36,7 @@ public abstract class LocalClientPlayerEntityMixin {
 		at = @At(value = "HEAD"),
 		cancellable = true
 	)
-	private void handleChatEvents(String string, CallbackInfo ci, @Local(argsOnly = true) LocalRef<String> stringRef) {
+	private void handleChatEvents(String string, CallbackInfo ci) {
 		if (ClientCommands.dispatchClient(string)) {
 			ci.cancel();
 		}
