@@ -48,22 +48,21 @@ public class StatsMod implements AbstractHypixelMod {
 	}
 
 	private static final List<Entry> HANDLERS = List.of(
-		new Entry("bedwars", (c, uuid, username) -> {
-			final var stats = BedwarsPlayerStats.fromAPI(uuid);
-			c.sendFeedback(
-				// TODO: color with rank, prestige
-				Component.translatable("playerstats.bedwars.title", username, stats.getStars()).append("\n")
-					.append(
-						// TODO: colorize this more
-						Component.translatable("playerstats.bedwars.kdr", stats.getKills(), stats.getDeaths(), stats.getKDR()))
-					.append("\n")
-					.append(Component.translatable("playerstats.bedwars.fkdr", stats.getFinalKills(), stats.getFinalDeaths(), stats.getFKDR()))
-					.append("\n")
-					.append(Component.translatable("playerstats.bedwars.beds", stats.getBedsBroken()))
-					.append("\n")
-					.append(Component.translatable("playerstats.bedwars.summary", stats.getWins(), stats.getWinstreak(), stats.getStars()))
-			);
-		})
+		new Entry("bedwars", (c, uuid, username) ->
+			BedwarsPlayerStats.fromAPIAsync(uuid).whenCompleteAsync((stats, th) ->
+				c.sendFeedback(
+					// TODO: color with rank, prestige
+					Component.translatable("playerstats.bedwars.title", username, stats.getStars()).append("\n")
+						.append(
+							// TODO: colorize this more
+							Component.translatable("playerstats.bedwars.kdr", stats.getKills(), stats.getDeaths(), stats.getKDR()))
+						.append("\n")
+						.append(Component.translatable("playerstats.bedwars.fkdr", stats.getFinalKills(), stats.getFinalDeaths(), stats.getFKDR()))
+						.append("\n")
+						.append(Component.translatable("playerstats.bedwars.beds", stats.getBedsBroken()))
+						.append("\n")
+						.append(Component.translatable("playerstats.bedwars.summary", stats.getWins(), stats.getWinstreak(), stats.getStars()))
+				), Minecraft.getInstance()))
 	);
 
 	@Getter
@@ -95,7 +94,7 @@ public class StatsMod implements AbstractHypixelMod {
 						} else {
 							handler.handler().accept(c.getSource(), s.get(), res.playerName());
 						}
-					}, Minecraft.getInstance());
+					});
 
 					return 0;
 				})));

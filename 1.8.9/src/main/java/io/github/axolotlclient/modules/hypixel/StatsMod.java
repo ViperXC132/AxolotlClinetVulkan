@@ -48,18 +48,17 @@ public class StatsMod implements AbstractHypixelMod {
 	}
 
 	private static final List<Entry> HANDLERS = List.of(
-		new Entry("bedwars", (c, uuid, username) -> {
-			final var stats = BedwarsPlayerStats.fromAPI(uuid);
-			c.sendMessageAsync(
-				// TODO: color with rank, prestige
-				I18n.translate("playerstats.bedwars.title", username, stats.getStars()),
-				// TODO: colorize this more
-				I18n.translate("playerstats.bedwars.kdr", stats.getKills(), stats.getDeaths(), stats.getKDR()),
-				I18n.translate("playerstats.bedwars.fkdr", stats.getFinalKills(), stats.getFinalDeaths(), stats.getFKDR()),
-				I18n.translate("playerstats.bedwars.beds", stats.getBedsBroken()),
-				I18n.translate("playerstats.bedwars.summary", stats.getWins(), stats.getWinstreak(), stats.getStars())
-			);
-		})
+		new Entry("bedwars", (c, uuid, username) ->
+			BedwarsPlayerStats.fromAPIAsync(uuid).whenCompleteAsync((stats, th) ->
+				c.sendMessageAsync(
+					// TODO: color with rank, prestige
+					I18n.translate("playerstats.bedwars.title", username, stats.getStars()),
+					// TODO: colorize this more
+					I18n.translate("playerstats.bedwars.kdr", stats.getKills(), stats.getDeaths(), stats.getKDR()),
+					I18n.translate("playerstats.bedwars.fkdr", stats.getFinalKills(), stats.getFinalDeaths(), stats.getFKDR()),
+					I18n.translate("playerstats.bedwars.beds", stats.getBedsBroken()),
+					I18n.translate("playerstats.bedwars.summary", stats.getWins(), stats.getWinstreak(), stats.getStars())
+				), Minecraft.getInstance()::submit))
 	);
 
 	@Getter
@@ -90,7 +89,7 @@ public class StatsMod implements AbstractHypixelMod {
 					} else {
 						handler.handler().accept(c.getSource(), s.get(), res.playerName());
 					}
-				}, Minecraft.getInstance()::submit);
+				});
 
 				return 0;
 			})));
