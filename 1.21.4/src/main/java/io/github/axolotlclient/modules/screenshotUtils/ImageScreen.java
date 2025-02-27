@@ -93,7 +93,7 @@ public class ImageScreen extends Screen {
 			layout.setHeaderHeight(38);
 			var uploader = header.addChild(new StringWidget(Component.translatable("gallery.image.upload_details", "", remote.sharedAt().atZone(ZoneId.systemDefault()).format(AxolotlClientCommon.getInstance().formatter)), font));
 			UUIDHelper.tryGetUsernameAsync(remote.uploader()).thenAccept(name -> {
-				uploader.setMessage(Component.translatable("gallery.image.upload_details", "", remote.sharedAt().atZone(ZoneId.systemDefault()).format(AxolotlClientCommon.getInstance().formatter)));
+				uploader.setMessage(Component.translatable("gallery.image.upload_details", name, remote.sharedAt().atZone(ZoneId.systemDefault()).format(AxolotlClientCommon.getInstance().formatter)));
 				uploader.setWidth(font.width(uploader.getMessage()));
 			});
 		}
