@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.commands;
 
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -101,7 +102,7 @@ public class PlayerArgument implements ArgumentType<PlayerArgument.PlayerInfo> {
 			.stream()
 			.map(playerInfo -> playerInfo.getProfile().getName())
 			.filter(name -> NAME_REGEX.matcher(name).matches())
-			.filter(name -> name.startsWith(builder.getRemaining()))
+			.filter(name -> name.toLowerCase(Locale.ROOT).startsWith(builder.getRemaining().toLowerCase(Locale.ROOT)))
 			.forEach(builder::suggest);
 
 		return builder.buildFuture();

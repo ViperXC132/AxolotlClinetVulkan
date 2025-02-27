@@ -96,7 +96,7 @@ public final class PlayerData {
 		@Accessors(fluent = true)
 		@ToString
 		@EqualsAndHashCode
-		public static final class GameData implements KDR, BedwarsGameData {
+		public static final class GameData implements BedwarsGameData {
 			private final int kills;
 			private final int deaths;
 			private final int wins;
@@ -113,7 +113,7 @@ public final class PlayerData {
 		@Accessors(fluent = true)
 		@ToString
 		@EqualsAndHashCode
-		public static final class CombinedGameData implements KDR, BedwarsGameData {
+		public static final class CombinedGameData implements BedwarsGameData {
 			private final int kills;
 			private final int deaths;
 			private final int wins;
@@ -124,13 +124,10 @@ public final class PlayerData {
 			private final int bedsLost;
 		}
 
-		public interface BedwarsGameData {
-
-			int wins();
-
-			int losses();
-
+		public interface BedwarsGameData extends WLR, KDR {
 			int bedsBroken();
+
+			int bedsLost();
 
 			int finalDeaths();
 
@@ -141,11 +138,7 @@ public final class PlayerData {
 			}
 
 			default float bblr() {
-				return (float) bedsBroken() / losses();
-			}
-
-			default float wlr() {
-				return (float) wins() / losses();
+				return (float) bedsBroken() / bedsLost();
 			}
 		}
 	}
@@ -191,7 +184,7 @@ public final class PlayerData {
 		@Accessors(fluent = true)
 		@ToString
 		@EqualsAndHashCode
-		public static final class GameData implements KDR {
+		public static final class GameData implements KDR, WLR {
 			private final int kills;
 			private final int deaths;
 			private final int wins;
@@ -230,5 +223,13 @@ public final class PlayerData {
 		default float kdr() {
 			return (float) kills() / deaths();
 		}
+	}
+
+	public interface WLR {
+		int wins();
+
+		int losses();
+
+		default float wlr() { return (float) wins() / losses(); }
 	}
 }

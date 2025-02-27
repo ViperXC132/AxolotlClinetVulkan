@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.hypixel;
 
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import java.util.List;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
@@ -46,6 +47,18 @@ public class StatsMod implements AbstractHypixelMod {
 	private record Entry(String name, Handler handler) {
 	}
 
+	private record HandlerEntry(
+		ColorOption lowCutoffColor,
+		ColorOption mediumCutoffColor,
+
+	) {
+
+	}
+
+	private static String colorize(int value, ) {
+
+	}
+
 	private static final List<Entry> HANDLERS = List.of(
 		new Entry("bedwars", (c, uuid, username, data) -> {
 			final var allStats = data.bedwars().all();
@@ -55,6 +68,14 @@ public class StatsMod implements AbstractHypixelMod {
 				I18n.translate("playerstats.bedwars.fkdr", allStats.finalKills(), allStats.finalDeaths(), allStats.fkdr()),
 				I18n.translate("playerstats.bedwars.beds", allStats.bedsBroken(), allStats.bedsLost(), allStats.bblr()),
 				I18n.translate("playerstats.bedwars.summary", allStats.wins(), allStats.losses(), allStats.wlr(), allStats.winstreak())
+			);
+		}),
+		new Entry("skywars", (c, uuid, username, data) -> {
+			final var allStats = data.skywars().all();
+			c.sendMessage(
+				I18n.translate("playerstats.skywars.title", data.formattedName(), data.bedwars().level()),
+				I18n.translate("playerstats.skywars.kdr", allStats.kills(), allStats.deaths(), allStats.kdr()),
+				I18n.translate("playerstats.skywars.summary", allStats.wins(), allStats.losses(), allStats.wlr())
 			);
 		})
 	);
