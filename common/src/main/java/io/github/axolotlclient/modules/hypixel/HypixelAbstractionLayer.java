@@ -24,6 +24,7 @@ package io.github.axolotlclient.modules.hypixel;
 
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -50,7 +51,8 @@ public class HypixelAbstractionLayer {
 		NETWORK_LEVEL("network_level"),
 		BEDWARS_LEVEL("bedwars_level"),
 		SKYWARS_EXPERIENCE("skywars_experience"),
-		BEDWARS_DATA("bedwars_data");
+		BEDWARS_DATA("bedwars_data"),
+		PLAYER_DATA("player_data");
 		private final String id;
 	}
 
@@ -195,6 +197,9 @@ public class HypixelAbstractionLayer {
 	@Getter
 	private final CachedAPI<String, Integer> skywarsExpApi = create(RequestDataType.SKYWARS_EXPERIENCE,
 		res -> Math.round(ExpCalculator.getLevelForExp(res.<Number>getBody(RequestDataType.SKYWARS_EXPERIENCE.getId()).intValue())));
+
+	@Getter
+	private final CachedAPI<String, Optional<PlayerData>> playerDataApi = create(RequestDataType.PLAYER_DATA, PlayerData::of);
 
 	@SneakyThrows // propagate interrupted exception
 	public void shutdown() {
