@@ -30,8 +30,9 @@ public record PlayerData(String name, Bedwars bedwars, Skywars skywars, DuelsDat
 
 	public String formattedName() {
 		StringBuilder builder = new StringBuilder();
-		if (!rankFormatted().isEmpty()) {
-			builder.append(rankFormatted()).append(" ");
+		builder.append(rankFormatted());
+		if (rankFormatted().length() > 2) {
+			builder.append(" ");
 		}
 		return builder.append(name()).append("§r").toString();
 	}
