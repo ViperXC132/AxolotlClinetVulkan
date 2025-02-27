@@ -38,31 +38,31 @@ import net.minecraft.network.chat.Component;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
-
 public class StatsMod implements AbstractHypixelMod {
 	private interface Handler {
-		void accept(FabricClientCommandSource ctx, String uuid, String username);
+		void accept(FabricClientCommandSource ctx, String uuid, String username, PlayerData data);
 	}
 
 	private record Entry(String name, Handler handler) {
 	}
 
 	private static final List<Entry> HANDLERS = List.of(
-		new Entry("bedwars", (c, uuid, username) ->
-			BedwarsPlayerStats.fromAPIAsync(uuid).whenCompleteAsync((stats, th) ->
-				c.sendFeedback(
-					// TODO: color with rank, prestige
-					Component.translatable("playerstats.bedwars.title", username, stats.getStars()).append("\n")
-						.append(
-							// TODO: colorize this more
-							Component.translatable("playerstats.bedwars.kdr", stats.getKills(), stats.getDeaths(), stats.getKDR()))
-						.append("\n")
-						.append(Component.translatable("playerstats.bedwars.fkdr", stats.getFinalKills(), stats.getFinalDeaths(), stats.getFKDR()))
-						.append("\n")
-						.append(Component.translatable("playerstats.bedwars.beds", stats.getBedsBroken()))
-						.append("\n")
-						.append(Component.translatable("playerstats.bedwars.summary", stats.getWins(), stats.getWinstreak(), stats.getStars()))
-				), Minecraft.getInstance()))
+		new Entry("bedwars", (c, uuid, username, data) -> {
+			final var allStats = data.bedwars().all();
+
+			c.sendFeedback(
+				Component.empty()
+					.append(Component.translatable("playerstats.bedwars.title", Component.literal(data.rankFormatted() + " " + username), data.bedwars().level()))
+					.append("\n")
+					.append(Component.translatable("playerstats.bedwars.kdr", allStats.kills(), allStats.deaths(), allStats.kdr()))
+					.append("\n")
+					.append(Component.translatable("playerstats.bedwars.fkdr", allStats.finalKills(), allStats.finalDeaths(), allStats.fkdr()))
+					.append("\n")
+					.append(Component.translatable("playerstats.bedwars.beds", allStats.bedsBroken(), allStats.bedsLost(), allStats.bblr()))
+					.append("\n")
+					.append(Component.translatable("playerstats.bedwars.summary", allStats.wins(), allStats.losses(), allStats.wlr(), allStats.winstreak()))
+			);
+		})
 	);
 
 	@Getter
@@ -92,7 +92,14 @@ public class StatsMod implements AbstractHypixelMod {
 						if (s.isEmpty()) {
 							c.getSource().sendFeedback(Component.translatable("playerstats.error.unknown_player").withStyle(ChatFormatting.RED));
 						} else {
-							handler.handler().accept(c.getSource(), s.get(), res.playerName());
+							HypixelAbstractionLayer.getInstance().getPlayerDataApi().getAsync(s.get()).whenCompleteAsync((playerData, throwable) -> {
+								if(playerData.isEmpty()) {
+									c.getSource().sendFeedback(Component.translatable("playerstats.error.failed_data"));
+									return;
+								}
+
+								handler.handler().accept(c.getSource(), s.get(), res.playerName(), playerData.get());
+							}, Minecraft.getInstance());
 						}
 					});
 

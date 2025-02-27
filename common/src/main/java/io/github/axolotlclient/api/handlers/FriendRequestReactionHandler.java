@@ -36,9 +36,9 @@ public class FriendRequestReactionHandler implements SocketMessageHandler {
 	public void handle(Response response) {
 		String from = response.getBody("from");
 		if ("friend_request_accept".equals(response.getBody("target"))) {
-			notification("api.friends", "api.friends.request.accepted", UUIDHelper.tryGetUsername(from));
+			notification("api.friends", "api.friends.request.accepted", UUIDHelper.tryGetUsernameAsync(from).join());
 		} else {
-			notification("api.friends", "api.friends.request.declined", UUIDHelper.tryGetUsername(from));
+			notification("api.friends", "api.friends.request.declined", UUIDHelper.tryGetUsernameAsync(from).join());
 		}
 	}
 }

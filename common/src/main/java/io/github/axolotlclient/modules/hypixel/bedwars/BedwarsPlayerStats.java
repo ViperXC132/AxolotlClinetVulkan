@@ -23,6 +23,7 @@
 package io.github.axolotlclient.modules.hypixel.bedwars;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.Random;
 
 import io.github.axolotlclient.modules.hypixel.BedwarsData;
@@ -46,6 +47,7 @@ public class BedwarsPlayerStats {
 	private int finalKills;
 	private int finalDeaths;
 	private int bedsBroken;
+	private int bedsLost;
 	private int deaths;
 	private int kills;
 	private int gameFinalKills;
@@ -71,7 +73,7 @@ public class BedwarsPlayerStats {
 		int finalKills = (int) (deaths * fkdr);
 		int kills = (int) (finalKills * getFloat(random, 1, 2));
 
-		return new BedwarsPlayerStats(finalKills, finalDeaths, beds, deaths, kills,
+		return new BedwarsPlayerStats(finalKills, finalDeaths, beds, 0, deaths, kills,
 			0, 0, 0, 0, 0,
 			losses, wins, 0, star);
 	}
@@ -84,27 +86,33 @@ public class BedwarsPlayerStats {
 		return random.nextFloat() * (bound - origin) + origin;
 	}
 
-	public static CompletableFuture<BedwarsPlayerStats> fromAPIAsync(String uuid) {
-		return HypixelAbstractionLayer.getInstance().getBedwarsDataApi().getAsync(uuid)
-			.thenCombine(
-				HypixelAbstractionLayer.getInstance().getBedwarsLevelApi().getAsync(uuid),
-				(stats, level) -> new BedwarsPlayerStats(
-					stats.losses(),
-					stats.wins(),
-					stats.winstreak(),
-					level,
-					stats.finalKills(),
-					stats.finalDeaths(),
-					stats.bedsBroken(),
-					stats.deaths(),
-					stats.kills(),
-					0, 0, 0, 0, 0
-				)
-			);
+	public static CompletableFuture<Optional<BedwarsPlayerStats>> fromAPIAsync(String uuid) {
+		return HypixelAbstractionLayer.getInstance().getPlayerDataApi().getAsync(uuid)
+			.thenApply(r -> r.map(data -> new BedwarsPlayerStats(
+				data.bedwars().all().losses(),
+				data.bedwars().all().wins(),
+				data.bedwars().all().winstreak(),
+				data.bedwars().level(),
+				data.bedwars().all().finalKills(),
+				data.bedwars().all().finalDeaths(),
+				data.bedwars().all().bedsBroken(),
+				data.bedwars().all().bedsLost(),
+				data.bedwars().all().deaths(),
+				data.bedwars().all().kills(),
+				0, 0, 0, 0, 0
+			)));
 	}
 
-	public static BedwarsPlayerStats fromAPI(String uuid) {
+	public static CompletableFuture<BedwarsPlayerStats> fromAPIOrFakeAsync(String uuid) {
+		return fromAPIAsync(uuid).thenApply(x -> x.orElse(generateFake(uuid)));
+	}
+
+	public static Optional<BedwarsPlayerStats> fromAPI(String uuid) {
 		return fromAPIAsync(uuid).join();
+	}
+
+	public static BedwarsPlayerStats fromAPIOrFake(String uuid) {
+		return fromAPIOrFakeAsync(uuid).join();
 	}
 
 	public void addDeath() {

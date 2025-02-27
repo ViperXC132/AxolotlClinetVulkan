@@ -44,7 +44,7 @@ public class ChannelInviteHandler implements SocketMessageHandler {
 			case "channel_invite" -> {
 				String from = response.getBody("from");
 				if (API.getInstance().getApiOptions().channelInvitesEnabled.get()) {
-					notification("api.channels.invite", "api.channels.invite.desc", UUIDHelper.tryGetUsername(from), channelName);
+					notification("api.channels.invite", "api.channels.invite.desc", UUIDHelper.tryGetUsernameAsync(from).join(), channelName);
 				} else {
 					ChannelRequest.ignoreChannelInvite(new ChannelInvite(id, channelName, from));
 				}
@@ -53,9 +53,9 @@ public class ChannelInviteHandler implements SocketMessageHandler {
 				String player = response.getBody("player");
 				boolean accepted = response.getBody("accepted");
 				if (accepted) {
-					notification("api.channels.invite.accepted", "api.channels.invite.accepted.desc", UUIDHelper.tryGetUsername(player), channelName);
+					notification("api.channels.invite.accepted", "api.channels.invite.accepted.desc", UUIDHelper.tryGetUsernameAsync(player).join(), channelName);
 				} else {
-					notification("api.channels.invite.denied", "api.channels.invite.denied.desc", UUIDHelper.tryGetUsername(player), channelName);
+					notification("api.channels.invite.denied", "api.channels.invite.denied.desc", UUIDHelper.tryGetUsernameAsync(player).join(), channelName);
 				}
 			}
 		}

@@ -27,7 +27,6 @@ import java.util.List;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.commands.PlayerArgument;
-import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsPlayerStats;
 import lombok.Getter;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
@@ -38,31 +37,31 @@ import net.minecraft.util.Formatting;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
 
-
 public class StatsMod implements AbstractHypixelMod {
 	private interface Handler {
-		void accept(FabricClientCommandSource ctx, String uuid, String username);
+		void accept(FabricClientCommandSource ctx, String uuid, String username, PlayerData data);
 	}
 
 	private record Entry(String name, Handler handler) {
 	}
 
 	private static final List<Entry> HANDLERS = List.of(
-		new Entry("bedwars", (c, uuid, username) ->
-			BedwarsPlayerStats.fromAPIAsync(uuid).whenCompleteAsync((stats, th) ->
-				c.sendFeedback(
-					// TODO: color with rank, prestige
-					Text.translatable("playerstats.bedwars.title", username, stats.getStars()).append("\n")
-						.append(
-							// TODO: colorize this more
-							Text.translatable("playerstats.bedwars.kdr", stats.getKills(), stats.getDeaths(), stats.getKDR()))
-						.append("\n")
-						.append(Text.translatable("playerstats.bedwars.fkdr", stats.getFinalKills(), stats.getFinalDeaths(), stats.getFKDR()))
-						.append("\n")
-						.append(Text.translatable("playerstats.bedwars.beds", stats.getBedsBroken()))
-						.append("\n")
-						.append(Text.translatable("playerstats.bedwars.summary", stats.getWins(), stats.getWinstreak(), stats.getStars()))
-				), MinecraftClient.getInstance()))
+		new Entry("bedwars", (c, uuid, username, data) -> {
+			final var allStats = data.bedwars().all();
+
+			c.sendFeedback(
+				Text.empty()
+					.append(Text.translatable("playerstats.bedwars.title", Text.of(data.rankFormatted() + " " + username), data.bedwars().level()))
+					.append("\n")
+					.append(Text.translatable("playerstats.bedwars.kdr", allStats.kills(), allStats.deaths(), allStats.kdr()))
+					.append("\n")
+					.append(Text.translatable("playerstats.bedwars.fkdr", allStats.finalKills(), allStats.finalDeaths(), allStats.fkdr()))
+					.append("\n")
+					.append(Text.translatable("playerstats.bedwars.beds", allStats.bedsBroken(), allStats.bedsLost(), allStats.bblr()))
+					.append("\n")
+					.append(Text.translatable("playerstats.bedwars.summary", allStats.wins(), allStats.losses(), allStats.wlr(), allStats.winstreak()))
+			);
+		})
 	);
 
 	@Getter
@@ -92,7 +91,14 @@ public class StatsMod implements AbstractHypixelMod {
 						if (s.isEmpty()) {
 							c.getSource().sendFeedback(Text.translatable("playerstats.error.unknown_player").formatted(Formatting.RED));
 						} else {
-							handler.handler().accept(c.getSource(), s.get(), res.playerName());
+							HypixelAbstractionLayer.getInstance().getPlayerDataApi().getAsync(s.get()).whenCompleteAsync((playerData, throwable) -> {
+								if(playerData.isEmpty()) {
+									c.getSource().sendFeedback(Text.translatable("playerstats.error.query_failed"));
+									return;
+								}
+
+								handler.handler().accept(c.getSource(), s.get(), res.playerName(), playerData.get());
+							}, MinecraftClient.getInstance());
 						}
 					});
 

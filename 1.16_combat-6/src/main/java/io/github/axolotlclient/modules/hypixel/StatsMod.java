@@ -27,42 +27,43 @@ import java.util.List;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.commands.PlayerArgument;
-import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsPlayerStats;
 import lombok.Getter;
 import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 import static net.fabricmc.fabric.api.client.command.v1.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v1.ClientCommandManager.literal;
 
-
 public class StatsMod implements AbstractHypixelMod {
 	private interface Handler {
-		void accept(FabricClientCommandSource ctx, String uuid, String username);
+		void accept(FabricClientCommandSource ctx, String uuid, String username, PlayerData data);
 	}
 
 	private record Entry(String name, Handler handler) {
 	}
 
 	private static final List<Entry> HANDLERS = List.of(
-		new Entry("bedwars", (c, uuid, username) ->
-			BedwarsPlayerStats.fromAPIAsync(uuid).whenCompleteAsync((stats, th) ->
-				c.sendFeedback(
-					// TODO: color with rank, prestige
-					new TranslatableText("playerstats.bedwars.title", username, stats.getStars()).append("\n")
-						.append(
-							// TODO: colorize this more
-							new TranslatableText("playerstats.bedwars.kdr", stats.getKills(), stats.getDeaths(), stats.getKDR()))
-						.append("\n")
-						.append(new TranslatableText("playerstats.bedwars.fkdr", stats.getFinalKills(), stats.getFinalDeaths(), stats.getFKDR()))
-						.append("\n")
-						.append(new TranslatableText("playerstats.bedwars.beds", stats.getBedsBroken()))
-						.append("\n")
-						.append(new TranslatableText("playerstats.bedwars.summary", stats.getWins(), stats.getWinstreak(), stats.getStars()))
-				), MinecraftClient.getInstance()))
+		new Entry("bedwars", (c, uuid, username, data) -> {
+			final var allStats = data.bedwars().all();
+
+			c.sendFeedback(
+				LiteralText.EMPTY.copy()
+					.append(new TranslatableText("playerstats.bedwars.title", Text.of(data.rankFormatted() + " " + username), username, data.bedwars().level()))
+					.append("\n")
+					.append(new TranslatableText("playerstats.bedwars.kdr", allStats.kills(), allStats.deaths(), allStats.kdr()))
+					.append("\n")
+					.append(new TranslatableText("playerstats.bedwars.fkdr", allStats.finalKills(), allStats.finalDeaths(), allStats.fkdr()))
+					.append("\n")
+					.append(new TranslatableText("playerstats.bedwars.beds", allStats.bedsBroken(), allStats.bedsLost(), allStats.bblr()))
+					.append("\n")
+					.append(new TranslatableText("playerstats.bedwars.summary", allStats.wins(), allStats.losses(), allStats.wlr(), allStats.winstreak()))
+			);
+		})
 	);
 
 	@Getter
@@ -72,6 +73,7 @@ public class StatsMod implements AbstractHypixelMod {
 
 	@Override
 	public void init() {
+		final var dispatcher = ClientCommandManager.DISPATCHER;
 		final var command = literal("playerstats");
 
 		for (Entry handler : HANDLERS) {
@@ -91,7 +93,14 @@ public class StatsMod implements AbstractHypixelMod {
 					if (s.isEmpty()) {
 						c.getSource().sendFeedback(new TranslatableText("playerstats.error.unknown_player").formatted(Formatting.RED));
 					} else {
-						handler.handler().accept(c.getSource(), s.get(), res.playerName());
+						HypixelAbstractionLayer.getInstance().getPlayerDataApi().getAsync(s.get()).whenCompleteAsync((playerData, throwable) -> {
+							if (playerData.isEmpty()) {
+								c.getSource().sendFeedback(new TranslatableText("playerstats.error.failed_data"));
+								return;
+							}
+
+							handler.handler().accept(c.getSource(), s.get(), res.playerName(), playerData.get());
+						}, MinecraftClient.getInstance());
 					}
 				});
 
@@ -99,8 +108,8 @@ public class StatsMod implements AbstractHypixelMod {
 			})));
 		}
 
-		final var node = ClientCommandManager.DISPATCHER.register(command);
-		ClientCommandManager.DISPATCHER.register(literal("pstats").redirect(node));
+		final var node = dispatcher.register(command);
+		dispatcher.register(literal("pstats").redirect(node));
 	}
 
 	@Override

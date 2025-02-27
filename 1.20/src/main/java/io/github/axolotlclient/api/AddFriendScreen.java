@@ -37,13 +37,7 @@ public class AddFriendScreen extends SimpleTextInputScreen {
 			Text.translatable("api.screen.friends.add.name"),
 			string -> {
 				if (API.getInstance().isSocketConnected()) {
-					String uuid;
-					try {
-						uuid = API.getInstance().sanitizeUUID(UUID.fromString(string).toString());
-					} catch (IllegalArgumentException e) {
-						uuid = UUIDHelper.tryGetUuid(string);
-					}
-					FriendRequest.getInstance().addFriend(uuid);
+					FriendRequest.getInstance().addFriend(UUIDHelper.ensureUuid(string).join());
 				} else {
 					Notifications.getInstance().addStatus("api.error.notLoggedIn", "api.error.notLoggedIn.desc");
 				}

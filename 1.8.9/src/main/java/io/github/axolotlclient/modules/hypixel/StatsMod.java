@@ -35,30 +35,30 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.Formatting;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 
 import static io.github.axolotlclient.commands.ClientCommands.argument;
 import static io.github.axolotlclient.commands.ClientCommands.literal;
 
 public class StatsMod implements AbstractHypixelMod {
 	private interface Handler {
-		void accept(ClientCommandInfo ctx, String uuid, String username);
+		void accept(ClientCommandInfo ctx, String uuid, String username, PlayerData data);
 	}
 
 	private record Entry(String name, Handler handler) {
 	}
 
 	private static final List<Entry> HANDLERS = List.of(
-		new Entry("bedwars", (c, uuid, username) ->
-			BedwarsPlayerStats.fromAPIAsync(uuid).whenCompleteAsync((stats, th) ->
-				c.sendMessageAsync(
-					// TODO: color with rank, prestige
-					I18n.translate("playerstats.bedwars.title", username, stats.getStars()),
-					// TODO: colorize this more
-					I18n.translate("playerstats.bedwars.kdr", stats.getKills(), stats.getDeaths(), stats.getKDR()),
-					I18n.translate("playerstats.bedwars.fkdr", stats.getFinalKills(), stats.getFinalDeaths(), stats.getFKDR()),
-					I18n.translate("playerstats.bedwars.beds", stats.getBedsBroken()),
-					I18n.translate("playerstats.bedwars.summary", stats.getWins(), stats.getWinstreak(), stats.getStars())
-				), Minecraft.getInstance()::submit))
+		new Entry("bedwars", (c, uuid, username, data) -> {
+			final var allStats = data.bedwars().all();
+			c.sendMessage(
+				I18n.translate("playerstats.bedwars.title", (data.rankFormatted() + " " + username + Formatting.RESET), data.bedwars().level()),
+				I18n.translate("playerstats.bedwars.kdr", allStats.kills(), allStats.deaths(), allStats.kdr()),
+				I18n.translate("playerstats.bedwars.fkdr", allStats.finalKills(), allStats.finalDeaths(), allStats.fkdr()),
+				I18n.translate("playerstats.bedwars.beds", allStats.bedsBroken(), allStats.bedsLost(), allStats.bblr()),
+				I18n.translate("playerstats.bedwars.summary", allStats.wins(), allStats.losses(), allStats.wlr(), allStats.winstreak())
+			);
+		})
 	);
 
 	@Getter
@@ -83,11 +83,18 @@ public class StatsMod implements AbstractHypixelMod {
 
 				final var res = PlayerArgument.get(c, "player");
 
-				res.uuid().whenCompleteAsync((s, ex) -> {
-					if (s.isEmpty()) {
+				res.uuid().whenCompleteAsync((uuid, ex) -> {
+					if (uuid.isEmpty()) {
 						c.getSource().sendMessageAsync(new LiteralText(Formatting.RED + I18n.translate("playerstats.error.unknown_player")));
 					} else {
-						handler.handler().accept(c.getSource(), s.get(), res.playerName());
+						HypixelAbstractionLayer.getInstance().getPlayerDataApi().getAsync(uuid.get()).whenCompleteAsync((playerData, throwable) -> {
+							if(playerData.isEmpty()) {
+								c.getSource().sendMessage(Formatting.RED + I18n.translate("playerstats.error.failed_data"));
+								return;
+							}
+
+							handler.handler().accept(c.getSource(), uuid.get(), res.playerName(), playerData.get());
+						}, Minecraft.getInstance()::submit);
 					}
 				});
 

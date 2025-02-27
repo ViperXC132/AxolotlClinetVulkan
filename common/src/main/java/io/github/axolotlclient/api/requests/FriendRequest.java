@@ -51,14 +51,14 @@ public class FriendRequest {
 	}
 
 	public CompletableFuture<?> addFriend(String uuid) {
-		return setRelation(uuid, Relation.REQUEST).whenCompleteAsync((response, t) -> {
+		return setRelation(uuid, Relation.REQUEST).thenAcceptBoth(UUIDHelper.tryGetUsernameAsync(uuid), (response, name) -> {
 			if (!response.isError()) {
 				api.getNotificationProvider()
-					.addStatus("api.success.request_sent", "api.success.request_sent.desc", UUIDHelper.tryGetUsername(uuid));
+					.addStatus("api.success.request_sent", "api.success.request_sent.desc", name);
 			} else if (response.getError().httpCode() == 404) {
-				api.getNotificationProvider().addStatus("api.failure.request_sent", "api.failure.request_sent.not_found", UUIDHelper.tryGetUsername(uuid));
+				api.getNotificationProvider().addStatus("api.failure.request_sent", "api.failure.request_sent.not_found", name);
 			} else if (response.getError().httpCode() == 403) {
-				api.getNotificationProvider().addStatus("api.failure.request_sent", "api.failure.request_sent.forbidden", UUIDHelper.tryGetUsername(uuid));
+				api.getNotificationProvider().addStatus("api.failure.request_sent", "api.failure.request_sent.forbidden", name);
 			}
 		});
 	}

@@ -73,8 +73,10 @@ public final class ClientCommandInfo {
 		}
 	}
 
-	public void sendMessage(String msg) {
-		sendMessage(new LiteralText(msg));
+	public void sendMessage(String... messages) {
+		for (String message : messages) {
+			sendMessage(new LiteralText(message));
+		}
 	}
 
 	public void sendMessage(Text text) {

@@ -90,13 +90,7 @@ public class BedwarsPlayer {
 	public void tick(int currentTick) {
 		if (stats == null && !triedStats) {
 			triedStats = true;
-			try {
-				stats = BedwarsPlayerStats.fromAPI(profile.getProfile().getId().toString().replace("-", ""));
-			} catch (Exception ignored) {
-			}
-			if (stats == null) {
-				stats = BedwarsPlayerStats.generateFake(profile.getProfile().getName());
-			}
+			stats = BedwarsPlayerStats.fromAPIOrFake(profile.getProfile().getId().toString().replace("-", ""));
 		}
 		if (alive || tickAlive < 0) {
 			return;

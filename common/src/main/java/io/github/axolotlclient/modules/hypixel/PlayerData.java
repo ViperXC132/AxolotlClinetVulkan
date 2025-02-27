@@ -23,18 +23,9 @@
 package io.github.axolotlclient.modules.hypixel;
 
 import java.util.Map;
-import java.util.Optional;
-
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import io.github.axolotlclient.api.Response;
 
 public record PlayerData(Bedwars bedwars, Skywars skywars, DuelsData duels, String rank, String rankFormatted,
 						 double level, int karma) {
-
-	private static final Gson GSON = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
-
 	public record Bedwars(int level, GameData all, CombinedGameData core,
 						  GameData solo, GameData doubles, GameData trios,
 						  GameData fours,
@@ -96,14 +87,6 @@ public record PlayerData(Bedwars bedwars, Skywars skywars, DuelsData duels, Stri
 	public record DuelsData(Map<String, DuelsGameData> modes) {
 		public record DuelsGameData(int kills, int deaths, int wins, int losses, int winstreak) implements KDR {
 		}
-	}
-
-	public static Optional<PlayerData> of(Response response) {
-		if (response.isError()) {
-			return Optional.empty();
-		}
-		PlayerData playerData = GSON.fromJson(response.getPlainBody(), PlayerData.class);
-		return Optional.of(playerData);
 	}
 
 	public interface KDR {

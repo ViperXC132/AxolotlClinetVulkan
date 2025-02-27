@@ -22,15 +22,15 @@
 
 package io.github.axolotlclient.modules.hypixel;
 
-import java.time.Duration;
-import java.time.temporal.ChronoUnit;
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import io.github.axolotlclient.api.API;
@@ -39,10 +39,9 @@ import io.github.axolotlclient.api.Response;
 import io.github.axolotlclient.util.CachedAPI;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.SneakyThrows;
 
 public class HypixelAbstractionLayer {
-
+	private static final Gson GSON = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
 	private static final int MAX_ATTEMPTS = 5;
 
 	@AllArgsConstructor
@@ -56,97 +55,47 @@ public class HypixelAbstractionLayer {
 		private final String id;
 	}
 
+	private final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+
 	@Getter
 	private static final HypixelAbstractionLayer instance = new HypixelAbstractionLayer();
 
-	private record Entry<T>(String desc, CompletableFuture<T> res, Function<Response, T> func, Request req,
-							AtomicInteger attempts) {
-		public void resolve(Response response) {
-			res.complete(func.apply(response));
-		}
+	private void queueRetry(int attempts, String desc, Request request, CompletableFuture<Optional<Response>> future, long count, TimeUnit unit) {
+		service.schedule(() -> queueRequest0(attempts - 1, desc, request, future), count, unit);
 	}
 
-	private final LinkedBlockingQueue<Entry<?>> tasks = new LinkedBlockingQueue<>();
-	private final AtomicBoolean isRunning = new AtomicBoolean(true);
+	private void queueRequest0(int attempts, String desc, Request request, CompletableFuture<Optional<Response>> future) {
+		if (attempts <= 0) {
+			future.complete(Optional.empty());
+			return;
+		}
 
-	// TODO: Someone who's better at async algorithms should port this to a scheduled executor service. This implementation is certainly janky and VERY VERY BAD!
-	// TODO: after a request fails {n} times, we should give up...
-	private final Thread worker = new Thread("HypixelAbstractionLayerWorker") {
-		@Override
-		public void run() {
-			AtomicLong timeout = new AtomicLong(System.currentTimeMillis());
-
-			while (isRunning.get()) {
-				Entry<?> task;
-
-				try {
-					task = tasks.take();
-				} catch (InterruptedException e) {
-					continue;
-				}
-
-				try {
-					if (timeout.get() > System.currentTimeMillis()) {
-						Thread.sleep(timeout.get() - System.currentTimeMillis());
-					}
-
-					API.getInstance().getLogger().debug("Performing request for {}", task.desc);
-					task.attempts.incrementAndGet();
-					API.getInstance().get(task.req).whenComplete((res, err) -> {
-						long delay;
-						// handle rate limit
-						if (res.getStatus() == 429) {
-							delay = Duration.of(
-								res.firstHeader("RateLimit-Reset")
-									.map(Long::parseLong)
-									.orElse(2L),
-								ChronoUnit.SECONDS
-							).toMillis();
-						} else {
-							delay = 100;
-						}
-
-						long newTimeout = System.currentTimeMillis() + delay;
-						timeout.set(newTimeout);
-						API.getInstance().getLogger().debug("Rate limit: backing off until {} (+{}ms)", newTimeout, delay);
-
-						if (err != null || res.isError()) {
-							if (err != null) {
-								API.getInstance().getLogger().warn("While performing request: ", err);
-							} else {
-								API.getInstance().getLogger().warn("Bad response ({}): {}", res.getStatus(), res.getBody());
-							}
-							retry(task);
-						} else {
-							try {
-								API.getInstance().getLogger().debug("Resolved request for {}", task.desc);
-								task.resolve(res);
-							} catch (Throwable ex) {
-								API.getInstance().getLogger().warn("Failed to parse response: ", ex);
-								retry(task);
-							}
-						}
-
-						this.interrupt();
-					});
-
-					timeout.getAndSet(System.currentTimeMillis() + Duration.of(2L, ChronoUnit.SECONDS).toMillis());
-				} catch (InterruptedException ignored) {
-					// we need to try again
-					retry(task);
-				}
+		API.getInstance().get(request).whenComplete((response, throwable) -> {
+			if (response == null) {
+				API.getInstance().getLogger().warn("Failed to process request {}: ", desc, throwable);
+				return;
 			}
-		}
-	};
 
-	private void retry(Entry<?> task) {
-		if (task.attempts.get() < MAX_ATTEMPTS) {
-			tasks.add(task);
-		}
+			if (response.getStatus() == 429) {
+				API.getInstance().getLogger().warn("Failed to process request {}: rate limited", desc, throwable);
+
+				queueRetry(
+					attempts, desc, request, future,
+					response.firstHeader("RateLimit-Reset").map(Long::parseLong).orElse(2L),
+					TimeUnit.SECONDS
+				);
+			} else if (response.getStatus() != 200 || response.isError()) {
+				API.getInstance().getLogger().warn("Failed to process request {} ({}): {}", desc, response.getStatus(), response.getBody());
+			} else {
+				future.complete(Optional.of(response));
+			}
+		});
 	}
 
-	private HypixelAbstractionLayer() {
-		worker.start();
+	private CompletableFuture<Optional<Response>> queueRequest(String desc, Request request) {
+		CompletableFuture<Optional<Response>> future = new CompletableFuture<>();
+		queueRequest0(MAX_ATTEMPTS, desc, request, future);
+		return future;
 	}
 
 	private <V> CachedAPI<String, V> create(RequestDataType type, Function<Response, V> app) {
@@ -157,10 +106,15 @@ public class HypixelAbstractionLayer {
 				.field("target_player", uuid)
 				.build();
 
-			CompletableFuture<V> future = new CompletableFuture<>();
-			tasks.add(new Entry<>("[%s, %s]".formatted(type, uuid), future, app, request, new AtomicInteger()));
-			return future;
-		});
+			return queueRequest("[%s, %s]".formatted(type.getId(), uuid), request).thenApply(opt -> opt.flatMap(res -> {
+				try {
+					return Optional.of(app.apply(res));
+				} catch (Throwable e){
+					API.getInstance().getLogger().warn("Failed to parse request for {} (uuid={})", type.getId(), uuid);
+					return Optional.empty();
+				}
+			}));
+		}, 128, true);
 	}
 
 	private CachedAPI<String, Integer> createLevel(RequestDataType type) {
@@ -199,14 +153,9 @@ public class HypixelAbstractionLayer {
 		res -> Math.round(ExpCalculator.getLevelForExp(res.<Number>getBody(RequestDataType.SKYWARS_EXPERIENCE.getId()).intValue())));
 
 	@Getter
-	private final CachedAPI<String, Optional<PlayerData>> playerDataApi = create(RequestDataType.PLAYER_DATA, PlayerData::of);
-
-	@SneakyThrows // propagate interrupted exception
-	public void shutdown() {
-		isRunning.set(false);
-		worker.interrupt();
-		worker.join();
-	}
+	private final CachedAPI<String, PlayerData> playerDataApi = create(RequestDataType.PLAYER_DATA,
+		response -> GSON.fromJson(response.getPlainBody(), PlayerData.class)
+	);
 
 	public void clearPlayerData() {
 		bedwarsDataApi.invalidate();

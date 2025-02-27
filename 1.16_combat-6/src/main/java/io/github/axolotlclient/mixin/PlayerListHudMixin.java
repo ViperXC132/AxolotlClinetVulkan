@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.mixin;
 
+import io.github.axolotlclient.modules.hypixel.levelhead.LevelHead;
 import java.util.List;
 
 import com.mojang.authlib.GameProfile;
@@ -193,9 +194,7 @@ public abstract class PlayerListHudMixin {
 			}
 
 			String uuid = UUIDHelper.toUndashed(playerListEntry2.getProfile().getId());
-			render = LevelHeadMode.BEDWARS.getApi().getAsyncNow(uuid)
-				.map(String::valueOf)
-				.orElse("???");
+			render = LevelHead.getDisplayString(LevelHeadMode.BEDWARS, uuid);
 		} catch (Exception e) {
 			return;
 		}

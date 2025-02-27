@@ -196,7 +196,7 @@ public class AxolotlClientWorldHostPlugin implements WorldHostPlugin {
 			if (s.isEmpty()) {
 				return;
 			}
-			Optional<String> uuidOpt = UUIDHelper.ensureUuidOpt(s);
+			Optional<String> uuidOpt = UUIDHelper.ensureUuidOpt(s).join();
 			uuidOpt.ifPresent(uuid -> UserRequest.get(uuid).thenAccept(o ->
 				o.map(AxolotlClientFriendListFriend::new).ifPresent(consumer)));
 		}

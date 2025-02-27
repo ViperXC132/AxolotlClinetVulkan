@@ -39,7 +39,7 @@ public class AddFriendScreen extends SimpleTextInputScreen {
 					try {
 						uuid = API.getInstance().sanitizeUUID(UUID.fromString(s).toString());
 					} catch (IllegalArgumentException e) {
-						uuid = UUIDHelper.tryGetUuid(s);
+						uuid = UUIDHelper.tryGetUsernameAsync(s).join();
 					}
 					FriendRequest.getInstance().addFriend(uuid);
 				} else {
