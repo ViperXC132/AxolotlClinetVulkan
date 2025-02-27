@@ -25,10 +25,9 @@ package io.github.axolotlclient.modules.hypixel.bedwars;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.Random;
-
-import io.github.axolotlclient.modules.hypixel.BedwarsData;
-import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
 import java.util.concurrent.CompletableFuture;
+
+import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

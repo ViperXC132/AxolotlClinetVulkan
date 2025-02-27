@@ -22,8 +22,6 @@
 
 package io.github.axolotlclient.api;
 
-import java.util.UUID;
-
 import io.github.axolotlclient.api.requests.FriendRequest;
 import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.util.notifications.Notifications;
@@ -37,7 +35,7 @@ public class AddFriendScreen extends SimpleTextInputScreen {
 			Text.translatable("api.screen.friends.add.name"),
 			string -> {
 				if (API.getInstance().isSocketConnected()) {
-					FriendRequest.getInstance().addFriend(UUIDHelper.ensureUuid(string).join());
+					UUIDHelper.ensureUuid(string).thenAccept(FriendRequest.getInstance()::addFriend);
 				} else {
 					Notifications.getInstance().addStatus("api.error.notLoggedIn", "api.error.notLoggedIn.desc");
 				}

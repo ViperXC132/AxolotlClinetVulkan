@@ -34,7 +34,7 @@ public class AddFriendScreen extends SimpleTextInputScreen {
 		super(parent, Component.translatable("api.screen.friends.add"),
 			Component.translatable("api.screen.friends.add.name"), string -> {
 				if (API.getInstance().isSocketConnected()) {
-					FriendRequest.getInstance().addFriend(UUIDHelper.tryGetUsernameAsync(string).join());
+					UUIDHelper.ensureUuid(string).thenAccept(FriendRequest.getInstance()::addFriend);
 				} else {
 					Notifications.getInstance().addStatus("api.error.notLoggedIn", "api.error.notLoggedIn.desc");
 				}
