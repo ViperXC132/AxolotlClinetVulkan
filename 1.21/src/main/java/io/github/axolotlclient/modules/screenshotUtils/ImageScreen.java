@@ -89,7 +89,11 @@ public class ImageScreen extends Screen {
 
 		if (image instanceof ImageInstance.Remote remote) {
 			layout.setHeaderHeight(38);
-			header.add(new TextWidget(Text.translatable("gallery.image.upload_details", UUIDHelper.tryGetUsernameAsync(remote.uploader()).join(), remote.sharedAt().atZone(ZoneId.systemDefault()).format(AxolotlClientCommon.getInstance().formatter)), textRenderer));
+			var uploader = header.add(new TextWidget(Text.translatable("gallery.image.upload_details", "", remote.sharedAt().atZone(ZoneId.systemDefault()).format(AxolotlClientCommon.getInstance().formatter)), textRenderer));
+			UUIDHelper.tryGetUsernameAsync(remote.uploader()).thenAccept(name -> {
+				uploader.setMessage(Text.translatable("gallery.image.upload_details", "", remote.sharedAt().atZone(ZoneId.systemDefault()).format(AxolotlClientCommon.getInstance().formatter)));
+				uploader.setWidth(textRenderer.getWidth(uploader.getMessage()));
+			});
 		}
 
 		int buttonWidth = 75;
