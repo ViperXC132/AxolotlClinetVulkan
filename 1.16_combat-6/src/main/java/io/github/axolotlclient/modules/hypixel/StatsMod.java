@@ -32,7 +32,6 @@ import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
@@ -53,7 +52,7 @@ public class StatsMod implements AbstractHypixelMod {
 
 			c.sendFeedback(
 				LiteralText.EMPTY.copy()
-					.append(new TranslatableText("playerstats.bedwars.title", Text.of(data.rankFormatted() + " " + username), username, data.bedwars().level()))
+					.append(new TranslatableText("playerstats.bedwars.title", data.formattedName(), username, data.bedwars().level()))
 					.append("\n")
 					.append(new TranslatableText("playerstats.bedwars.kdr", allStats.kills(), allStats.deaths(), allStats.kdr()))
 					.append("\n")

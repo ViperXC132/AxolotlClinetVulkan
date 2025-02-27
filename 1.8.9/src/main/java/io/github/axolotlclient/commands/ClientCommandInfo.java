@@ -22,8 +22,6 @@
 
 package io.github.axolotlclient.commands;
 
-import java.util.Arrays;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.With;
@@ -55,14 +53,6 @@ public final class ClientCommandInfo {
 
 	@With
 	private final float pitch;
-
-	public void sendMessageAsync(String... msg) {
-		sendMessageAsync(() -> Arrays.stream(msg).map(x -> (Text) new LiteralText(x)).iterator());
-	}
-
-	public void sendMessageAsync(Text... messages) {
-		sendMessageAsync(List.of(messages));
-	}
 
 	public void sendMessageAsync(Iterable<Text> more) {
 		if (!minecraft.isOnSameThread()) {

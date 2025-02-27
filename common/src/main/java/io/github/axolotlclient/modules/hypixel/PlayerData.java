@@ -24,8 +24,18 @@ package io.github.axolotlclient.modules.hypixel;
 
 import java.util.Map;
 
-public record PlayerData(Bedwars bedwars, Skywars skywars, DuelsData duels, String rank, String rankFormatted,
+public record PlayerData(String name, Bedwars bedwars, Skywars skywars, DuelsData duels, String rank,
+						 String rankFormatted,
 						 double level, int karma) {
+
+	public String formattedName() {
+		StringBuilder builder = new StringBuilder();
+		if (!rankFormatted().isEmpty()) {
+			builder.append(rankFormatted()).append(" ");
+		}
+		return builder.append(name()).append("§r").toString();
+	}
+
 	public record Bedwars(int level, GameData all, CombinedGameData core,
 						  GameData solo, GameData doubles, GameData trios,
 						  GameData fours,

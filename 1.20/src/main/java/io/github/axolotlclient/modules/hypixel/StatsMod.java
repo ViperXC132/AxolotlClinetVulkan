@@ -51,7 +51,7 @@ public class StatsMod implements AbstractHypixelMod {
 
 			c.sendFeedback(
 				Text.empty()
-					.append(Text.translatable("playerstats.bedwars.title", Text.literal(data.rankFormatted() + " " + username), data.bedwars().level()))
+					.append(Text.translatable("playerstats.bedwars.title", data.formattedName(), data.bedwars().level()))
 					.append("\n")
 					.append(Text.translatable("playerstats.bedwars.kdr", allStats.kills(), allStats.deaths(), allStats.kdr()))
 					.append("\n")
@@ -92,7 +92,7 @@ public class StatsMod implements AbstractHypixelMod {
 							c.getSource().sendFeedback(Text.translatable("playerstats.error.unknown_player").formatted(Formatting.RED));
 						} else {
 							HypixelAbstractionLayer.getInstance().getPlayerDataApi().getAsync(s.get()).whenCompleteAsync((playerData, throwable) -> {
-								if(playerData.isEmpty()) {
+								if (playerData.isEmpty()) {
 									c.getSource().sendFeedback(Text.translatable("playerstats.error.failed_data"));
 									return;
 								}

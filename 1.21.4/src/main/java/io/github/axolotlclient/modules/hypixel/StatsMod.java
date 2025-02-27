@@ -27,7 +27,6 @@ import java.util.List;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.commands.PlayerArgument;
-import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsPlayerStats;
 import lombok.Getter;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
@@ -52,7 +51,7 @@ public class StatsMod implements AbstractHypixelMod {
 
 			c.sendFeedback(
 				Component.empty()
-					.append(Component.translatable("playerstats.bedwars.title", Component.literal(data.rankFormatted() + " " + username), data.bedwars().level()))
+					.append(Component.translatable("playerstats.bedwars.title", data.formattedName(), data.bedwars().level()))
 					.append("\n")
 					.append(Component.translatable("playerstats.bedwars.kdr", allStats.kills(), allStats.deaths(), allStats.kdr()))
 					.append("\n")
@@ -93,7 +92,7 @@ public class StatsMod implements AbstractHypixelMod {
 							c.getSource().sendFeedback(Component.translatable("playerstats.error.unknown_player").withStyle(ChatFormatting.RED));
 						} else {
 							HypixelAbstractionLayer.getInstance().getPlayerDataApi().getAsync(s.get()).whenCompleteAsync((playerData, throwable) -> {
-								if(playerData.isEmpty()) {
+								if (playerData.isEmpty()) {
 									c.getSource().sendFeedback(Component.translatable("playerstats.error.failed_data"));
 									return;
 								}

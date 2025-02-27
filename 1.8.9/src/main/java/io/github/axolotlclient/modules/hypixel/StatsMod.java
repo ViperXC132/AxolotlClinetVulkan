@@ -29,13 +29,11 @@ import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.commands.ClientCommandInfo;
 import io.github.axolotlclient.commands.ClientCommands;
 import io.github.axolotlclient.commands.PlayerArgument;
-import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsPlayerStats;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.Formatting;
 import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 
 import static io.github.axolotlclient.commands.ClientCommands.argument;
 import static io.github.axolotlclient.commands.ClientCommands.literal;
@@ -52,7 +50,7 @@ public class StatsMod implements AbstractHypixelMod {
 		new Entry("bedwars", (c, uuid, username, data) -> {
 			final var allStats = data.bedwars().all();
 			c.sendMessage(
-				I18n.translate("playerstats.bedwars.title", (data.rankFormatted() + " " + username + Formatting.RESET), data.bedwars().level()),
+				I18n.translate("playerstats.bedwars.title", data.formattedName(), data.bedwars().level()),
 				I18n.translate("playerstats.bedwars.kdr", allStats.kills(), allStats.deaths(), allStats.kdr()),
 				I18n.translate("playerstats.bedwars.fkdr", allStats.finalKills(), allStats.finalDeaths(), allStats.fkdr()),
 				I18n.translate("playerstats.bedwars.beds", allStats.bedsBroken(), allStats.bedsLost(), allStats.bblr()),

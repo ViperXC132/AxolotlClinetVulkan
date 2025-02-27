@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.commands;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
@@ -34,9 +35,51 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.github.axolotlclient.api.util.UUIDHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
+import org.jetbrains.annotations.Nullable;
 
 public class PlayerArgument implements ArgumentType<PlayerArgument.PlayerInfo> {
-	public record PlayerInfo(String playerName, CompletableFuture<Optional<String>> uuid) {
+	public static final class PlayerInfo {
+		private final String playerName;
+		@Nullable
+		private CompletableFuture<Optional<String>> uuid;
+
+		public PlayerInfo(String playerName) {
+			this.playerName = playerName;
+		}
+
+		public String playerName() {
+			return playerName;
+		}
+
+		public CompletableFuture<Optional<String>> uuid() {
+			if (uuid == null) {
+				uuid = UUIDHelper.USERNAME_TO_UUID.getAsync(playerName);
+			}
+
+			return uuid;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == this) return true;
+			if (obj == null || obj.getClass() != this.getClass()) return false;
+			var that = (PlayerInfo) obj;
+			return Objects.equals(this.playerName, that.playerName) &&
+				Objects.equals(this.uuid, that.uuid);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(playerName, uuid);
+		}
+
+		@Override
+		public String toString() {
+			return "PlayerInfo[" +
+				"playerName=" + playerName + ", " +
+				"uuid=" + uuid + ']';
+		}
+
 	}
 
 	private static final Pattern NAME_REGEX = Pattern.compile("[a-zA-Z0-9_]{2,16}");
@@ -44,7 +87,7 @@ public class PlayerArgument implements ArgumentType<PlayerArgument.PlayerInfo> {
 	@Override
 	public PlayerInfo parse(StringReader stringReader) {
 		String playerName = stringReader.readUnquotedString();
-		return new PlayerInfo(playerName, UUIDHelper.USERNAME_TO_UUID.getAsync(playerName));
+		return new PlayerInfo(playerName);
 	}
 
 	@Override

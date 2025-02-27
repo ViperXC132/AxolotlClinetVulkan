@@ -80,7 +80,7 @@ public class PlayerArgument implements ArgumentType<PlayerArgument.PlayerInfo> {
 				"uuid=" + uuid + ']';
 		}
 
-		}
+	}
 
 	private static final Pattern NAME_REGEX = Pattern.compile("[a-zA-Z0-9_]{2,16}");
 
