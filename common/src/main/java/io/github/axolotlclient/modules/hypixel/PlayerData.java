@@ -35,10 +35,10 @@ public record PlayerData(Bedwars bedwars, Skywars skywars, DuelsData duels, Stri
 
 	private static final Gson GSON = new GsonBuilder().setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES).create();
 
-	public record Bedwars(int level, GameData all, GameData core,
+	public record Bedwars(int level, GameData all, CombinedGameData core,
 						  GameData solo, GameData doubles, GameData trios,
 						  GameData fours,
-						  GameData fourVFour, GameData dreams, GameData castle,
+						  GameData fourVFour, CombinedGameData dreams, GameData castle,
 						  GameData doublesLucky,
 						  GameData foursLucky, GameData doublesUltimate,
 						  GameData foursUltimate,
@@ -46,16 +46,34 @@ public record PlayerData(Bedwars bedwars, Skywars skywars, DuelsData duels, Stri
 						  GameData foursRush,
 						  GameData doublesSwap, GameData foursSwap) {
 		public record GameData(int kills, int deaths, int wins, int losses, int winstreak, int finalKills,
-							   int finalDeaths, int bedsBroken, int bedsLost) implements KDR {
-			public float fkdr() {
+							   int finalDeaths, int bedsBroken, int bedsLost) implements KDR, BedwarsGameData {
+		}
+
+		public record CombinedGameData(int kills, int deaths, int wins, int losses, int finalKills,
+									   int finalDeaths, int bedsBroken, int bedsLost) implements KDR, BedwarsGameData {
+		}
+
+		public interface BedwarsGameData {
+
+			int wins();
+
+			int losses();
+
+			int bedsBroken();
+
+			int finalDeaths();
+
+			int finalKills();
+
+			default float fkdr() {
 				return (float) finalKills() / finalDeaths();
 			}
 
-			public float bblr() {
+			default float bblr() {
 				return (float) bedsBroken() / losses();
 			}
 
-			public float wlr() {
+			default float wlr() {
 				return (float) wins() / losses();
 			}
 		}
