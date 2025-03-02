@@ -23,6 +23,7 @@
 package io.github.axolotlclient.modules.hypixel.bedwars;
 
 
+import io.github.axolotlclient.api.util.UUIDHelper;
 import lombok.Data;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.PlayerInfo;
@@ -90,7 +91,8 @@ public class BedwarsPlayer {
 	public void tick(int currentTick) {
 		if (stats == null && !triedStats) {
 			triedStats = true;
-			stats = BedwarsPlayerStats.fromAPIOrFake(profile.getProfile().getId().toString().replace("-", ""));
+			BedwarsPlayerStats.fromAPIOrFakeAsync(UUIDHelper.toUndashed(profile.getProfile().getId()))
+				.thenAccept(stat -> stats = stat);
 		}
 		if (alive || tickAlive < 0) {
 			return;

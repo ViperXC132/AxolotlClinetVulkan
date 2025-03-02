@@ -21,15 +21,15 @@
  */
 package io.github.axolotlclient.util;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import org.jetbrains.annotations.ApiStatus;
+
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 @SuppressWarnings("UnstableApiUsage")
 public final class CachedAPI<K, V> {
@@ -132,8 +132,6 @@ public final class CachedAPI<K, V> {
 			// this doesn't need to be perfect, as long as we don't keep a bad value in the cache for too long
 			// therefore, we can completely ignore possible race conditions
 			if (getAsyncNow(value).isError()) {
-				System.out.println("Invalidate cache for " + value);
-				System.out.println();
 				cache.invalidate(value);
 			}
 

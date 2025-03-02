@@ -48,19 +48,13 @@ public class LevelHead implements AbstractHypixelMod {
 	}
 
 	public static String getDisplayString(LevelHeadMode mode, String uuid) {
-		String text = "Level: " + mode.getApi().getAsyncNow(uuid).map(() -> "...", () -> "???", val -> {
+		return "Level: " + mode.getApi().getAsyncNow(uuid).map(() -> "...", () -> "???", val -> {
 			if (mode == LevelHeadMode.BEDWARS) {
 				return val + "☆";
 			} else {
 				return String.valueOf(val);
 			}
 		});
-
-		if (mode == LevelHeadMode.BEDWARS) {
-			text += "☆";
-		}
-
-		return text;
 	}
 
 	public String getDisplayString(String uuid) {

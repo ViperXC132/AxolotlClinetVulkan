@@ -27,7 +27,6 @@ import io.github.axolotlclient.api.util.UUIDHelper;
 import lombok.Data;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
-import net.minecraft.core.UUIDUtil;
 
 /**
  * @author DarkKronicle
@@ -92,7 +91,8 @@ public class BedwarsPlayer {
 	public void tick(int currentTick) {
 		if (stats == null && !triedStats) {
 			triedStats = true;
-			stats = BedwarsPlayerStats.fromAPIOrFake(UUIDHelper.toUndashed(profile.getProfile().getId()));
+			BedwarsPlayerStats.fromAPIOrFakeAsync(UUIDHelper.toUndashed(profile.getProfile().getId()))
+				.thenAccept(stat -> stats = stat);
 		}
 		if (alive || tickAlive < 0) {
 			return;

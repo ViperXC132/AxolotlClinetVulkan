@@ -22,9 +22,6 @@
 
 package io.github.axolotlclient.modules.hypixel;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -33,6 +30,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
+import com.google.gson.FieldNamingPolicy;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.Request;
 import io.github.axolotlclient.api.Response;
@@ -108,8 +108,8 @@ public class HypixelAbstractionLayer {
 
 			return queueRequest("[%s, %s]".formatted(type.getId(), uuid), request).thenApply(opt -> opt.flatMap(res -> {
 				try {
-					return Optional.of(app.apply(res));
-				} catch (Throwable e){
+					return Optional.ofNullable(app.apply(res));
+				} catch (Throwable e) {
 					API.getInstance().getLogger().warn("Failed to parse request for {} (uuid={})", type.getId(), uuid);
 					return Optional.empty();
 				}
@@ -118,7 +118,10 @@ public class HypixelAbstractionLayer {
 	}
 
 	private CachedAPI<String, Integer> createLevel(RequestDataType type) {
-		return create(type, res -> res.<Number>getBody(type.getId()).intValue());
+		return create(type, res -> {
+			var level = res.<Number>getBody(type.getId()).intValue();
+			return level == -1 ? null : level;
+		});
 	}
 
 	private void freePlayerData(String uuid) {
@@ -150,7 +153,13 @@ public class HypixelAbstractionLayer {
 
 	@Getter
 	private final CachedAPI<String, Integer> skywarsExpApi = create(RequestDataType.SKYWARS_EXPERIENCE,
-		res -> Math.round(ExpCalculator.getLevelForExp(res.<Number>getBody(RequestDataType.SKYWARS_EXPERIENCE.getId()).intValue())));
+		res -> {
+			var exp = res.<Number>getBody(RequestDataType.SKYWARS_EXPERIENCE.getId()).intValue();
+			if (exp == -1) {
+				return null;
+			}
+			return Math.round(ExpCalculator.getLevelForExp(exp));
+		});
 
 	@Getter
 	private final CachedAPI<String, PlayerData> playerDataApi = create(RequestDataType.PLAYER_DATA,
