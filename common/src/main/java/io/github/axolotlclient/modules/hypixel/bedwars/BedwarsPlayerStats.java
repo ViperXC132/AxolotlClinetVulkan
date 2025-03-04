@@ -72,9 +72,8 @@ public class BedwarsPlayerStats {
 		int finalKills = (int) (deaths * fkdr);
 		int kills = (int) (finalKills * getFloat(random, 1, 2));
 
-		return new BedwarsPlayerStats(finalKills, finalDeaths, beds, 0, deaths, kills,
-			0, 0, 0, 0, 0,
-			losses, wins, 0, star);
+		return new BedwarsPlayerStats(losses, wins, 0, star, finalKills, finalDeaths, beds, losses, deaths,
+			kills, 0, 0, 0, 0, 0);
 	}
 
 	private static double getGaussian(Random random, float mean, float deviation) {
