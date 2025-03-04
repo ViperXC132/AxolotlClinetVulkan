@@ -24,19 +24,20 @@ package io.github.axolotlclient.mixin;
 
 import java.io.File;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.modules.screenshotUtils.ScreenshotUtils;
+import java.util.function.Consumer;
 import net.minecraft.text.MutableText;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(net.minecraft.client.util.ScreenshotUtils.class)
 public abstract class ScreenshotRecorderMixin {
 
-	@WrapOperation(method = "method_1661", at = @At(value = "INVOKE", target = "Lnet/minecraft/text/TranslatableText;<init>(Ljava/lang/String;[Ljava/lang/Object;)V", ordinal = 0))
-	private static MutableText axolotlclient$onScreenshotSaveSuccess(String s, Object[] objects, Operation<MutableText> original, @Local(argsOnly = true) File target) {
-		return ScreenshotUtils.getInstance().onScreenshotTaken(original.call(s, objects), target);
+	// for some reason @WrapOperation doesn't like injecting at <init>
+	@Redirect(method = "method_1661", at = @At(value = "INVOKE", target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V", ordinal = 0))
+	private static void axolotlclient$onScreenshotSaveSuccess(Consumer<MutableText> instance, Object t, @Local(argsOnly = true) File target) {
+		instance.accept(ScreenshotUtils.getInstance().onScreenshotTaken((MutableText) t, target));
 	}
 }

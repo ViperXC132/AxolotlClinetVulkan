@@ -22,17 +22,21 @@
 
 package io.github.axolotlclient.modules.hypixel;
 
+import java.util.Arrays;
 import java.util.List;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.commands.PlayerArgument;
+import java.util.stream.IntStream;
 import lombok.Getter;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
@@ -45,25 +49,127 @@ public class StatsMod implements AbstractHypixelMod {
 	private record Entry(String name, Handler handler) {
 	}
 
+
+	private static MutableComponent statComponent(String key, Object... args) {
+		return Component.translatable(key, Arrays.stream(args).map(s -> {
+			if(s instanceof Float f) {
+				return Component.literal(String.format("%.2f", f)).withStyle(ChatFormatting.GREEN);
+			} else {
+				return Component.literal(s.toString()).withStyle(ChatFormatting.GREEN);
+			}
+		}).toArray());
+	}
+
+	private static final List<ChatFormatting> RAINBOW = List.of(
+		ChatFormatting.RED, ChatFormatting.GOLD, ChatFormatting.YELLOW, ChatFormatting.GREEN, ChatFormatting.AQUA, ChatFormatting.LIGHT_PURPLE, ChatFormatting.DARK_PURPLE
+	);
+
+	private static Component formatBedwarsPrestige(int level) {
+		return switch (level / 100) {
+			case 0 -> Component.literal(String.valueOf(level)).withStyle(ChatFormatting.GRAY);
+			case 1 -> Component.literal(String.valueOf(level)).withStyle(ChatFormatting.WHITE);
+			case 2 -> Component.literal(String.valueOf(level)).withStyle(ChatFormatting.GOLD);
+			case 3 -> Component.literal(String.valueOf(level)).withStyle(ChatFormatting.AQUA);
+			case 4 -> Component.literal(String.valueOf(level)).withStyle(ChatFormatting.DARK_GREEN);
+			case 5 -> Component.literal(String.valueOf(level)).withStyle(ChatFormatting.DARK_AQUA);
+			case 6 -> Component.literal(String.valueOf(level)).withStyle(ChatFormatting.DARK_RED);
+			case 7 -> Component.literal(String.valueOf(level)).withStyle(ChatFormatting.LIGHT_PURPLE);
+			case 8 -> Component.literal(String.valueOf(level)).withStyle(ChatFormatting.BLUE);
+			case 9 -> Component.literal(String.valueOf(level)).withStyle(ChatFormatting.DARK_PURPLE);
+			default -> {
+				String str = String.valueOf(level);
+				yield IntStream.range(0, str.length())
+					.mapToObj(x -> Component.literal(str.substring(x, x + 1)).withStyle(RAINBOW.get(x % RAINBOW.size())))
+					.reduce(Component.literal(""), MutableComponent::append);
+			}
+		};
+	}
+
+	private static Component buildBedwarsGameMode(String key, PlayerData.Bedwars.BedwarsGameData data) {
+		final var text = statComponent(key);
+
+		final var hover = Component.literal("");
+		hover.append(statComponent("playerstats.bedwars.kdr", data.kills(), data.deaths(), data.kdr()));
+		hover.append("\n");
+		hover.append(statComponent("playerstats.bedwars.fkdr", data.finalKills(), data.finalDeaths(), data.fkdr()));
+		hover.append("\n");
+		hover.append(statComponent("playerstats.bedwars.beds", data.bedsBroken(), data.bedsLost(), data.bblr()));
+		hover.append("\n");
+		hover.append(statComponent("playerstats.bedwars.summary_short", data.wins(), data.losses(), data.wlr()));
+
+		text.setStyle(text.getStyle()
+			.applyFormat(ChatFormatting.GOLD)
+			.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover))
+		);
+		return text;
+	}
+
+	private static Component buildBedwarsGameModesLine(PlayerData.Bedwars data) {
+		final var text = Component.literal("");
+
+		text.append(buildBedwarsGameMode("playerstats.bedwars.solo", data.solo()));
+		text.append(" | ");
+		text.append(buildBedwarsGameMode("playerstats.bedwars.duos", data.doubles()));
+		text.append(" | ");
+		text.append(buildBedwarsGameMode("playerstats.bedwars.fours", data.fours()));
+		text.append(" | ");
+		text.append(buildBedwarsGameMode("playerstats.bedwars.core", data.core()));
+		text.append(" | ");
+		text.append(buildBedwarsGameMode("playerstats.bedwars.dreams", data.dreams()));
+		return text;
+	}
+
+	private static Component buildSkywarsGameMode(String key, PlayerData.Skywars.GameData data) {
+		final var text = statComponent(key);
+
+		final var hover = Component.literal("");
+		hover.append(statComponent("playerstats.skywars.kdr", data.kills(), data.deaths(), data.kdr()));
+		hover.append("\n");
+		hover.append(statComponent("playerstats.skywars.summary", data.wins(), data.losses(), data.wlr()));
+
+		text.setStyle(text.getStyle()
+			.applyFormat(ChatFormatting.GOLD)
+			.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover))
+		);
+
+		return text;
+	}
+
+	private static Component buildSkywarsGameModesLine(PlayerData.Skywars data) {
+		final var text = Component.literal("");
+
+		text.append(buildSkywarsGameMode("playerstats.skywars.solo", data.solo().normal()));
+		text.append(" | ");
+		text.append(buildSkywarsGameMode("playerstats.skywars.duos", data.team().normal()));
+		text.append(" | ");
+		text.append(buildSkywarsGameMode("playerstats.skywars.solo_insane", data.solo().insane()));
+		text.append(" | ");
+		text.append(buildSkywarsGameMode("playerstats.skywars.duos_insane", data.team().insane()));
+		return text;
+	}
+
 	private static final List<Entry> HANDLERS = List.of(
 		new Entry("bedwars", (c, uuid, username, data) -> {
 			final var allStats = data.bedwars().all();
-
-			c.sendFeedback(
-				Component.empty()
-					.append(Component.translatable("playerstats.bedwars.title", data.formattedName(), data.bedwars().level()))
-					.append("\n")
-					.append(Component.translatable("playerstats.bedwars.kdr", allStats.kills(), allStats.deaths(), allStats.kdr()))
-					.append("\n")
-					.append(Component.translatable("playerstats.bedwars.fkdr", allStats.finalKills(), allStats.finalDeaths(), allStats.fkdr()))
-					.append("\n")
-					.append(Component.translatable("playerstats.bedwars.beds", allStats.bedsBroken(), allStats.bedsLost(), allStats.bblr()))
-					.append("\n")
-					.append(Component.translatable("playerstats.bedwars.summary", allStats.wins(), allStats.losses(), allStats.wlr(), allStats.winstreak()))
-			);
+			List.of(
+				Component.translatable("playerstats.bedwars.title", data.formattedName(), formatBedwarsPrestige(data.bedwars().level())),
+				statComponent("playerstats.bedwars.kdr", allStats.kills(), allStats.deaths(), allStats.kdr()),
+				statComponent("playerstats.bedwars.fkdr", allStats.finalKills(), allStats.finalDeaths(), allStats.fkdr()),
+				statComponent("playerstats.bedwars.beds", allStats.bedsBroken(), allStats.bedsLost(), allStats.bblr()),
+				statComponent("playerstats.bedwars.summary", allStats.wins(), allStats.losses(), allStats.wlr(), allStats.winstreak()),
+				buildBedwarsGameModesLine(data.bedwars())
+			).forEach(c::sendFeedback);
+		}),
+		new Entry("skywars", (c, uuid, username, data) -> {
+			final var allStats = data.skywars().all();
+			List.of(
+				Component.translatable("playerstats.skywars.title", data.formattedName(), data.skywars().level()),
+				statComponent("playerstats.skywars.kdr", allStats.kills(), allStats.deaths(), allStats.kdr()),
+				statComponent("playerstats.skywars.summary", allStats.wins(), allStats.losses(), allStats.wlr()),
+				buildSkywarsGameModesLine(data.skywars())
+			).forEach(c::sendFeedback);
 		})
 	);
-
 	@Getter
 	private static StatsMod instance = new StatsMod();
 
