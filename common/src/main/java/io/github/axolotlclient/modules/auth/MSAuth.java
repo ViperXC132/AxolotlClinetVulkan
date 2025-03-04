@@ -111,7 +111,12 @@ public class MSAuth {
 								response.get("refresh_token").getAsString())
 								.thenAccept(o -> {
 									o.ifPresent(a -> {
-										accounts.getAccounts().set(accounts.getAccounts().indexOf(a), a);
+										int index = accounts.getAccounts().indexOf(a);
+										if(index == -1) {
+											accounts.getAccounts().add(a);
+										} else {
+											accounts.getAccounts().set(index, a);
+										}
 										accounts.login(a);
 										accounts.save();
 										data.setStatus("auth.finished");
