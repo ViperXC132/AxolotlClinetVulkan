@@ -22,13 +22,18 @@
 
 package io.github.axolotlclient.modules.hypixel.nickhider;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
+import io.github.axolotlclient.api.util.BiContainer;
 import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.living.player.PlayerEntity;
+import net.minecraft.text.BaseText;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 
@@ -61,22 +66,51 @@ public class NickHider implements AbstractHypixelMod {
 
 	public Text editMessage(Text message) {
 		if (hideOwnName.get() || hideOtherNames.get()) {
-			String msg = message.getFormattedString();
-			String playerName = Minecraft.getInstance().player.getGameProfile().getName();
-			if (hideOwnName.get() && msg.contains(playerName)) {
-				msg = msg.replaceAll(playerName, hiddenNameSelf.get());
+			String msg = message.getString();
+
+			List<BiContainer<String, String>> replacements = new ArrayList<>();
+			if (Minecraft.getInstance().player != null) {
+				String playerName = Minecraft.getInstance().player.getName();
+				if (hideOwnName.get() && msg.contains(playerName)) {
+					replacements.add(BiContainer.of(playerName, hiddenNameSelf.get()));
+				}
 			}
 
-			if (hideOtherNames.get()) {
+			if (hideOtherNames.get() && Minecraft.getInstance().world != null) {
 				for (PlayerEntity player : Minecraft.getInstance().world.players) {
-					if (msg.contains(player.getGameProfile().getName())) {
-						msg = msg.replaceAll(player.getGameProfile().getName(), hiddenNameOthers.get());
+					if (player == Minecraft.getInstance().player) {
+						continue;
+					}
+					if (msg.contains(player.getName())) {
+						replacements.add(BiContainer.of(player.getName(), hiddenNameOthers.get()));
 					}
 				}
 			}
 
-			return new LiteralText(msg).setStyle(message.getStyle().deepCopy());
+			if (!replacements.isEmpty()) {
+				BaseText editedMessage = new LiteralText("");
+				editComponent(message, replacements, editedMessage);
+				return editedMessage;
+			}
 		}
 		return message;
+	}
+
+	public Text editComponent(Text c, String find, String replace) {
+		BaseText edited = new LiteralText("");
+		c.iterator().forEachRemaining(text -> {
+			edited.append(new LiteralText(text.getContent().replace(find, replace)).setStyle(text.getStyle()));
+		});
+		return edited;
+	}
+
+	private void editComponent(Text component, List<BiContainer<String, String>> replacements, BaseText edited) {
+		component.iterator().forEachRemaining(text -> {
+			String edit = text.getContent();
+			for (var entry : replacements) {
+				edit = edit.replace(entry.getLeft(), entry.getRight());
+			}
+			edited.append(new LiteralText(edit).setStyle(text.getStyle()));
+		});
 	}
 }

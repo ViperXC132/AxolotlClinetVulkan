@@ -22,9 +22,14 @@
 
 package io.github.axolotlclient.modules.hypixel.nickhider;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
+import io.github.axolotlclient.api.util.BiContainer;
 import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
 import io.github.axolotlclient.util.events.Events;
 import io.github.axolotlclient.util.events.impl.ReceiveChatMessageEvent;
@@ -32,6 +37,8 @@ import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 
 public class NickHider implements AbstractHypixelMod {
 
@@ -64,20 +71,51 @@ public class NickHider implements AbstractHypixelMod {
 	private void editMessage(ReceiveChatMessageEvent event) {
 		if (hideOwnName.get() || hideOtherNames.get()) {
 			String msg = event.getOriginalMessage();
+			Component message = event.getFormattedMessage();
 
-			String playerName = Minecraft.getInstance().player.getName().getString();
-			if (NickHider.Instance.hideOwnName.get() && msg.contains(playerName)) {
-				msg = msg.replaceAll(playerName, NickHider.Instance.hiddenNameSelf.get());
+			List<BiContainer<String, String>> replacements = new ArrayList<>();
+			if (Minecraft.getInstance().player != null) {
+				String playerName = Minecraft.getInstance().player.getName().getString();
+				if (hideOwnName.get() && msg.contains(playerName)) {
+					replacements.add(BiContainer.of(playerName, hiddenNameSelf.get()));
+				}
 			}
 
-			if (NickHider.Instance.hideOtherNames.get()) {
+			if (hideOtherNames.get() && Minecraft.getInstance().level != null) {
 				for (AbstractClientPlayer player : Minecraft.getInstance().level.players()) {
+					if (player == Minecraft.getInstance().player) {
+						continue;
+					}
 					if (msg.contains(player.getName().getString())) {
-						msg = msg.replaceAll(player.getName().getString(), NickHider.Instance.hiddenNameOthers.get());
+						replacements.add(BiContainer.of(player.getName().getString(), hiddenNameOthers.get()));
 					}
 				}
 			}
-			event.setNewMessage(Component.literal(msg).copy().setStyle(event.getFormattedMessage().getStyle()));
+			if (!replacements.isEmpty()) {
+				MutableComponent editedMessage = Component.empty();
+				editComponent(message, replacements, editedMessage);
+				event.setNewMessage(editedMessage);
+			}
 		}
+	}
+
+	public Component editComponent(Component c, String find, String replace) {
+		MutableComponent edited = Component.empty();
+		c.visit((style, string) -> {
+			edited.append(Component.literal(string.replace(find, replace)).withStyle(style));
+			return Optional.empty();
+		}, Style.EMPTY);
+		return edited;
+	}
+
+	private void editComponent(Component component, List<BiContainer<String, String>> replacements, MutableComponent edited) {
+		component.visit((style, string) -> {
+			String edit = string;
+			for (var entry : replacements) {
+				edit = edit.replace(entry.getLeft(), entry.getRight());
+			}
+			edited.append(Component.literal(edit).setStyle(style));
+			return Optional.empty();
+		}, Style.EMPTY);
 	}
 }

@@ -25,6 +25,8 @@ package io.github.axolotlclient.mixin;
 import java.util.List;
 import java.util.UUID;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.AxolotlClient;
@@ -44,7 +46,6 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -71,20 +72,20 @@ public abstract class PlayerListHudMixin {
 	@Final
 	private MinecraftClient client;
 
-	@Inject(method = "getPlayerName", at = @At("HEAD"), cancellable = true)
-	private void axolotlclient$nickHider(PlayerListEntry playerEntry, CallbackInfoReturnable<Text> cir) {
-		assert MinecraftClient.getInstance().player != null;
-		if (playerEntry.getProfile().equals(MinecraftClient.getInstance().player.getGameProfile())
-			&& NickHider.getInstance().hideOwnName.get()) {
-			cir.setReturnValue(this.applyGameModeFormatting(playerEntry, Text.literal(NickHider.getInstance().hiddenNameSelf.get())));
-		} else if (!playerEntry.getProfile().equals(MinecraftClient.getInstance().player.getGameProfile())
-			&& NickHider.getInstance().hideOtherNames.get()) {
-			cir.setReturnValue(this.applyGameModeFormatting(playerEntry, Text.literal(NickHider.getInstance().hiddenNameOthers.get())));
+	@WrapMethod(method = "getPlayerName")
+	private Text nickHider(PlayerListEntry entry, Operation<Text> original) {
+		var orig = original.call(entry);
+		if (client.player == null) {
+			return orig;
 		}
+		if (entry.getProfile().equals(client.player.getGameProfile()) && NickHider.getInstance().hideOwnName.get()) {
+			return NickHider.getInstance().editComponent(orig, entry.getProfile().getName(), NickHider.getInstance().hiddenNameSelf.get());
+		} else if (!entry.getProfile().equals(client.player.getGameProfile()) &&
+			NickHider.getInstance().hideOtherNames.get()) {
+			return NickHider.getInstance().editComponent(orig, entry.getProfile().getName(), NickHider.getInstance().hiddenNameOthers.get());
+		}
+		return orig;
 	}
-
-	@Shadow
-	protected abstract Text applyGameModeFormatting(PlayerListEntry entry, MutableText name);
 
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/PlayerListHud;getPlayerName(Lnet/minecraft/client/network/PlayerListEntry;)Lnet/minecraft/text/Text;"))
 	private PlayerListEntry axolotlclient$getPlayer(PlayerListEntry playerEntry) {
@@ -110,17 +111,6 @@ public abstract class PlayerListHudMixin {
 		}
 		axolotlclient$profile = null;
 		return instance.drawShadowedText(renderer, text, x, y, color);
-	}
-
-	@ModifyArg(method = "getPlayerName", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/PlayerListHud;applyGameModeFormatting(Lnet/minecraft/client/network/PlayerListEntry;Lnet/minecraft/text/MutableText;)Lnet/minecraft/text/Text;"), index = 1)
-	private MutableText axolotlclient$hideNames(MutableText name) {
-		if (NickHider.getInstance().hideOwnName.get()) {
-			return Text.literal(NickHider.getInstance().hiddenNameSelf.get());
-		}
-		if (NickHider.getInstance().hideOtherNames.get()) {
-			return Text.literal(NickHider.getInstance().hiddenNameOthers.get());
-		}
-		return name;
 	}
 
 	@Inject(method = "renderLatencyIcon", at = @At("HEAD"), cancellable = true)
