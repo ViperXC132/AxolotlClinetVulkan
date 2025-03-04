@@ -61,7 +61,9 @@
 		"TntEntityRendererMixin",
 		"VertexBufferMixin",
 		"WorldRendererAccessor",
-		"WorldRendererMixin"
+		"WorldRendererMixin",
+		"translation.LanguageMixin",
+		"translation.TranslationStorageMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

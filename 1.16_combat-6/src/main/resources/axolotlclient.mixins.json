@@ -59,7 +59,8 @@
 		"TntEntityRendererMixin",
 		"WorldListWidgetEntryMixin",
 		"WorldRendererAccessor",
-		"WorldRendererMixin"
+		"WorldRendererMixin",
+		"translation.LanguageMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
