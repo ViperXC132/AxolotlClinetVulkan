@@ -69,7 +69,9 @@ public final class ClientCommandInfo {
 		}
 	}
 
-	public void sendMessage(Text text) {
-		origin.sendMessage(text);
+	public void sendMessage(Text... messages) {
+		for (Text message : messages) {
+			origin.sendMessage(message);
+		}
 	}
 }
