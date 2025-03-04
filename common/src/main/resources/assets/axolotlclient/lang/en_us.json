@@ -700,6 +700,7 @@
 	"playerstats.error.api_disabled": "API is not enabled!",
 	"playerstats.error.unknown_player": "Unknown Player!",
 	"playerstats.error.api_unauthenticated": "API is not authenticated!",
+	"playerstats.error.failed_data": "Failed to retrieve player data!",
 	"playerstats.bedwars.solo": "Solo",
 	"playerstats.bedwars.duos": "Duos",
 	"playerstats.bedwars.fours": "Fours",

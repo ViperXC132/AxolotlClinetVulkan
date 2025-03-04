@@ -79,14 +79,14 @@ public class StatsMod implements AbstractHypixelMod {
 			case 9 -> Component.literal(levelString).withStyle(ChatFormatting.DARK_PURPLE);
 			default -> IntStream.range(0, levelString.length())
 				.mapToObj(x -> Component.literal(levelString.substring(x, x + 1)).withStyle(RAINBOW.get(x % RAINBOW.size())))
-				.reduce(Component.literal(""), MutableComponent::append);
+				.reduce(Component.empty(), MutableComponent::append);
 		};
 	}
 
 	private static Component buildBedwarsGameMode(String key, PlayerData.Bedwars.BedwarsGameData data) {
 		final var text = statComponent(key);
 
-		final var hover = Component.literal("");
+		final var hover = Component.empty();
 		hover.append(statComponent("playerstats.bedwars.kdr", data.kills(), data.deaths(), data.kdr()));
 		hover.append("\n");
 		hover.append(statComponent("playerstats.bedwars.fkdr", data.finalKills(), data.finalDeaths(), data.fkdr()));
@@ -103,7 +103,7 @@ public class StatsMod implements AbstractHypixelMod {
 	}
 
 	private static Component buildBedwarsGameModesLine(PlayerData.Bedwars data) {
-		final var text = Component.literal("");
+		final var text = Component.empty();
 
 		text.append(buildBedwarsGameMode("playerstats.bedwars.solo", data.solo()));
 		text.append(" | ");
@@ -120,7 +120,7 @@ public class StatsMod implements AbstractHypixelMod {
 	private static Component buildSkywarsGameMode(String key, PlayerData.Skywars.GameData data) {
 		final var text = statComponent(key);
 
-		final var hover = Component.literal("");
+		final var hover = Component.empty();
 		hover.append(statComponent("playerstats.skywars.kdr", data.kills(), data.deaths(), data.kdr()));
 		hover.append("\n");
 		hover.append(statComponent("playerstats.skywars.summary", data.wins(), data.losses(), data.wlr()));
@@ -134,7 +134,7 @@ public class StatsMod implements AbstractHypixelMod {
 	}
 
 	private static Component buildSkywarsGameModesLine(PlayerData.Skywars data) {
-		final var text = Component.literal("");
+		final var text = Component.empty();
 
 		text.append(buildSkywarsGameMode("playerstats.skywars.solo", data.solo().normal()));
 		text.append(" | ");
@@ -169,7 +169,7 @@ public class StatsMod implements AbstractHypixelMod {
 		})
 	);
 	@Getter
-	private static StatsMod instance = new StatsMod();
+	private static final StatsMod instance = new StatsMod();
 
 	private final OptionCategory playerstats = OptionCategory.create("playerstats");
 

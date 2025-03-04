@@ -78,14 +78,14 @@ public class StatsMod implements AbstractHypixelMod {
 			case 9 -> Text.literal(levelString).formatted(Formatting.DARK_PURPLE);
 			default -> IntStream.range(0, levelString.length())
 				.mapToObj(x -> Text.literal(levelString.substring(x, x + 1)).formatted(RAINBOW.get(x % RAINBOW.size())))
-				.reduce(Text.literal(""), MutableText::append);
+				.reduce(Text.empty(), MutableText::append);
 		};
 	}
 
 	private static Text buildBedwarsGameMode(String key, PlayerData.Bedwars.BedwarsGameData data) {
 		final var text = statText(key);
 
-		final var hover = Text.literal("");
+		final var hover = Text.empty();
 		hover.append(statText("playerstats.bedwars.kdr", data.kills(), data.deaths(), data.kdr()));
 		hover.append("\n");
 		hover.append(statText("playerstats.bedwars.fkdr", data.finalKills(), data.finalDeaths(), data.fkdr()));
@@ -102,7 +102,7 @@ public class StatsMod implements AbstractHypixelMod {
 	}
 
 	private static Text buildBedwarsGameModesLine(PlayerData.Bedwars data) {
-		final var text = Text.literal("");
+		final var text = Text.empty();
 
 		text.append(buildBedwarsGameMode("playerstats.bedwars.solo", data.solo()));
 		text.append(" | ");
@@ -119,7 +119,7 @@ public class StatsMod implements AbstractHypixelMod {
 	private static Text buildSkywarsGameMode(String key, PlayerData.Skywars.GameData data) {
 		final var text = statText(key);
 
-		final var hover = Text.literal("");
+		final var hover = Text.empty();
 		hover.append(statText("playerstats.skywars.kdr", data.kills(), data.deaths(), data.kdr()));
 		hover.append("\n");
 		hover.append(statText("playerstats.skywars.summary", data.wins(), data.losses(), data.wlr()));
@@ -133,7 +133,7 @@ public class StatsMod implements AbstractHypixelMod {
 	}
 
 	private static Text buildSkywarsGameModesLine(PlayerData.Skywars data) {
-		final var text = Text.literal("");
+		final var text = Text.empty();
 
 		text.append(buildSkywarsGameMode("playerstats.skywars.solo", data.solo().normal()));
 		text.append(" | ");
@@ -169,7 +169,7 @@ public class StatsMod implements AbstractHypixelMod {
 	);
 
 	@Getter
-	private static StatsMod instance = new StatsMod();
+	private static final StatsMod instance = new StatsMod();
 
 	private final OptionCategory playerstats = OptionCategory.create("playerstats");
 

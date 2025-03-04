@@ -168,7 +168,7 @@ public class StatsMod implements AbstractHypixelMod {
 	);
 
 	@Getter
-	private static StatsMod instance = new StatsMod();
+	private static final StatsMod instance = new StatsMod();
 
 	private final OptionCategory playerstats = OptionCategory.create("playerstats");
 
