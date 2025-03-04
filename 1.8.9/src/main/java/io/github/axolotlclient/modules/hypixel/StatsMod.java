@@ -22,26 +22,20 @@
 
 package io.github.axolotlclient.modules.hypixel;
 
-import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.commands.ClientCommandInfo;
 import io.github.axolotlclient.commands.ClientCommands;
 import io.github.axolotlclient.commands.PlayerArgument;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.text.Formatting;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.*;
 
 import static io.github.axolotlclient.commands.ClientCommands.argument;
 import static io.github.axolotlclient.commands.ClientCommands.literal;
@@ -56,7 +50,7 @@ public class StatsMod implements AbstractHypixelMod {
 
 	private static Text statText(String key, Object... args) {
 		return new TranslatableText(key, Arrays.stream(args).map(s -> {
-			if(s instanceof Float f) {
+			if (s instanceof Float f) {
 				return Formatting.GREEN + String.format("%.2f", f) + Formatting.RESET;
 			} else {
 				return Formatting.GREEN + s.toString() + Formatting.RESET;
@@ -69,23 +63,21 @@ public class StatsMod implements AbstractHypixelMod {
 	);
 
 	private static String formatBedwarsPrestige(int level) {
+		String levelString = level + "☆";
 		return switch (level / 100) {
-			case 0 -> Formatting.GRAY + String.valueOf(level);
-			case 1 -> Formatting.WHITE + String.valueOf(level);
-			case 2 -> Formatting.GOLD + String.valueOf(level);
-			case 3 -> Formatting.AQUA + String.valueOf(level);
-			case 4 -> Formatting.DARK_GREEN + String.valueOf(level);
-			case 5 -> Formatting.DARK_AQUA + String.valueOf(level);
-			case 6 -> Formatting.DARK_RED + String.valueOf(level);
-			case 7 -> Formatting.LIGHT_PURPLE + String.valueOf(level);
-			case 8 -> Formatting.BLUE + String.valueOf(level);
-			case 9 -> Formatting.DARK_PURPLE + String.valueOf(level);
-			default -> {
-				String str = String.valueOf(level);
-				yield IntStream.range(0, str.length())
-					.mapToObj(x -> RAINBOW.get(x % RAINBOW.size()) + str.substring(x, x + 1))
-					.collect(Collectors.joining());
-			}
+			case 0 -> Formatting.GRAY + levelString;
+			case 1 -> Formatting.WHITE + levelString;
+			case 2 -> Formatting.GOLD + levelString;
+			case 3 -> Formatting.AQUA + levelString;
+			case 4 -> Formatting.DARK_GREEN + levelString;
+			case 5 -> Formatting.DARK_AQUA + levelString;
+			case 6 -> Formatting.DARK_RED + levelString;
+			case 7 -> Formatting.LIGHT_PURPLE + levelString;
+			case 8 -> Formatting.BLUE + levelString;
+			case 9 -> Formatting.DARK_PURPLE + levelString;
+			default -> IntStream.range(0, levelString.length())
+				.mapToObj(x -> RAINBOW.get(x % RAINBOW.size()) + levelString.substring(x, x + 1))
+				.collect(Collectors.joining());
 		} + Formatting.RESET;
 	}
 

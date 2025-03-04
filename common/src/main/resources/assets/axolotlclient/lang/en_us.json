@@ -691,7 +691,7 @@
 	"daycounterhud.days": "%s Days",
 	"keystrokes.animation_time": "Animation Time (Milliseconds)",
 	"playerstats": "Player Statistics",
-	"playerstats.bedwars.title": "[Bedwars Stats for %s (%s☆)]",
+	"playerstats.bedwars.title": "[Bedwars Stats for %s (%s)]",
 	"playerstats.bedwars.kdr": "» Kill Death Ratio: %s/%s (%s)",
 	"playerstats.bedwars.fkdr": "» Final Kill Death Ratio: %s/%s (%s)",
 	"playerstats.bedwars.beds": "» Beds Broken/Lost Ratio: %s/%s (%s)",

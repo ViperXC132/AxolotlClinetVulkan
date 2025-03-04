@@ -24,11 +24,11 @@ package io.github.axolotlclient.modules.hypixel;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.commands.PlayerArgument;
-import java.util.stream.IntStream;
 import lombok.Getter;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
@@ -52,7 +52,7 @@ public class StatsMod implements AbstractHypixelMod {
 
 	private static MutableComponent statComponent(String key, Object... args) {
 		return Component.translatable(key, Arrays.stream(args).map(s -> {
-			if(s instanceof Float f) {
+			if (s instanceof Float f) {
 				return Component.literal(String.format("%.2f", f)).withStyle(ChatFormatting.GREEN);
 			} else {
 				return Component.literal(s.toString()).withStyle(ChatFormatting.GREEN);
@@ -65,23 +65,21 @@ public class StatsMod implements AbstractHypixelMod {
 	);
 
 	private static Component formatBedwarsPrestige(int level) {
+		String levelString = level + "☆";
 		return switch (level / 100) {
-			case 0 -> Component.literal(String.valueOf(level)).withStyle(ChatFormatting.GRAY);
-			case 1 -> Component.literal(String.valueOf(level)).withStyle(ChatFormatting.WHITE);
-			case 2 -> Component.literal(String.valueOf(level)).withStyle(ChatFormatting.GOLD);
-			case 3 -> Component.literal(String.valueOf(level)).withStyle(ChatFormatting.AQUA);
-			case 4 -> Component.literal(String.valueOf(level)).withStyle(ChatFormatting.DARK_GREEN);
-			case 5 -> Component.literal(String.valueOf(level)).withStyle(ChatFormatting.DARK_AQUA);
-			case 6 -> Component.literal(String.valueOf(level)).withStyle(ChatFormatting.DARK_RED);
-			case 7 -> Component.literal(String.valueOf(level)).withStyle(ChatFormatting.LIGHT_PURPLE);
-			case 8 -> Component.literal(String.valueOf(level)).withStyle(ChatFormatting.BLUE);
-			case 9 -> Component.literal(String.valueOf(level)).withStyle(ChatFormatting.DARK_PURPLE);
-			default -> {
-				String str = String.valueOf(level);
-				yield IntStream.range(0, str.length())
-					.mapToObj(x -> Component.literal(str.substring(x, x + 1)).withStyle(RAINBOW.get(x % RAINBOW.size())))
-					.reduce(Component.literal(""), MutableComponent::append);
-			}
+			case 0 -> Component.literal(levelString).withStyle(ChatFormatting.GRAY);
+			case 1 -> Component.literal(levelString).withStyle(ChatFormatting.WHITE);
+			case 2 -> Component.literal(levelString).withStyle(ChatFormatting.GOLD);
+			case 3 -> Component.literal(levelString).withStyle(ChatFormatting.AQUA);
+			case 4 -> Component.literal(levelString).withStyle(ChatFormatting.DARK_GREEN);
+			case 5 -> Component.literal(levelString).withStyle(ChatFormatting.DARK_AQUA);
+			case 6 -> Component.literal(levelString).withStyle(ChatFormatting.DARK_RED);
+			case 7 -> Component.literal(levelString).withStyle(ChatFormatting.LIGHT_PURPLE);
+			case 8 -> Component.literal(levelString).withStyle(ChatFormatting.BLUE);
+			case 9 -> Component.literal(levelString).withStyle(ChatFormatting.DARK_PURPLE);
+			default -> IntStream.range(0, levelString.length())
+				.mapToObj(x -> Component.literal(levelString.substring(x, x + 1)).withStyle(RAINBOW.get(x % RAINBOW.size())))
+				.reduce(Component.literal(""), MutableComponent::append);
 		};
 	}
 

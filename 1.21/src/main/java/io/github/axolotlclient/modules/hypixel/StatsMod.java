@@ -24,11 +24,11 @@ package io.github.axolotlclient.modules.hypixel;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.commands.PlayerArgument;
-import java.util.stream.IntStream;
 import lombok.Getter;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
@@ -51,7 +51,7 @@ public class StatsMod implements AbstractHypixelMod {
 
 	private static MutableText statText(String key, Object... args) {
 		return Text.translatable(key, Arrays.stream(args).map(s -> {
-			if(s instanceof Float f) {
+			if (s instanceof Float f) {
 				return Text.literal(String.format("%.2f", f)).formatted(Formatting.GREEN);
 			} else {
 				return Text.literal(s.toString()).formatted(Formatting.GREEN);
@@ -64,23 +64,21 @@ public class StatsMod implements AbstractHypixelMod {
 	);
 
 	private static Text formatBedwarsPrestige(int level) {
+		String levelString = level + "☆";
 		return switch (level / 100) {
-			case 0 -> Text.literal(String.valueOf(level)).formatted(Formatting.GRAY);
-			case 1 -> Text.literal(String.valueOf(level)).formatted(Formatting.WHITE);
-			case 2 -> Text.literal(String.valueOf(level)).formatted(Formatting.GOLD);
-			case 3 -> Text.literal(String.valueOf(level)).formatted(Formatting.AQUA);
-			case 4 -> Text.literal(String.valueOf(level)).formatted(Formatting.DARK_GREEN);
-			case 5 -> Text.literal(String.valueOf(level)).formatted(Formatting.DARK_AQUA);
-			case 6 -> Text.literal(String.valueOf(level)).formatted(Formatting.DARK_RED);
-			case 7 -> Text.literal(String.valueOf(level)).formatted(Formatting.LIGHT_PURPLE);
-			case 8 -> Text.literal(String.valueOf(level)).formatted(Formatting.BLUE);
-			case 9 -> Text.literal(String.valueOf(level)).formatted(Formatting.DARK_PURPLE);
-			default -> {
-				String str = String.valueOf(level);
-				yield IntStream.range(0, str.length())
-					.mapToObj(x -> Text.literal(str.substring(x, x + 1)).formatted(RAINBOW.get(x % RAINBOW.size())))
-					.reduce(Text.literal(""), MutableText::append);
-			}
+			case 0 -> Text.literal(levelString).formatted(Formatting.GRAY);
+			case 1 -> Text.literal(levelString).formatted(Formatting.WHITE);
+			case 2 -> Text.literal(levelString).formatted(Formatting.GOLD);
+			case 3 -> Text.literal(levelString).formatted(Formatting.AQUA);
+			case 4 -> Text.literal(levelString).formatted(Formatting.DARK_GREEN);
+			case 5 -> Text.literal(levelString).formatted(Formatting.DARK_AQUA);
+			case 6 -> Text.literal(levelString).formatted(Formatting.DARK_RED);
+			case 7 -> Text.literal(levelString).formatted(Formatting.LIGHT_PURPLE);
+			case 8 -> Text.literal(levelString).formatted(Formatting.BLUE);
+			case 9 -> Text.literal(levelString).formatted(Formatting.DARK_PURPLE);
+			default -> IntStream.range(0, levelString.length())
+				.mapToObj(x -> Text.literal(levelString.substring(x, x + 1)).formatted(RAINBOW.get(x % RAINBOW.size())))
+				.reduce(Text.literal(""), MutableText::append);
 		};
 	}
 

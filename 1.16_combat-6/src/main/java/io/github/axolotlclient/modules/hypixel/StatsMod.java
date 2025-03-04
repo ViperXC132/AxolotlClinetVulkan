@@ -24,22 +24,16 @@ package io.github.axolotlclient.modules.hypixel;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.commands.PlayerArgument;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import lombok.Getter;
 import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
 import net.fabricmc.fabric.api.client.command.v1.FabricClientCommandSource;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 
 import static net.fabricmc.fabric.api.client.command.v1.ClientCommandManager.argument;
@@ -55,7 +49,7 @@ public class StatsMod implements AbstractHypixelMod {
 
 	private static MutableText statText(String key, Object... args) {
 		return new TranslatableText(key, Arrays.stream(args).map(s -> {
-			if(s instanceof Float f) {
+			if (s instanceof Float f) {
 				return new LiteralText(String.format("%.2f", f)).formatted(Formatting.GREEN);
 			} else {
 				return new LiteralText(s.toString()).formatted(Formatting.GREEN);
@@ -68,21 +62,21 @@ public class StatsMod implements AbstractHypixelMod {
 	);
 
 	private static Text formatBedwarsPrestige(int level) {
+		String levelString = level + "☆";
 		return switch (level / 100) {
-			case 0 -> new LiteralText(String.valueOf(level)).formatted(Formatting.GRAY);
-			case 1 -> new LiteralText(String.valueOf(level)).formatted(Formatting.WHITE);
-			case 2 -> new LiteralText(String.valueOf(level)).formatted(Formatting.GOLD);
-			case 3 -> new LiteralText(String.valueOf(level)).formatted(Formatting.AQUA);
-			case 4 -> new LiteralText(String.valueOf(level)).formatted(Formatting.DARK_GREEN);
-			case 5 -> new LiteralText(String.valueOf(level)).formatted(Formatting.DARK_AQUA);
-			case 6 -> new LiteralText(String.valueOf(level)).formatted(Formatting.DARK_RED);
-			case 7 -> new LiteralText(String.valueOf(level)).formatted(Formatting.LIGHT_PURPLE);
-			case 8 -> new LiteralText(String.valueOf(level)).formatted(Formatting.BLUE);
-			case 9 -> new LiteralText(String.valueOf(level)).formatted(Formatting.DARK_PURPLE);
+			case 0 -> new LiteralText(levelString).formatted(Formatting.GRAY);
+			case 1 -> new LiteralText(levelString).formatted(Formatting.WHITE);
+			case 2 -> new LiteralText(levelString).formatted(Formatting.GOLD);
+			case 3 -> new LiteralText(levelString).formatted(Formatting.AQUA);
+			case 4 -> new LiteralText(levelString).formatted(Formatting.DARK_GREEN);
+			case 5 -> new LiteralText(levelString).formatted(Formatting.DARK_AQUA);
+			case 6 -> new LiteralText(levelString).formatted(Formatting.DARK_RED);
+			case 7 -> new LiteralText(levelString).formatted(Formatting.LIGHT_PURPLE);
+			case 8 -> new LiteralText(levelString).formatted(Formatting.BLUE);
+			case 9 -> new LiteralText(levelString).formatted(Formatting.DARK_PURPLE);
 			default -> {
-				String str = String.valueOf(level);
-				yield IntStream.range(0, str.length())
-					.mapToObj(x -> new LiteralText(str.substring(x, x + 1)).formatted(RAINBOW.get(x % RAINBOW.size())))
+				yield IntStream.range(0, levelString.length())
+					.mapToObj(x -> new LiteralText(levelString.substring(x, x + 1)).formatted(RAINBOW.get(x % RAINBOW.size())))
 					.reduce(new LiteralText(""), MutableText::append);
 			}
 		};
