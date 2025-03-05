@@ -50,7 +50,7 @@ public final class CachedAPI<K, V> {
 
 		@SuppressWarnings("unchecked")
 		public static <T> ApiResult<T> error() {
-			return (ApiResult<T>) PENDING_INSTANCE;
+			return (ApiResult<T>) ERROR_INSTANCE;
 		}
 
 		public static <T> ApiResult<T> of(T value) {
