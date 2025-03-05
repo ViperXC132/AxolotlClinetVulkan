@@ -585,7 +585,6 @@
 	"api.status.title.world_host": "Playing with WorldHost",
 	"api.worldhost.joinability.not_published": "World isn't published!",
 	"autoboop.filterlist": "Filter List",
-	"autoboop.filterlist.tooltip": "Comma-separated list of player names to be filtered for.",
 	"autoboop.filterlist.mode": "Filter Mode",
 	"autoboop.filterlist.mode.disabled": "Disabled",
 	"autoboop.filterlist.mode.whitelist": "Whitelist",
@@ -689,5 +688,11 @@
 	"bedwars.enabled.tooltip": "Whether this module is enabled or not.<br>Some functions of this module require the social features to be enabled<br>in order to communicate with the backend and the Hypixel API.",
 	"daycounterhud": "Day Counter HUD",
 	"daycounterhud.days": "%s Days",
-	"keystrokes.animation_time": "Animation Time (Milliseconds)"
+	"keystrokes.animation_time": "Animation Time (Milliseconds)",
+	"autoboop.filters.configure": "Configure Filters",
+	"autoboop.filterlist.configure": "Configure Filters",
+	"autoboop.filters.add": "Add Filter",
+	"autoboop.filters.remove": "Remove",
+	"autoboop.filters.clear": "Clear List",
+	"autoboop.filters.edit": "Edit Filter"
 }

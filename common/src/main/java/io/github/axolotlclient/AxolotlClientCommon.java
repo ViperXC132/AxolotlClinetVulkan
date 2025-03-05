@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient;
 
+import java.nio.file.Path;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -73,5 +74,9 @@ public class AxolotlClientCommon {
 
 	public void saveConfig() {
 		manager.get().save();
+	}
+
+	public static Path resolveConfigFile(String file) {
+		return FabricLoader.getInstance().getConfigDir().resolve("axolotlclient").resolve(file);
 	}
 }

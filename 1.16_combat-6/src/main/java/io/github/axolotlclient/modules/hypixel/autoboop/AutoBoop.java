@@ -22,9 +22,12 @@
 
 package io.github.axolotlclient.modules.hypixel.autoboop;
 
+import java.util.List;
+
 import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
 import io.github.axolotlclient.util.Util;
 import lombok.Getter;
+import net.minecraft.client.MinecraftClient;
 
 // Based on https://github.com/VeryHolyCheeeese/AutoBoop/blob/main/src/main/java/autoboop/AutoBoop.java
 public class AutoBoop extends AutoBoopCommon implements AbstractHypixelMod {
@@ -35,5 +38,10 @@ public class AutoBoop extends AutoBoopCommon implements AbstractHypixelMod {
 	@Override
 	protected void sendChatMessage(String message) {
 		Util.sendChatMessage(message);
+	}
+
+	@Override
+	protected void openFiltersScreen(List<String> filters) {
+		MinecraftClient.getInstance().openScreen(new FilterListConfigurationScreen(filters, MinecraftClient.getInstance().currentScreen));
 	}
 }
