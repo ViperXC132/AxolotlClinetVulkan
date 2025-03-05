@@ -205,13 +205,12 @@ public final class PlayerData {
 		@Accessors(fluent = true)
 		@ToString
 		@EqualsAndHashCode
-		public static final class DuelsGameData implements KDR {
+		public static final class DuelsGameData implements KDR, WLR {
 			private final int kills;
 			private final int deaths;
 			private final int wins;
 			private final int losses;
 			private final int winstreak;
-
 		}
 	}
 

@@ -24,6 +24,7 @@ package io.github.axolotlclient.modules.hypixel;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
@@ -145,6 +146,37 @@ public class StatsMod implements AbstractHypixelMod {
 		return text;
 	}
 
+	private static Text buildDuelsGameMode(Map.Entry<String, PlayerData.DuelsData.DuelsGameData> entry) {
+		final var value = entry.getValue();
+		final var hover = new TranslatableText("playerstats.duels.mode_title",
+			new TranslatableText("playerstats.duels." + entry.getKey())
+				.setStyle(Style.EMPTY.withFormatting(Formatting.GOLD)));
+		hover.append("\n");
+		hover.append(statText("playerstats.duels.kdr", value.kills(), value.deaths(), value.kdr()));
+		hover.append("\n");
+		hover.append(statText("playerstats.duels.summary", value.wins(), value.losses(), value.wlr(), value.winstreak()));
+
+		return new TranslatableText("playerstats.duels." + entry.getKey())
+			.setStyle(Style.EMPTY
+				.withFormatting(Formatting.GOLD)
+				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover)));
+	}
+
+	private static Text buildDuelsGameModesLine(PlayerData.DuelsData data) {
+		final var text = new LiteralText("");
+		boolean empty = true;
+		for (Map.Entry<String, PlayerData.DuelsData.DuelsGameData> stringDuelsGameDataEntry : data.modes().entrySet()) {
+			if (!empty) {
+				text.append("\n");
+			}
+			Text buildDuelsGameMode = buildDuelsGameMode(stringDuelsGameDataEntry);
+			text.append(new LiteralText("» ").setStyle(Style.EMPTY.withFormatting(Formatting.RED)));
+			text.append(buildDuelsGameMode);
+			empty = false;
+		}
+		return text;
+	}
+
 	private static final List<Entry> HANDLERS = List.of(
 		new Entry("bedwars", (c, uuid, username, data) -> {
 			final var allStats = data.bedwars().all();
@@ -164,6 +196,12 @@ public class StatsMod implements AbstractHypixelMod {
 				statText("playerstats.skywars.kdr", allStats.kills(), allStats.deaths(), allStats.kdr()),
 				statText("playerstats.skywars.summary", allStats.wins(), allStats.losses(), allStats.wlr()),
 				buildSkywarsGameModesLine(data.skywars())
+			).forEach(c::sendFeedback);
+		}),
+		new Entry("duels", (c, uuid, username, data) -> {
+			List.of(
+				new TranslatableText("playerstats.duels.title", data.formattedName()),
+				buildDuelsGameModesLine(data.duels())
 			).forEach(c::sendFeedback);
 		})
 	);

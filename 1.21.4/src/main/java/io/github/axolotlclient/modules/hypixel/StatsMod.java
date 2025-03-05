@@ -24,6 +24,7 @@ package io.github.axolotlclient.modules.hypixel;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
@@ -37,6 +38,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.Style;
 
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.argument;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommandManager.literal;
@@ -146,6 +148,37 @@ public class StatsMod implements AbstractHypixelMod {
 		return text;
 	}
 
+	private static Component buildDuelsGameMode(Map.Entry<String, PlayerData.DuelsData.DuelsGameData> entry) {
+		final var value = entry.getValue();
+		final var hover = Component.translatable("playerstats.duels.mode_title",
+			Component.translatable("playerstats.duels." + entry.getKey())
+				.setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)));
+		hover.append("\n");
+		hover.append(statComponent("playerstats.duels.kdr", value.kills(), value.deaths(), value.kdr()));
+		hover.append("\n");
+		hover.append(statComponent("playerstats.duels.summary", value.wins(), value.losses(), value.wlr(), value.winstreak()));
+
+		return Component.translatable("playerstats.duels." + entry.getKey())
+			.setStyle(Style.EMPTY
+				.withColor(ChatFormatting.GOLD)
+				.withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover)));
+	}
+
+	private static Component buildDuelsGameModesLine(PlayerData.DuelsData data) {
+		final var text = Component.empty();
+		boolean empty = true;
+		for (Map.Entry<String, PlayerData.DuelsData.DuelsGameData> stringDuelsGameDataEntry : data.modes().entrySet()) {
+			if (!empty) {
+				text.append("\n");
+			}
+			Component buildDuelsGameMode = buildDuelsGameMode(stringDuelsGameDataEntry);
+			text.append(Component.literal("» ").setStyle(Style.EMPTY.withColor(ChatFormatting.RED)));
+			text.append(buildDuelsGameMode);
+			empty = false;
+		}
+		return text;
+	}
+
 	private static final List<Entry> HANDLERS = List.of(
 		new Entry("bedwars", (c, uuid, username, data) -> {
 			final var allStats = data.bedwars().all();
@@ -166,7 +199,13 @@ public class StatsMod implements AbstractHypixelMod {
 				statComponent("playerstats.skywars.summary", allStats.wins(), allStats.losses(), allStats.wlr()),
 				buildSkywarsGameModesLine(data.skywars())
 			).forEach(c::sendFeedback);
-		})
+		}),
+		new Entry("duels", (c, uuid, username, data) -> {
+		List.of(
+			Component.translatable("playerstats.duels.title", data.formattedName()),
+			buildDuelsGameModesLine(data.duels())
+		).forEach(c::sendFeedback);
+	})
 	);
 	@Getter
 	private static final StatsMod instance = new StatsMod();
