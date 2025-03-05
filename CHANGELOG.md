@@ -3,11 +3,12 @@
 ### 3.1.2
 
 - Customizable keystrokes
-  - Mouse movement is now its own HUD element
+- Mouse movement is now its own HUD element
 - Custom text-based HUD elements
 - Add DebugCountersHud, displaying Counters from the F3 screen
 - Add Bedwars resources HUD
 - update NickHider
+- add /playerstats command to display stats of hypixel gamemodes (`@Floweynt`)
 
 ### 3.1.1
 

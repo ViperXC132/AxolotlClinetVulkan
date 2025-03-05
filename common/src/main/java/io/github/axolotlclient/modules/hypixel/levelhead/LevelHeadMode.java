@@ -24,7 +24,6 @@ package io.github.axolotlclient.modules.hypixel.levelhead;
 
 import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
 import io.github.axolotlclient.util.CachedAPI;
-import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

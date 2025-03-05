@@ -26,6 +26,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
+import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
 import io.github.axolotlclient.util.ClientColors;
 import lombok.Getter;
@@ -58,7 +59,7 @@ public class LevelHead implements AbstractHypixelMod {
 	}
 
 	public String getDisplayString(String uuid) {
-		return getDisplayString(mode.get(), uuid);
+		return getDisplayString(mode.get(), API.getInstance().sanitizeUUID(uuid));
 	}
 
 	@Override

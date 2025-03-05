@@ -22,10 +22,6 @@
 
 package io.github.axolotlclient.api.util;
 
-import io.github.axolotlclient.api.API;
-import io.github.axolotlclient.util.CachedAPI;
-import io.github.axolotlclient.util.GsonHelper;
-import io.github.axolotlclient.util.NetworkUtil;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -33,6 +29,11 @@ import java.net.http.HttpResponse;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+
+import io.github.axolotlclient.api.API;
+import io.github.axolotlclient.util.CachedAPI;
+import io.github.axolotlclient.util.GsonHelper;
+import io.github.axolotlclient.util.NetworkUtil;
 
 public class UUIDHelper {
 	private static final HttpClient CLIENT = NetworkUtil.createHttpClient("UUIDHelper");
