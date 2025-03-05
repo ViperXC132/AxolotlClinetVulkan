@@ -42,7 +42,6 @@
 		"ParticleManagerMixin",
 		"PlayerEntityMixin",
 		"PlayerEntityModelMixin",
-		"PlayerEntityRendererMixin",
 		"PlayerInventoryScreenMixin",
 		"PlayerListEntryMixin",
 		"PlayerListHudMixin",
@@ -64,7 +63,9 @@
 		"WorldRendererAccessor",
 		"WorldRendererMixin",
 		"commands.ChatScreenMixin",
-		"commands.LocalClientPlayerEntityMixin"
+		"commands.LocalClientPlayerEntityMixin",
+		"translation.LanguageMixin",
+		"translation.TranslationStorageMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

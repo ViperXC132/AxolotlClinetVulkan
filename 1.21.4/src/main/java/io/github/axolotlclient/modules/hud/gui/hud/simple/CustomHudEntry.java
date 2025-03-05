@@ -22,10 +22,14 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud.simple;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
+import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
+import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
+import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.entry.SimpleTextHudEntry;
@@ -44,11 +48,30 @@ public class CustomHudEntry extends SimpleTextHudEntry {
 			HudManager.getInstance().removeEntry(this.id);
 			HudManager.getInstance().saveCustomEntries();
 		});
-	}
+		AxolotlClientConfig.getInstance().register(new ConfigManager() {
+			@Override
+			public void save() {
+				HudManager.getInstance().saveCustomEntries();
+			}
 
-	@Override
-	public String getNameKey() {
-		return "custom_hud";
+			@Override
+			public void load() {
+
+			}
+
+			@Override
+			public OptionCategory getRoot() {
+				return getAllOptions();
+			}
+
+			@Override
+			public Collection<String> getSuppressedNames() {
+				return List.of("x", "y");
+			}
+
+			@Override
+			public void suppressName(String name) {}
+		});
 	}
 
 	@Override

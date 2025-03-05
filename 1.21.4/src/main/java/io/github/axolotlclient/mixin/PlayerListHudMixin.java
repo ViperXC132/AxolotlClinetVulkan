@@ -26,6 +26,7 @@ import io.github.axolotlclient.modules.hypixel.levelhead.LevelHead;
 import java.util.List;
 import java.util.UUID;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
@@ -48,7 +49,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Scoreboard;
 import org.spongepowered.asm.mixin.Final;
@@ -72,20 +72,20 @@ public abstract class PlayerListHudMixin {
 	@Final
 	private Minecraft minecraft;
 
-	@Shadow
-	protected abstract Component decorateName(PlayerInfo entry, MutableComponent name);
 
-	@Inject(method = "getNameForDisplay", at = @At("HEAD"), cancellable = true)
-	private void axolotlclient$nickHider(PlayerInfo entry, CallbackInfoReturnable<Component> cir) {
-		assert minecraft.player != null;
-		if (entry.getProfile().equals(minecraft.player.getGameProfile()) && NickHider.getInstance().hideOwnName.get()) {
-			cir.setReturnValue(
-				this.decorateName(entry, Component.literal(NickHider.getInstance().hiddenNameSelf.get())));
-		} else if (!entry.getProfile().equals(minecraft.player.getGameProfile()) &&
-			NickHider.getInstance().hideOtherNames.get()) {
-			cir.setReturnValue(
-				this.decorateName(entry, Component.literal(NickHider.getInstance().hiddenNameOthers.get())));
+	@WrapMethod(method = "getNameForDisplay")
+	private Component nickHider(PlayerInfo playerInfo, Operation<Component> original) {
+		var orig = original.call(playerInfo);
+		if (minecraft.player == null) {
+			return orig;
 		}
+		if (playerInfo.getProfile().equals(minecraft.player.getGameProfile()) && NickHider.getInstance().hideOwnName.get()) {
+			return NickHider.getInstance().editComponent(orig, playerInfo.getProfile().getName(), NickHider.getInstance().hiddenNameSelf.get());
+		} else if (!playerInfo.getProfile().equals(minecraft.player.getGameProfile()) &&
+			NickHider.getInstance().hideOtherNames.get()) {
+			return NickHider.getInstance().editComponent(orig, playerInfo.getProfile().getName(), NickHider.getInstance().hiddenNameOthers.get());
+		}
+		return orig;
 	}
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE",
@@ -110,19 +110,6 @@ public abstract class PlayerListHudMixin {
 			x += 9;
 		}
 		return original.call(instance, font, component, x, y, color);
-	}
-
-	@ModifyArg(method = "getNameForDisplay", at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/client/gui/components/PlayerTabOverlay;decorateName(Lnet/minecraft/client/multiplayer/PlayerInfo;Lnet/minecraft/network/chat/MutableComponent;)Lnet/minecraft/network/chat/Component;"),
-		index = 1)
-	private MutableComponent axolotlclient$hideNames(MutableComponent name) {
-		if (NickHider.getInstance().hideOwnName.get()) {
-			return Component.literal(NickHider.getInstance().hiddenNameSelf.get());
-		}
-		if (NickHider.getInstance().hideOtherNames.get()) {
-			return Component.literal(NickHider.getInstance().hiddenNameOthers.get());
-		}
-		return name;
 	}
 
 	@Inject(method = "renderPingIcon", at = @At("HEAD"), cancellable = true)

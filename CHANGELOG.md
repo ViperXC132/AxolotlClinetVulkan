@@ -7,6 +7,7 @@
 - Custom text-based HUD elements
 - Add DebugCountersHud, displaying Counters from the F3 screen
 - Add Bedwars resources HUD
+- update NickHider
 
 ### 3.1.1
 
