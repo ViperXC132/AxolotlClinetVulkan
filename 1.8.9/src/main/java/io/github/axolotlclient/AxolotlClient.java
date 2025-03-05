@@ -157,6 +157,6 @@ public class AxolotlClient implements ClientModInitializer {
 	}
 
 	public static Path resolveConfigFile(String file) {
-		return FabricLoader.getInstance().getConfigDir().resolve("axolotlclient").resolve(file);
+		return AxolotlClientCommon.resolveConfigFile(file);
 	}
 }

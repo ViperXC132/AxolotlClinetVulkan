@@ -20,11 +20,11 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.hud.gui.keystrokes;
+package io.github.axolotlclient.modules.hypixel.autoboop;
 
 import java.util.List;
 
-import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
+import io.github.axolotlclient.AxolotlClientCommon;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
@@ -32,34 +32,27 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
-public class KeystrokesScreen extends Screen {
-
-	private final List<KeystrokeHud.Keystroke> keys;
-	public final KeystrokeHud hud;
-	private final Screen screen;
+public class FilterListConfigurationScreen extends Screen {
+	final List<String> filters;
 	public final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
-	private final KeyBindsList keyBindsList;
+	private final FiltersList filtersList;
+	private final Screen parent;
 
-	public KeystrokesScreen(KeystrokeHud hud, Screen screen) {
-		super(Component.translatable("keystrokes.keys"));
-		if (hud.keystrokes == null) {
-			hud.setKeystrokes();
-		}
-		this.keys = hud.keystrokes;
-		this.hud = hud;
-		this.screen = screen;
-		this.keyBindsList = new KeyBindsList(this);
+	public FilterListConfigurationScreen(List<String> filters, Screen parent) {
+		super(Component.translatable("autoboop.filters.configure"));
+		this.filters = filters;
+		this.parent = parent;
+		this.filtersList = new FiltersList(this);
 	}
 
 	@Override
 	protected void init() {
 		layout.addTitleHeader(getTitle(), font);
-		layout.addToContents(keyBindsList);
-		Button resetButton = Button.builder(Component.translatable("controls.resetAll"), button -> {
-			keys.clear();
-			hud.setDefaultKeystrokes();
-			keyBindsList.reload();
-			hud.saveKeystrokes();
+		layout.addToContents(filtersList);
+		Button resetButton = Button.builder(Component.translatable("autoboop.filters.clear"), button -> {
+			filters.clear();
+			filtersList.reload();
+			AxolotlClientCommon.getInstance().saveConfig();
 		}).build();
 		LinearLayout linearLayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(8));
 		linearLayout.addChild(resetButton);
@@ -71,17 +64,14 @@ public class KeystrokesScreen extends Screen {
 	@Override
 	protected void repositionElements() {
 		this.layout.arrangeElements();
-		this.keyBindsList.updateSize(this.width, this.layout);
-		keyBindsList.reload();
+		this.filtersList.updateSize(this.width, this.layout);
+		filtersList.reload();
 	}
 
 	@Override
 	public void onClose() {
-		this.minecraft.setScreen(this.screen);
-		hud.saveKeystrokes();
-	}
-
-	public void removeKey(KeystrokeHud.Keystroke key) {
-		keys.remove(key);
+		this.minecraft.setScreen(this.parent);
+		filtersList.apply();
+		AxolotlClientCommon.getInstance().saveConfig();
 	}
 }
