@@ -53,14 +53,14 @@ public class FilterListConfigurationScreen extends Screen {
 	protected void init() {
 		this.filtersList = addChild(new FiltersList(this));
 		ButtonWidget resetButton = new ButtonWidget(width / 2 - 150 - 4, height - 33 / 2 - 10, 150, 20,
-				new TranslatableText("autoboop.filters.clear"), button -> {
+			new TranslatableText("autoboop.filters.clear"), button -> {
 			filters.clear();
 			filtersList.reload();
 			AxolotlClientCommon.getInstance().saveConfig();
 		});
 		addButton(resetButton);
 		addButton(new ButtonWidget(width / 2 + 4, height - 33 / 2 - 10, 150, 20,
-				ScreenTexts.DONE, button -> this.onClose()));
+			ScreenTexts.DONE, button -> this.onClose()));
 	}
 
 	@Override

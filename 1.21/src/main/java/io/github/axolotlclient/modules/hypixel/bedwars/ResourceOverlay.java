@@ -68,8 +68,8 @@ public class ResourceOverlay extends BoxHudEntry {
 
 	private void draw(GuiGraphics graphics, Function<ItemStack, Integer> countFunction) {
 		var pos = getPos();
-		int x = pos.x()+1;
-		int y = pos.y()+1;
+		int x = pos.x() + 1;
+		int y = pos.y() + 1;
 		for (Item item : RESOURCES) {
 			var stack = item.getDefaultStack();
 			int amount = countFunction.apply(stack);

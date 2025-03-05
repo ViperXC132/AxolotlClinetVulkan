@@ -112,7 +112,7 @@ public class MSAuth {
 								.thenAccept(o -> {
 									o.ifPresent(a -> {
 										int index = accounts.getAccounts().indexOf(a);
-										if(index == -1) {
+										if (index == -1) {
 											accounts.getAccounts().add(a);
 										} else {
 											accounts.getAccounts().set(index, a);

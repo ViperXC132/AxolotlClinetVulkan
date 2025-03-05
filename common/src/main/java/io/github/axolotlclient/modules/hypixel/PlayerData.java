@@ -229,6 +229,8 @@ public final class PlayerData {
 
 		int losses();
 
-		default float wlr() { return (float) wins() / losses(); }
+		default float wlr() {
+			return (float) wins() / losses();
+		}
 	}
 }

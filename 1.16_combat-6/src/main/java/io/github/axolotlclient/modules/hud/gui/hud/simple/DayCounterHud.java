@@ -40,7 +40,7 @@ public class DayCounterHud extends SimpleTextHudEntry {
 		if (client.world == null) {
 			return getPlaceholder();
 		}
-		return I18n.translate("daycounterhud.days", client.world.getTimeOfDay()/24000);
+		return I18n.translate("daycounterhud.days", client.world.getTimeOfDay() / 24000);
 	}
 
 	@Override

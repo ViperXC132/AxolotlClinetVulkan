@@ -201,11 +201,11 @@ public class StatsMod implements AbstractHypixelMod {
 			).forEach(c::sendFeedback);
 		}),
 		new Entry("duels", (c, uuid, username, data) -> {
-		List.of(
-			Component.translatable("playerstats.duels.title", data.formattedName()),
-			buildDuelsGameModesLine(data.duels())
-		).forEach(c::sendFeedback);
-	})
+			List.of(
+				Component.translatable("playerstats.duels.title", data.formattedName()),
+				buildDuelsGameModesLine(data.duels())
+			).forEach(c::sendFeedback);
+		})
 	);
 	@Getter
 	private static final StatsMod instance = new StatsMod();

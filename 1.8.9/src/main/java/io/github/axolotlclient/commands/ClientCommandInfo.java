@@ -57,8 +57,7 @@ public final class ClientCommandInfo {
 	public void sendMessageAsync(Iterable<Text> more) {
 		if (!minecraft.isOnSameThread()) {
 			minecraft.submit(() -> more.forEach(this::sendMessage));
-		}
-		else {
+		} else {
 			more.forEach(this::sendMessage);
 		}
 	}

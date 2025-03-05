@@ -45,43 +45,43 @@ public class ChatScreenMixin {
 	@Shadow
 	private boolean completed;
 	@Unique
-    @Nullable
-    private CompletableFuture<List<String>> lcu$clientSuggestions;
+	@Nullable
+	private CompletableFuture<List<String>> lcu$clientSuggestions;
 
-    @Inject(
-        method = "goThroughHistory(Ljava/lang/String;Ljava/lang/String;)V",
-        at = @At(
-            value = "FIELD",
-            target = "Lnet/minecraft/client/gui/screen/ChatScreen;completed:Z"
-        )
-    )
-    private void prepareClientSideSuggestions(String partialMessage, String nextWord, CallbackInfo ci) {
-        lcu$clientSuggestions = ClientCommands.getCompletionsClient(partialMessage);
-    }
+	@Inject(
+		method = "goThroughHistory(Ljava/lang/String;Ljava/lang/String;)V",
+		at = @At(
+			value = "FIELD",
+			target = "Lnet/minecraft/client/gui/screen/ChatScreen;completed:Z"
+		)
+	)
+	private void prepareClientSideSuggestions(String partialMessage, String nextWord, CallbackInfo ci) {
+		lcu$clientSuggestions = ClientCommands.getCompletionsClient(partialMessage);
+	}
 
-    @WrapMethod(method = "setMessageHistory")
-    private void addClientSideSuggestions(String[] suggestions, Operation<Void> original) {
-        if (!completed) {
-            return;
-        }
+	@WrapMethod(method = "setMessageHistory")
+	private void addClientSideSuggestions(String[] suggestions, Operation<Void> original) {
+		if (!completed) {
+			return;
+		}
 
-        if (lcu$clientSuggestions == null) {
-            original.call((Object) suggestions);
-        }
+		if (lcu$clientSuggestions == null) {
+			original.call((Object) suggestions);
+		}
 
-        lcu$clientSuggestions.whenCompleteAsync((strings, throwable) -> {
-            if (strings == null) {
-                original.call((Object) suggestions);
-            } else {
-                original.call(
-                    (Object) Stream.concat(
-                        Arrays.stream(suggestions),
-                        strings.stream()
-                    ).toArray(String[]::new)
-                );
-            }
-        }, Minecraft.getInstance()::submit);
+		lcu$clientSuggestions.whenCompleteAsync((strings, throwable) -> {
+			if (strings == null) {
+				original.call((Object) suggestions);
+			} else {
+				original.call(
+					(Object) Stream.concat(
+						Arrays.stream(suggestions),
+						strings.stream()
+					).toArray(String[]::new)
+				);
+			}
+		}, Minecraft.getInstance()::submit);
 
-        lcu$clientSuggestions = null;
-    }
+		lcu$clientSuggestions = null;
+	}
 }

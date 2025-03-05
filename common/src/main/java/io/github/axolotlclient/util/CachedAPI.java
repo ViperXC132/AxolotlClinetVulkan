@@ -59,7 +59,7 @@ public final class CachedAPI<K, V> {
 
 		@SuppressWarnings("unchecked")
 		public T get() {
-			if(this == PENDING_INSTANCE || this == ERROR_INSTANCE) {
+			if (this == PENDING_INSTANCE || this == ERROR_INSTANCE) {
 				throw new NoSuchElementException("no value present");
 			}
 
@@ -79,11 +79,11 @@ public final class CachedAPI<K, V> {
 		}
 
 		public <U> U map(Supplier<U> onPending, Supplier<U> onError, Function<T, U> mapper) {
-			if(this == PENDING_INSTANCE) {
+			if (this == PENDING_INSTANCE) {
 				return onPending.get();
 			}
 
-			if(this == ERROR_INSTANCE) {
+			if (this == ERROR_INSTANCE) {
 				return onError.get();
 			}
 
@@ -95,14 +95,14 @@ public final class CachedAPI<K, V> {
 		}
 	}
 
-    public interface APIHandler<K, V> {
-        CompletableFuture<Optional<V>> makeRequest(K key);
-    }
+	public interface APIHandler<K, V> {
+		CompletableFuture<Optional<V>> makeRequest(K key);
+	}
 
-    private final LoadingCache<K, CompletableFuture<Optional<V>>> cache;
+	private final LoadingCache<K, CompletableFuture<Optional<V>>> cache;
 	private final boolean retainFails;
 
-    public CachedAPI(APIHandler<K, V> apiHandler, int size, boolean retainFails) {
+	public CachedAPI(APIHandler<K, V> apiHandler, int size, boolean retainFails) {
 		cache = CacheBuilder
 			.newBuilder()
 			.maximumSize(size)
@@ -113,17 +113,17 @@ public final class CachedAPI<K, V> {
 				}
 			});
 		this.retainFails = retainFails;
-    }
+	}
 
-    public void invalidate() {
-        cache.invalidateAll();
-    }
+	public void invalidate() {
+		cache.invalidateAll();
+	}
 
 	public void invalidate(K key) {
 		cache.invalidate(key);
 	}
 
-    public CompletableFuture<Optional<V>> getAsync(K value) {
+	public CompletableFuture<Optional<V>> getAsync(K value) {
 		if (retainFails) {
 			return cache.getUnchecked(value);
 		} else {
@@ -142,7 +142,7 @@ public final class CachedAPI<K, V> {
 	public ApiResult<V> getAsyncNow(K value) {
 		final var res = cache.getUnchecked(value);
 
-		if(!res.isDone()) {
+		if (!res.isDone()) {
 			return ApiResult.pending();
 		}
 
