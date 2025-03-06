@@ -36,7 +36,7 @@ public class SoundEngineMixin {
 
 	@WrapOperation(method = "play(Lnet/minecraft/client/sound/instance/SoundInstance;)V", at = @At(value = "INVOKE", target = "Lorg/apache/logging/log4j/Logger;warn(Lorg/apache/logging/log4j/Marker;Ljava/lang/String;[Ljava/lang/Object;)V", ordinal = 0, remap = false))
 	private void noWarningOnUnknownEvent(Logger instance, Marker marker, String s, Object[] objects, Operation<Void> original, SoundInstance sound) {
-		if (!sound.getLocation().getPath().isEmpty()) {
+		if (!sound.getLocation().getPath().isEmpty() && !"minecraft:none".equals(sound.getLocation().toString())) {
 			original.call(instance, marker, s, objects);
 		}
 	}

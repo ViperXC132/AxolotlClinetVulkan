@@ -62,6 +62,8 @@
 		"VertexBufferMixin",
 		"WorldRendererAccessor",
 		"WorldRendererMixin",
+		"commands.ChatScreenMixin",
+		"commands.LocalClientPlayerEntityMixin",
 		"translation.LanguageMixin",
 		"translation.TranslationStorageMixin"
 	],

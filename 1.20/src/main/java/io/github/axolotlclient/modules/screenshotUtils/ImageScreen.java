@@ -53,6 +53,7 @@ public class ImageScreen extends Screen {
 	private final ImageInstance image;
 	private final boolean freeOnClose;
 	private final boolean isRemote;
+	private final CompletableFuture<String> uploader;
 
 	static Screen create(Screen parent, CompletableFuture<ImageInstance> future, boolean freeOnClose) {
 		if (future.isDone()) {
@@ -77,17 +78,22 @@ public class ImageScreen extends Screen {
 		this.image = instance;
 		this.freeOnClose = freeOnClose;
 		this.isRemote = image instanceof ImageInstance.Remote;
+		if (isRemote) {
+			this.uploader = UUIDHelper.tryGetUsernameAsync(((ImageInstance.Remote) image).uploader());
+		} else {
+			this.uploader = null;
+		}
 	}
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 		renderBackground(graphics);
 		super.render(graphics, mouseX, mouseY, delta);
-		if (isRemote) {
+		if (isRemote && uploader.isDone()) {
 			ImageInstance.Remote r = (ImageInstance.Remote) image;
 			graphics.drawCenteredShadowedText(textRenderer, getTitle(), width / 2, 38 / 2 - textRenderer.fontHeight - 2, -1);
 			graphics.drawCenteredShadowedText(textRenderer,
-				Text.translatable("gallery.image.upload_details", UUIDHelper.getUsername(r.uploader()),
+				Text.translatable("gallery.image.upload_details", uploader.join(),
 					r.sharedAt().atZone(ZoneId.systemDefault()).format(AxolotlClientCommon.getInstance().formatter)),
 				width / 2, 38 / 2 + 2, -1);
 		} else {

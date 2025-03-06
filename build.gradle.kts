@@ -30,6 +30,8 @@ allprojects {
 		maven("https://moehreag.duckdns.org/maven/releases")
 		maven("https://moehreag.duckdns.org/maven/snapshots")
 		maven("https://maven.parchmentmc.org")
+		// jtracy doesn't want to resolve without this
+		maven("https://libraries.minecraft.net")
 		maven("https://repo.hypixel.net/repository/Hypixel/") {
 			content {
 				includeGroup("net.hypixel")

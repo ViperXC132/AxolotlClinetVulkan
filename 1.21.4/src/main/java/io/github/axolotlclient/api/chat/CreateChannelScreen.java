@@ -30,7 +30,6 @@ import java.util.function.Supplier;
 
 import io.github.axolotlclient.api.requests.ChannelRequest;
 import io.github.axolotlclient.api.types.Persistence;
-import io.github.axolotlclient.api.util.UUIDHelper;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LayoutElement;
@@ -113,7 +112,7 @@ public class CreateChannelScreen extends Screen {
 			ChannelRequest.createChannel(nameField.getValue(), Persistence.of(persistence.getValue(), count.get().get(),
 					duration.get().get()
 				),
-				Arrays.stream(namesInput.getValue().split(",")).filter(s -> !s.isEmpty()).map(UUIDHelper::ensureUuid)
+				Arrays.stream(namesInput.getValue().split(",")).filter(s -> !s.isEmpty())
 					.toArray(String[]::new)
 			).thenRun(() -> minecraft.submit(() -> minecraft.setScreen(parent)));
 		}).build());

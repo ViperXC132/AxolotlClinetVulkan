@@ -174,7 +174,7 @@ public class UnfocusedFpsLimiter extends AbstractModule {
 	 */
 	private void idle(long waitMillis) {
 		long targetMs = System.currentTimeMillis() + waitMillis;
-		while(!Display.isVisible() && !(Mouse.isInsideWindow() && restoreOnHover.get()) && System.currentTimeMillis() <= targetMs) {
+		while (!Display.isVisible() && !(Mouse.isInsideWindow() && restoreOnHover.get()) && System.currentTimeMillis() <= targetMs) {
 			LockSupport.parkNanos("waiting to render", 30 * 1_000_000);
 		}
 	}

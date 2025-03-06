@@ -38,6 +38,7 @@ import io.github.axolotlclient.mixin.SoundSystemAccessor;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.RenderUtil;
 import io.github.axolotlclient.util.ClientColors;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -273,16 +274,20 @@ public class CreditsScreen extends Screen {
 	}
 
 	private void stopBGM() {
-		if (((SoundSystemAccessor) ((SoundManagerAccessor) Minecraft.getInstance().getSoundManager())
-			.getSoundSystem()).getChannelsByEvent().get(bgm) != null) {
-			((SoundSystem) ((SoundManagerAccessor) Minecraft.getInstance().getSoundManager())
-				.getSoundSystem().system)
-				.stop(((SoundSystemAccessor) ((SoundManagerAccessor) Minecraft.getInstance()
-					.getSoundManager()).getSoundSystem()).getChannelsByEvent().get(bgm));
-			((SoundSystem) ((SoundManagerAccessor) Minecraft.getInstance().getSoundManager())
-				.getSoundSystem().system)
-				.removeSource(((SoundSystemAccessor) ((SoundManagerAccessor) Minecraft.getInstance()
-					.getSoundManager()).getSoundSystem()).getChannelsByEvent().get(bgm));
+		if (FabricLoader.getInstance().isModLoaded("soundfix")) {
+			minecraft.getSoundManager().stop(bgm);
+		} else {
+			if (((SoundSystemAccessor) ((SoundManagerAccessor) Minecraft.getInstance().getSoundManager())
+				.getSoundSystem()).getChannelsByEvent().get(bgm) != null) {
+				((SoundSystem) ((SoundManagerAccessor) Minecraft.getInstance().getSoundManager())
+					.getSoundSystem().system)
+					.stop(((SoundSystemAccessor) ((SoundManagerAccessor) Minecraft.getInstance()
+						.getSoundManager()).getSoundSystem()).getChannelsByEvent().get(bgm));
+				((SoundSystem) ((SoundManagerAccessor) Minecraft.getInstance().getSoundManager())
+					.getSoundSystem().system)
+					.removeSource(((SoundSystemAccessor) ((SoundManagerAccessor) Minecraft.getInstance()
+						.getSoundManager()).getSoundSystem()).getChannelsByEvent().get(bgm));
+			}
 		}
 	}
 

@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.api.chat;
 
+import java.util.concurrent.CompletableFuture;
+
 import io.github.axolotlclient.api.requests.ChannelRequest;
 import io.github.axolotlclient.api.types.ChannelInvite;
 import io.github.axolotlclient.api.util.UUIDHelper;
@@ -107,9 +109,11 @@ public class ChannelInvitesScreen extends Screen {
 		private class InvitesListEntry extends Entry<InvitesListEntry> {
 
 			private final ChannelInvite invite;
+			private final CompletableFuture<String> fromName;
 
 			public InvitesListEntry(ChannelInvite invite) {
 				this.invite = invite;
+				this.fromName = UUIDHelper.tryGetUsernameAsync(invite.fromUuid());
 			}
 
 			@Override
@@ -120,7 +124,9 @@ public class ChannelInvitesScreen extends Screen {
 			@Override
 			public void render(GuiGraphics graphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
 				graphics.drawShadowedText(textRenderer, Text.translatable("api.channels.invite.name", invite.channelName()), left + 2, top + 2, -1);
-				graphics.drawShadowedText(textRenderer, Text.translatable("api.channels.invite.from", UUIDHelper.getUsername(invite.fromUuid())).setStyle(Style.EMPTY.withItalic(true)), left + 15, top + height - textRenderer.fontHeight - 1, 0x808080);
+				if (fromName.isDone()) {
+					graphics.drawShadowedText(textRenderer, Text.translatable("api.channels.invite.from", fromName.join()).setStyle(Style.EMPTY.withItalic(true)), left + 15, top + height - textRenderer.fontHeight - 1, 0x808080);
+				}
 
 			}
 		}

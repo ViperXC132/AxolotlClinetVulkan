@@ -86,7 +86,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 		return (buttonWidget) -> {
 			if (Objects.equals(HypixelMods.getInstance().cacheMode.get(),
 				HypixelMods.HypixelCacheMode.ON_CLIENT_DISCONNECT.toString())) {
-				HypixelAbstractionLayer.clearPlayerData();
+				HypixelAbstractionLayer.getInstance().clearPlayerData();
 			}
 			onPress.onPress(buttonWidget);
 		};

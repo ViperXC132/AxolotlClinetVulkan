@@ -22,6 +22,17 @@
 
 package io.github.axolotlclient.modules.hypixel.levelhead;
 
+import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
+import io.github.axolotlclient.util.CachedAPI;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public enum LevelHeadMode {
-	NETWORK, BEDWARS, SKYWARS
+	NETWORK(HypixelAbstractionLayer.getInstance().getNetworkLevelApi()),
+	BEDWARS(HypixelAbstractionLayer.getInstance().getBedwarsLevelApi()),
+	SKYWARS(HypixelAbstractionLayer.getInstance().getSkywarsExpApi());
+
+	private final CachedAPI<String, Integer> api;
 }

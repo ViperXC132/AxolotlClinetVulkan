@@ -26,10 +26,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.api.requests.UserRequest;
-import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.modules.hypixel.levelhead.LevelHead;
-import io.github.axolotlclient.modules.hypixel.levelhead.LevelHeadMode;
 import io.github.axolotlclient.modules.hypixel.nickhider.NickHider;
 import io.github.axolotlclient.util.Util;
 import net.minecraft.ChatFormatting;
@@ -117,11 +115,7 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
 							textRenderer.drawInBatch(text, x, y, LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.CONFIG.useShadows.get(), matrix4f, vertexConsumers, Font.DisplayMode.NORMAL, LevelHead.getInstance().background.get() ? 127 : 0, light);
 						}
 					} else if (LevelHead.getInstance().enabled.get()) {
-						String text = "Level: " + HypixelAbstractionLayer.getPlayerLevel(String.valueOf(entity.getUUID()), LevelHead.getInstance().mode.get());
-
-						if (LevelHead.getInstance().mode.get().equals(LevelHeadMode.BEDWARS)) {
-							text += "☆";
-						}
+						String text = LevelHead.getInstance().getDisplayString(entity.getStringUUID());
 
 						float x = -textRenderer.width(text) / 2F;
 						float y = c.getString().contains("deadmau5") ? -20 : -10;

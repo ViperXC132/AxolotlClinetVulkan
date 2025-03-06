@@ -33,7 +33,6 @@ import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.util.DrawUtil;
 import io.github.axolotlclient.api.requests.ChannelRequest;
 import io.github.axolotlclient.api.types.Persistence;
-import io.github.axolotlclient.api.util.UUIDHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
@@ -148,7 +147,7 @@ public class CreateChannelScreen extends Screen {
 		addButton(new ButtonWidget(width / 2 + 4, footerY, 150, 20, ScreenTexts.DONE, widget -> {
 			ChannelRequest.createChannel(nameField.getText(),
 					Persistence.of(persistence.getValue(), count.get().get(), duration.get().get()),
-					Arrays.stream(namesInput.getText().split(",")).filter(s -> !s.isEmpty()).map(UUIDHelper::ensureUuid).toArray(String[]::new))
+					Arrays.stream(namesInput.getText().split(",")).filter(s -> !s.isEmpty()).toArray(String[]::new))
 				.thenRun(() -> client.execute(() -> client.openScreen(parent)));
 			;
 		}));

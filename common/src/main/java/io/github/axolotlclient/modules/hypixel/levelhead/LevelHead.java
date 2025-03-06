@@ -26,21 +26,19 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
+import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
 import io.github.axolotlclient.util.ClientColors;
+import lombok.Getter;
 
 public class LevelHead implements AbstractHypixelMod {
-
-	private static final LevelHead Instance = new LevelHead();
+	@Getter
+	private static final LevelHead instance = new LevelHead();
 	public final BooleanOption enabled = new BooleanOption("enabled", "levelhead.enabled.tooltip", false);
 	public final BooleanOption background = new BooleanOption("background", false);
 	public final ColorOption textColor = new ColorOption("textColor", ClientColors.GOLD);
 	public final EnumOption<LevelHeadMode> mode = new EnumOption<>("levelHeadMode", LevelHeadMode.class, LevelHeadMode.NETWORK);
 	private final OptionCategory category = OptionCategory.create("levelhead");
-
-	public static LevelHead getInstance() {
-		return Instance;
-	}
 
 	@Override
 	public void init() {
@@ -48,6 +46,20 @@ public class LevelHead implements AbstractHypixelMod {
 		category.add(textColor);
 		category.add(background);
 		category.add(mode);
+	}
+
+	public static String getDisplayString(LevelHeadMode mode, String uuid) {
+		return "Level: " + mode.getApi().getAsyncNow(uuid).map(() -> "...", () -> "???", val -> {
+			if (mode == LevelHeadMode.BEDWARS) {
+				return val + "☆";
+			} else {
+				return String.valueOf(val);
+			}
+		});
+	}
+
+	public String getDisplayString(String uuid) {
+		return getDisplayString(mode.get(), API.getInstance().sanitizeUUID(uuid));
 	}
 
 	@Override

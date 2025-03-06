@@ -70,7 +70,8 @@ public class CustomHudEntry extends SimpleTextHudEntry {
 			}
 
 			@Override
-			public void suppressName(String name) {}
+			public void suppressName(String name) {
+			}
 		});
 	}
 

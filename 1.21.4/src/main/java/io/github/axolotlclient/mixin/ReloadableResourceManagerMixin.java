@@ -52,7 +52,7 @@ public abstract class ReloadableResourceManagerMixin {
 
 	@Inject(method = "createReload", at = @At("TAIL"))
 	private void axolotlclient$reload(Executor prepareExecutor, Executor applyExecutor, CompletableFuture<Unit> initialStage, List<Pack> resourcePacks, CallbackInfoReturnable<ReloadInstance> cir) {
-		HypixelAbstractionLayer.clearPlayerData();
+		HypixelAbstractionLayer.getInstance().clearPlayerData();
 
 		PackDisplayHud hud = (PackDisplayHud) HudManager.getInstance().get(PackDisplayHud.ID);
 		if (hud != null) {
