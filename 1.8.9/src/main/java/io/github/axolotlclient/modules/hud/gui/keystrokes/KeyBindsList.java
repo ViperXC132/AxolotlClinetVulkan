@@ -101,7 +101,7 @@ public class KeyBindsList extends ElementListWidget<KeyBindsList.Entry> {
 	public class KeyEntry extends Entry {
 		private static final String REMOVE_BUTTON_TITLE = I18n.translate("keystrokes.stroke.remove");
 		private final KeystrokeHud.Keystroke key;
-		private String name;
+		private final String name;
 		private final ButtonWidget configureButton, removeButton;
 
 		KeyEntry(final KeystrokeHud.Keystroke key, final String name) {
@@ -111,6 +111,7 @@ public class KeyBindsList extends ElementListWidget<KeyBindsList.Entry> {
 			this.removeButton = new VanillaButtonWidget(0, 0, 50, 20, REMOVE_BUTTON_TITLE, b -> {
 				removeEntry(this);
 				keyBindsScreen.removeKey(key);
+				setScrollAmount(getScrollAmount());
 			});
 		}
 

@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import com.google.gson.stream.JsonWriter;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.modules.AbstractModule;
@@ -62,7 +63,7 @@ import org.lwjgl.input.Keyboard;
 
 public class HudManager extends AbstractModule {
 
-	private final static Path CUSTOM_MODULE_SAVE_PATH = AxolotlClient.resolveConfigFile("custom_hud.json");
+	private final static Path CUSTOM_MODULE_SAVE_PATH = AxolotlClientCommon.resolveConfigFile("custom_hud.json");
 	private final static HudManager INSTANCE = new HudManager();
 	static KeyBinding key = new KeyBinding("key.openHud", Keyboard.KEY_RSHIFT, "category.axolotlclient");
 	private final OptionCategory hudCategory = OptionCategory.create("hud");

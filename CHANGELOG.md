@@ -9,6 +9,7 @@
 - Add Bedwars resources HUD
 - update NickHider
 - add /playerstats command to display stats of hypixel gamemodes (`@Floweynt`)
+- move config file location
 
 ### 3.1.1
 

@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -78,5 +80,18 @@ public class AxolotlClientCommon {
 
 	public static Path resolveConfigFile(String file) {
 		return FabricLoader.getInstance().getConfigDir().resolve("axolotlclient").resolve(file);
+	}
+
+	public Path getMainConfigFile() {
+		var legacy = FabricLoader.getInstance().getConfigDir().resolve("AxolotlClient.json");
+		var current = resolveConfigFile("axolotlclient.json");
+		try {
+			if (Files.exists(legacy)) {
+				Files.move(legacy, current);
+			}
+		} catch (IOException e) {
+			logger.warn("Failed to move config file, it might get reset! ", e);
+		}
+		return current;
 	}
 }

@@ -30,54 +30,52 @@ import java.util.List;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.util.GsonHelper;
 import io.github.axolotlclient.util.Logger;
+import lombok.Getter;
 
+@Getter
 public abstract class Accounts {
 
 	private final List<Account> accounts = new ArrayList<>();
 	protected Account current;
 	protected MSAuth auth;
 
-	public MSAuth getAuth() {
-		return auth;
-	}
-
-	public List<Account> getAccounts() {
-		return accounts;
-	}
-
 	public void load() {
-		if (Files.exists(getAccountsSaveFile())) {
+		Path legacy = AxolotlClientCommon.resolveConfigFile("../accounts.json");
+		Path saveFile = getAccountsSaveFile();
+		if (Files.exists(legacy)) {
 			try {
-				JsonObject list = GsonHelper.GSON.fromJson(Files.newBufferedReader(getAccountsSaveFile()), JsonObject.class);
+				Files.move(legacy, saveFile);
+			} catch (IOException e) {
+				getLogger().warn("Failed to move legacy accounts file to new location", e);
+			}
+		}
+		if (Files.exists(saveFile)) {
+			try {
+				JsonObject list = GsonHelper.GSON.fromJson(Files.newBufferedReader(saveFile), JsonObject.class);
 				if (list != null) {
 					list.get("accounts").getAsJsonArray().forEach(jsonElement -> accounts.add(Account.deserialize(jsonElement.getAsJsonObject())));
 				}
 			} catch (IOException e) {
-				throw new RuntimeException(e);
+				getLogger().warn("Failed to load accounts file!", e);
 			}
 		} else {
 			try {
 				Files.createFile(getAccountsSaveFile());
 			} catch (IOException e) {
-				throw new RuntimeException(e);
+				getLogger().warn("Failed to create accounts file", e);
 			}
 		}
 	}
 
 	protected Path getAccountsSaveFile() {
-		return getConfigDir().resolve("accounts.json");
+		return AxolotlClientCommon.resolveConfigFile("accounts.json");
 	}
-
-	protected abstract Path getConfigDir();
 
 	public void addAccount(Account account) {
 		accounts.add(account);
-	}
-
-	public Account getCurrent() {
-		return current;
 	}
 
 	protected abstract void login(Account account);
@@ -99,7 +97,9 @@ public abstract class Accounts {
 		}
 	}
 
-	protected abstract Logger getLogger();
+	private Logger getLogger() {
+		return AxolotlClientCommon.getInstance().getLogger();
+	}
 
 	protected boolean isContained(String uuid) {
 		return accounts.stream().anyMatch(account -> account.getUuid().equals(uuid));

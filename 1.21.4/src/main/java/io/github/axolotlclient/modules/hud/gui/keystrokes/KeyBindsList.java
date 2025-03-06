@@ -109,7 +109,7 @@ public class KeyBindsList extends ContainerObjectSelectionList<KeyBindsList.Entr
 	public class KeyEntry extends Entry {
 		private static final Component REMOVE_BUTTON_TITLE = Component.translatable("keystrokes.stroke.remove");
 		private final KeystrokeHud.Keystroke key;
-		private Component name;
+		private final Component name;
 		private final Button configureButton, removeButton;
 
 		KeyEntry(final KeystrokeHud.Keystroke key, final Component name) {
@@ -121,6 +121,7 @@ public class KeyBindsList extends ContainerObjectSelectionList<KeyBindsList.Entr
 			this.removeButton = Button.builder(REMOVE_BUTTON_TITLE, b -> {
 					removeEntry(this);
 					keyBindsScreen.removeKey(key);
+					refreshScrollAmount();
 				}).bounds(0, 0, 50, 20)
 				.build();
 		}

@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import com.mojang.blaze3d.platform.InputUtil;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.modules.AbstractModule;
@@ -62,7 +63,7 @@ import net.minecraft.util.Identifier;
 
 public class HudManager extends AbstractModule {
 
-	private final static Path CUSTOM_MODULE_SAVE_PATH = AxolotlClient.resolveConfigFile("custom_hud.json");
+	private final static Path CUSTOM_MODULE_SAVE_PATH = AxolotlClientCommon.resolveConfigFile("custom_hud.json");
 	private final static HudManager INSTANCE = new HudManager();
 	private final OptionCategory hudCategory = OptionCategory.create("hud");
 	private final Map<Identifier, HudEntry> entries;
