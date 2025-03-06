@@ -22,11 +22,19 @@
 
 package io.github.axolotlclient.modules.hud.gui.keystrokes;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.function.BooleanSupplier;
+import java.util.function.Function;
+
+import com.google.common.collect.ImmutableList;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.IntegerWidget;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
+import io.github.axolotlclient.modules.hud.gui.layout.Justification;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import lombok.Getter;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ScreenTexts;
@@ -35,8 +43,11 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
+import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Nullable;
 
 public class ConfigureKeyBindScreen extends io.github.axolotlclient.AxolotlClientConfig.impl.ui.Screen {
 
@@ -99,13 +110,13 @@ public class ConfigureKeyBindScreen extends io.github.axolotlclient.AxolotlClien
 			leftColY += 28;
 			boolean supportsSynchronization = stroke instanceof KeystrokeHud.LabelKeystroke;
 
-			var label = addDrawableChild(new TextFieldWidget(textRenderer, rightColX, rightColY, supportsSynchronization ? 73 : 150, 20, LiteralText.EMPTY));
+			var label = addDrawableChild(new TextFieldWidget(textRenderer, rightColX, rightColY, supportsSynchronization ? 30 : 150, 20, LiteralText.EMPTY));
 
 			label.setText(stroke.getLabel());
 			label.setChangedListener(stroke::setLabel);
 			if (supportsSynchronization) {
 				var s = (KeystrokeHud.LabelKeystroke) stroke;
-				ButtonWidget synchronizeButton = addDrawableChild(new ButtonWidget(rightColX + 75 + 2, rightColY, 73, 20,
+				ButtonWidget synchronizeButton = addDrawableChild(new ButtonWidget(rightColX + 30 + 4, rightColY, 58, 20,
 					new TranslatableText("keystrokes.stroke.label.synchronize_with_key", s.isSynchronizeLabel() ? ScreenTexts.ON : ScreenTexts.OFF), b -> {
 					s.setSynchronizeLabel(!s.isSynchronizeLabel());
 					b.setMessage(new TranslatableText("keystrokes.stroke.label.synchronize_with_key", s.isSynchronizeLabel() ? ScreenTexts.ON : ScreenTexts.OFF));
@@ -116,6 +127,9 @@ public class ConfigureKeyBindScreen extends io.github.axolotlclient.AxolotlClien
 				}));
 				synchronizeButton.active = s.getKey() != null;
 				label.setEditable(!s.isSynchronizeLabel());
+				addDrawableChild(CyclingButtonWidget.<Justification>builder(j -> new TranslatableText(j.toString())).values(Justification.values())
+					.initially(s.getJustification()).build(rightColX + 30 + 4 + 58 + 4, rightColY, 58, 20,
+						new TranslatableText("justification"), (btn, val) -> s.setJustification(val)));
 			}
 			rightColY += 28;
 		}
@@ -173,5 +187,198 @@ public class ConfigureKeyBindScreen extends io.github.axolotlclient.AxolotlClien
 		};
 		widget.active = false;
 		return widget;
+	}
+}
+
+class CyclingButtonWidget<T> extends ButtonWidget {
+	private final Text optionText;
+	private int index;
+	@Getter
+	private T value;
+	private final CyclingButtonWidget.Values<T> values;
+	private final Function<T, Text> valueToText;
+	private final Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory;
+	private final CyclingButtonWidget.UpdateCallback<T> callback;
+
+	CyclingButtonWidget(int x, int y, int width, int height, Text message, Text optionText, int index, T value,
+						CyclingButtonWidget.Values<T> values, Function<T, Text> valueToText,
+						Function<CyclingButtonWidget<T>, MutableText> narrationMessageFactory,
+						CyclingButtonWidget.UpdateCallback<T> callback) {
+		super(x, y, width, height, message, btn -> {
+		});
+		this.optionText = optionText;
+		this.index = index;
+		this.value = value;
+		this.values = values;
+		this.valueToText = valueToText;
+		this.narrationMessageFactory = narrationMessageFactory;
+		this.callback = callback;
+	}
+
+	@Override
+	public void onPress() {
+		if (Screen.hasShiftDown()) {
+			this.cycle(-1);
+		} else {
+			this.cycle(1);
+		}
+	}
+
+	private void cycle(int amount) {
+		List<T> list = this.values.getCurrent();
+		this.index = MathHelper.floorMod(this.index + amount, list.size());
+		T object = list.get(this.index);
+		this.internalSetValue(object);
+		this.callback.onValueChange(this, object);
+	}
+
+	@Override
+	public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+		if (amount > 0.0) {
+			this.cycle(-1);
+		} else if (amount < 0.0) {
+			this.cycle(1);
+		}
+
+		return true;
+	}
+
+	public void setValue(T value) {
+		List<T> list = this.values.getCurrent();
+		int i = list.indexOf(value);
+		if (i != -1) {
+			this.index = i;
+		}
+
+		this.internalSetValue(value);
+	}
+
+	private void internalSetValue(T value) {
+		Text text = this.composeText(value);
+		this.setMessage(text);
+		this.value = value;
+	}
+
+	private Text composeText(T value) {
+		return this.composeGenericOptionText(value);
+	}
+
+	private MutableText composeGenericOptionText(T value) {
+		return this.optionText.copy().append(": ").append(this.valueToText.apply(value));
+	}
+
+	@Override
+	protected MutableText getNarrationMessage() {
+		return this.narrationMessageFactory.apply(this);
+	}
+
+	public MutableText getGenericNarrationMessage() {
+		return new TranslatableText("gui.narrate.button", this.getMessage());
+	}
+
+	static <T> CyclingButtonWidget.Builder<T> builder(Function<T, Text> valueToText) {
+		return new CyclingButtonWidget.Builder<>(valueToText);
+	}
+
+	static class Builder<T> {
+		private int initialIndex;
+		@Nullable
+		private T value;
+		private final Function<T, Text> valueToText;
+		private CyclingButtonWidget.Values<T> values = CyclingButtonWidget.Values.of(ImmutableList.<T>of());
+
+		public Builder(Function<T, Text> valueToText) {
+			this.valueToText = valueToText;
+		}
+
+		public CyclingButtonWidget.Builder<T> values(Collection<T> values) {
+			return this.values(CyclingButtonWidget.Values.of(values));
+		}
+
+		@SafeVarargs
+		public final CyclingButtonWidget.Builder<T> values(T... values) {
+			return this.values(ImmutableList.copyOf(values));
+		}
+
+		public CyclingButtonWidget.Builder<T> values(CyclingButtonWidget.Values<T> values) {
+			this.values = values;
+			return this;
+		}
+
+		public CyclingButtonWidget.Builder<T> initially(T value) {
+			this.value = value;
+			int i = this.values.getDefaults().indexOf(value);
+			if (i != -1) {
+				this.initialIndex = i;
+			}
+
+			return this;
+		}
+
+		public CyclingButtonWidget<T> build(int x, int y, int width, int height, Text optionText, CyclingButtonWidget.UpdateCallback<T> callback) {
+			List<T> list = this.values.getDefaults();
+			if (list.isEmpty()) {
+				throw new IllegalStateException("No values for cycle button");
+			} else {
+				T object = this.value != null ? this.value : list.get(this.initialIndex);
+				Text text = this.valueToText.apply(object);
+				Text text2 = optionText.copy().append(": ").append(text);
+				return new CyclingButtonWidget<>(
+					x,
+					y,
+					width,
+					height,
+					text2,
+					optionText,
+					this.initialIndex,
+					object,
+					this.values,
+					this.valueToText,
+					CyclingButtonWidget::getGenericNarrationMessage,
+					callback
+				);
+			}
+		}
+	}
+
+	interface UpdateCallback<T> {
+		void onValueChange(CyclingButtonWidget<T> cyclingButtonWidget, T object);
+	}
+
+	interface Values<T> {
+		List<T> getCurrent();
+
+		List<T> getDefaults();
+
+		static <T> CyclingButtonWidget.Values<T> of(Collection<T> values) {
+			final List<T> list = ImmutableList.copyOf(values);
+			return new CyclingButtonWidget.Values<T>() {
+				@Override
+				public List<T> getCurrent() {
+					return list;
+				}
+
+				@Override
+				public List<T> getDefaults() {
+					return list;
+				}
+			};
+		}
+
+		static <T> CyclingButtonWidget.Values<T> of(BooleanSupplier alternativeToggle, List<T> defaults, List<T> alternatives) {
+			final List<T> list = ImmutableList.copyOf(defaults);
+			final List<T> list2 = ImmutableList.copyOf(alternatives);
+			return new CyclingButtonWidget.Values<T>() {
+				@Override
+				public List<T> getCurrent() {
+					return alternativeToggle.getAsBoolean() ? list2 : list;
+				}
+
+				@Override
+				public List<T> getDefaults() {
+					return list;
+				}
+			};
+		}
 	}
 }

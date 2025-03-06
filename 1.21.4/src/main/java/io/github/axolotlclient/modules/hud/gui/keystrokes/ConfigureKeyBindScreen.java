@@ -26,12 +26,10 @@ import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.IntegerWidget;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
+import io.github.axolotlclient.modules.hud.gui.layout.Justification;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.layouts.FrameLayout;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
@@ -102,14 +100,10 @@ public class ConfigureKeyBindScreen extends Screen {
 		var options = contents.addChild(LinearLayout.vertical().spacing(8));
 		if (stroke.isLabelEditable()) {
 			names.addChild(new StringWidget(150, 20, Component.translatable("keystrokes.stroke.label"), font));
-			LinearLayout labelLayout;
 			boolean supportsSynchronization = stroke instanceof KeystrokeHud.LabelKeystroke;
-			if (supportsSynchronization) {
-				labelLayout = options.addChild(LinearLayout.horizontal()).spacing(4);
-			} else {
-				labelLayout = options;
-			}
-			var label = labelLayout.addChild(new EditBox(font, supportsSynchronization ? 73 : 150, 20, Component.empty()));
+
+			LinearLayout labelLayout = options.addChild(LinearLayout.horizontal()).spacing(4);
+			var label = labelLayout.addChild(new EditBox(font, supportsSynchronization ? 30 : 150, 20, Component.empty()));
 			label.setValue(stroke.getLabel());
 			label.setResponder(stroke::setLabel);
 			if (supportsSynchronization) {
@@ -121,9 +115,12 @@ public class ConfigureKeyBindScreen extends Screen {
 					if (s.isSynchronizeLabel()) {
 						label.setValue(stroke.getLabel());
 					}
-				}).width(73).build());
+				}).width(58).build());
 				synchronizeButton.active = s.getKey() != null;
 				label.setEditable(!s.isSynchronizeLabel());
+				labelLayout.addChild(CycleButton.<Justification>builder(j -> Component.translatable(j.toString())).withValues(Justification.values())
+					.withInitialValue(s.getJustification()).create(0, 0, 58, 20,
+						Component.translatable("justification"), (btn, val) -> s.setJustification(val)));
 			}
 		}
 		names.addChild(new StringWidget(150, 20, Component.translatable("keystrokes.stroke.width"), font));

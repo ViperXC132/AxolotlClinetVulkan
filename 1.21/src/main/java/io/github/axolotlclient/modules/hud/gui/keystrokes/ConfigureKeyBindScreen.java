@@ -26,6 +26,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.IntegerWidget;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
+import io.github.axolotlclient.modules.hud.gui.layout.Justification;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.Screen;
@@ -33,6 +34,7 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.button.ButtonWidget;
+import net.minecraft.client.gui.widget.button.CyclingButtonWidget;
 import net.minecraft.client.gui.widget.layout.FrameWidget;
 import net.minecraft.client.gui.widget.layout.HeaderFooterLayoutWidget;
 import net.minecraft.client.gui.widget.layout.LinearLayoutWidget;
@@ -102,14 +104,11 @@ public class ConfigureKeyBindScreen extends Screen {
 		var options = contents.add(LinearLayoutWidget.createVertical().setSpacing(8));
 		if (stroke.isLabelEditable()) {
 			names.add(new TextWidget(150, 20, Text.translatable("keystrokes.stroke.label"), textRenderer));
-			LinearLayoutWidget labelLayout;
 			boolean supportsSynchronization = stroke instanceof KeystrokeHud.LabelKeystroke;
-			if (supportsSynchronization) {
-				labelLayout = options.add(LinearLayoutWidget.createHorizontal()).setSpacing(4);
-			} else {
-				labelLayout = options;
-			}
-			var label = labelLayout.add(new TextFieldWidget(textRenderer, supportsSynchronization ? 73 : 150, 20, Text.empty()));
+
+			LinearLayoutWidget labelLayout = options.add(LinearLayoutWidget.createHorizontal()).setSpacing(4);
+
+			var label = labelLayout.add(new TextFieldWidget(textRenderer, supportsSynchronization ? 30 : 150, 20, Text.empty()));
 			label.setText(stroke.getLabel());
 			label.setChangedListener(stroke::setLabel);
 			if (supportsSynchronization) {
@@ -121,9 +120,12 @@ public class ConfigureKeyBindScreen extends Screen {
 					if (s.isSynchronizeLabel()) {
 						label.setText(stroke.getLabel());
 					}
-				}).width(73).build());
+				}).width(58).build());
 				synchronizeButton.active = s.getKey() != null;
 				label.setEditable(!s.isSynchronizeLabel());
+				labelLayout.add(CyclingButtonWidget.<Justification>builder(j -> Text.translatable(j.toString())).values(Justification.values())
+					.initially(s.getJustification()).build(0, 0, 58, 20,
+						Text.translatable("justification"), (btn, val) -> s.setJustification(val)));
 			}
 		}
 		names.add(new TextWidget(150, 20, Text.translatable("keystrokes.stroke.width"), textRenderer));
