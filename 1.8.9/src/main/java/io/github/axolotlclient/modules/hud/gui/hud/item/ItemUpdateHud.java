@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
@@ -125,7 +124,6 @@ public class ItemUpdateHud extends TextHudEntry {
 		int i = 0;
 		for (ItemUtil.ItemStorage item : this.added) {
 			if (i > 5) {
-				GlStateManager.popMatrix();
 				return;
 			}
 			String message = "+ " + Formatting.DARK_GRAY + "[" + Formatting.WHITE + item.times + Formatting.DARK_GRAY
@@ -140,7 +138,6 @@ public class ItemUpdateHud extends TextHudEntry {
 		}
 		for (ItemUtil.ItemStorage item : this.removed) {
 			if (i > 5) {
-				GlStateManager.popMatrix();
 				return;
 			}
 			String message = "- " + Formatting.DARK_GRAY + "[" + Formatting.WHITE + item.times + Formatting.DARK_GRAY

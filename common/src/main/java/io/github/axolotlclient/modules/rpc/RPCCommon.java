@@ -37,6 +37,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringArrayOptio
 import io.github.axolotlclient.modules.Module;
 import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.OSUtil;
+import io.github.axolotlclient.util.ThreadExecuter;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 
 public abstract class RPCCommon implements Module {
@@ -47,9 +48,9 @@ public abstract class RPCCommon implements Module {
 	public final BooleanOption showActivity = new BooleanOption("showActivity", true);
 	public final ForceableBooleanOption enabled = new ForceableBooleanOption("enabled", false, value -> {
 		if (value) {
-			initRPC();
+			ThreadExecuter.scheduleTask(this::initRPC);
 		} else {
-			shutdown();
+			ThreadExecuter.scheduleTask(this::shutdown);
 		}
 	});
 	public final StringArrayOption showServerNameMode = new StringArrayOption("showServerNameMode",
@@ -73,11 +74,11 @@ public abstract class RPCCommon implements Module {
 
 	public void tick() {
 		if (!running && enabled.get()) {
-			initRPC();
+			ThreadExecuter.scheduleTask(this::initRPC);
 		}
 
 		if (running) {
-			updateRPC();
+			ThreadExecuter.scheduleTask(this::updateRPC);
 		}
 	}
 
