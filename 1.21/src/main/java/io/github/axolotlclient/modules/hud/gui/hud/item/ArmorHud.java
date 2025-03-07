@@ -60,6 +60,7 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		new ItemStack(Items.IRON_SWORD)};
 	private final BooleanOption showDurabilityNumber = new BooleanOption("show_durability_num", false);
 	private final BooleanOption showMaxDurabilityNumber = new BooleanOption("show_max_durability_num", false);
+	private final BooleanOption mainHandItemOnTop = new BooleanOption("armorhud.main_hand_item_top", false);
 
 	private final EnumOption<AnchorPoint> anchor = new EnumOption<>("anchorpoint", AnchorPoint.class,
 		AnchorPoint.TOP_RIGHT);
@@ -83,8 +84,11 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		}
 		DrawPosition pos = getPos();
 		int lastY = 2 + (4 * 20);
-		renderMainItem(graphics, client.player.getInventory().getMainHandStack(), pos.x() + 2, pos.y() + lastY, labelWidth);
-		lastY = lastY - 20;
+		boolean mainHandItemTop = mainHandItemOnTop.get();
+		if (!mainHandItemTop) {
+			renderMainItem(graphics, client.player.getInventory().getMainHandStack(), pos.x() + 2, pos.y() + lastY, labelWidth);
+			lastY = lastY - 20;
+		}
 		for (int i = 0; i <= 3; i++) {
 			ItemStack stack = client.player.getInventory().getArmorStack(i).copy();
 			if (showProtLvl.get() && stack.hasEnchantments()) {
@@ -98,6 +102,9 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 			}
 			renderItem(graphics, stack, pos.x() + 2, lastY + pos.y(), labelWidth);
 			lastY = lastY - 20;
+		}
+		if (!mainHandItemTop) {
+			renderMainItem(graphics, client.player.getInventory().getMainHandStack(), pos.x() + 2, pos.y() + lastY, labelWidth);
 		}
 	}
 
@@ -166,6 +173,7 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		options.add(showDurabilityNumber);
 		options.add(showMaxDurabilityNumber);
 		options.add(anchor);
+		options.add(mainHandItemOnTop);
 		return options;
 	}
 

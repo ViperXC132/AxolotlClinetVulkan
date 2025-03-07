@@ -735,5 +735,6 @@
 	"playerstats.duels.uhc_doubles": "UHC (Doubles)",
 	"playerstats.duels.uhc_duel": "UHC (Duel)",
 	"playerstats.duels.uhc_four": "UHC (Fours)",
-	"playerstats.duels.mode_title": "Stats in %s:"
+	"playerstats.duels.mode_title": "Stats in %s:",
+	"armorhud.main_hand_item_top": "Main Hand Item above Armor"
 }
