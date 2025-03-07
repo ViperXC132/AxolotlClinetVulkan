@@ -216,7 +216,10 @@ public class HudManager extends AbstractModule {
 	}
 
 	public void removeEntry(Identifier identifier) {
-		hudCategory.getSubCategories().remove(entries.remove(identifier).getCategory());
+		var removed = entries.remove(identifier);
+		if (removed != null) {
+			hudCategory.getSubCategories().remove(removed.getCategory());
+		}
 	}
 
 	public void render(Minecraft client, float delta) {
