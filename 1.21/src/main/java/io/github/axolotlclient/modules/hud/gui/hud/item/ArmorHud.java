@@ -27,7 +27,9 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
+import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
@@ -60,6 +62,8 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		new ItemStack(Items.IRON_SWORD)};
 	private final BooleanOption showDurabilityNumber = new BooleanOption("show_durability_num", false);
 	private final BooleanOption showMaxDurabilityNumber = new BooleanOption("show_max_durability_num", false);
+	private final BooleanOption customDurabilityNumColor = new BooleanOption("armorhud.custom_durability_num_color", false);
+	private final ColorOption durabilityNumColor = new ColorOption("armorhud.durability_num_color", Colors.WHITE);
 	private final BooleanOption mainHandItemOnTop = new BooleanOption("armorhud.main_hand_item_top", false);
 
 	private final EnumOption<AnchorPoint> anchor = new EnumOption<>("anchorpoint", AnchorPoint.class,
@@ -134,7 +138,7 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		}
 		String text = showDurability && showMaxDurability ? (stack.getMaxDamage() - stack.getDamage()) + "/" + stack.getMaxDamage() : String.valueOf((showDurability ? stack.getMaxDamage() - stack.getDamage() : stack.getMaxDamage()));
 		int textY = y + 10 - client.textRenderer.fontHeight / 2;
-		graphics.drawShadowedText(client.textRenderer, text, x, textY, stack.getItemBarColor());
+		graphics.drawShadowedText(client.textRenderer, text, x, textY, customDurabilityNumColor.get() ? durabilityNumColor.get().toInt() : stack.getItemBarColor());
 	}
 
 	@Override
@@ -152,12 +156,18 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		}
 		DrawPosition pos = getPos();
 		int lastY = 2 + (4 * 20);
-		renderItem(graphics, placeholderStacks[4], pos.x() + 2, pos.y() + lastY, labelWidth);
-		lastY = lastY - 20;
+		boolean mainHandItemTop = mainHandItemOnTop.get();
+		if (!mainHandItemTop) {
+			renderItem(graphics, placeholderStacks[4], pos.x() + 2, pos.y() + lastY, labelWidth);
+			lastY = lastY - 20;
+		}
 		for (int i = 0; i <= 3; i++) {
 			ItemStack item = placeholderStacks[i];
 			renderItem(graphics, item, pos.x() + 2, lastY + pos.y(), labelWidth);
 			lastY = lastY - 20;
+		}
+		if (mainHandItemTop) {
+			renderItem(graphics, placeholderStacks[4], pos.x() + 2, pos.y() + lastY, labelWidth);
 		}
 	}
 
@@ -172,6 +182,8 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		options.add(showProtLvl);
 		options.add(showDurabilityNumber);
 		options.add(showMaxDurabilityNumber);
+		options.add(customDurabilityNumColor);
+		options.add(durabilityNumColor);
 		options.add(anchor);
 		options.add(mainHandItemOnTop);
 		return options;

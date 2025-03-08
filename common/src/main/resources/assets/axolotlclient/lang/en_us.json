@@ -737,5 +737,7 @@
 	"playerstats.duels.uhc_four": "UHC (Fours)",
 	"playerstats.duels.mode_title": "Stats in %s:",
 	"armorhud.main_hand_item_top": "Main Hand Item above Armor",
-	"itemupdatehud.bracket_color": "Separator (Bracket) Color"
+	"itemupdatehud.bracket_color": "Separator (Bracket) Color",
+	"armorhud.durability_num_color": "Durability Number Color",
+	"armorhud.custom_durability_num_color": "Custom Durability Number Color"
 }
