@@ -112,7 +112,7 @@ public abstract class TextRendererMixin {
 	}
 
 	@Unique
-	private static final Pattern COLOR_PATTERN = Pattern.compile("#(?:0x)?([a-fA-F0-9]{6})");
+	private static final Pattern COLOR_PATTERN = Pattern.compile("(#(?:0x)?[a-fA-F0-9]{6})");
 
 	// This target does not exist when using OptiFine
 	@WrapOperation(method = "drawLayer(Ljava/lang/String;Z)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;color4f(FFFF)V", ordinal = 0), require = 0)

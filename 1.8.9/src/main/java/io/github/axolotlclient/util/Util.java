@@ -33,6 +33,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Graphics;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
@@ -50,7 +51,7 @@ import org.jetbrains.annotations.ApiStatus;
 
 public class Util {
 
-	public static final Color GlColor = new Color();
+	public static final Util.GlColor GlColor = new GlColor();
 	public static String lastgame;
 	public static String game;
 
@@ -282,21 +283,25 @@ public class Util {
 		Minecraft.getInstance().getTextureManager().bind(id);
 	}
 
-	public static class Color {
+	public static class GlColor {
 
 		public float red = 1.0F;
 		public float green = 1.0F;
 		public float blue = 1.0F;
 		public float alpha = 1.0F;
 
-		public Color() {
+		public GlColor() {
 		}
 
-		public Color(float red, float green, float blue, float alpha) {
+		public GlColor(float red, float green, float blue, float alpha) {
 			this.red = red;
 			this.green = green;
 			this.blue = blue;
 			this.alpha = alpha;
 		}
+	}
+
+	public static String getFormatCode(Color color) {
+		return String.format("§#%06X", color.getRed() << 16 | color.getGreen() << 8 | color.getBlue());
 	}
 }

@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Optional;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
+import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
@@ -58,6 +60,7 @@ public class ItemUpdateHud extends TextHudEntry {
 	private List<ItemUtil.ItemStorage> oldItems = new ArrayList<>();
 	private ArrayList<ItemUtil.TimedItemStorage> removed;
 	private ArrayList<ItemUtil.TimedItemStorage> added;
+	private final ColorOption bracketColor = new ColorOption("itemupdatehud.bracket_color", Colors.DARK_GRAY);
 
 	public ItemUpdateHud() {
 		super(200, 11 * 6 - 2, true);
@@ -136,10 +139,10 @@ public class ItemUpdateHud extends TextHudEntry {
 			ComponentCollector message = new ComponentCollector();
 			message.append(Component.literal("+ "));
 			message.append(Component.literal("[")
-				.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(ClientColors.DARK_GRAY.toInt()))));
+				.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(bracketColor.get().toInt()))));
 			message.append(Component.literal(item.times + "").setStyle(Style.EMPTY.withColor(ChatFormatting.WHITE)));
 			message.append(Component.literal("] ")
-				.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(ClientColors.DARK_GRAY.toInt()))));
+				.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(bracketColor.get().toInt()))));
 			message.append(item.stack.getItemName());
 			FormattedCharSequence text = Language.getInstance().getVisualOrder(message.getResult());
 			graphics.drawString(client.font, text, pos.x(), pos.y() + lastY, ClientColors.SELECTOR_GREEN.toInt(),
@@ -156,10 +159,10 @@ public class ItemUpdateHud extends TextHudEntry {
 			ComponentCollector message = new ComponentCollector();
 			message.append(Component.literal("- "));
 			message.append(Component.literal("[")
-				.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(ClientColors.DARK_GRAY.toInt()))));
+				.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(bracketColor.get().toInt()))));
 			message.append(Component.literal(item.times + "").setStyle(Style.EMPTY.withColor(ChatFormatting.WHITE)));
 			message.append(Component.literal("] ")
-				.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(ClientColors.DARK_GRAY.toInt()))));
+				.setStyle(Style.EMPTY.withColor(TextColor.fromRgb(bracketColor.get().toInt()))));
 			message.append(item.stack.getItemName());
 			FormattedCharSequence text = Language.getInstance().getVisualOrder(message.getResult());
 			graphics.drawString(client.font, text, pos.x(), pos.y() + lastY, ChatFormatting.RED.getColor(),
@@ -176,20 +179,20 @@ public class ItemUpdateHud extends TextHudEntry {
 		ComponentCollector addM = new ComponentCollector();
 		addM.append(Component.literal("+ "));
 		addM.append(
-			Component.literal("[").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(ClientColors.DARK_GRAY.toInt()))));
+			Component.literal("[").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(bracketColor.get().toInt()))));
 		addM.append(Component.literal("2").setStyle(Style.EMPTY.withColor(ChatFormatting.WHITE)));
 		addM.append(
-			Component.literal("] ").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(ClientColors.DARK_GRAY.toInt()))));
+			Component.literal("] ").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(bracketColor.get().toInt()))));
 		addM.append(new ItemStack(Items.DIRT).getItemName());
 		FormattedCharSequence addText = Language.getInstance().getVisualOrder(addM.getResult());
 		graphics.drawString(client.font, addText, pos.x(), pos.y(), ChatFormatting.RED.getColor(), shadow.get());
 		ComponentCollector removeM = new ComponentCollector();
 		removeM.append(Component.literal("- "));
 		removeM.append(
-			Component.literal("[").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(ClientColors.DARK_GRAY.toInt()))));
+			Component.literal("[").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(bracketColor.get().toInt()))));
 		removeM.append(Component.literal("4").setStyle(Style.EMPTY.withColor(ChatFormatting.WHITE)));
 		removeM.append(
-			Component.literal("] ").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(ClientColors.DARK_GRAY.toInt()))));
+			Component.literal("] ").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(bracketColor.get().toInt()))));
 		removeM.append(new ItemStack(Items.SHORT_GRASS).getItemName());
 		FormattedCharSequence removeText = Language.getInstance().getVisualOrder(removeM.getResult());
 		graphics.drawString(client.font, removeText, pos.x(), pos.y() + client.font.lineHeight + 2,
@@ -202,6 +205,7 @@ public class ItemUpdateHud extends TextHudEntry {
 		List<Option<?>> options = super.getConfigurationOptions();
 		options.add(shadow);
 		options.add(timeout);
+		options.add(bracketColor);
 		return options;
 	}
 
