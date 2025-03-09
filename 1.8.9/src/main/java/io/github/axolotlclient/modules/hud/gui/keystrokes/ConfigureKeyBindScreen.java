@@ -46,6 +46,7 @@ import net.minecraft.client.render.TextRenderer;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.input.Keyboard;
 
 public class ConfigureKeyBindScreen extends io.github.axolotlclient.AxolotlClientConfig.impl.ui.Screen {
 
@@ -170,6 +171,15 @@ public class ConfigureKeyBindScreen extends io.github.axolotlclient.AxolotlClien
 	public void closeScreen() {
 		minecraft.openScreen(parent);
 		hud.saveKeystrokes();
+	}
+
+	@Override
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (keyCode == Keyboard.KEY_ESCAPE) {
+			closeScreen();
+			return true;
+		}
+		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	private static ClickableWidget textWidget(int x, int y, int width, int height, String message, TextRenderer textRenderer) {

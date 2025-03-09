@@ -7,9 +7,10 @@
 - Custom text-based HUD elements
 - Add DebugCountersHud, displaying Counters from the F3 screen
 - Add Bedwars resources HUD
-- update NickHider
-- add /playerstats command to display stats of hypixel gamemodes (`@Floweynt`)
-- move config file location
+- Update NickHider
+- Add /playerstats command to display stats of hypixel gamemodes (`@Floweynt`)
+- Move config file location
+- Add various additional options to some HUD elements
 
 ### 3.1.1
 

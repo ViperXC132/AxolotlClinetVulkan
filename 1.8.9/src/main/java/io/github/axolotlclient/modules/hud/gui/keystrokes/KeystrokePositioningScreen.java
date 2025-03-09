@@ -40,6 +40,7 @@ import io.github.axolotlclient.util.ClientColors;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
+import org.lwjgl.input.Keyboard;
 
 public class KeystrokePositioningScreen extends Screen {
 	private static final String title = I18n.translate("keystrokes.stroke.move");
@@ -164,6 +165,13 @@ public class KeystrokePositioningScreen extends Screen {
 	public void closeScreen() {
 		minecraft.openScreen(parent);
 		hud.saveKeystrokes();
+	}
+
+	@Override
+	protected void keyPressed(char c, int code) {
+		if (code == Keyboard.KEY_ESCAPE) {
+			closeScreen();
+		}
 	}
 
 	@Override
