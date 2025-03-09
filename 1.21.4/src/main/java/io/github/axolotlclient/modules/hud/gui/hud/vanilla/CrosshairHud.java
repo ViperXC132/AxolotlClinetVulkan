@@ -228,7 +228,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 				}
 			}
 		}
-		if (indicator == AttackIndicatorStatus.CROSSHAIR && !type.get().equals(Crosshair.TEXTURE)) {
+		if (indicator == AttackIndicatorStatus.CROSSHAIR && !type.get().equals(Crosshair.TEXTURE) && !type.get().equals(Crosshair.CUSTOM)) {
 			float progress = this.client.player.getAttackStrengthScale(0.0F);
 			if (progress != 1.0F) {
 				fillRenderType(graphics, blend, getRawX() + (getWidth() / 2) - 6, getRawY() + (getHeight() / 2) + 9,
