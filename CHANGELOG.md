@@ -11,6 +11,7 @@
 - Add /playerstats command to display stats of hypixel gamemodes (`@Floweynt`)
 - Move config file location
 - Add various additional options to some HUD elements
+- Mark Reach & Combo HUDs as broken
 
 ### 3.1.1
 
