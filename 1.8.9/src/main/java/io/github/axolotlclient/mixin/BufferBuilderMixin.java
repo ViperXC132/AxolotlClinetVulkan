@@ -31,7 +31,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(BufferBuilder.class)
-public class BufferBuilderMixin {
+public abstract class BufferBuilderMixin {
 
 	@WrapOperation(method = "grow", at = @At(value = "INVOKE", target = "Lorg/apache/logging/log4j/Logger;warn(Ljava/lang/String;)V", remap = false))
 	private void muteBufferBuilderWarnings(Logger instance, String s, Operation<Void> original, @Local(ordinal = 3) int newSize) {

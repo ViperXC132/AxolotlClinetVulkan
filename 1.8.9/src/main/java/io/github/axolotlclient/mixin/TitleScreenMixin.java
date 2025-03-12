@@ -186,7 +186,7 @@ public abstract class TitleScreenMixin extends Screen {
 	@Inject(method = "<init>",
 		at = @At(value = "INVOKE",
 			target = "Ljava/util/List;isEmpty()Z", remap = false))
-	private void axolotlclient$customSplashTexts(CallbackInfo ci, @Local List<String> list) throws IOException {
+	private void axolotlclient$customSplashTexts(CallbackInfo ci, @Local ArrayList<String> list) throws IOException {
 		try (InputStream input = Minecraft.getInstance().getResourceManager()
 			.getResource(new Identifier("axolotlclient", "texts/splashes.txt")).asStream()) {
 			list.addAll(IOUtils.readLines(input));

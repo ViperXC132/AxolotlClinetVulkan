@@ -32,7 +32,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(SoundEngine.class)
-public class SoundEngineMixin {
+public abstract class SoundEngineMixin {
 
 	@WrapOperation(method = "play(Lnet/minecraft/client/sound/instance/SoundInstance;)V", at = @At(value = "INVOKE", target = "Lorg/apache/logging/log4j/Logger;warn(Lorg/apache/logging/log4j/Marker;Ljava/lang/String;[Ljava/lang/Object;)V", ordinal = 0, remap = false))
 	private void noWarningOnUnknownEvent(Logger instance, Marker marker, String s, Object[] objects, Operation<Void> original, SoundInstance sound) {

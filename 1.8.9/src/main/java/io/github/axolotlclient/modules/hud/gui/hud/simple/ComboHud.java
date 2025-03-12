@@ -65,7 +65,7 @@ public class ComboHud extends SimpleTextHudEntry {
 
 	@Override
 	public String getPlaceholder() {
-		return I18n.translate("hits", 3);
+		return I18n.translate("combocounter.hits", 3);
 	}
 
 	public void onEntityAttack(Entity attacked) {
