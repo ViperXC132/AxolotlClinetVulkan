@@ -9,7 +9,7 @@ plugins {
 	id("dev.yumi.gradle.licenser") version "2.0.+"
 	id("io.github.p03w.machete") version "2.+" apply false
 	id("fabric-loom") version "1.10.+" apply false
-	id("ploceus") version "1.10.+" apply false
+	id("ploceus") version "1.10.3" apply false
 }
 
 version = "${project.version}"

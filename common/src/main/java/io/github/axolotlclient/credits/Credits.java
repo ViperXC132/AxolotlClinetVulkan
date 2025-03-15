@@ -41,6 +41,7 @@ public class Credits {
 		contributor("gart", "gartbin dev and host", "Image sharing help", "https://gart.sh", "Backend developer");
 		contributor("xlingy", "Website author");
 		contributor("DarkKronicle", "Bedwars Overlay", "Author of KronHUD, the best HUD mod!");
+		contributor("Floweynt", "Playerstats command");
 
 		otherPerson("AMereBagatelle", "Author of the excellent FabricSkyBoxes Mod");
 	}
