@@ -43,8 +43,8 @@ public class IconHud extends BoxHudEntry {
 	@Override
 	public void renderComponent(AxoRenderContext context, float delta) {
 		context.drawTexture(
-			getX(), getY(), width, height,
-			0, 0, width, height,
+			getX(), getY(), 0, 0, width, height,
+            width, height,
 			AxolotlClientCommon.BADGE_ICON
 		);
 	}

@@ -41,6 +41,7 @@ public class CustomHudEntry extends SimpleTextHudEntry {
 	public CustomHudEntry() {
 		this.id = new Identifier("axolotlclient", "custom_hud/" + UUID.randomUUID());
 		removeEntry = new GenericOption("custom_hud.remove", "custom_hud.remove.label", () -> {
+			// TODO
 			//HudManager.getInstance().removeEntry(this.id);
 			//HudManager.getInstance().saveCustomEntries();
 		});

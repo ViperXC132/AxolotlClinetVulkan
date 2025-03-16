@@ -65,7 +65,7 @@ public class PingHud extends SimpleTextHudEntry {
 		} else
 			second++;
 	}
-/*
+/* TODO: implement this
 	private void updatePing() {
 		if (Minecraft.getInstance().getCurrentServerEntry() != null) {
 			ServerAddress address = ServerAddress

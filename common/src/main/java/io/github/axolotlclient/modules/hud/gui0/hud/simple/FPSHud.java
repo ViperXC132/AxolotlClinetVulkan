@@ -22,7 +22,7 @@
 
 package io.github.axolotlclient.modules.hud.gui0.hud.simple;
 
-import io.github.axolotlclient.bridge.Platform;
+import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui0.entry.SimpleTextHudEntry;
 
@@ -48,7 +48,7 @@ public class FPSHud extends SimpleTextHudEntry {
 
 	@Override
 	public String getValue() {
-		return Platform.getCurrentFps() + " FPS";
+		return AxoMinecraftClient.getCurrentFps() + " FPS";
 	}
 
 	@Override

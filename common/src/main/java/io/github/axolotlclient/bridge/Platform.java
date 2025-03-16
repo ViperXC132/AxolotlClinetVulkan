@@ -14,10 +14,6 @@ public interface Platform {
 		return PlatformImplInternal.getConfig();
 	}
 
-	static int getCurrentFps() {
-		return PlatformImplInternal.getCurrentFps();
-	}
-
 	static AxoIdentifier getTexture(GraphicsOption option) {
 		return PlatformImplInternal.getTexture(option);
 	}

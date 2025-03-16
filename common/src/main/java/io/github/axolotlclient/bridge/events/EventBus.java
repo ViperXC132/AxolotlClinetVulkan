@@ -7,6 +7,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,164 +26,10 @@ import org.jetbrains.annotations.Nullable;
  * @param <T>
  */
 public final class EventBus<T> {
-	public static final class Phase<T> {
-		private final AxoIdentifier name;
-		private final EventBus<T> bus;
-		private final Set<T> handlers;
-		private final List<Phase<T>> after;
-
-		private int tempInDegree;
-
-		private Phase(AxoIdentifier name, EventBus<T> bus, Set<T> handlers, List<Phase<T>> after) {
-			this.name = name;
-			this.bus = bus;
-			this.handlers = handlers;
-			this.after = after;
-		}
-
-		public ListenerHandle register(T listener) {
-			handlers.add(listener);
-			return () -> handlers.remove(listener);
-		}
-	}
-
-	public final class PhaseBuilder {
-		private final List<Phase<T>> before = new ArrayList<>();
-		private final List<Phase<T>> after = new ArrayList<>();
-
-		private PhaseBuilder() {
-		}
-
-		public PhaseBuilder before(Phase<T> phase) {
-			Preconditions.checkArgument(phase.bus == EventBus.this, "phase %s belongs to a different bus", phase.name);
-			before.add(phase);
-			return this;
-		}
-
-		public PhaseBuilder beforeDefault() {
-			return before(defaultPhase);
-		}
-
-		public PhaseBuilder after(Phase<T> phase) {
-			Preconditions.checkArgument(phase.bus == EventBus.this, "phase %s belongs to a different bus", phase.name);
-			after.add(phase);
-			return this;
-		}
-
-		public PhaseBuilder afterDefault() {
-			return after(defaultPhase);
-		}
-
-		public Phase<T> define(AxoIdentifier name) {
-			Preconditions.checkArgument(!phases.containsKey(name), "phase already exists");
-			Phase<T> phase = new Phase<>(
-				name,
-				EventBus.this,
-				Sets.newSetFromMap(new IdentityHashMap<>()),
-				after
-			);
-
-			before.forEach(x -> x.after.add(phase));
-			phases.put(name, phase);
-			rebuildSeqCache();
-			return phase;
-		}
-
-		public Phase<T> define(String ns, String path) {
-			return define(AxoIdentifier.of(ns, path));
-		}
-	}
-
-	public interface ListenerHandle {
-		void cancel();
-	}
-
-	private final List<Phase<T>> seq = new ArrayList<>();
-	private final Map<AxoIdentifier, Phase<T>> phases = new HashMap<>();
 	private final Function<Iterable<T>, T> combiner;
-	private final Phase<T> defaultPhase = phase().define(AxoIdentifier.of("default"));
-
+	private final Set<T> events = new HashSet<>();
 	@Nullable
 	private T cachedInvoker;
-
-	private static <T> void topologicalSort(Collection<Phase<T>> allPhases, List<Phase<T>> result) {
-		ArrayDeque<Phase<T>> queue = new ArrayDeque<>();
-
-		// setup indegree counts
-		for (Phase<T> phase : allPhases) {
-			phase.tempInDegree = 0;
-		}
-
-		for (Phase<T> phase : allPhases) {
-			for (Phase<T> dep : phase.after) {
-				dep.tempInDegree++;
-			}
-		}
-
-		// enqueue phases
-		for (Phase<T> phase : allPhases) {
-			if (phase.tempInDegree == 0) {
-				queue.add(phase);
-			}
-		}
-
-		// process phases
-		while (!queue.isEmpty()) {
-			Phase<T> phase = queue.poll();
-			result.add(phase);
-
-			for (Phase<T> dep : phase.after) {
-				dep.tempInDegree--;
-				if (dep.tempInDegree == 0) {
-					queue.push(dep);
-				}
-			}
-		}
-
-		if (result.size() != allPhases.size()) {
-			throw new IllegalArgumentException("Phase dependency detected");
-		}
-	}
-
-	private void rebuildSeqCache() {
-		seq.clear();
-		cachedInvoker = null;
-		topologicalSort(phases.values(), seq);
-	}
-
-	public static <T> EventBus<Predicate<T>> firstTrue() {
-		return new EventBus<>(input -> arg -> {
-			for (Predicate<T> pred : input) {
-				if (pred.test(arg)) {
-					return true;
-				}
-			}
-
-			return false;
-		});
-	}
-
-	public static <T> EventBus<Predicate<T>> firstFalse() {
-		return new EventBus<>(input -> arg -> {
-			for (Predicate<T> pred : input) {
-				if (!pred.test(arg)) {
-					return false;
-				}
-			}
-
-			return true;
-		});
-	}
-
-	public static <T> EventBus<UnaryOperator<T>> pipeline() {
-		return new EventBus<>(input -> val -> {
-			for (UnaryOperator<T> op : input) {
-				val = op.apply(val);
-			}
-
-			return val;
-		});
-	}
 
 	public static <T> EventBus<Runnable> broadcast0() {
 		return new EventBus<>(input -> () -> {
@@ -212,23 +59,23 @@ public final class EventBus<T> {
 		this.combiner = combiner;
 	}
 
-	public Optional<Phase<T>> getPhase(AxoIdentifier name) {
-		return Optional.ofNullable(phases.get(name));
-	}
-
-	public PhaseBuilder phase() {
-		return new PhaseBuilder();
-	}
-
 	public T invoker() {
 		if (cachedInvoker == null) {
-			cachedInvoker = combiner.apply(() -> seq.stream().flatMap(x -> x.handlers.stream()).iterator());
+			// copy to arraylist for iteration performance
+			cachedInvoker = combiner.apply(events);
 		}
 
 		return cachedInvoker;
 	}
 
-	public Phase<T> defaultPhase() {
-		return defaultPhase;
+	public void register(T event) {
+		events.add(event);
+		cachedInvoker = null;
+	}
+
+	public boolean unregister(T event) {
+		boolean res = events.remove(event);
+		cachedInvoker = null;
+		return res;
 	}
 }

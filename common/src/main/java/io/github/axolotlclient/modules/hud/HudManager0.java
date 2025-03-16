@@ -151,8 +151,7 @@ public class HudManager0 extends AbstractModule0 {
 				});
 			}
 		} catch (IOException e) {
-			// TODO: better logging mechanism
-			// AxolotlClient.LOGGER.warn("Failed to load custom hud modules!", e);
+			AxolotlClientCommon.getInstance().getLogger().warn("Failed to load custom hud modules!", e);
 		}
 	}
 
@@ -179,8 +178,7 @@ public class HudManager0 extends AbstractModule0 {
 			json.endArray();
 			json.close();
 		} catch (IOException e) {
-			// TODO: better logging mechanism
-			// AxolotlClient.LOGGER.warn("Failed to save custom hud modules!", e);
+			AxolotlClientCommon.getInstance().getLogger().warn("Failed to save custom hud modules!", e);
 		}
 	}
 

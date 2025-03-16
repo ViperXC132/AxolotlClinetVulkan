@@ -7,7 +7,6 @@ import io.github.axolotlclient.bridge.render.AxoTextRenderer;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.ItemUtil;
-import io.github.axolotlclient.modules.hud.util.Rectangle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resource.Identifier;
 import org.jetbrains.annotations.Nullable;
@@ -52,18 +51,8 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 	}
 
 	@Override
-	public void glDisableTexture() {
-		GlStateManager.disableTexture();
-	}
-
-	@Override
 	public void glEnableBlend() {
 		GlStateManager.enableBlend();
-	}
-
-	@Override
-	public void glDisableBlend() {
-		GlStateManager.disableBlend();
 	}
 
 	@Override
@@ -82,7 +71,7 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 	}
 
 	@Override
-	public void drawTexture(int sx, int sy, int sw, int sh, int tx, int ty, int tw, int th, AxoIdentifier texture) {
+	public void drawTexture(int sx, int sy, int tx, int ty, int sw, int sh, int tw, int th, AxoIdentifier texture) {
 		client.getTextureManager().bind((Identifier) texture);
 		DrawUtil.drawTexture(sx, sy, tx, ty, sh, sw, th, tw);
 	}

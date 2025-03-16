@@ -14,7 +14,11 @@ public interface AxoMinecraftClient {
 		return PlatformImplInternal.getMinecraftClientInstance();
 	}
 
-	@Contract(pure = true)
+    static int getCurrentFps() {
+        return PlatformImplInternal.getCurrentFps();
+    }
+
+    @Contract(pure = true)
 	@Nullable
 	default AxoPlayer getPlayer() {
 		throw BridgeUtil.noImpl();

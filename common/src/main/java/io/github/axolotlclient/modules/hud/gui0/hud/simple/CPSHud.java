@@ -47,8 +47,8 @@ public class CPSHud extends SimpleTextHudEntry {
 	private final BooleanOption fromKeybindings = new BooleanOption("cpskeybind", false);
 	private final BooleanOption rmb = new BooleanOption("rightcps", false);
 
-	private final ClickList left = new ClickList();
-	private final ClickList right = new ClickList();
+	public final ClickList left = new ClickList();
+	public final ClickList right = new ClickList();
 
 	public CPSHud() {
 		super();

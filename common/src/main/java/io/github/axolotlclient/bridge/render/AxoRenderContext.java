@@ -34,15 +34,6 @@ public interface AxoRenderContext {
 		throw BridgeUtil.noImpl();
 	}
 
-	default void glDisableTexture() {
-		throw BridgeUtil.noImpl();
-	}
-
-	default void glDisableBlend() {
-		throw BridgeUtil.noImpl();
-	}
-
-
 	default void glColor4(float r, float g, float b, float a) {
 		throw BridgeUtil.noImpl();
 	}
@@ -107,15 +98,15 @@ public interface AxoRenderContext {
 	@ApiStatus.NonExtendable
 	default void drawTexture(Rectangle screenPos, Rectangle texturePos, AxoIdentifier texture) {
 		drawTexture(
-			screenPos.x, screenPos.y, screenPos.width, screenPos.height,
-			texturePos.x, texturePos.y, texturePos.width, texturePos.height,
+			screenPos.x, screenPos.y, texturePos.x, texturePos.y, screenPos.width, screenPos.height,
+			texturePos.width, texturePos.height,
 			texture
 		);
 	}
 
 	default void drawTexture(
-		int sx, int sy, int sw, int sh,
-		int tx, int ty, int tw, int th,
+		int sx, int sy, int tx, int ty, int sw, int sh,
+		int tw, int th,
 		AxoIdentifier texture
 	) {
 		throw BridgeUtil.noImpl();
