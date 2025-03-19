@@ -157,8 +157,8 @@ public abstract class AxolotlClientCommon {
 		lateModuleInit();
 
 		// register events
-		Events.TICK.defaultPhase().register(() -> modules.forEach(Module::tick));
-		Events.CLIENT_STOP.defaultPhase().register(() -> API.getInstance().shutdown());
+		Events.TICK.register(() -> modules.forEach(Module::tick));
+		Events.CLIENT_STOP.register(() -> API.getInstance().shutdown());
 	}
 
 	protected final void registerModule(Module module) {

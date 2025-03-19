@@ -52,8 +52,8 @@ public abstract class ClientWorldMixin {
 
 	@ModifyArg(method = "setTimeOfDay", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld$Properties;setTimeOfDay(J)V"))
 	public long axolotlclient$timeChanger(long time) {
-		if (AxolotlClient.CONFIG.timeChangerEnabled.get()) {
-			return AxolotlClient.CONFIG.customTime.get();
+		if (AxolotlClient.config().timeChangerEnabled.get()) {
+			return AxolotlClient.config().customTime.get();
 		}
 		return time;
 	}

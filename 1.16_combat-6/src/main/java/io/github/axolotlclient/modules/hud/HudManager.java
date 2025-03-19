@@ -36,8 +36,6 @@ import io.github.axolotlclient.modules.AbstractModule;
 import io.github.axolotlclient.modules.hud.gui.AbstractHudEntry;
 import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
 import io.github.axolotlclient.modules.hud.gui.hud.*;
-import io.github.axolotlclient.modules.hud.gui.hud.item.ArmorHud;
-import io.github.axolotlclient.modules.hud.gui.hud.item.ArrowHud;
 import io.github.axolotlclient.modules.hud.gui.hud.item.ItemUpdateHud;
 import io.github.axolotlclient.modules.hud.gui.hud.simple.*;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
@@ -89,38 +87,20 @@ public class HudManager extends AbstractModule {
 			}
 		});
 
-		AxolotlClient.CONFIG.addCategory(hudCategory);
+		AxolotlClient.config().addCategory(hudCategory);
 
-		add(new PingHud());
-		add(new FPSHud());
-		add(new CPSHud());
-		add(new ArmorHud());
 		add(new PotionsHud());
 		add(new KeystrokeHud());
-		add(new ToggleSprintHud());
 		add(new IPHud());
-		add(new iconHud());
-		add(new SpeedHud());
 		add(new ScoreboardHud());
 		add(new CrosshairHud());
-		add(new CoordsHud());
 		add(new ActionBarHud());
 		add(new BossBarHud());
-		add(new ArrowHud());
 		add(new ItemUpdateHud());
 		add(new PackDisplayHud());
-		add(new IRLTimeHud());
-		add(new ReachHud());
 		add(new HotbarHUD());
-		add(new MemoryHud());
-		add(new PlayerCountHud());
-		add(new CompassHud());
-		add(new TPSHud());
-		add(new ComboHud());
 		add(new PlayerHud());
-		add(new MouseMovementHud());
 		add(new DebugCountersHud());
-		add(new DayCounterHud());
 		entries.put(BedwarsMod.getInstance().getUpgradesOverlay().getId(), BedwarsMod.getInstance().getUpgradesOverlay());
 		entries.put(BedwarsMod.getInstance().getResourceOverlay().getId(), BedwarsMod.getInstance().getResourceOverlay());
 

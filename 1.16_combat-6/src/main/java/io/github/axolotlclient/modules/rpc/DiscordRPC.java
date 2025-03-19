@@ -74,6 +74,6 @@ public class DiscordRPC extends RPCCommon {
 	public void init() {
 		super.init();
 
-		AxolotlClient.CONFIG.addCategory(category);
+		AxolotlClient.config().addCategory(category);
 	}
 }

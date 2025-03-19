@@ -22,9 +22,7 @@
 
 package io.github.axolotlclient.modules.hud;
 
-import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.modules.AbstractModule;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 

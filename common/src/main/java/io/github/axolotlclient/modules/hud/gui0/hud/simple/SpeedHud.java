@@ -60,16 +60,16 @@ public class SpeedHud extends SimpleTextHudEntry {
 
 	@Override
 	public String getValue() {
-		AxoPlayer player = client.getPlayer();
+		AxoPlayer player = client.br$getPlayer();
 
 		if (player == null) {
 			return getPlaceholder();
 		}
 
-		AxoEntity entity = Objects.requireNonNullElse(player.getVehicle(), player);
+		AxoEntity entity = Objects.requireNonNullElse(player.br$getVehicle(), player);
 
-		Vec3 vec = entity.getVelocity();
-		if (horizontal.get() || entity.isOnGround() && vec.y() < 0) {
+		Vec3 vec = entity.br$getVelocity();
+		if (horizontal.get() || entity.br$isOnGround() && vec.y() < 0) {
 			vec = vec.y(0);
 		}
 

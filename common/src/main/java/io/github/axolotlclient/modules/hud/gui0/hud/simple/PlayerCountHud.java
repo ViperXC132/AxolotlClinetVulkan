@@ -44,11 +44,11 @@ public class PlayerCountHud extends SimpleTextHudEntry {
 
 	@Override
 	public String getValue() {
-		if(client.getWorld() == null) {
+		if(client.br$getWorld() == null) {
 			return getPlaceholder();
 		}
 
-		return client.getWorld().getPlayers().size() + " " + AxoI18n.translate("players");
+		return client.br$getWorld().br$getPlayers().size() + " " + AxoI18n.translate("players");
 	}
 
 	@Override

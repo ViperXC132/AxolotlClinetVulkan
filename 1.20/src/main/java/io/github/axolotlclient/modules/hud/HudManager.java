@@ -82,7 +82,7 @@ public class HudManager extends AbstractModule0 {
 	public void init() {
 		//KeyBindingHelper.registerKeyBinding(key);
 
-		AxolotlClient.CONFIG.addCategory(hudCategory);
+		AxolotlClient.config().addCategory(hudCategory);
 
 		add(new PingHud());
 		add(new FPSHud());

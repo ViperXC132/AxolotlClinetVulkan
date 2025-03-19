@@ -1,7 +1,30 @@
+/*
+ * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
+ *
+ * This file is part of AxolotlClient.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ * For more information, see the LICENSE file.
+ */
+
 package io.github.axolotlclient.bridge.item;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
+import org.jetbrains.annotations.ApiStatus;
 
 public interface AxoItemStack {
 	static AxoItemStack of(AxoItem item, int count) {
@@ -12,47 +35,48 @@ public interface AxoItemStack {
 		return PlatformImplInternal.createItemStack(item, 1);
 	}
 
-	default AxoItem getItem() {
+	default AxoItem br$getItem() {
 		throw BridgeUtil.noImpl();
 	}
 
-	default AxoItemStack copy() {
+	default AxoItemStack br$copy() {
 		throw BridgeUtil.noImpl();
 	}
 
-	default void setCount(int count) {
+	default void br$setCount(int count) {
 		throw BridgeUtil.noImpl();
 	}
 
-	default int getCount() {
+	default int br$getCount() {
 		throw BridgeUtil.noImpl();
 	}
 
-	default int getDamage() {
+	default int br$getDamage() {
 		throw BridgeUtil.noImpl();
 	}
 
-	default int getMaxDamage() {
+	default int br$getMaxDamage() {
 		throw BridgeUtil.noImpl();
 	}
 
-	default boolean isEmpty() {
-		return getCount() == 0 || getItem() == AxoItems.AIR;
+	@ApiStatus.NonExtendable
+	default boolean br$isEmpty() {
+		return br$getCount() == 0 || br$getItem() == AxoItems.AIR;
 	}
 
-	default int getEnchantment(AxoEnchant enchant) {
+	default int br$getEnchantment(AxoEnchant enchant) {
 		throw BridgeUtil.noImpl();
 	}
 
-	default void setEnchantment(AxoEnchant enchant, int level) {
+	default void br$setEnchantment(AxoEnchant enchant, int level) {
 		throw BridgeUtil.noImpl();
 	}
 
-	default void removeEnchantment(AxoEnchant enchant) {
+	default void br$removeEnchantment(AxoEnchant enchant) {
 		throw BridgeUtil.noImpl();
 	}
 
-	default boolean hasEnchantment(AxoEnchant enchant) {
-		return getEnchantment(enchant) != 0;
+	default boolean br$hasEnchantment(AxoEnchant enchant) {
+		return br$getEnchantment(enchant) != 0;
 	}
 }

@@ -63,7 +63,7 @@ public class HudEditScreen extends Screen {
 
 	static {
 		hudEditScreenCategory.add(snapping);
-		AxolotlClient.config.add(hudEditScreenCategory);
+		AxolotlClient.hiddenConfig.add(hudEditScreenCategory);
 	}
 
 	private final Screen parent;
@@ -120,12 +120,12 @@ public class HudEditScreen extends Screen {
 				snapping.toggle();
 				buttonWidget.setMessage(new TranslatableText("hud.snapping").append(": ")
 					.append(new TranslatableText(snapping.get() ? "options.on" : "options.off")));
-				AxolotlClient.configManager.save();
+				AxolotlClient.getInstance().saveConfig();
 			}));
 
 		this.addButton(new ButtonWidget(width / 2 - 75, height / 2 - 10, 150, 20, new TranslatableText("hud.clientOptions"),
 			buttonWidget -> {
-				Screen screen = ConfigStyles.createScreen(this, AxolotlClient.configManager.getRoot());
+				Screen screen = ConfigStyles.createScreen(this, AxolotlClient.getInstance().getConfig().config);
 				MinecraftClient.getInstance().openScreen(screen);
 			}));
 
@@ -165,7 +165,7 @@ public class HudEditScreen extends Screen {
 	@Override
 	public boolean mouseReleased(double mouseX, double mouseY, int button) {
 		if (current != null) {
-			AxolotlClient.configManager.save();
+			AxolotlClient.getInstance().saveConfig();
 		}
 		current = null;
 		snap = null;

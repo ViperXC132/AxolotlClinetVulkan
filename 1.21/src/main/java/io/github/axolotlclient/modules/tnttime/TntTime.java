@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.tnttime;
 
+import io.github.axolotlclient.modules.AbstractModule;
 import java.text.DecimalFormat;
 
 import io.github.axolotlclient.AxolotlClient;
@@ -49,7 +50,7 @@ public class TntTime extends AbstractModule {
 	@Override
 	public void init() {
 		category.add(enabled, decimalPlaces);
-		AxolotlClient.CONFIG.rendering.add(category);
+		AxolotlClient.config().rendering.add(category);
 	}
 
 	@Override

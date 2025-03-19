@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.config;
 
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +35,6 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.*;
-import io.github.axolotlclient.CommonOptions;
 import io.github.axolotlclient.config.screen.CreditsScreen;
 import io.github.axolotlclient.mixin.OverlayTextureAccessor;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
@@ -43,7 +43,7 @@ import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 
-public class AxolotlClientConfig {
+public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 
 	public final BooleanOption showOwnNametag = new BooleanOption("showOwnNametag", false);
 	public final BooleanOption useShadows = new BooleanOption("useShadows", false);
@@ -109,20 +109,7 @@ public class AxolotlClientConfig {
 	@Getter
 	private final List<Option<?>> options = new ArrayList<>();
 
-	@Getter
-	private final OptionCategory config = OptionCategory.create("config");
-
-	public void add(Option<?> option) {
-		options.add(option);
-	}
-
-	public void addCategory(OptionCategory cat) {
-		config.add(cat);
-	}
-
-
-	public void init() {
-
+	public AxolotlClientConfig() {
 		config.add(general);
 		config.add(nametagOptions);
 		config.add(rendering);
@@ -142,7 +129,6 @@ public class AxolotlClientConfig {
 		general.add(customWindowTitle);
 		general.add(openCredits);
 		general.add(debugLogOutput);
-		general.add(CommonOptions.datetimeFormat);
 		ConfigUI.getInstance().runWhenLoaded(() -> {
 			general.getOptions().removeIf(o -> "configStyle".equals(o.getName()));
 			String[] themes = ConfigUI.getInstance().getStyleNames().stream().map(s -> "configStyle." + s)

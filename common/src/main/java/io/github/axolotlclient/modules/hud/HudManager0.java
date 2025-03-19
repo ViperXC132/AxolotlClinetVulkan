@@ -127,8 +127,8 @@ public class HudManager0 extends AbstractModule0 {
 			saveCustomEntries();
 		}));
 
-		Events.CLIENT_START.defaultPhase().register(this::loadCustomEntries);
-		Events.CLIENT_STOP.defaultPhase().register(this::saveCustomEntries);
+		Events.CLIENT_START.register(this::loadCustomEntries);
+		Events.CLIENT_STOP.register(this::saveCustomEntries);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -182,6 +182,7 @@ public class HudManager0 extends AbstractModule0 {
 		}
 	}
 
+	@Override
 	public void tick() {
 		// if (key.isPressed())
 		//	Minecraft.getInstance().openScreen(new HudEditScreen());

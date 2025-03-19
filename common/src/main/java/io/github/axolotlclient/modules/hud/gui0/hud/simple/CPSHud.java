@@ -26,7 +26,6 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.bridge.Platform;
 import io.github.axolotlclient.bridge.events.Events;
-import io.github.axolotlclient.bridge.key.AxoKey;
 import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui0.entry.SimpleTextHudEntry;
@@ -53,11 +52,11 @@ public class CPSHud extends SimpleTextHudEntry {
 	public CPSHud() {
 		super();
 
-		Events.KEY_INPUT.defaultPhase().register(key -> {
+		Events.KEY_INPUT.register(key -> {
 			if (fromKeybindings.get()) {
-				if (key.equals(client.getKeybinds().getAttackKey().getBoundKey())) {
+				if (key.equals(client.br$getKeybinds().br$getAttackKey().br$getBoundKey())) {
 					left.click();
-				} else if (key.equals(client.getKeybinds().getUseKey().getBoundKey())) {
+				} else if (key.equals(client.br$getKeybinds().br$getUseKey().br$getBoundKey())) {
 					right.click();
 				}
 			} else {

@@ -77,37 +77,37 @@ public class MouseMovementHud extends BoxHudEntry {
 	// Port to Bridge: removed event and poll pitch/yaw in renderComponent
 	@Override
 	public void renderComponent(AxoRenderContext context, float delta) {
-		final var player = client.getPlayer();
+		final var player = client.br$getPlayer();
 
 		if(player != null) {
 			if (hasPreviousPitchYaw) {
-				mouseX = (player.getYaw() - prevYaw);
-				mouseY = (player.getPitch() - prevPitch);
-				prevPitch = player.getPitch();
-				prevYaw = player.getYaw();
+				mouseX = (player.br$getYaw() - prevYaw);
+				mouseY = (player.br$getPitch() - prevPitch);
+				prevPitch = player.br$getPitch();
+				prevYaw = player.br$getYaw();
 
 				float halfWidth = getWidth() / 2f;
 				mouseX = MathUtil.clamp(mouseX, -halfWidth + 4, halfWidth - 4);
 				mouseY = MathUtil.clamp(mouseY, -13, 13);
 			} else {
 				hasPreviousPitchYaw = true;
-				prevPitch = player.getPitch();
-				prevYaw = player.getYaw();
+				prevPitch = player.br$getPitch();
+				prevYaw = player.br$getYaw();
 			}
 		}
 
-		context.glColor4(1, 1, 1, 1);
-		context.glEnableBlend();
+		context.br$glColor4(1, 1, 1, 1);
+		context.br$glEnableBlend();
 		int spaceY = getRawY();
 		int spaceX = getRawX();
 
 		float calculatedMouseX = (lastMouseX + ((mouseX - lastMouseX) * delta)) - 5;
 		float calculatedMouseY = (lastMouseY + ((mouseY - lastMouseY) * delta)) - 5;
 
-		context.drawTexture(spaceX + (width / 2) - 7 / 2 - 1, spaceY + 17 - (7 / 2), 0, 0, 7, 7, 7, 7, Platform.getTexture(mouseMovementIndicatorInner));
+		context.br$drawTexture(spaceX + (width / 2) - 7 / 2 - 1, spaceY + 17 - (7 / 2), 0, 0, 7, 7, 7, 7, Platform.getTexture(mouseMovementIndicatorInner));
 		// Woah KodeToad, good use of translate
-		context.translateMatrix(calculatedMouseX, calculatedMouseY, 0);
-		context.drawTexture(spaceX + (width / 2) - 1, spaceY + 17, 0, 0, 11, 11, 11, 11, Platform.getTexture(mouseMovementIndicatorOuter));
+		context.br$translateMatrix(calculatedMouseX, calculatedMouseY, 0);
+		context.br$drawTexture(spaceX + (width / 2) - 1, spaceY + 17, 0, 0, 11, 11, 11, 11, Platform.getTexture(mouseMovementIndicatorOuter));
 	}
 
 	@Override

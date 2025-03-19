@@ -25,20 +25,15 @@ package io.github.axolotlclient.modules.hud.gui0.hud.simple;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
-import io.github.axolotlclient.bridge.key.AxoKey;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.bridge.util.AxoI18n;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui0.entry.SimpleTextHudEntry;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 import lombok.Getter;
 
 /**
@@ -72,8 +67,8 @@ public class ToggleSprintHud extends SimpleTextHudEntry {
 
 	@Override
 	public void init() {
-		sprintToggle.registerOnClicked(sprintToggled::toggle);
-		sneakToggle.registerOnClicked(sneakToggled::toggle);
+		sprintToggle.br$registerOnClicked(sprintToggled::toggle);
+		sneakToggle.br$registerOnClicked(sneakToggled::toggle);
 	}
 
 	@Override
@@ -106,10 +101,10 @@ public class ToggleSprintHud extends SimpleTextHudEntry {
 
 	@Override
 	public String getValue() {
-		if (client.getKeybinds().getSneakKeybind().isPressed()) {
+		if (client.br$getKeybinds().br$getSneakKeybind().br$isPressed()) {
 			return AxoI18n.translate("sneaking_pressed");
 		}
-		if (client.getKeybinds().getSprintKeybind().isPressed()) {
+		if (client.br$getKeybinds().br$getSprintKeybind().br$isPressed()) {
 			return AxoI18n.translate("sprinting_pressed");
 		}
 

@@ -42,7 +42,7 @@ public class BeaconBeam extends AbstractModule {
 	public void init() {
 		beams.add(showBeaconBeams, showEndGatewayBeams);
 
-		AxolotlClient.CONFIG.rendering.add(beams);
+		AxolotlClient.config().rendering.add(beams);
 	}
 
 	public boolean showBeam(boolean endGateway) {

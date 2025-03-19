@@ -42,7 +42,7 @@ public enum Justification {
 		if (this == LEFT) {
 			return 0;
 		}
-		return getXOffset(AxoMinecraftClient.getInstance().getTextRenderer().getWidth(text), width);
+		return getXOffset(AxoMinecraftClient.getInstance().br$getFont().br$getWidth(text), width);
 	}
 
 	public int getXOffset(int textWidth, int width) {
@@ -59,6 +59,6 @@ public enum Justification {
 		if (this == LEFT) {
 			return 0;
 		}
-		return getXOffset(AxoMinecraftClient.getInstance().getTextRenderer().getWidth(text), width);
+		return getXOffset(AxoMinecraftClient.getInstance().br$getFont().br$getWidth(text), width);
 	}
 }

@@ -71,30 +71,29 @@ public abstract class BoxHudEntry extends AbstractHudEntry {
 
 	@Override
 	public void render(AxoRenderContext ctx, float delta) {
-		ctx.pushMatrix();
+		ctx.br$pushMatrix();
 		scale(ctx);
 		if (backgroundAllowed) {
 			if (background.get() && backgroundColor.get().getAlpha() > 0) {
-				ctx.fillRect(getBounds(), backgroundColor.get());
+				ctx.br$fillRect(getBounds(), backgroundColor.get());
 			}
 			if (outline.get() && outlineColor.get().getAlpha() > 0) {
-				ctx.outlineRect(getBounds(), outlineColor.get());
+				ctx.br$outlineRect(getBounds(), outlineColor.get());
 			}
 		}
 		renderComponent(ctx, delta);
-		ctx.popMatrix();
+		ctx.br$popMatrix();
 	}
 
 	public abstract void renderComponent(AxoRenderContext ctx, float delta);
 
 	@Override
 	public void renderPlaceholder(AxoRenderContext ctx, float delta) {
-		ctx.pushMatrix();
+		ctx.br$pushMatrix();
 		renderPlaceholderBackground(ctx);
 		scale(ctx);
-		ctx.glEnableTexture();
 		renderPlaceholderComponent(ctx, delta);
-		ctx.popMatrix();
+		ctx.br$popMatrix();
 		hovered = false;
 	}
 

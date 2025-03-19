@@ -1,3 +1,25 @@
+/*
+ * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
+ *
+ * This file is part of AxolotlClient.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ * For more information, see the LICENSE file.
+ */
+
 package io.github.axolotlclient.bridge.mixin.world;
 
 import io.github.axolotlclient.bridge.entity.AxoEntity;
@@ -7,17 +29,11 @@ import java.util.List;
 import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Implements;
-import org.spongepowered.asm.mixin.Interface;
-import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(World.class)
-@Implements({
-	@Interface(iface = AxoWorld.class, prefix = "bridge$")
-})
-public abstract class WorldMixin {
+public abstract class WorldMixin implements AxoWorld {
 	@Shadow
 	public abstract long getTimeOfDay();
 
@@ -25,12 +41,13 @@ public abstract class WorldMixin {
 	@Final
 	public List<PlayerEntity> players;
 
-	@Intrinsic
-	public long bridge$getTimeOfDay() {
+	@Override
+	public long br$getTimeOfDay() {
 		return getTimeOfDay();
 	}
 
-	public List<? extends AxoEntity> bridge$getPlayers() {
+	@Override
+	public List<? extends AxoEntity> br$getPlayers() {
 		return Collections.unmodifiableList(this.players);
 	}
 }

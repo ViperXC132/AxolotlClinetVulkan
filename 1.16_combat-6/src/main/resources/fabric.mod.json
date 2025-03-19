@@ -30,10 +30,55 @@
 		]
 	},
 	"mixins": [
-		"axolotlclient.mixins.json"
+		"axolotlclient.mixins.json",
+		"axolotlclient-bridge.mixins.json"
 	],
 	"custom": {
-		"modmenu:clientsideOnly": true
+		"modmenu:clientsideOnly": true,
+		"loom:injected_interfaces": {
+			"net/minecraft/class_2960": [
+				"io/github/axolotlclient/bridge/util/AxoIdentifier"
+			],
+			"net/minecraft/class_310": [
+				"io/github/axolotlclient/bridge/AxoMinecraftClient"
+			],
+			"net/minecraft/class_327": [
+				"io/github/axolotlclient/bridge/render/AxoFont"
+			],
+			"net/minecraft/class_1041": [
+				"io/github/axolotlclient/bridge/render/AxoWindow"
+			],
+			"net/minecraft/class_1297": [
+				"io/github/axolotlclient/bridge/entity/AxoEntity"
+			],
+			"net/minecraft/class_1799": [
+				"io/github/axolotlclient/bridge/item/AxoItemStack"
+			],
+			"net/minecraft/class_1661": [
+				"io/github/axolotlclient/bridge/item/AxoPlayerInventory"
+			],
+			"net/minecraft/class_1657": [
+				"io/github/axolotlclient/bridge/entity/AxoPlayer"
+			],
+			"net/minecraft/class_1792": [
+				"io/github/axolotlclient/bridge/item/AxoItem"
+			],
+			"net/minecraft/class_1937": [
+				"io/github/axolotlclient/bridge/world/AxoWorld"
+			],
+			"net/minecraft/class_1887": [
+				"io/github/axolotlclient/bridge/item/AxoEnchant"
+			],
+			"net/minecraft/class_304": [
+				"io/github/axolotlclient/bridge/key/AxoKeybinding"
+			],
+			"net/minecraft/class_315": [
+				"io/github/axolotlclient/bridge/key/AxoClientKeybinds"
+			],
+			"net/minecraft/class_3675\u0024class_306": [
+				"io/github/axolotlclient/bridge/key/AxoKey"
+			]
+		}
 	},
 	"depends": {
 		"fabricloader": ">=0.15.0",

@@ -1,3 +1,25 @@
+/*
+ * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
+ *
+ * This file is part of AxolotlClient.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ * For more information, see the LICENSE file.
+ */
+
 package io.github.axolotlclient.bridge.mixin.entity;
 
 import io.github.axolotlclient.bridge.entity.AxoEntity;
@@ -6,17 +28,11 @@ import java.util.UUID;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Implements;
-import org.spongepowered.asm.mixin.Interface;
-import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(Entity.class)
-@Implements({
-	@Interface(iface = AxoEntity.class, prefix = "bridge$")
-})
-public abstract class EntityMixin {
+public abstract class EntityMixin implements AxoEntity {
 	@Shadow
 	@Nullable
 	public Entity vehicle;
@@ -51,34 +67,39 @@ public abstract class EntityMixin {
 	@Shadow
 	public abstract UUID getUuid();
 
-	@Nullable
-	public AxoEntity bridge$getVehicle() {
+	@Override
+	public @Nullable AxoEntity br$getVehicle() {
 		return vehicle;
 	}
 
-	public Vec3 bridge$getPos() {
+	@Override
+	public Vec3 br$getPos() {
 		return new Vec3(this.x, this.y, this.z);
 	}
 
-	public Vec3 bridge$getVelocity() {
+	@Override
+	public Vec3 br$getVelocity() {
 		return new Vec3(this.velocityX, this.velocityY, this.velocityZ);
 	}
 
-	public boolean bridge$isOnGround() {
+	@Override
+	public boolean br$isOnGround() {
 		return onGround;
 	}
 
-	public float bridge$getYaw() {
+	@Override
+	public float br$getYaw() {
 		return yaw;
 	}
 
-	public Vec3 bridge$getRotation(float deltaTick) {
+	@Override
+	public Vec3 br$getRotation(float deltaTick) {
 		final var vec = getRotationVec(deltaTick);
 		return new Vec3(vec.x, vec.y, vec.z);
 	}
 
-	@Intrinsic
-	public UUID bridge$getUuid() {
+	@Override
+	public UUID br$getUuid() {
 		return getUuid();
 	}
 }

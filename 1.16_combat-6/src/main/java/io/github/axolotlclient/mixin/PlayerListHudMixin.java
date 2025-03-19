@@ -98,14 +98,14 @@ public abstract class PlayerListHudMixin {
 
 	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;getWidth(Lnet/minecraft/text/StringVisitable;)I"))
 	public int axolotlclient$moveName(TextRenderer instance, StringVisitable text) {
-		if (axolotlclient$profile != null && AxolotlClient.CONFIG.showBadges.get() && UserRequest.getOnline(axolotlclient$profile.getId().toString()))
+		if (axolotlclient$profile != null && AxolotlClient.config().showBadges.get() && UserRequest.getOnline(axolotlclient$profile.getId().toString()))
 			return instance.getWidth(text) + 10;
 		return instance.getWidth(text);
 	}
 
 	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;drawWithShadow(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/text/Text;FFI)I"))
 	public int axolotlclient$moveName2(TextRenderer instance, MatrixStack matrices, Text text, float x, float y, int color) {
-		if (axolotlclient$profile != null && AxolotlClient.CONFIG.showBadges.get() && UserRequest.getOnline(axolotlclient$profile.getId().toString())) {
+		if (axolotlclient$profile != null && AxolotlClient.config().showBadges.get() && UserRequest.getOnline(axolotlclient$profile.getId().toString())) {
 			MinecraftClient.getInstance().getTextureManager().bindTexture(AxolotlClient.badgeIcon);
 			RenderSystem.color4f(1, 1, 1, 1);
 

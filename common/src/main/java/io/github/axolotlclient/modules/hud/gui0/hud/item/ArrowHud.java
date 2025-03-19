@@ -54,12 +54,12 @@ public class ArrowHud extends TextHudEntry {
 	@Override
 	public void render(AxoRenderContext context, float delta) {
 		if (dynamic.get()) {
-			AxoPlayer player = client.getPlayer();
+			AxoPlayer player = client.br$getPlayer();
 			if (player == null) {
 				return;
 			}
 
-			if(!player.getInventory().getMainHand().getItem().is(AxoItemClass.BOW)) {
+			if(!player.br$getInventory().br$getMainHand().br$getItem().br$is(AxoItemClass.BOW)) {
 				return;
 			}
 		}
@@ -68,13 +68,13 @@ public class ArrowHud extends TextHudEntry {
 
 	private void doRender(AxoRenderContext context, int count) {
 		DrawPosition pos = getPos();
-		context.drawCenteredString(
+		context.br$drawCenteredString(
 			String.valueOf(count), pos.x() + getWidth() / 2,
 			pos.y() + getHeight() - 10,
 			textColor.get().toInt(),
 			shadow.get()
 		);
-		context.renderGuiItemModel(ITEM, pos.x() + 2, pos.y() + 2);
+		context.br$renderGuiItemModel(ITEM, pos.x() + 2, pos.y() + 2);
 	}
 
 	@Override

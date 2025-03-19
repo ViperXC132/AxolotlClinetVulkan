@@ -50,17 +50,17 @@ public class ComboHud extends SimpleTextHudEntry {
 
 	@Override
 	public void init() {
-		Events.PLAYER_ATTACK.defaultPhase().register((player, attacked) -> target = attacked.getNetId());
-		Events.PLAYER_HURT.defaultPhase().register((player, entity) -> {
-			if(client.getPlayer() == null || entity == null) {
+		Events.PLAYER_ATTACK.register((player, attacked) -> target = attacked.br$getNetId());
+		Events.PLAYER_HURT.register((player, entity) -> {
+			if(client.br$getPlayer() == null || entity == null) {
 				return;
 			}
 
 			// if the entity that was hurt is the client player
-			if (entity.getNetId() == client.getPlayer().getNetId()) {
+			if (entity.br$getNetId() == client.br$getPlayer().br$getNetId()) {
 				target = -1;
 				count = 0;
-			} else if (entity.getNetId() == target) {
+			} else if (entity.br$getNetId() == target) {
 				count++;
 				lastTime = Platform.getMeasuringTimeMs();
 			}

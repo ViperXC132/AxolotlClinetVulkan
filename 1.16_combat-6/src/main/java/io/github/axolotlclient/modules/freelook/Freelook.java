@@ -72,7 +72,7 @@ public class Freelook extends AbstractModule0 {
 		KeyBindingHelper.registerKeyBinding(KEY_ALT);
 		category.add(enabled, mode, perspective, invert, toggle);
 		category.add(perspectiveAlt, toggleAlt);
-		AxolotlClient.CONFIG.addCategory(category);
+		AxolotlClient.config().addCategory(category);
 	}
 
 	@Override

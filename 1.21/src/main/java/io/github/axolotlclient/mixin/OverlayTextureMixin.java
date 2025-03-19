@@ -35,7 +35,7 @@ public abstract class OverlayTextureMixin {
 	@ModifyConstant(method = "<init>", constant = @Constant(intValue = -1308622593))
 	private int axolotlclient$customHitColor(int constant) {
 
-		Color c = AxolotlClient.CONFIG.hitColor.get();
+		Color c = AxolotlClient.config().hitColor.get();
 		int color = 255 - c.getAlpha();
 		color = (color << 8) + c.getBlue();
 		color = (color << 8) + c.getGreen();

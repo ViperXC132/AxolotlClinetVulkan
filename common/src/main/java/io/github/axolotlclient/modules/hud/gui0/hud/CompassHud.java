@@ -115,11 +115,11 @@ public class CompassHud extends TextHudEntry implements DynamicallyPositionable 
 		// E = 90
 		// S = 180
 		// W = 270
-		if (client.getPlayer() == null) {
+		if (client.br$getPlayer() == null) {
 			return;
 		}
 		float halfWidth = width / 2f;
-		float degrees = (client.getPlayer().getYaw() + 180) % 360;
+		float degrees = (client.br$getPlayer().br$getYaw() + 180) % 360;
 		if (degrees < -180) {
 			degrees += 360;
 		}
@@ -132,16 +132,16 @@ public class CompassHud extends TextHudEntry implements DynamicallyPositionable 
 		DrawPosition pos = getPos();
 		int x = pos.x();
 		int y = pos.y() + 1;
-		context.fillRect(pos.x() + (int) halfWidth - 1, pos.y(), 3, 11, lookingBox.get());
+		context.br$fillRect(pos.x() + (int) halfWidth - 1, pos.y(), 3, 11, lookingBox.get());
 		if (showDegrees.get()) {
-			context.drawCenteredString(String.valueOf((int) degrees), x + (int) halfWidth, y + 20, degreesColor.get(), shadow.get());
+			context.br$drawCenteredString(String.valueOf((int) degrees), x + (int) halfWidth, y + 20, degreesColor.get(), shadow.get());
 		}
 		float shift = (startIndicator - start) / 15f * dist;
 		if (invert.get()) {
 			shift = dist - shift;
 		}
-		context.pushMatrix();
-		context.translateMatrix(shift, 0, 0);
+		context.br$pushMatrix();
+		context.br$translateMatrix(shift, 0, 0);
 		for (int i = 0; i < amount; i++) {
 			int d;
 			if (invert.get()) {
@@ -160,31 +160,31 @@ public class CompassHud extends TextHudEntry implements DynamicallyPositionable 
 			}
 
 			float targetOpacity = 1 - Math.abs((halfWidth - trueDist)) / halfWidth;
-			context.glColor4(1, 1, 1, targetOpacity);
+			context.br$glColor4(1, 1, 1, targetOpacity);
 			if (indicator == Indicator.CARDINAL) {
 				// We have to call .color() here so that transparency stays
-				context.fillRect(innerX, y, 1, 9, majorIndicatorColor.get()
+				context.br$fillRect(innerX, y, 1, 9, majorIndicatorColor.get()
 					.withAlpha((int) (majorIndicatorColor.get().getAlpha() * targetOpacity)));
 				Color color = cardinalColor.get();
 				color = color.withAlpha((int) (color.getAlpha() * targetOpacity));
 				if (color.getAlpha() > 0) {
-					context.drawCenteredString(getCardString(indicator, d), innerX + 1, y + 10, color, shadow.get());
+					context.br$drawCenteredString(getCardString(indicator, d), innerX + 1, y + 10, color, shadow.get());
 				}
 			} else if (indicator == Indicator.SEMI_CARDINAL) {
 				Color color = semiCardinalColor.get();
 				color = color.withAlpha((int) (color.getAlpha() * targetOpacity));
 				if (color.getAlpha() > 0) {
-					context.drawCenteredString(getCardString(indicator, d), innerX + 1, y + 1, color, shadow.get());
+					context.br$drawCenteredString(getCardString(indicator, d), innerX + 1, y + 1, color, shadow.get());
 				}
 			} else {
 				// We have to call .color() here so that transparency stays
-				context.fillRect(innerX, y, 1, 5, minorIndicatorColor.get()
+				context.br$fillRect(innerX, y, 1, 5, minorIndicatorColor.get()
 					.withAlpha((int) (minorIndicatorColor.get().getAlpha() * targetOpacity)).toInt());
 			}
 		}
 
-		context.glColor4(1, 1, 1, 1);
-		context.popMatrix();
+		context.br$glColor4(1, 1, 1, 1);
+		context.br$popMatrix();
 	}
 
 	@Override

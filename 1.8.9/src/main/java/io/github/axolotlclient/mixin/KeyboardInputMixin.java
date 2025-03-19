@@ -22,8 +22,6 @@
 
 package io.github.axolotlclient.mixin;
 
-import io.github.axolotlclient.modules.hud.HudManager;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.player.input.GameInput;
 import org.spongepowered.asm.mixin.Mixin;

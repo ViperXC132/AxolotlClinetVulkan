@@ -109,18 +109,18 @@ public class MemoryHud extends TextHudEntry implements DynamicallyPositionable {
 		if (showGraph.get()) {
 			graph.setData(pos.x() + 5, pos.y() + 5, getBounds().width - 10, getBounds().height - 10);
 			final int usagePx = (int) (graph.width * info.usage());
-			context.fillRect(graph.x, graph.y, usagePx, graph.height, graphUsedColor.get().toInt());
-			context.fillRect(graph.x + usagePx, graph.y, graph.width - usagePx, graph.height,
+			context.br$fillRect(graph.x, graph.y, usagePx, graph.height, graphUsedColor.get().toInt());
+			context.br$fillRect(graph.x + usagePx, graph.y, graph.width - usagePx, graph.height,
 				graphFreeColor.get().toInt());
-			context.outlineRect(graph, ClientColors.BLACK);
+			context.br$outlineRect(graph, ClientColors.BLACK);
 		}
 
 		if (showText.get()) {
 			String mem = info.getMemoryLine();
 
-			context.drawString(
+			context.br$drawString(
 				mem,
-				pos.x() + justification.get().getXOffset(context.getTextRenderer().getWidth(mem), getWidth() - 4) + 2,
+				pos.x() + justification.get().getXOffset(context.br$getFont().br$getWidth(mem), getWidth() - 4) + 2,
 				pos.y() + (Math.round((float) height / 2) - 4) - (showAllocated.get() ? 4 : 0),
 				textColor.get().toInt(),
 				shadow.get()
@@ -128,9 +128,9 @@ public class MemoryHud extends TextHudEntry implements DynamicallyPositionable {
 
 			if (showAllocated.get()) {
 				String alloc = info.getAllocationLine();
-				context.drawString(
+				context.br$drawString(
 					alloc,
-					pos.x() + justification.get().getXOffset(context.getTextRenderer().getWidth(alloc),
+					pos.x() + justification.get().getXOffset(context.br$getFont().br$getWidth(alloc),
 						getWidth() - 4) + 2,
 					pos.y() + (Math.round((float) height / 2) - 4) + 4,
 					textColor.get().toInt(),

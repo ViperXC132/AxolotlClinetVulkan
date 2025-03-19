@@ -50,7 +50,7 @@ public interface Identifiable {
 	 * @return The display name key
 	 */
 	default String getNameKey() {
-		return getId().getPath();
+		return getId().br$getPath();
 	}
 
 	/**

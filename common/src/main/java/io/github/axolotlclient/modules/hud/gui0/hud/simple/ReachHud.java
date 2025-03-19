@@ -48,14 +48,14 @@ public class ReachHud extends SimpleTextHudEntry {
 	private long lastTime = 0;
 
 	private static double getAttackDistance(AxoEntity attacking, AxoEntity receiving) {
-		Vec3 camera = attacking.getRotation(1);
-		return camera.dist(receiving.getRotation(1));
+		Vec3 camera = attacking.br$getRotation(1);
+		return camera.dist(receiving.br$getRotation(1));
 	}
 
 	@Override
 	public void init() {
-		Events.PLAYER_ATTACK.defaultPhase().register((attacking, receiving) -> {
-			final var thePlayer = AxoMinecraftClient.getInstance().getPlayer();
+		Events.PLAYER_ATTACK.register((attacking, receiving) -> {
+			final var thePlayer = AxoMinecraftClient.getInstance().br$getPlayer();
 			if (Objects.equals(thePlayer, attacking)) {
 				double distance = getAttackDistance(attacking, receiving);
 				StringBuilder format = new StringBuilder("0");

@@ -87,13 +87,13 @@ public abstract class AbstractHudEntry implements HudEntry {
 	}
 
 	public void renderPlaceholderBackground(AxoRenderContext context) {
-		context.fillRect(getTrueBounds(), hovered ? ClientColors.SELECTOR_BLUE.withAlpha(100) : ClientColors.WHITE.withAlpha(50));
-		context.outlineRect(getTrueBounds(), Colors.BLACK);
+		context.br$fillRect(getTrueBounds(), hovered ? ClientColors.SELECTOR_BLUE.withAlpha(100) : ClientColors.WHITE.withAlpha(50));
+		context.br$outlineRect(getTrueBounds(), Colors.BLACK);
 	}
 
 	public void scale(AxoRenderContext context) {
 		float scale = getScale();
-		context.scaleMatrix(scale, scale, 1);
+		context.br$scaleMatrix(scale, scale, 1);
 	}
 
 	@Override
@@ -102,7 +102,7 @@ public abstract class AbstractHudEntry implements HudEntry {
 	}
 
 	public void setX(int x) {
-		this.x.set((double) intToFloat(x, (int) AxoWindow.getWindow().getScaledWidth(), 0));
+		this.x.set((double) intToFloat(x, (int) AxoWindow.getWindow().br$getScaledWidth(), 0));
 	}
 
 	@Override
@@ -124,7 +124,7 @@ public abstract class AbstractHudEntry implements HudEntry {
 	}
 
 	public void setY(int y) {
-		this.y.set((double) intToFloat(y, (int) AxoWindow.getWindow().getScaledHeight(), 0));
+		this.y.set((double) intToFloat(y, (int) AxoWindow.getWindow().br$getScaledHeight(), 0));
 	}
 
 	/**
@@ -146,8 +146,8 @@ public abstract class AbstractHudEntry implements HudEntry {
 			trueBounds = new Rectangle(0, 0, 1, 1);
 			return;
 		}
-		int scaledX = floatToInt(x.get().floatValue(), (int) window.getScaledWidth(), 0) - offsetTrueWidth();
-		int scaledY = floatToInt(y.get().floatValue(), (int) window.getScaledHeight(), 0)
+		int scaledX = floatToInt(x.get().floatValue(), (int) window.br$getScaledWidth(), 0) - offsetTrueWidth();
+		int scaledY = floatToInt(y.get().floatValue(), (int) window.br$getScaledHeight(), 0)
 			- offsetTrueHeight();
 		if (scaledX < 0) {
 			scaledX = 0;
@@ -156,13 +156,13 @@ public abstract class AbstractHudEntry implements HudEntry {
 			scaledY = 0;
 		}
 		int trueWidth = (int) (getWidth() * getScale());
-		if (trueWidth < window.getScaledWidth() && scaledX + trueWidth > window.getScaledWidth()) {
-			scaledX = (int) (window.getScaledWidth() - trueWidth);
+		if (trueWidth < window.br$getScaledWidth() && scaledX + trueWidth > window.br$getScaledWidth()) {
+			scaledX = (int) (window.br$getScaledWidth() - trueWidth);
 		}
 		int trueHeight = (int) (getHeight() * getScale());
-		if (trueHeight < window.getScaledHeight()
-			&& scaledY + trueHeight > window.getScaledHeight()) {
-			scaledY = (int) (window.getScaledHeight() - trueHeight);
+		if (trueHeight < window.br$getScaledHeight()
+			&& scaledY + trueHeight > window.br$getScaledHeight()) {
+			scaledY = (int) (window.br$getScaledHeight() - trueHeight);
 		}
 		truePosition.x = scaledX;
 		truePosition.y = scaledY;

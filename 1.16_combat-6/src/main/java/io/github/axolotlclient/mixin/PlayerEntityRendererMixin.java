@@ -38,7 +38,7 @@ public abstract class PlayerEntityRendererMixin {
 
 	@ModifyArgs(method = "renderLabelIfPresent(Lnet/minecraft/client/network/AbstractClientPlayerEntity;Lnet/minecraft/text/Text;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;renderLabelIfPresent(Lnet/minecraft/entity/Entity;Lnet/minecraft/text/Text;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V"))
 	public void axolotlclient$modifiyName(Args args) {
-		if (AxolotlClient.CONFIG != null) {
+		if (AxolotlClient.config() != null) {
 			AbstractClientPlayerEntity player = args.get(0);
 			if (player.getUuid() == MinecraftClient.getInstance().player.getUuid()
 				&& NickHider.getInstance().hideOwnName.get()) {

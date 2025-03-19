@@ -42,7 +42,7 @@ public class IconHud extends BoxHudEntry {
 
 	@Override
 	public void renderComponent(AxoRenderContext context, float delta) {
-		context.drawTexture(
+		context.br$drawTexture(
 			getX(), getY(), 0, 0, width, height,
             width, height,
 			AxolotlClientCommon.BADGE_ICON
@@ -52,7 +52,7 @@ public class IconHud extends BoxHudEntry {
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
 		if(BridgeVersion.V1_8.isCurrent()) {
-			context.glColor4(1, 1, 1, 1); // TODO: figure out why 1.8.9 needs this
+			context.br$glColor4(1, 1, 1, 1); // TODO: figure out why 1.8.9 needs this
 		}
 
 		renderComponent(context, delta);

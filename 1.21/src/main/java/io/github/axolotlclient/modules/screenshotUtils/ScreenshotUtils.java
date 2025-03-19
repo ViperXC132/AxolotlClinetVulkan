@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.screenshotUtils;
 
+import io.github.axolotlclient.modules.AbstractModule;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -48,7 +49,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
-public class ScreenshotUtils extends AbstractModule0 {
+public class ScreenshotUtils extends AbstractModule {
 
 	@Getter
 	private static final ScreenshotUtils Instance = new ScreenshotUtils();
@@ -105,7 +106,7 @@ public class ScreenshotUtils extends AbstractModule0 {
 		category.add(enabled, autoExec, new GenericOption("imageViewer", "openViewer", () ->
 			client.setScreen(new GalleryScreen(client.currentScreen))));
 
-		AxolotlClient.CONFIG.general.add(category);
+		AxolotlClient.config().general.add(category);
 	}
 
 	public MutableText onScreenshotTaken(MutableText text, File shot) {

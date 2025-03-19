@@ -58,7 +58,7 @@ public abstract class GameRendererMixin {
 		Zoom.update();
 		double returnValue = cir.getReturnValue();
 
-		if (!AxolotlClient.CONFIG.dynamicFOV.get()) {
+		if (!AxolotlClient.config().dynamicFOV.get()) {
 			Entity entity = this.client.getCameraEntity();
 			double f = changingFov ? client.options.fov : 70F;
 			if (entity instanceof LivingEntity && ((LivingEntity) entity).getHealth() <= 0.0F) {
@@ -103,7 +103,7 @@ public abstract class GameRendererMixin {
 
 	@Inject(method = "bobView", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;translate(DDD)V"), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
 	private void axolotlclient$minimalViewBob(MatrixStack matrixStack, float f, CallbackInfo ci, PlayerEntity playerEntity, float g, float h, float i) {
-		if (AxolotlClient.CONFIG.minimalViewBob.get()) {
+		if (AxolotlClient.config().minimalViewBob.get()) {
 			h /= 2;
 			i /= 2;
 			matrixStack.translate((double) (MathHelper.sin(h * (float) Math.PI) * i * 0.5F), (double) (-Math.abs(MathHelper.cos(h * (float) Math.PI) * i)), 0.0);
@@ -115,7 +115,7 @@ public abstract class GameRendererMixin {
 
 	@Inject(method = "bobViewWhenHurt", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;getCameraEntity()Lnet/minecraft/entity/Entity;", ordinal = 1), cancellable = true)
 	private void axolotlclient$noHurtCam(MatrixStack matrixStack, float f, CallbackInfo ci) {
-		if (AxolotlClient.CONFIG.noHurtCam.get()) {
+		if (AxolotlClient.config().noHurtCam.get()) {
 			ci.cancel();
 		}
 	}

@@ -37,11 +37,11 @@ public class DayCounterHud extends SimpleTextHudEntry {
 
 	@Override
 	public String getValue() {
-		if (client.getWorld() == null) {
+		if (client.br$getWorld() == null) {
 			return getPlaceholder();
 		}
 
-		return AxoI18n.translate("daycounterhud.days", client.getWorld().getTimeOfDay() / 24000);
+		return AxoI18n.translate("daycounterhud.days", client.br$getWorld().br$getTimeOfDay() / 24000);
 	}
 
 	@Override

@@ -45,7 +45,7 @@ public class LoggerImpl implements Logger {
 	}
 
 	public void debug(String msg, Object... args) {
-		if (AxolotlClient.CONFIG.debugLogOutput.get()) {
+		if (AxolotlClient.config().debugLogOutput.get()) {
 			LOGGER.info(prefix + "[DEBUG] " + msg, args);
 		}
 	}

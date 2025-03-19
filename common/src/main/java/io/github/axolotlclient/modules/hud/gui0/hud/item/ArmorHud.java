@@ -25,7 +25,6 @@ package io.github.axolotlclient.modules.hud.gui0.hud.item;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
-import io.github.axolotlclient.bridge.item.AxoEnchant;
 import io.github.axolotlclient.bridge.item.AxoEnchants;
 import io.github.axolotlclient.bridge.item.AxoPlayerInventory;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
@@ -71,9 +70,9 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		boolean showMaxDurability = showMaxDurabilityNumber.get();
 		return showDurability || showMaxDurability ? items
 			.stream()
-			.filter(x -> !x.isEmpty())
+			.filter(x -> !x.br$isEmpty())
 			.map(this::getItemString)
-			.mapToInt(text -> context.getTextRenderer().getWidth(text) + 2)
+			.mapToInt(text -> context.br$getFont().br$getWidth(text) + 2)
 			.max()
 			.orElse(0) : 0;
 	}
@@ -82,32 +81,32 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		boolean showDurability = showDurabilityNumber.get();
 		boolean showMaxDurability = showMaxDurabilityNumber.get();
 		if (showDurability && showMaxDurability) {
-			return (stack.getMaxDamage() - stack.getDamage()) + "/" + stack.getMaxDamage();
+			return (stack.br$getMaxDamage() - stack.br$getDamage()) + "/" + stack.br$getMaxDamage();
 		}
 
-		return String.valueOf(showDurability ? stack.getMaxDamage() - stack.getDamage() : stack.getMaxDamage());
+		return String.valueOf(showDurability ? stack.br$getMaxDamage() - stack.br$getDamage() : stack.br$getMaxDamage());
 	}
 
 	private void renderDurabilityNumber(AxoRenderContext context, AxoItemStack stack, int x, int y) {
 		boolean showDurability = showDurabilityNumber.get();
 		boolean showMaxDurability = showMaxDurabilityNumber.get();
-		if (stack == null || !(showMaxDurability || showDurability) || stack.getMaxDamage() == 0) {
+		if (stack == null || !(showMaxDurability || showDurability) || stack.br$getMaxDamage() == 0) {
 			return;
 		}
 		String text = getItemString(stack);
-		int textY = y + 10 - context.getTextRenderer().getFontHeight() / 2;
-		float f = (float) stack.getDamage();
-		float g = (float) stack.getMaxDamage();
+		int textY = y + 10 - context.br$getFont().br$getFontHeight() / 2;
+		float f = (float) stack.br$getDamage();
+		float g = (float) stack.br$getMaxDamage();
 		float h = Math.max(0.0F, (g - f) / g);
 		int j = java.awt.Color.HSBtoRGB(h / 3.0F, 1.0F, 1.0F);
-		context.drawString(text, x, textY, (((255 << 8) + (j >> 16 & 255) << 8) + (j >> 8 & 255) << 8) + (j & 255), false);
+		context.br$drawString(text, x, textY, (((255 << 8) + (j >> 16 & 255) << 8) + (j >> 8 & 255) << 8) + (j & 255), false);
 	}
 
 	private void renderItem(AxoRenderContext context, AxoItemStack stack, int x, int y, int offset, String mainItemOverride) {
 		renderDurabilityNumber(context, stack, x, y);
 		x += offset;
-		context.renderGuiItemModel(stack, x, y);
-		context.renderGuiItemOverlay(stack, x, y, mainItemOverride, textColor.get().toInt(), shadow.get());
+		context.br$renderGuiItemModel(stack, x, y);
+		context.br$renderGuiItemOverlay(stack, x, y, mainItemOverride, textColor.get().toInt(), shadow.get());
 	}
 
 	private void renderComponent(AxoRenderContext context, List<AxoItemStack> items, int mainItemCountOverride) {
@@ -123,13 +122,13 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 
 		for (int i = 0; i < items.size(); i++) {
 			AxoItemStack item = items.get(i);
-			if (!item.isEmpty()) {
+			if (!item.br$isEmpty()) {
 
-				final var itemForRendering = item.copy();
+				final var itemForRendering = item.br$copy();
 
 				if (showProtLvl.get()) {
-					if (itemForRendering.hasEnchantment(AxoEnchants.PROTECTION)) {
-						itemForRendering.setCount(itemForRendering.getEnchantment(AxoEnchants.PROTECTION));
+					if (itemForRendering.br$hasEnchantment(AxoEnchants.PROTECTION)) {
+						itemForRendering.br$setCount(itemForRendering.br$getEnchantment(AxoEnchants.PROTECTION));
 					}
 				}
 
@@ -148,19 +147,19 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 
 	@Override
 	public void renderComponent(AxoRenderContext context, float delta) {
-		if (client.getPlayer() == null) {
+		if (client.br$getPlayer() == null) {
 			return;
 		}
 
-		AxoPlayerInventory inventory = client.getPlayer().getInventory();
+		AxoPlayerInventory inventory = client.br$getPlayer().br$getInventory();
 
 		renderComponent(
 			context,
 			Stream.concat(
-				Stream.of(inventory.getMainHand()),
-				inventory.getArmor().stream()
+				Stream.of(inventory.br$getMainHand()),
+				inventory.br$getArmor().stream()
 			).toList(),
-			ItemUtil.getTotal(inventory, inventory.getMainHand().getItem())
+			ItemUtil.getTotal(inventory, inventory.br$getMainHand().br$getItem())
 		);
 	}
 

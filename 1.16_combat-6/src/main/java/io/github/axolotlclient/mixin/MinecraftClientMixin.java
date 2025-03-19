@@ -49,7 +49,7 @@ public abstract class MinecraftClientMixin {
 	 */
 	@Inject(method = "getWindowTitle", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$getWindowTitle(CallbackInfoReturnable<String> cir) {
-		if (AxolotlClient.CONFIG.customWindowTitle.get()) {
+		if (AxolotlClient.config().customWindowTitle.get()) {
 			cir.setReturnValue("AxolotlClient" + " " + SharedConstants.getGameVersion().getName());
 		}
 	}

@@ -66,13 +66,13 @@ public abstract class SimpleTextHudEntry extends TextHudEntry implements Dynamic
 
 	@Override
 	public void renderComponent(AxoRenderContext render, float delta) {
-		render.glEnableBlend();
+		render.br$glEnableBlend();
 		// render.blendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		// render.glDisableTexture();
 		DrawPosition pos = getPos();
 		String value = wrapWithBrackets(getValue());
 
-		int valueWidth = render.getTextRenderer().getWidth(value);
+		int valueWidth = render.br$getFont().br$getWidth(value);
 		int elementWidth = valueWidth + 4;
 
 		int min = minWidth.get();
@@ -85,7 +85,7 @@ public abstract class SimpleTextHudEntry extends TextHudEntry implements Dynamic
 			setWidth(elementWidth);
 			onBoundsUpdate();
 		}
-		render.drawString(value,
+		render.br$drawString(value,
 			pos.x() + justification.get().getXOffset(valueWidth, getWidth() - 4) + 2,
 			pos.y() + (Math.round((float) getHeight() / 2)) - 4, getTextColor().toInt(), shadow.get());
 		// render.glEnableTexture();
@@ -96,7 +96,7 @@ public abstract class SimpleTextHudEntry extends TextHudEntry implements Dynamic
 	public void renderPlaceholderComponent(AxoRenderContext ctx, float delta) {
 		DrawPosition pos = getPos();
 		String value = wrapWithBrackets(getPlaceholder());
-		ctx.drawString(value, pos.x() + justification.get().getXOffset(value, getWidth() - 4) + 2,
+		ctx.br$drawString(value, pos.x() + justification.get().getXOffset(value, getWidth() - 4) + 2,
 			pos.y() + (Math.round((float) getHeight() / 2)) - 4, getTextColor().toInt(), shadow.get());
 	}
 

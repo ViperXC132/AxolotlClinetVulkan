@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.blur;
 
+import io.github.axolotlclient.modules.AbstractModule;
 import java.io.IOException;
 
 import com.google.gson.JsonSyntaxException;
@@ -65,7 +66,7 @@ public class MotionBlur extends AbstractModule {
 	public void init() {
 		category.add(enabled, strength, inGuis);
 
-		AxolotlClient.CONFIG.rendering.add(category);
+		AxolotlClient.config().rendering.add(category);
 		AxolotlClient.runtimeResources.put(shaderLocation, new MotionBlurShader());
 	}
 

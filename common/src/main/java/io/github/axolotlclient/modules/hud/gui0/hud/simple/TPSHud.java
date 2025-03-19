@@ -45,7 +45,7 @@ public class TPSHud extends SimpleTextHudEntry {
 
 	@Override
 	public void init() {
-		Events.UPDATE_TIME.defaultPhase().register(ticks -> {
+		Events.UPDATE_TIME.register(ticks -> {
 			if (lastTick < 0) {
 				lastTick = ticks;
 				lastUpdate = System.nanoTime();

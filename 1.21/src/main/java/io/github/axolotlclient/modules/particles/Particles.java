@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.particles;
 
+import io.github.axolotlclient.modules.AbstractModule;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -60,7 +61,7 @@ public class Particles extends AbstractModule {
 		cat.add(enabled);
 
 		addParticleOptions();
-		AxolotlClient.CONFIG.rendering.add(cat);
+		AxolotlClient.config().rendering.add(cat);
 	}
 
 	private void addParticleOptions() {

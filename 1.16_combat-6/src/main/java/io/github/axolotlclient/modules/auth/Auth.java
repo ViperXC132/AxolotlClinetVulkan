@@ -77,7 +77,7 @@ public class Auth extends Accounts implements Module {
 
 		OptionCategory category = OptionCategory.create("auth");
 		category.add(showButton, viewAccounts);
-		AxolotlClient.CONFIG.general.add(category);
+		AxolotlClient.config().general.add(category);
 	}
 
 	@Override

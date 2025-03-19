@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.particles;
 
+import io.github.axolotlclient.modules.AbstractModule;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,6 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.mixin.ParticleAccessor;
-import io.github.axolotlclient.modules.AbstractModule0;
 import io.github.axolotlclient.util.ClientColors;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.particle.ParticleType;
@@ -60,7 +60,7 @@ public class Particles extends AbstractModule {
 		cat.add(enabled);
 
 		addParticleOptions();
-		AxolotlClient.CONFIG.rendering.add(cat);
+		AxolotlClient.config().rendering.add(cat);
 	}
 
 	private void addParticleOptions() {

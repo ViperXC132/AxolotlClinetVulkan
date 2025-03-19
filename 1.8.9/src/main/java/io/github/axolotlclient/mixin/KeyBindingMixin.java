@@ -48,7 +48,8 @@ public abstract class KeyBindingMixin {
 	@Inject(method = "set", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/KeyBinding;pressed:Z"))
 	private static void axolotlclient$onPress(int keyCode, boolean pressed, CallbackInfo ci, @Local KeyBinding key) {
 		if (pressed) {
-			Events.KEY_INPUT.invoker().accept(key.getBoundKey());
+			// TODO: handle event for unbound keys as well
+			Events.KEY_INPUT.invoker().accept(key.br$getBoundKey());
 			io.github.axolotlclient.util.events.Events.KEY_PRESS.invoker().invoke(new KeyPressEvent(key));
 		}
 	}

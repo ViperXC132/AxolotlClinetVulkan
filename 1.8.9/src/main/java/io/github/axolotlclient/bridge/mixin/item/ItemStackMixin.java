@@ -1,3 +1,25 @@
+/*
+ * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
+ *
+ * This file is part of AxolotlClient.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ * For more information, see the LICENSE file.
+ */
+
 package io.github.axolotlclient.bridge.mixin.item;
 
 import com.google.common.base.Preconditions;
@@ -19,10 +41,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(ItemStack.class)
-@Implements({
-	@Interface(iface = AxoItemStack.class, prefix = "bridge$")
-})
-public abstract class ItemStackMixin {
+public abstract class ItemStackMixin implements AxoItemStack{
 	@Shadow
 	public abstract Item getItem();
 
@@ -47,7 +66,8 @@ public abstract class ItemStackMixin {
 	@Shadow
 	public abstract void addEnchantment(Enchantment enchantment, int level);
 
-	public AxoItem bridge$getItem() {
+	@Override
+	public AxoItem br$getItem() {
 		if (size == 0) {
 			return AxoItems.AIR;
 		}
@@ -55,25 +75,28 @@ public abstract class ItemStackMixin {
 		return getItem();
 	}
 
-	public AxoItemStack bridge$copy() {
+	@Override
+	public AxoItemStack br$copy() {
 		return copy();
 	}
 
-	public void bridge$setCount(int count) {
+	@Override
+	public void br$setCount(int count) {
 		size = count;
 	}
 
-	public int bridge$getCount() {
+	@Override
+	public int br$getCount() {
 		return size;
 	}
 
-	@Intrinsic
-	public int bridge$getDamage() {
+	@Override
+	public int br$getDamage() {
 		return getDamage();
 	}
 
-	@Intrinsic
-	public int bridge$getMaxDamage() {
+
+	@Override	public int br$getMaxDamage() {
 		return getMaxDamage();
 	}
 
@@ -94,13 +117,15 @@ public abstract class ItemStackMixin {
 		return null;
 	}
 
-	public int bridge$getEnchantment(AxoEnchant enchant) {
+	@Override
+	public int br$getEnchantment(AxoEnchant enchant) {
 		Preconditions.checkArgument(enchant != null, "enchant != null");
 		final var data = axolotlclient$getEnchantment(((Enchantment) enchant).id);
 		return data == null ? 0 : data.getShort("lvl");
 	}
 
-	public void bridge$setEnchantment(AxoEnchant enchant, int level) {
+	@Override
+	public void br$setEnchantment(AxoEnchant enchant, int level) {
 		Preconditions.checkArgument(enchant != null, "enchant != null");
 		Preconditions.checkArgument(level > 1, "level > 1");
 
@@ -114,7 +139,8 @@ public abstract class ItemStackMixin {
 		}
 	}
 
-	public void bridge$removeEnchantment(AxoEnchant enchant) {
+	@Override
+	public void br$removeEnchantment(AxoEnchant enchant) {
 		final var enchants = getEnchantments();
 		if (enchants == null) {
 			return;

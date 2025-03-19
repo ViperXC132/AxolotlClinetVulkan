@@ -1,3 +1,25 @@
+/*
+ * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
+ *
+ * This file is part of AxolotlClient.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ * For more information, see the LICENSE file.
+ */
+
 package io.github.axolotlclient.bridge.mixin.key;
 
 import com.llamalad7.mixinextras.sugar.Local;
@@ -7,9 +29,6 @@ import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.client.options.KeyBinding;
-import org.spongepowered.asm.mixin.Implements;
-import org.spongepowered.asm.mixin.Interface;
-import org.spongepowered.asm.mixin.Intrinsic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -21,44 +40,44 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * An abstract representation of a keybind
  */
 @Mixin(KeyBinding.class)
-@Implements({
-	@Interface(iface = AxoKeybinding.class, prefix = "bridge$")
-})
-public abstract class KeyBindingMixin {
+public abstract class KeyBindingMixin implements AxoKeybinding {
 	@Shadow
 	public abstract boolean isPressed();
 
 	@Shadow
 	private int keyCode;
 	@Unique
-	private final List<Runnable> axolotlclient$bridge$onClicked = new ArrayList<>();
+	private final List<Runnable> axolotlclient$onClicked = new ArrayList<>();
 
 	@Unique
-	private final List<Runnable> axolotlclient$bridge$onReleased = new ArrayList<>();
+	private final List<Runnable> axolotlclient$onReleased = new ArrayList<>();
 
 	@Inject(method = "set", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/KeyBinding;pressed:Z"))
 	private static void dispatchHandlers(int i, boolean bl, CallbackInfo ci, @Local KeyBinding binding) {
 		if (bl) {
-			((KeyBindingMixin) (Object) binding).axolotlclient$bridge$onClicked.forEach(Runnable::run);
+			((KeyBindingMixin) (Object) binding).axolotlclient$onClicked.forEach(Runnable::run);
 		} else {
-			((KeyBindingMixin) (Object) binding).axolotlclient$bridge$onReleased.forEach(Runnable::run);
+			((KeyBindingMixin) (Object) binding).axolotlclient$onReleased.forEach(Runnable::run);
 		}
 	}
 
-	public void bridge$registerOnClicked(Runnable runnable) {
-		axolotlclient$bridge$onClicked.add(runnable);
+	@Override
+	public void br$registerOnClicked(Runnable runnable) {
+		axolotlclient$onClicked.add(runnable);
 	}
 
-	public void bridge$registerOnReleased(Runnable runnable) {
-		axolotlclient$bridge$onReleased.add(runnable);
+	@Override
+	public void br$registerOnReleased(Runnable runnable) {
+		axolotlclient$onReleased.add(runnable);
 	}
 
-	@Intrinsic
-	public boolean bridge$isPressed() {
+	@Override
+	public boolean br$isPressed() {
 		return isPressed();
 	}
 
-	public AxoKey bridge$getBoundKey() {
+	@Override
+	public AxoKey br$getBoundKey() {
 		return AxoKeyImpl.get(keyCode);
 	}
 }

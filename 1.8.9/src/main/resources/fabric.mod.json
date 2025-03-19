@@ -44,7 +44,7 @@
 				"io/github/axolotlclient/bridge/AxoMinecraftClient"
 			],
 			"net/minecraft/unmapped/C_3831727": [
-				"io/github/axolotlclient/bridge/render/AxoTextRenderer"
+				"io/github/axolotlclient/bridge/render/AxoFont"
 			],
 			"net/minecraft/unmapped/C_7799337": [
 				"io/github/axolotlclient/bridge/render/AxoWindow"
