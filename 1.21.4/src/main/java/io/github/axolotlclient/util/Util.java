@@ -47,29 +47,16 @@ public class Util {
 	public static String lastgame;
 	public static String game;
 
-	/**
-	 * Gets the amount of ticks in between start and end, on a 24000 tick system.
-	 *
-	 * @param start The start of the time you wish to measure
-	 * @param end   The end of the time you wish to measure
-	 * @return The amount of ticks in between start and end
-	 */
-	public static int getTicksBetween(int start, int end) {
-		if (end < start)
-			end += 24000;
-		return end - start;
-	}
-
 	public static String getGame() {
 		List<String> sidebar = getSidebar();
 
 		if (sidebar.isEmpty())
 			game = "";
 		else if (Minecraft.getInstance().getCurrentServer() != null
-				 && Minecraft.getInstance().getCurrentServer().ip.toLowerCase()
-					 .contains(sidebar.getFirst().toLowerCase())) {
+			&& Minecraft.getInstance().getCurrentServer().ip.toLowerCase()
+			.contains(sidebar.getFirst().toLowerCase())) {
 			if (sidebar.getLast().toLowerCase(Locale.ROOT)
-					.contains(Minecraft.getInstance().getCurrentServer().ip.toLowerCase(Locale.ROOT))
+				.contains(Minecraft.getInstance().getCurrentServer().ip.toLowerCase(Locale.ROOT))
 				|| sidebar.getLast().contains("Playtime")) {
 				game = "In Lobby";
 			} else {
@@ -168,7 +155,7 @@ public class Util {
 		}
 	}
 
-	public static void sendChatMessage(Component msg) {
+	public static void addMessageToChatHud(Component msg) {
 		Minecraft.getInstance().gui.getChat().addMessage(msg);
 	}
 
@@ -177,7 +164,7 @@ public class Util {
 	}
 
 	public static ResourceLocation getTexture(Graphics graphics, String name) {
-		ResourceLocation id = ResourceLocation.fromNamespaceAndPath("axolotlclient", "graphics_"+ name.toLowerCase(Locale.ROOT));
+		ResourceLocation id = ResourceLocation.fromNamespaceAndPath("axolotlclient", "graphics_" + name.toLowerCase(Locale.ROOT));
 		try {
 			DynamicTexture texture;
 			if (!textures.containsKey(id)) {

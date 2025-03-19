@@ -30,10 +30,8 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tessellator;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.freelook.Perspective;
-import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.modules.hypixel.levelhead.LevelHead;
-import io.github.axolotlclient.modules.hypixel.levelhead.LevelHeadMode;
 import io.github.axolotlclient.util.BadgeRenderer;
 import io.github.axolotlclient.util.Util;
 import net.minecraft.client.Minecraft;
@@ -65,7 +63,7 @@ public abstract class EntityRendererMixin<T extends Entity> {
 		}
 	}
 
-	@Inject(method = "renderNameTag(Lnet/minecraft/entity/Entity;Ljava/lang/String;DDDI)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/TextRenderer;draw(Ljava/lang/String;III)I", ordinal = 0))
+	@Inject(method = "renderNameTag(Lnet/minecraft/entity/Entity;Ljava/lang/String;DDDI)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/TextRenderer;draw(Ljava/lang/String;III)I", ordinal = 1))
 	public void axolotlclient$addBadges(T entity, String string, double d, double e, double f, int i, CallbackInfo ci) {
 		if (entity instanceof ClientPlayerEntity && string.equals(entity.getDisplayName().getFormattedString()))
 			BadgeRenderer.renderNametagBadge(entity);
@@ -91,11 +89,7 @@ public abstract class EntityRendererMixin<T extends Entity> {
 						axolotlclient$drawLevelHead(levelhead);
 					}
 				} else if (LevelHead.getInstance().enabled.get()) {
-					String text = "Level: " + HypixelAbstractionLayer.getPlayerLevel(String.valueOf(entity.getUuid()), LevelHead.getInstance().mode.get());
-
-					if (LevelHead.getInstance().mode.get().equals(LevelHeadMode.BEDWARS)) {
-						text += "☆";
-					}
+					String text = LevelHead.getInstance().getDisplayString(entity.getUuid().toString());
 
 					axolotlclient$drawLevelHead(text);
 				}

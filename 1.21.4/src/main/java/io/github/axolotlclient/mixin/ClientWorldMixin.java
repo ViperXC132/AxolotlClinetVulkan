@@ -47,7 +47,7 @@ public abstract class ClientWorldMixin {
 		Entity entity = this.getEntities().get(entityId);
 		if (entity instanceof Player && HypixelMods.getInstance().cacheMode.get()
 			.equals(HypixelMods.HypixelCacheMode.ON_PLAYER_DISCONNECT)) {
-			HypixelAbstractionLayer.handleDisconnectEvents(entity.getUUID());
+			HypixelAbstractionLayer.getInstance().handleDisconnectEvents(entity.getUUID());
 		}
 	}
 

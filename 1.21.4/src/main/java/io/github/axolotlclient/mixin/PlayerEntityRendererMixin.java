@@ -22,35 +22,39 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.hypixel.nickhider.NickHider;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.entity.state.PlayerRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArgs;
-import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(PlayerRenderer.class)
 public abstract class PlayerEntityRendererMixin {
 
-	@ModifyArgs(method = "renderNameTag(Lnet/minecraft/client/renderer/entity/state/PlayerRenderState;Lnet/minecraft/network/chat/Component;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
+	@WrapOperation(method = "renderNameTag(Lnet/minecraft/client/renderer/entity/state/PlayerRenderState;Lnet/minecraft/network/chat/Component;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/LivingEntityRenderer;renderNameTag(Lnet/minecraft/client/renderer/entity/state/EntityRenderState;Lnet/minecraft/network/chat/Component;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V"))
-	private void axolotlclient$modifiyName(Args args) {
+	private void axolotlclient$modifiyName(PlayerRenderer instance, EntityRenderState entityRenderState, Component component, PoseStack poseStack, MultiBufferSource source, int i, Operation<Void> original, @Local(argsOnly = true) PlayerRenderState state) {
 		if (AxolotlClient.CONFIG != null) {
-			PlayerRenderState state = args.get(0);
 			Level level = Minecraft.getInstance().level;
 			Entity player = level.getEntity(state.id);
 			boolean self = player.getUUID() == Minecraft.getInstance().player.getUUID();
 			if (self && NickHider.getInstance().hideOwnName.get()) {
-				args.set(1, Component.literal(NickHider.getInstance().hiddenNameSelf.get()));
+				component = NickHider.getInstance().editComponent(component, player.getName().getString(), NickHider.getInstance().hiddenNameSelf.get());
 			} else if (!self && NickHider.getInstance().hideOtherNames.get()) {
-				args.set(1, Component.literal(NickHider.getInstance().hiddenNameOthers.get()));
+				component = NickHider.getInstance().editComponent(component, player.getName().getString(), NickHider.getInstance().hiddenNameOthers.get());
 			}
 		}
+		original.call(instance, entityRenderState, component, poseStack, source, i);
 	}
 }

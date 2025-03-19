@@ -27,10 +27,7 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.*;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
@@ -62,6 +59,9 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 	private final IntegerOption decimalPlaces = new IntegerOption("decimalplaces", 0, 0, 15);
 	private final BooleanOption minimal = new BooleanOption("minimal", false);
 	private final BooleanOption biome = new BooleanOption("show_biome", false);
+	private final StringOption delimiter = new StringOption("coordshud.delimiter", ": ");
+	private final StringOption separator = new StringOption("coordshud.separator", ", ");
+	private final ColorOption separatorColor = new ColorOption("coordshud.separator.color", firstColor.getDefault());
 
 	private final EnumOption<AnchorPoint> anchor =
 		new EnumOption<>("anchorpoint", AnchorPoint.class, AnchorPoint.TOP_MIDDLE);
@@ -139,16 +139,17 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		String direction = getWordedDirection(dir);
 		Font textRenderer = client.font;
 		int width, height;
+		int xStart = pos.x() + 2;
 		if (minimal.get()) {
-			int currPos = pos.x() + 1;
-			String separator = ", ";
-			currPos = graphics.drawString(textRenderer, "XYZ: ", currPos, pos.y() + 2, firstColor.get().toInt(), shadow.get());
+			int currPos = xStart;
+			String separator = this.separator.get();
+			currPos = graphics.drawString(textRenderer, "XYZ" + delimiter.get(), currPos, pos.y() + 2, firstColor.get().toInt(), shadow.get());
 			currPos = graphics.drawString(textRenderer, df.format(x), currPos, pos.y() + 2, secondColor.get().toInt(),
 				shadow.get());
-			currPos = graphics.drawString(textRenderer, separator, currPos, pos.y() + 2, firstColor.get().toInt(), shadow.get());
+			currPos = graphics.drawString(textRenderer, separator, currPos, pos.y() + 2, separatorColor.get().toInt(), shadow.get());
 			currPos = graphics.drawString(textRenderer, df.format(y), currPos, pos.y() + 2, secondColor.get().toInt(),
 				shadow.get());
-			currPos = graphics.drawString(textRenderer, separator, currPos, pos.y() + 2, firstColor.get().toInt(), shadow.get());
+			currPos = graphics.drawString(textRenderer, separator, currPos, pos.y() + 2, separatorColor.get().toInt(), shadow.get());
 			currPos = graphics.drawString(textRenderer, df.format(z), currPos, pos.y() + 2, secondColor.get().toInt(),
 				shadow.get());
 			width = currPos - pos.x() + 2;
@@ -156,18 +157,18 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		} else {
 			int xEnd;
 			int yEnd = pos.y() + 2;
-			graphics.drawString(textRenderer, "X", pos.x() + 1, yEnd, firstColor.get().toInt(), shadow.get());
+			graphics.drawString(textRenderer, "X", xStart, yEnd, firstColor.get().toInt(), shadow.get());
 			xEnd = graphics.drawString(textRenderer, df.format(x), pos.x() + 11, yEnd,
 				secondColor.get().toInt(), shadow.get());
 			yEnd += 10;
 
-			graphics.drawString(textRenderer, "Y", pos.x() + 1, yEnd, firstColor.get().toInt(), shadow.get());
+			graphics.drawString(textRenderer, "Y", xStart, yEnd, firstColor.get().toInt(), shadow.get());
 			xEnd = Math.max(xEnd, graphics.drawString(textRenderer, df.format(y), pos.x() + 11, yEnd,
 				secondColor.get().toInt(), shadow.get()));
 
 			yEnd += 10;
 
-			graphics.drawString(textRenderer, "Z", pos.x() + 1, yEnd, firstColor.get().toInt(), shadow.get());
+			graphics.drawString(textRenderer, "Z", xStart, yEnd, firstColor.get().toInt(), shadow.get());
 
 			xEnd = Math.max(xEnd, graphics.drawString(textRenderer, df.format(z), pos.x() + 11, yEnd,
 				secondColor.get().toInt(), shadow.get()));
@@ -183,13 +184,13 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 				shadow.get());
 			graphics.drawString(textRenderer, getZDir(dir), xEnd, pos.y() + 22, secondColor.get().toInt(),
 				shadow.get());
-			xEnd += 19;
+			xEnd += 14;
 			width = xEnd - pos.x();
 			height = yEnd + 1 - pos.y();
 		}
 		if (biome.get() && y >= client.level.getMinY() && y < client.level.getMaxY()) {
 			BlockPos b = new BlockPos(Mth.floor(x), Mth.floor(y), Mth.floor(z));
-			int bX = graphics.drawString(textRenderer, I18n.get("coordshud.biome"), pos.x() + 1, height + pos.y(), firstColor.get().toInt(), shadow.get());
+			int bX = graphics.drawString(textRenderer, I18n.get("coordshud.biome"), xStart, height + pos.y(), firstColor.get().toInt(), shadow.get());
 			bX += 5;
 			width = Math.max(width + pos.x() - 1, graphics.drawString(textRenderer, getBiomeName(this.client.level.getBiome(b).unwrap().left().orElse(null)), bX, height + pos.y(), secondColor.get().toInt(), shadow.get())) - pos.x() + 1;
 			height += 10;
@@ -214,7 +215,7 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		}
 		String path = biome.location().getPath();
 		if (!biome.location().getNamespace().equals("minecraft")) {
-			path += "("+biome.location().getNamespace()+")";
+			path += "(" + biome.location().getNamespace() + ")";
 		}
 		final String str = path.replace("_", " ");
 		if (str.isEmpty()) {
@@ -269,16 +270,17 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		String direction = getWordedDirection(dir);
 		Font textRenderer = client.font;
 		int width, height;
+		int xStart = pos.x() + 2;
 		if (minimal.get()) {
-			int currPos = pos.x() + 1;
-			String separator = ", ";
-			currPos = graphics.drawString(textRenderer, "XYZ: ", currPos, pos.y() + 2, firstColor.get().toInt(), shadow.get());
+			int currPos = xStart;
+			String separator = this.separator.get();
+			currPos = graphics.drawString(textRenderer, "XYZ" + delimiter.get(), currPos, pos.y() + 2, firstColor.get().toInt(), shadow.get());
 			currPos = graphics.drawString(textRenderer, df.format(x), currPos, pos.y() + 2, secondColor.get().toInt(),
 				shadow.get());
-			currPos = graphics.drawString(textRenderer, separator, currPos, pos.y() + 2, firstColor.get().toInt(), shadow.get());
+			currPos = graphics.drawString(textRenderer, separator, currPos, pos.y() + 2, separatorColor.get().toInt(), shadow.get());
 			currPos = graphics.drawString(textRenderer, df.format(y), currPos, pos.y() + 2, secondColor.get().toInt(),
 				shadow.get());
-			currPos = graphics.drawString(textRenderer, separator, currPos, pos.y() + 2, firstColor.get().toInt(), shadow.get());
+			currPos = graphics.drawString(textRenderer, separator, currPos, pos.y() + 2, separatorColor.get().toInt(), shadow.get());
 			currPos = graphics.drawString(textRenderer, df.format(z), currPos, pos.y() + 2, secondColor.get().toInt(),
 				shadow.get());
 			width = currPos - pos.x() + 2;
@@ -286,18 +288,18 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		} else {
 			int xEnd;
 			int yEnd = pos.y() + 2;
-			graphics.drawString(textRenderer, "X", pos.x() + 1, yEnd, firstColor.get().toInt(), shadow.get());
+			graphics.drawString(textRenderer, "X", xStart, yEnd, firstColor.get().toInt(), shadow.get());
 			xEnd = graphics.drawString(textRenderer, df.format(x), pos.x() + 11, yEnd,
 				secondColor.get().toInt(), shadow.get());
 			yEnd += 10;
 
-			graphics.drawString(textRenderer, "Y", pos.x() + 1, yEnd, firstColor.get().toInt(), shadow.get());
+			graphics.drawString(textRenderer, "Y", xStart, yEnd, firstColor.get().toInt(), shadow.get());
 			xEnd = Math.max(xEnd, graphics.drawString(textRenderer, df.format(y), pos.x() + 11, yEnd,
 				secondColor.get().toInt(), shadow.get()));
 
 			yEnd += 10;
 
-			graphics.drawString(textRenderer, "Z", pos.x() + 1, yEnd, firstColor.get().toInt(), shadow.get());
+			graphics.drawString(textRenderer, "Z", xStart, yEnd, firstColor.get().toInt(), shadow.get());
 
 			xEnd = Math.max(xEnd, graphics.drawString(textRenderer, df.format(z), pos.x() + 11, yEnd,
 				secondColor.get().toInt(), shadow.get()));
@@ -313,12 +315,12 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 				shadow.get());
 			graphics.drawString(textRenderer, getZDir(dir), xEnd, pos.y() + 22, secondColor.get().toInt(),
 				shadow.get());
-			xEnd += 19;
+			xEnd += 14;
 			width = xEnd - pos.x();
 			height = yEnd + 1 - pos.y();
 		}
 		if (biome.get()) {
-			int bX = graphics.drawString(textRenderer, I18n.get("coordshud.biome"), pos.x() + 1, height + pos.y(), firstColor.get().toInt(), shadow.get());
+			int bX = graphics.drawString(textRenderer, I18n.get("coordshud.biome"), xStart, height + pos.y(), firstColor.get().toInt(), shadow.get());
 			bX += 5;
 			width = Math.max(width + pos.x() - 1, graphics.drawString(textRenderer, getBiomeName(Biomes.PLAINS), bX, height + pos.y(), secondColor.get().toInt(), shadow.get())) - pos.x() + 1;
 			height += 10;
@@ -347,6 +349,9 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		options.add(minimal);
 		options.add(biome);
 		options.add(anchor);
+		options.add(delimiter);
+		options.add(separator);
+		options.add(separatorColor);
 		return options;
 	}
 

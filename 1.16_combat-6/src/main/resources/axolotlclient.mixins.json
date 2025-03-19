@@ -28,7 +28,9 @@
 		"HandledScreenMixin",
 		"InGameHudMixin",
 		"InGameOverlayRendererMixin",
+		"InputUtilTypeMixin",
 		"ItemEntityRendererMixin",
+		"KeyBindAccessor",
 		"KeyBindMixin",
 		"KeyboardInputMixin",
 		"LightmapManagerMixin",
@@ -57,7 +59,8 @@
 		"TntEntityRendererMixin",
 		"WorldListWidgetEntryMixin",
 		"WorldRendererAccessor",
-		"WorldRendererMixin"
+		"WorldRendererMixin",
+		"translation.LanguageMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

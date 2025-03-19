@@ -24,14 +24,17 @@ package io.github.axolotlclient.mixin;
 
 import java.util.List;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.api.requests.UserRequest;
-import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
+import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsGame;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsPlayer;
+import io.github.axolotlclient.modules.hypixel.levelhead.LevelHead;
 import io.github.axolotlclient.modules.hypixel.levelhead.LevelHeadMode;
 import io.github.axolotlclient.modules.hypixel.nickhider.NickHider;
 import io.github.axolotlclient.modules.tablist.Tablist;
@@ -47,8 +50,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -75,20 +76,20 @@ public abstract class PlayerListHudMixin {
 	@Final
 	private MinecraftClient client;
 
-	@Inject(method = "getPlayerName", at = @At("HEAD"), cancellable = true)
-	public void axolotlclient$nickHider(PlayerListEntry playerEntry, CallbackInfoReturnable<Text> cir) {
-		assert MinecraftClient.getInstance().player != null;
-		if (playerEntry.getProfile().equals(MinecraftClient.getInstance().player.getGameProfile())
-			&& NickHider.getInstance().hideOwnName.get()) {
-			cir.setReturnValue(this.method_27538(playerEntry, new LiteralText(NickHider.getInstance().hiddenNameSelf.get())));
-		} else if (!playerEntry.getProfile().equals(MinecraftClient.getInstance().player.getGameProfile())
-				   && NickHider.getInstance().hideOtherNames.get()) {
-			cir.setReturnValue(this.method_27538(playerEntry, new LiteralText(NickHider.getInstance().hiddenNameOthers.get())));
+	@WrapMethod(method = "getPlayerName")
+	private Text nickHider(PlayerListEntry entry, Operation<Text> original) {
+		var orig = original.call(entry);
+		if (client.player == null) {
+			return orig;
 		}
+		if (entry.getProfile().equals(client.player.getGameProfile()) && NickHider.getInstance().hideOwnName.get()) {
+			return NickHider.getInstance().editComponent(orig, entry.getProfile().getName(), NickHider.getInstance().hiddenNameSelf.get());
+		} else if (!entry.getProfile().equals(client.player.getGameProfile()) &&
+			NickHider.getInstance().hideOtherNames.get()) {
+			return NickHider.getInstance().editComponent(orig, entry.getProfile().getName(), NickHider.getInstance().hiddenNameOthers.get());
+		}
+		return orig;
 	}
-
-	@Shadow
-	protected abstract Text method_27538(PlayerListEntry par1, MutableText par2);
 
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/PlayerListHud;getPlayerName(Lnet/minecraft/client/network/PlayerListEntry;)Lnet/minecraft/text/Text;"))
 	public PlayerListEntry axolotlclient$getPlayer(PlayerListEntry playerEntry) {
@@ -115,17 +116,6 @@ public abstract class PlayerListHudMixin {
 		}
 		axolotlclient$profile = null;
 		return instance.drawWithShadow(matrices, text, x, y, color);
-	}
-
-	@ModifyArg(method = "getPlayerName", at = @At(value = "INVOKE", target = "Lnet/minecraft/scoreboard/Team;modifyText(Lnet/minecraft/scoreboard/AbstractTeam;Lnet/minecraft/text/Text;)Lnet/minecraft/text/MutableText;"), index = 1)
-	public Text axolotlclient$hideNames(Text par2) {
-		if (NickHider.getInstance().hideOwnName.get()) {
-			return new LiteralText(NickHider.getInstance().hiddenNameSelf.get());
-		}
-		if (NickHider.getInstance().hideOtherNames.get()) {
-			return new LiteralText(NickHider.getInstance().hiddenNameOthers.get());
-		}
-		return par2;
 	}
 
 	@Inject(method = "renderLatencyIcon", at = @At("HEAD"), cancellable = true)
@@ -192,9 +182,8 @@ public abstract class PlayerListHudMixin {
 				return;
 			}
 
-			render = String.valueOf(HypixelAbstractionLayer.getPlayerLevel(playerListEntry2
-					.getProfile().getId().toString().replace("-", ""),
-				LevelHeadMode.BEDWARS));
+			String uuid = UUIDHelper.toUndashed(playerListEntry2.getProfile().getId());
+			render = LevelHead.getDisplayString(LevelHeadMode.BEDWARS, uuid);
 		} catch (Exception e) {
 			return;
 		}

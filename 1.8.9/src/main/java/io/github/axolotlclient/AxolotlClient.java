@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.google.gson.JsonObject;
 import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
@@ -67,7 +68,7 @@ public class AxolotlClient implements ClientModInitializer {
 
 	public static final String MODID = "axolotlclient";
 	public static final HashMap<Identifier, Resource> runtimeResources = new HashMap<>();
-	public static final Identifier badgeIcon = new Identifier("axolotlclient", "textures/badge.png");
+	public static final Identifier badgeIcon = new Identifier(MODID, "textures/badge.png");
 	public static final OptionCategory config = OptionCategory.create("storedOptions");
 	public static final BooleanOption someNiceBackground = new BooleanOption("defNoSecret", false);
 	public static final List<Module> modules = new ArrayList<>();
@@ -100,10 +101,6 @@ public class AxolotlClient implements ClientModInitializer {
 		modules.addAll(ModuleLoader.loadExternalModules());
 	}
 
-	public static void tickClient() {
-		modules.forEach(Module::tick);
-	}
-
 	@Override
 	public void onInitializeClient() {
 
@@ -125,9 +122,17 @@ public class AxolotlClient implements ClientModInitializer {
 
 		CONFIG.getConfig().add(config);
 
-		AxolotlClientConfig.getInstance().register(configManager = new VersionedJsonConfigManager(FabricLoader.getInstance().getConfigDir().resolve("AxolotlClient.json"),
-			CONFIG.getConfig(), 1, (oldVersion, newVersion, config, json) -> {
-			// convert changed Options between versions here
+		AxolotlClientConfig.getInstance().register(configManager = new VersionedJsonConfigManager(AxolotlClientCommon.getInstance().getMainConfigFile(),
+			CONFIG.getConfig(), 2, (oldVersion, newVersion, config, json) -> {
+			if (oldVersion.getMajor() == 1) {
+				var keystrokes = json.get("hud").getAsJsonObject().get("keystrokehud")
+					.getAsJsonObject();
+				var mousemovement = new JsonObject();
+				mousemovement.addProperty("enabled", keystrokes.get("enabled").getAsBoolean() && keystrokes.get("mousemovement").getAsBoolean());
+				mousemovement.addProperty("mouseMovementIndicator", keystrokes.get("mouseMovementIndicator").getAsString());
+				mousemovement.addProperty("mouseMovementIndicatorOuter", keystrokes.get("mouseMovementIndicatorOuter").getAsString());
+				json.get("hud").getAsJsonObject().add("mousemovementhud", mousemovement);
+			}
 			return json;
 		}));
 		configManager.load();
@@ -137,7 +142,7 @@ public class AxolotlClient implements ClientModInitializer {
 
 		modules.forEach(Module::lateInit);
 
-		MinecraftClientEvents.TICK_END.register(client -> tickClient());
+		MinecraftClientEvents.TICK_END.register(client -> modules.forEach(Module::tick));
 
 		FeatureDisabler.init();
 

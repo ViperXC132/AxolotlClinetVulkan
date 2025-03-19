@@ -40,7 +40,6 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.Vanil
 import io.github.axolotlclient.AxolotlClientConfig.impl.util.DrawUtil;
 import io.github.axolotlclient.api.requests.ChannelRequest;
 import io.github.axolotlclient.api.types.Persistence;
-import io.github.axolotlclient.api.util.UUIDHelper;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.resource.Identifier;
@@ -154,8 +153,8 @@ public class CreateChannelScreen extends io.github.axolotlclient.AxolotlClientCo
 		addDrawableChild(new VanillaButtonWidget(width / 2 - 150 - 4, footerY, 150, 20, I18n.translate("gui.cancel"), widget -> minecraft.openScreen(parent)));
 		addDrawableChild(new VanillaButtonWidget(width / 2 + 4, footerY, 150, 20, I18n.translate("gui.done"), widget -> {
 			ChannelRequest.createChannel(nameField.getText(),
-				Persistence.of(persistence.getValue(), count.get().get(), duration.get().get()),
-				Arrays.stream(namesInput.getText().split(",")).filter(s -> !s.isEmpty()).map(UUIDHelper::ensureUuid).toArray(String[]::new))
+					Persistence.of(persistence.getValue(), count.get().get(), duration.get().get()),
+					Arrays.stream(namesInput.getText().split(",")).filter(s -> !s.isEmpty()).toArray(String[]::new))
 				.thenRun(() -> minecraft.submit(() -> minecraft.openScreen(parent)));
 		}));
 	}

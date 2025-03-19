@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Optional;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
+import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
@@ -58,6 +60,7 @@ public class ItemUpdateHud extends TextHudEntry {
 	private List<ItemUtil.ItemStorage> oldItems = new ArrayList<>();
 	private ArrayList<ItemUtil.TimedItemStorage> removed;
 	private ArrayList<ItemUtil.TimedItemStorage> added;
+	private final ColorOption bracketColor = new ColorOption("itemupdatehud.bracket_color", Colors.DARK_GRAY);
 
 	public ItemUpdateHud() {
 		super(200, 11 * 6 - 2, true);
@@ -136,10 +139,10 @@ public class ItemUpdateHud extends TextHudEntry {
 			TextCollector message = new TextCollector();
 			message.add(Text.literal("+ "));
 			message.add(
-				Text.literal("[").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(ClientColors.DARK_GRAY.toInt()))));
+				Text.literal("[").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(bracketColor.get().toInt()))));
 			message.add(Text.literal(item.times + "").setStyle(Style.EMPTY.withColor(Formatting.WHITE)));
 			message.add(
-				Text.literal("] ").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(ClientColors.DARK_GRAY.toInt()))));
+				Text.literal("] ").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(bracketColor.get().toInt()))));
 			message.add(item.stack.getName());
 			OrderedText text = Language.getInstance().reorder(message.getCombined());
 			graphics.drawText(client.textRenderer, text, pos.x(), pos.y() + lastY, ClientColors.SELECTOR_GREEN.toInt(), shadow.get());
@@ -154,10 +157,10 @@ public class ItemUpdateHud extends TextHudEntry {
 			TextCollector message = new TextCollector();
 			message.add(Text.literal("- "));
 			message.add(
-				Text.literal("[").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(ClientColors.DARK_GRAY.toInt()))));
+				Text.literal("[").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(bracketColor.get().toInt()))));
 			message.add(Text.literal(item.times + "").setStyle(Style.EMPTY.withColor(Formatting.WHITE)));
 			message.add(
-				Text.literal("] ").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(ClientColors.DARK_GRAY.toInt()))));
+				Text.literal("] ").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(bracketColor.get().toInt()))));
 			message.add(item.stack.getName());
 			OrderedText text = Language.getInstance().reorder(message.getCombined());
 			graphics.drawText(client.textRenderer, text, pos.x(), pos.y() + lastY, Formatting.RED.getColorValue(), shadow.get());
@@ -171,17 +174,17 @@ public class ItemUpdateHud extends TextHudEntry {
 		DrawPosition pos = getPos();
 		TextCollector addM = new TextCollector();
 		addM.add(Text.literal("+ "));
-		addM.add(Text.literal("[").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(ClientColors.DARK_GRAY.toInt()))));
+		addM.add(Text.literal("[").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(bracketColor.get().toInt()))));
 		addM.add(Text.literal("2").setStyle(Style.EMPTY.withColor(Formatting.WHITE)));
-		addM.add(Text.literal("] ").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(ClientColors.DARK_GRAY.toInt()))));
+		addM.add(Text.literal("] ").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(bracketColor.get().toInt()))));
 		addM.add(new ItemStack(Items.DIRT).getName());
 		OrderedText addText = Language.getInstance().reorder(addM.getCombined());
 		graphics.drawText(client.textRenderer, addText, pos.x(), pos.y(), Formatting.RED.getColorValue(), shadow.get());
 		TextCollector removeM = new TextCollector();
 		removeM.add(Text.literal("- "));
-		removeM.add(Text.literal("[").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(ClientColors.DARK_GRAY.toInt()))));
+		removeM.add(Text.literal("[").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(bracketColor.get().toInt()))));
 		removeM.add(Text.literal("4").setStyle(Style.EMPTY.withColor(Formatting.WHITE)));
-		removeM.add(Text.literal("] ").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(ClientColors.DARK_GRAY.toInt()))));
+		removeM.add(Text.literal("] ").setStyle(Style.EMPTY.withColor(TextColor.fromRgb(bracketColor.get().toInt()))));
 		removeM.add(new ItemStack(Items.GRASS).getName());
 		OrderedText removeText = Language.getInstance().reorder(removeM.getCombined());
 		graphics.drawText(client.textRenderer, removeText, pos.x(),
@@ -193,6 +196,7 @@ public class ItemUpdateHud extends TextHudEntry {
 		List<Option<?>> options = super.getConfigurationOptions();
 		options.add(shadow);
 		options.add(timeout);
+		options.add(bracketColor);
 		return options;
 	}
 

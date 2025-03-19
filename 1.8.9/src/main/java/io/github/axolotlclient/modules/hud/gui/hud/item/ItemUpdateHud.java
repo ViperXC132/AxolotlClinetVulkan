@@ -26,13 +26,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
+import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.ItemUtil;
 import io.github.axolotlclient.util.ClientColors;
+import io.github.axolotlclient.util.Util;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.resource.Identifier;
@@ -52,6 +54,7 @@ public class ItemUpdateHud extends TextHudEntry {
 	private List<ItemUtil.ItemStorage> oldItems = new ArrayList<>();
 	private ArrayList<ItemUtil.TimedItemStorage> removed;
 	private ArrayList<ItemUtil.TimedItemStorage> added;
+	private final ColorOption bracketColor = new ColorOption("itemupdatehud.bracket_color", Colors.DARK_GRAY);
 
 	public ItemUpdateHud() {
 		super(200, 11 * 6 - 2, true);
@@ -125,11 +128,10 @@ public class ItemUpdateHud extends TextHudEntry {
 		int i = 0;
 		for (ItemUtil.ItemStorage item : this.added) {
 			if (i > 5) {
-				GlStateManager.popMatrix();
 				return;
 			}
-			String message = "+ " + Formatting.DARK_GRAY + "[" + Formatting.WHITE + item.times + Formatting.DARK_GRAY
-							 + "] " + Formatting.RESET + item.stack.getHoverName();
+			String message = "+ " + Util.getFormatCode(bracketColor.get()) + "[" + Formatting.WHITE + item.times + Util.getFormatCode(bracketColor.get())
+				+ "] " + Formatting.RESET + item.stack.getHoverName();
 			if (shadow.get()) {
 				client.textRenderer.drawWithShadow(message, pos.x, pos.y + lastY, ClientColors.SELECTOR_GREEN.toInt());
 			} else {
@@ -140,11 +142,10 @@ public class ItemUpdateHud extends TextHudEntry {
 		}
 		for (ItemUtil.ItemStorage item : this.removed) {
 			if (i > 5) {
-				GlStateManager.popMatrix();
 				return;
 			}
-			String message = "- " + Formatting.DARK_GRAY + "[" + Formatting.WHITE + item.times + Formatting.DARK_GRAY
-							 + "] " + Formatting.RESET + item.stack.getHoverName();
+			String message = "- " + Util.getFormatCode(bracketColor.get()) + "[" + Formatting.WHITE + item.times + Util.getFormatCode(bracketColor.get())
+				+ "] " + Formatting.RESET + item.stack.getHoverName();
 			if (shadow.get()) {
 				client.textRenderer.drawWithShadow(message, pos.x, pos.y + lastY, ClientColors.SELECTOR_RED.toInt());
 			} else {
@@ -158,16 +159,16 @@ public class ItemUpdateHud extends TextHudEntry {
 	@Override
 	public void renderPlaceholderComponent(float delta) {
 		DrawPosition pos = getPos();
-		String addM = "+ " + Formatting.DARK_GRAY + "[" + Formatting.WHITE + 2 + Formatting.DARK_GRAY + "] "
-					  + Formatting.RESET + new ItemStack(Blocks.DIRT).getHoverName();
+		String addM = "+ " + Util.getFormatCode(bracketColor.get()) + "[" + Formatting.WHITE + 2 + Util.getFormatCode(bracketColor.get()) + "] "
+			+ Formatting.RESET + new ItemStack(Blocks.DIRT).getHoverName();
 		if (shadow.get()) {
 			client.textRenderer.drawWithShadow(addM, pos.x + 1, pos.y + 1, ClientColors.SELECTOR_GREEN.toInt());
 		} else {
 			client.textRenderer.draw(addM, pos.x + 1, pos.y + 1 + client.textRenderer.fontHeight + 2,
 				ClientColors.SELECTOR_GREEN.toInt());
 		}
-		String removeM = "- " + Formatting.DARK_GRAY + "[" + Formatting.WHITE + 4 + Formatting.DARK_GRAY + "] "
-						 + Formatting.RESET + new ItemStack(Blocks.GRASS).getHoverName();
+		String removeM = "- " + Util.getFormatCode(bracketColor.get()) + "[" + Formatting.WHITE + 4 + Util.getFormatCode(bracketColor.get()) + "] "
+			+ Formatting.RESET + new ItemStack(Blocks.GRASS).getHoverName();
 		if (shadow.get()) {
 			client.textRenderer.drawWithShadow(removeM, pos.x + 1, pos.y + 1 + client.textRenderer.fontHeight + 2,
 				ClientColors.SELECTOR_RED.toInt());
@@ -187,6 +188,7 @@ public class ItemUpdateHud extends TextHudEntry {
 		List<Option<?>> options = super.getConfigurationOptions();
 		options.add(shadow);
 		options.add(timeout);
+		options.add(bracketColor);
 		return options;
 	}
 

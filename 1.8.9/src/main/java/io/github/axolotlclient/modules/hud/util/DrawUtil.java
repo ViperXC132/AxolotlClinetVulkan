@@ -119,6 +119,7 @@ public class DrawUtil extends GuiElement {
 		public NineSlice(int width, int height, Border border) {
 			this(width, height, border, false);
 		}
+
 		public NineSlice(int width, int height, int borderSize) {
 			this(width, height, new Border(borderSize));
 		}
@@ -376,5 +377,6 @@ public class DrawUtil extends GuiElement {
 		bufferBuilder.vertex(x2, y, 0.0F).texture(u2, v).nextVertex();
 		bufferBuilder.vertex(x, y, 0.0F).texture(u, v).nextVertex();
 		tessellator.end();
+		GlStateManager.color4f(1, 1, 1, 1);
 	}
 }

@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.api.API;
@@ -53,6 +54,7 @@ public class ImageScreen extends Screen {
 	private final boolean freeOnClose;
 	private final boolean isRemote;
 	private final String title;
+	private final CompletableFuture<String> uploader;
 
 	static Screen create(Screen parent, CompletableFuture<ImageInstance> future, boolean freeOnClose) {
 		if (future.isDone()) {
@@ -78,17 +80,22 @@ public class ImageScreen extends Screen {
 		this.image = instance;
 		this.freeOnClose = freeOnClose;
 		this.isRemote = image instanceof ImageInstance.Remote;
+		if (isRemote) {
+			this.uploader = UUIDHelper.tryGetUsernameAsync(((ImageInstance.Remote) image).uploader());
+		} else {
+			this.uploader = null;
+		}
 	}
 
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		renderBackground();
 		super.render(mouseX, mouseY, delta);
-		if (isRemote) {
+		if (isRemote && uploader.isDone()) {
 			ImageInstance.Remote r = (ImageInstance.Remote) image;
 			drawCenteredString(textRenderer, title, width / 2, 38 / 2 - textRenderer.fontHeight - 2, -1);
 			drawCenteredString(textRenderer,
-				I18n.translate("gallery.image.upload_details", UUIDHelper.getUsername(r.uploader()),
+				I18n.translate("gallery.image.upload_details", uploader.join(),
 					r.sharedAt().atZone(ZoneId.systemDefault()).format(AxolotlClientCommon.getInstance().formatter)),
 				width / 2, 38 / 2 + 2, -1);
 		} else {
@@ -111,7 +118,7 @@ public class ImageScreen extends Screen {
 		if (width / 2 > (imageWidth / 2) + buttonWidth + 4) {
 			element.setPosition(width / 2 - imageWidth / 2, 36);
 		} else {
-			element.setPosition(width/2 - imageWidth/2 - buttonWidth/2 - 2, 36);
+			element.setPosition(width / 2 - imageWidth / 2 - buttonWidth / 2 - 2, 36);
 		}
 		int actionX = element.x + imageWidth + 4;
 		var actions = new ArrayList<ButtonWidget>();
@@ -221,6 +228,7 @@ public class ImageScreen extends Screen {
 
 		@Override
 		public void render(Minecraft client, int mouseX, int mouseY) {
+			GlStateManager.color4f(1, 1, 1, 1);
 			client.getTextureManager().bind(image.id());
 			drawTexture(x, y, 0, 0, getWidth(), getHeight(), getWidth(), getHeight());
 		}

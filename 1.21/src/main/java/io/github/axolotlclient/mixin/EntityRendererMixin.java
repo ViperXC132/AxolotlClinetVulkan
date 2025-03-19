@@ -26,10 +26,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.api.requests.UserRequest;
-import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.modules.hypixel.levelhead.LevelHead;
-import io.github.axolotlclient.modules.hypixel.levelhead.LevelHeadMode;
 import io.github.axolotlclient.modules.hypixel.nickhider.NickHider;
 import io.github.axolotlclient.util.Util;
 import net.minecraft.client.MinecraftClient;
@@ -66,25 +64,25 @@ public abstract class EntityRendererMixin<T extends Entity> {
 					int x = -(MinecraftClient.getInstance().textRenderer.getWidth(
 						entity.getUuid() == MinecraftClient.getInstance().player.getUuid() ? (
 							NickHider.getInstance().hideOwnName.get() ? NickHider.getInstance().hiddenNameSelf.get()
-																	  : Team.decorateName(entity.getScoreboardTeam(),
-																						  entity.getName()
-																						 ).getString()) : (
+								: Team.decorateName(entity.getScoreboardTeam(),
+								entity.getName()
+							).getString()) : (
 							NickHider.getInstance().hideOtherNames.get()
-							? NickHider.getInstance().hiddenNameOthers.get()
-							: Team.decorateName(entity.getScoreboardTeam(), entity.getName()).getString())) / 2 +
-							  (AxolotlClient.CONFIG.customBadge.get()
-							   ? MinecraftClient.getInstance().textRenderer.getWidth(
-								  " " + Formatting.strip(AxolotlClient.CONFIG.badgeText.get())) : 10));
+								? NickHider.getInstance().hiddenNameOthers.get()
+								: Team.decorateName(entity.getScoreboardTeam(), entity.getName()).getString())) / 2 +
+						(AxolotlClient.CONFIG.customBadge.get()
+							? MinecraftClient.getInstance().textRenderer.getWidth(
+							" " + Formatting.strip(AxolotlClient.CONFIG.badgeText.get())) : 10));
 
 					RenderSystem.setShaderColor(1, 1, 1, 1);
 
 					if (AxolotlClient.CONFIG.customBadge.get()) {
 						Text badgeText = Util.formatFromCodes(AxolotlClient.CONFIG.badgeText.get());
-						MinecraftClient.getInstance().textRenderer.draw(badgeText, x+6, 0, -1,
-																		AxolotlClient.CONFIG.useShadows.get(),
-																		matrices.peek().getModel(), vertexConsumers,
-																		TextRenderer.TextLayerType.NORMAL, 0, 15728880
-																	   );
+						MinecraftClient.getInstance().textRenderer.draw(badgeText, x + 6, 0, -1,
+							AxolotlClient.CONFIG.useShadows.get(),
+							matrices.peek().getModel(), vertexConsumers,
+							TextRenderer.TextLayerType.NORMAL, 0, 15728880
+						);
 					} else {
 						RenderSystem.setShader(GameRenderer::getPositionTexShader);
 						RenderSystem.setShaderTexture(0, AxolotlClient.badgeIcon);
@@ -142,35 +140,29 @@ public abstract class EntityRendererMixin<T extends Entity> {
 
 						Matrix4f matrix4f = matrices.peek().getModel();
 						MinecraftClient.getInstance().textRenderer.draw(text, x, y,
-																		LevelHead.getInstance().textColor.get().toInt(),
-																		AxolotlClient.CONFIG.useShadows.get(), matrix4f,
-																		vertexConsumers,
-																		TextRenderer.TextLayerType.NORMAL,
-																		LevelHead.getInstance().background.get() ? 127
-																												 : 0,
-																		light
-																	   );
+							LevelHead.getInstance().textColor.get().toInt(),
+							AxolotlClient.CONFIG.useShadows.get(), matrix4f,
+							vertexConsumers,
+							TextRenderer.TextLayerType.NORMAL,
+							LevelHead.getInstance().background.get() ? 127
+								: 0,
+							light
+						);
 					}
 				} else if (LevelHead.getInstance().enabled.get()) {
-					String text = "Level: " + HypixelAbstractionLayer.getPlayerLevel(String.valueOf(entity.getUuid()),
-																					 LevelHead.getInstance().mode.get()
-																					);
-
-					if (LevelHead.getInstance().mode.get().equals(LevelHeadMode.BEDWARS)) {
-						text += "☆";
-					}
+					String text = LevelHead.getInstance().getDisplayString(entity.getUuid().toString());
 
 					float x = -textRenderer.getWidth(text) / 2F;
 					float y = string.getString().contains("deadmau5") ? -20 : -10;
 
 					Matrix4f matrix4f = matrices.peek().getModel();
 					MinecraftClient.getInstance().textRenderer.draw(text, x, y,
-																	LevelHead.getInstance().textColor.get().toInt(),
-																	AxolotlClient.CONFIG.useShadows.get(), matrix4f,
-																	vertexConsumers, TextRenderer.TextLayerType.NORMAL,
-																	LevelHead.getInstance().background.get() ? 127 : 0,
-																	light
-																   );
+						LevelHead.getInstance().textColor.get().toInt(),
+						AxolotlClient.CONFIG.useShadows.get(), matrix4f,
+						vertexConsumers, TextRenderer.TextLayerType.NORMAL,
+						LevelHead.getInstance().background.get() ? 127 : 0,
+						light
+					);
 				}
 			}
 		}

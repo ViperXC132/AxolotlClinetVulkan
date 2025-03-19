@@ -38,6 +38,7 @@ import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.render.texture.DynamicTexture;
 import net.minecraft.client.resource.pack.ResourcePack;
 import net.minecraft.resource.Identifier;
+import net.ornithemc.osl.resource.loader.api.ModResourcePack;
 
 public class PackDisplayHud extends TextHudEntry {
 
@@ -80,6 +81,9 @@ public class PackDisplayHud extends TextHudEntry {
 	public void init() {
 		packs.forEach(pack -> {
 			try {
+				if (pack instanceof ModResourcePack) {
+					return;
+				}
 				if (pack.getIcon() != null) {
 					if (packs.size() == 1) {
 						widgets.add(new PackWidget(pack));
@@ -152,7 +156,7 @@ public class PackDisplayHud extends TextHudEntry {
 				this.texture = new DynamicTexture(pack.getIcon()).getGlId();
 			} catch (Exception e) {
 				AxolotlClient.LOGGER.warn("Pack " + pack.getName()
-										  + " somehow threw an error! Please investigate... Does it have an icon?");
+					+ " somehow threw an error! Please investigate... Does it have an icon?");
 			}
 		}
 

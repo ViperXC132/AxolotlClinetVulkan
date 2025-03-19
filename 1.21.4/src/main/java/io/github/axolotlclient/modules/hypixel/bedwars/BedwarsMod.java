@@ -53,21 +53,26 @@ public class BedwarsMod implements AbstractHypixelMod {
 	private final static Pattern[] GAME_START =
 		{Pattern.compile("^\\s*?Protect your bed and destroy the enemy beds\\.\\s*?$")};
 
-	@Getter private static BedwarsMod instance = new BedwarsMod();
+	@Getter
+	private static BedwarsMod instance = new BedwarsMod();
 	public final BooleanOption hardcoreHearts = new BooleanOption(getTranslationKey("hardcoreHearts"), true);
 	public final BooleanOption showHunger = new BooleanOption(getTranslationKey("showHunger"), false);
 	public final BooleanOption displayArmor = new BooleanOption(getTranslationKey("displayArmor"), true);
 	public final BooleanOption bedwarsLevelHead = new BooleanOption(getTranslationKey("bedwarsLevelHead"), true);
 	public final EnumOption<BedwarsLevelHeadMode> bedwarsLevelHeadMode =
 		new EnumOption<>(getTranslationKey("bedwarsLevelHeadMode"), BedwarsLevelHeadMode.class,
-						 BedwarsLevelHeadMode.GAME_KILLS_GAME_DEATHS
+			BedwarsLevelHeadMode.GAME_KILLS_GAME_DEATHS
 		);
-	@Getter protected final TeamUpgradesOverlay upgradesOverlay;
+	@Getter
+	protected final TeamUpgradesOverlay upgradesOverlay;
+	@Getter
+	protected final ResourceOverlay resourceOverlay;
 	protected final BooleanOption removeAnnoyingMessages =
 		new BooleanOption(getTranslationKey("removeAnnoyingMessages"), true);
 	protected final BooleanOption overrideMessages = new BooleanOption(getTranslationKey("overrideMessages"), true);
-	@Getter private final OptionCategory category = OptionCategory.create("bedwars");
-	private final BooleanOption enabled = new BooleanOption("enabled", false);
+	@Getter
+	private final OptionCategory category = OptionCategory.create("bedwars");
+	private final BooleanOption enabled = new BooleanOption("enabled", "bedwars.enabled.tooltip", false);
 	private final BooleanOption tabRenderLatencyIcon =
 		new BooleanOption(getTranslationKey("tabRenderLatencyIcon"), false);
 
@@ -78,15 +83,17 @@ public class BedwarsMod implements AbstractHypixelMod {
 
 	public BedwarsMod() {
 		upgradesOverlay = new TeamUpgradesOverlay(this);
+		resourceOverlay = new ResourceOverlay(this);
 	}
 
 
 	@Override
 	public void init() {
 		category.add(enabled, hardcoreHearts, showHunger, displayArmor, bedwarsLevelHead, bedwarsLevelHeadMode,
-					 removeAnnoyingMessages, tabRenderLatencyIcon, showChatTime, overrideMessages
-					);
+			removeAnnoyingMessages, tabRenderLatencyIcon, showChatTime, overrideMessages
+		);
 		category.add(upgradesOverlay.getAllOptions());
+		category.add(resourceOverlay.getAllOptions());
 		category.add(BedwarsDeathType.getOptions());
 
 		instance = this;

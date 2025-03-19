@@ -22,16 +22,24 @@
 
 package io.github.axolotlclient;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
 import io.github.axolotlclient.util.Logger;
+import io.github.axolotlclient.util.OSUtil;
 import io.github.axolotlclient.util.notifications.NotificationProvider;
 import lombok.Getter;
 import net.fabricmc.loader.api.FabricLoader;
 
 public class AxolotlClientCommon {
+
+	public static final boolean NVG_SUPPORTED = OSUtil.getOS() != OSUtil.OperatingSystem.OTHER && !Objects.requireNonNullElse(System.getenv("TMPDIR"), "").contains("/Android/data/net.kdt.pojavlaunch/");
+
 	@Getter
 	private static AxolotlClientCommon instance;
 	@Getter
@@ -63,10 +71,27 @@ public class AxolotlClientCommon {
 	}
 
 	public static String getUAVersionString() {
-		return "AxolotlClient/"+VERSION+" (Minecraft "+GAME_VERSION+")";
+		return "AxolotlClient/" + VERSION + " (Minecraft " + GAME_VERSION + ")";
 	}
 
 	public void saveConfig() {
 		manager.get().save();
+	}
+
+	public static Path resolveConfigFile(String file) {
+		return FabricLoader.getInstance().getConfigDir().resolve("axolotlclient").resolve(file);
+	}
+
+	public Path getMainConfigFile() {
+		var legacy = FabricLoader.getInstance().getConfigDir().resolve("AxolotlClient.json");
+		var current = resolveConfigFile("axolotlclient.json");
+		try {
+			if (Files.exists(legacy)) {
+				Files.move(legacy, current);
+			}
+		} catch (IOException e) {
+			logger.warn("Failed to move config file, it might get reset! ", e);
+		}
+		return current;
 	}
 }

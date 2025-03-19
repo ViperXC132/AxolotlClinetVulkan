@@ -48,12 +48,12 @@ public class ImageShare extends ImageNetworking {
 	}
 
 	public void uploadImage(Path file) {
-		Util.sendChatMessage(Component.translatable("imageUploadStarted"));
+		Util.addMessageToChatHud(Component.translatable("imageUploadStarted"));
 		upload(file).whenCompleteAsync((downloadUrl, throwable) -> {
 			if (downloadUrl.isEmpty()) {
-				Util.sendChatMessage(Component.translatable("imageUploadFailure"));
+				Util.addMessageToChatHud(Component.translatable("imageUploadFailure"));
 			} else {
-				Util.sendChatMessage(Component.translatable("imageUploadSuccess").append(" ").append(
+				Util.addMessageToChatHud(Component.translatable("imageUploadSuccess").append(" ").append(
 					Component.literal(downloadUrl).setStyle(
 						Style.EMPTY.withColor(ChatFormatting.DARK_PURPLE).withUnderlined(true)
 							.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, downloadUrl))
@@ -66,7 +66,7 @@ public class ImageShare extends ImageNetworking {
 	public CompletableFuture<ImageInstance> downloadImage(String url) {
 		return download(url).thenApply(data -> {
 			if (data != ImageData.EMPTY) {
-				try(var in = new ByteArrayInputStream(data.data())) {
+				try (var in = new ByteArrayInputStream(data.data())) {
 					ImageInstance.Remote remote = new ImageInstance.RemoteImpl(NativeImage.read(in), data.name(), data.uploader(), data.sharedAt(), ensureUrl(url).orElseThrow());
 					try {
 						Path local = GalleryScreen.SCREENSHOTS_DIR.resolve(remote.filename());

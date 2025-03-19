@@ -93,7 +93,7 @@ public abstract class TitleScreenMixin extends Screen {
 				buttons.add(addDrawableChild(ButtonWidget.builder(Text.translatable("api.friends"),
 					w -> client.setScreen(new FriendsScreen(this))).positionAndSize(10, shortcutButtonY, 50, 20).build()));
 				buttons.add(addDrawableChild(ButtonWidget.builder(Text.translatable("api.chats"),
-					w -> client.setScreen(new ChatListScreen(this))).positionAndSize(10, shortcutButtonY+25, 50, 20).build()));
+					w -> client.setScreen(new ChatListScreen(this))).positionAndSize(10, shortcutButtonY + 25, 50, 20).build()));
 			});
 			if (API.getInstance().isSocketConnected()) {
 				addApiButtons.run();
@@ -111,6 +111,7 @@ public abstract class TitleScreenMixin extends Screen {
 							if (r) {
 								OSUtil.getOS().open(URI.create("https://modrinth.com/mod/axolotlclient/versions"));
 							}
+							client.setScreen(this);
 						}, "https://modrinth.com/mod/axolotlclient/versions", true)))
 					.positionAndSize(width - 90, buttonY, 80, 20).build()));
 				buttonY += 22;

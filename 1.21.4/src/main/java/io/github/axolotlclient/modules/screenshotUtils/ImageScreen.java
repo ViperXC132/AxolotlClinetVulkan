@@ -91,7 +91,11 @@ public class ImageScreen extends Screen {
 
 		if (image instanceof ImageInstance.Remote remote) {
 			layout.setHeaderHeight(38);
-			header.addChild(new StringWidget(Component.translatable("gallery.image.upload_details", UUIDHelper.getUsername(remote.uploader()), remote.sharedAt().atZone(ZoneId.systemDefault()).format(AxolotlClientCommon.getInstance().formatter)), font));
+			var uploader = header.addChild(new StringWidget(Component.translatable("gallery.image.upload_details", "", remote.sharedAt().atZone(ZoneId.systemDefault()).format(AxolotlClientCommon.getInstance().formatter)), font));
+			UUIDHelper.tryGetUsernameAsync(remote.uploader()).thenAccept(name -> {
+				uploader.setMessage(Component.translatable("gallery.image.upload_details", name, remote.sharedAt().atZone(ZoneId.systemDefault()).format(AxolotlClientCommon.getInstance().formatter)));
+				uploader.setWidth(font.width(uploader.getMessage()));
+			});
 		}
 
 		int buttonWidth = 75;
@@ -100,7 +104,7 @@ public class ImageScreen extends Screen {
 		int imageHeight = (int) (imageWidth / imgAspectRatio);
 
 		var contents = layout.addToContents(LinearLayout.horizontal().spacing(4));
-		if (width/2 > (imageWidth / 2) + buttonWidth+4) {
+		if (width / 2 > (imageWidth / 2) + buttonWidth + 4) {
 			contents.addChild(new SpacerElement(buttonWidth + 4, imageHeight));
 		}
 		var footer = layout.addToFooter(LinearLayout.horizontal().spacing(4));

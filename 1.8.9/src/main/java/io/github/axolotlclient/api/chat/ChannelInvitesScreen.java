@@ -24,6 +24,7 @@ package io.github.axolotlclient.api.chat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 import io.github.axolotlclient.api.requests.ChannelRequest;
@@ -138,9 +139,11 @@ public class ChannelInvitesScreen extends Screen {
 		private class InvitesListEntry implements Entry {
 
 			private final ChannelInvite invite;
+			private final CompletableFuture<String> fromName;
 
 			public InvitesListEntry(ChannelInvite invite) {
 				this.invite = invite;
+				this.fromName = UUIDHelper.tryGetUsernameAsync(invite.fromUuid());
 			}
 
 			@Override
@@ -151,7 +154,9 @@ public class ChannelInvitesScreen extends Screen {
 			@Override
 			public void render(int index, int x, int y, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovere) {
 				drawString(textRenderer, I18n.translate("api.channels.invite.name", invite.channelName()), x + 2, y + 2, -1);
-				drawString(textRenderer, ChatFormatting.ITALIC + I18n.translate("api.channels.invite.from", UUIDHelper.getUsername(invite.fromUuid())), x + 15, y + entryHeight - textRenderer.fontHeight - 1, 0x808080);
+				if (fromName.isDone()) {
+					drawString(textRenderer, ChatFormatting.ITALIC + I18n.translate("api.channels.invite.from", fromName.join()), x + 15, y + entryHeight - textRenderer.fontHeight - 1, 0x808080);
+				}
 			}
 
 			@Override

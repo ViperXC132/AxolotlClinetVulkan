@@ -26,7 +26,6 @@ import javax.imageio.ImageIO;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -34,6 +33,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Graphics;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
@@ -47,12 +47,11 @@ import net.minecraft.scoreboard.ScoreboardScore;
 import net.minecraft.scoreboard.team.Team;
 import net.minecraft.text.Formatting;
 import net.minecraft.text.Text;
-import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.ApiStatus;
 
 public class Util {
 
-	public static final Color GlColor = new Color();
+	public static final Util.GlColor GlColor = new GlColor();
 	public static String lastgame;
 	public static String game;
 
@@ -116,7 +115,7 @@ public class Util {
 		Minecraft.getInstance().player.sendChat(msg);
 	}
 
-	public static void sendChatMessage(Text msg) {
+	public static void addMessageToChatHud(Text msg) {
 		Minecraft.getInstance().gui.getChat().addMessage(msg);
 	}
 
@@ -220,21 +219,8 @@ public class Util {
 			: null;
 	}
 
-	public static double calculateDistance(Vec3d pos1, Vec3d pos2) {
-		return calculateDistance(pos1.x, pos2.x, pos1.y, pos2.y, pos1.z, pos2.z);
-	}
-
-	public static double calculateDistance(double x1, double x2, double y1, double y2, double z1, double z2) {
-		return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2) + Math.pow(z2 - z1, 2));
-	}
-
 	public static <T> T make(Supplier<T> factory) {
 		return factory.get();
-	}
-
-	public static <T> T make(T object, Consumer<T> initializer) {
-		initializer.accept(object);
-		return object;
 	}
 
 	public static boolean currentServerAddressContains(String address) {
@@ -297,21 +283,25 @@ public class Util {
 		Minecraft.getInstance().getTextureManager().bind(id);
 	}
 
-	public static class Color {
+	public static class GlColor {
 
 		public float red = 1.0F;
 		public float green = 1.0F;
 		public float blue = 1.0F;
 		public float alpha = 1.0F;
 
-		public Color() {
+		public GlColor() {
 		}
 
-		public Color(float red, float green, float blue, float alpha) {
+		public GlColor(float red, float green, float blue, float alpha) {
 			this.red = red;
 			this.green = green;
 			this.blue = blue;
 			this.alpha = alpha;
 		}
+	}
+
+	public static String getFormatCode(Color color) {
+		return String.format("§#%06X", color.getRed() << 16 | color.getGreen() << 8 | color.getBlue());
 	}
 }

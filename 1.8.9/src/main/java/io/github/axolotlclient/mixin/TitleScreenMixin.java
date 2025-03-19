@@ -75,16 +75,21 @@ public abstract class TitleScreenMixin extends Screen {
 			buttons.add(new AuthWidget(10, leftButtonY));
 			leftButtonY += 25;
 		}
+		this.buttons.addAll(buttons);
 		if (APIOptions.getInstance().addShortcutButtons.get()) {
 			int y = leftButtonY;
-			Runnable addApiButtons = () -> minecraft.submit(() -> {
-				buttons.add(new ButtonWidget(142, 10, y, 50, 20, I18n.translate("api.friends")));
-				buttons.add(new ButtonWidget(42, 10, y + 25, 50, 20, I18n.translate("api.chats")));
-			});
+			Runnable addApiButtons = () -> {
+				ButtonWidget friends = new ButtonWidget(142, 10, y, 50, 20, I18n.translate("api.friends"));
+				this.buttons.add(friends);
+				buttons.add(friends);
+				ButtonWidget chats = new ButtonWidget(42, 10, y + 25, 50, 20, I18n.translate("api.chats"));
+				this.buttons.add(chats);
+				buttons.add(chats);
+			};
 			if (API.getInstance().isSocketConnected()) {
 				addApiButtons.run();
 			} else {
-				API.addStartupListener(addApiButtons, API.ListenerType.ONCE);
+				API.addStartupListener(() -> minecraft.submit(addApiButtons), API.ListenerType.ONCE);
 			}
 		}
 		GlobalDataRequest.get().thenAccept(data -> {
@@ -92,16 +97,19 @@ public abstract class TitleScreenMixin extends Screen {
 			if (APIOptions.getInstance().updateNotifications.get() &&
 				data.success() &&
 				data.latestVersion().isNewerThan(AxolotlClient.VERSION)) {
-				buttons.add(new ButtonWidget(182, width - 90, buttonY, 80, 20, I18n.translate("api.new_version_available")));
+				ButtonWidget newVersion = new ButtonWidget(182, width - 90, buttonY, 80, 20, I18n.translate("api.new_version_available"));
+				this.buttons.add(newVersion);
+				buttons.add(newVersion);
 				buttonY += 22;
 			}
 			if (APIOptions.getInstance().displayNotes.get() &&
 				data.success() && !data.notes().isEmpty()) {
-				buttons.add(new ButtonWidget(253, width - 90, buttonY, 80, 20,
-					I18n.translate("api.notes")));
+				ButtonWidget notes = new ButtonWidget(253, width - 90, buttonY, 80, 20,
+					I18n.translate("api.notes"));
+				this.buttons.add(notes);
+				buttons.add(notes);
 			}
 		});
-		this.buttons.addAll(buttons);
 
 		if (FabricLoader.getInstance().isModLoaded("modmenu")) {
 			try {
@@ -177,7 +185,7 @@ public abstract class TitleScreenMixin extends Screen {
 
 	@Inject(method = "<init>",
 		at = @At(value = "INVOKE",
-			target = "Ljava/util/List;isEmpty()Z", remap = false))
+			target = "Ljava/io/BufferedReader;readLine()Ljava/lang/String;", remap = false))
 	private void axolotlclient$customSplashTexts(CallbackInfo ci, @Local List<String> list) throws IOException {
 		try (InputStream input = Minecraft.getInstance().getResourceManager()
 			.getResource(new Identifier("axolotlclient", "texts/splashes.txt")).asStream()) {

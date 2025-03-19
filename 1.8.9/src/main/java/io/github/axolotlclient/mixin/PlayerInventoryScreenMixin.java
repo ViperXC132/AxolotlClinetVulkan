@@ -29,7 +29,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(PlayerInventoryScreen.class)
-public class PlayerInventoryScreenMixin {
+public abstract class PlayerInventoryScreenMixin {
 
 	@WrapWithCondition(method = "checkStatusEffects", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/inventory/menu/PlayerInventoryScreen;x:I"))
 	private boolean noInventoryShift(PlayerInventoryScreen instance, int value) {

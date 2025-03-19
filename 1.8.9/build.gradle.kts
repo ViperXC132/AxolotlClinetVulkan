@@ -87,14 +87,15 @@ dependencies {
 
 	api("net.hypixel:mod-api:1.0.1")
 	include(modImplementation("io.github.moehreag.hypixel:mod-api-fabric:1.0.1+build.4+mc1.8.9")!!)
+	include(implementation("com.mojang:brigadier:1.0.18")!!)
 }
 
 configurations.configureEach {
 	resolutionStrategy {
 		dependencySubstitution {
-			substitute(module("io.netty:netty-all:4.0.23.Final")).using(module("io.netty:netty-all:4.1.9.Final"))
+			substitute(module("io.netty:netty-all:4.0.23.Final")).using(module("io.netty:netty-all:4.0.56.Final"))
 		}
-		force("io.netty:netty-all:4.1.9.Final")
+		force("io.netty:netty-all:4.0.56.Final")
 	}
 }
 
@@ -107,7 +108,8 @@ tasks.processResources {
 }
 
 tasks.runClient {
-	if (project.property("native_glfw") == "true") {
+	// might not be set
+	if (project.properties["native_glfw"] == "true") {
 		val glfwPath = project.properties.getOrDefault("native_glfw_path", "/usr/lib/libglfw.so")
 		jvmArgs("-Dorg.lwjgl.glfw.libname=$glfwPath")
 	}

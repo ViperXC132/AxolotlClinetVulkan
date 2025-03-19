@@ -60,7 +60,8 @@
 		"TntEntityRendererMixin",
 		"WeatherEffectRendererMixin",
 		"WorldListWidgetEntryMixin",
-		"WorldRendererMixin"
+		"WorldRendererMixin",
+		"translation.TranslationStorageMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

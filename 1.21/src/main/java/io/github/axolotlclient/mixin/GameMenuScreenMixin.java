@@ -63,7 +63,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 	@Inject(method = "initWidgets", at = @At("TAIL"))
 	private void axolotlclient$addButtons(CallbackInfo ci, @Local GridWidget widget) {
 		if (API.getInstance().isSocketConnected()) {
-			int buttonY = height-30;
+			int buttonY = height - 30;
 			if (APIOptions.getInstance().addShortcutButtons.get()) {
 				addDrawableSelectableElement(ButtonWidget.builder(Text.translatable("api.friends"),
 						button -> client.setScreen(new FriendsScreen(this)))
@@ -93,7 +93,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 		return (buttonWidget) -> {
 			if (Objects.equals(HypixelMods.getInstance().cacheMode.get(),
 				HypixelMods.HypixelCacheMode.ON_CLIENT_DISCONNECT)) {
-				HypixelAbstractionLayer.clearPlayerData();
+				HypixelAbstractionLayer.getInstance().clearPlayerData();
 			}
 			onPress.onPress(buttonWidget);
 		};

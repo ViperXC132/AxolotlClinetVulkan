@@ -22,7 +22,6 @@
 
 package io.github.axolotlclient.modules.hud;
 
-import java.awt.*;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,6 +50,14 @@ public class HudEditScreen extends Screen {
 
 	private static final BooleanOption snapping = new BooleanOption("snapping", true);
 	private static final OptionCategory hudEditScreenCategory = OptionCategory.create("hudEditScreen");
+
+	public static boolean isSnappingEnabled() {
+		return snapping.get();
+	}
+
+	public static void toggleSnapping() {
+		snapping.toggle();
+	}
 
 	static {
 		hudEditScreenCategory.add(snapping);
@@ -87,8 +94,8 @@ public class HudEditScreen extends Screen {
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		if (Minecraft.getInstance().world != null)
-			fillGradient(0, 0, width, height, new Color(0xB0100E0E, true).hashCode(),
-				new Color(0x46212020, true).hashCode());
+			fillGradient(0, 0, width, height, 0xB0100E0E,
+				0x46212020);
 		else {
 			renderBackground(0);
 		}
@@ -164,7 +171,7 @@ public class HudEditScreen extends Screen {
 			case 3:
 				snapping.toggle();
 				button.message = I18n.translate("hud.snapping") + ": "
-								 + I18n.translate(snapping.get() ? "options.on" : "options.off");
+					+ I18n.translate(snapping.get() ? "options.on" : "options.off");
 				AxolotlClient.configManager.save();
 				break;
 			case 1:

@@ -23,9 +23,10 @@
 package io.github.axolotlclient.modules.hypixel.bedwars;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.Random;
+import java.util.concurrent.CompletableFuture;
 
-import io.github.axolotlclient.modules.hypixel.BedwarsData;
 import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -45,6 +46,7 @@ public class BedwarsPlayerStats {
 	private int finalKills;
 	private int finalDeaths;
 	private int bedsBroken;
+	private int bedsLost;
 	private int deaths;
 	private int kills;
 	private int gameFinalKills;
@@ -70,9 +72,8 @@ public class BedwarsPlayerStats {
 		int finalKills = (int) (deaths * fkdr);
 		int kills = (int) (finalKills * getFloat(random, 1, 2));
 
-		return new BedwarsPlayerStats(finalKills, finalDeaths, beds, deaths, kills,
-			0, 0, 0, 0, 0,
-			losses, wins, 0, star);
+		return new BedwarsPlayerStats(losses, wins, 0, star, finalKills, finalDeaths, beds, losses, deaths,
+			kills, 0, 0, 0, 0, 0);
 	}
 
 	private static double getGaussian(Random random, float mean, float deviation) {
@@ -83,11 +84,33 @@ public class BedwarsPlayerStats {
 		return random.nextFloat() * (bound - origin) + origin;
 	}
 
-	public static BedwarsPlayerStats fromAPI(String uuid) {
-		BedwarsData data = HypixelAbstractionLayer.getBedwarsData(uuid);
-		return new BedwarsPlayerStats(data.losses(), data.wins(), data.winstreak(), HypixelAbstractionLayer.getBedwarsLevel(uuid), data.finalKills(), data.finalDeaths(), data.bedsBroken(),
-			data.deaths(), data.kills(), 0, 0, 0,
-			0, 0);
+	public static CompletableFuture<Optional<BedwarsPlayerStats>> fromAPIAsync(String uuid) {
+		return HypixelAbstractionLayer.getInstance().getPlayerDataApi().getAsync(uuid)
+			.thenApply(r -> r.map(data -> new BedwarsPlayerStats(
+				data.bedwars().all().losses(),
+				data.bedwars().all().wins(),
+				data.bedwars().all().winstreak(),
+				data.bedwars().level(),
+				data.bedwars().all().finalKills(),
+				data.bedwars().all().finalDeaths(),
+				data.bedwars().all().bedsBroken(),
+				data.bedwars().all().bedsLost(),
+				data.bedwars().all().deaths(),
+				data.bedwars().all().kills(),
+				0, 0, 0, 0, 0
+			)));
+	}
+
+	public static CompletableFuture<BedwarsPlayerStats> fromAPIOrFakeAsync(String uuid) {
+		return fromAPIAsync(uuid).thenApply(x -> x.orElse(generateFake(uuid)));
+	}
+
+	public static Optional<BedwarsPlayerStats> fromAPI(String uuid) {
+		return fromAPIAsync(uuid).join();
+	}
+
+	public static BedwarsPlayerStats fromAPIOrFake(String uuid) {
+		return fromAPIOrFakeAsync(uuid).join();
 	}
 
 	public void addDeath() {
@@ -117,6 +140,10 @@ public class BedwarsPlayerStats {
 
 	public float getFKDR() {
 		return (float) finalKills / finalDeaths;
+	}
+
+	public float getKDR() {
+		return (float) kills / deaths;
 	}
 
 	public float getBBLR() {

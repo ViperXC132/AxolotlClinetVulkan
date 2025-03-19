@@ -22,24 +22,21 @@
 
 package io.github.axolotlclient.modules.auth;
 
-import java.nio.file.Path;
 import java.util.*;
 
 import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.yggdrasil.ProfileResult;
-import com.mojang.util.UndashedUuid;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.api.API;
+import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
 import io.github.axolotlclient.modules.Module;
-import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.ThreadExecuter;
 import io.github.axolotlclient.util.notifications.Notifications;
 import io.github.axolotlclient.util.options.GenericOption;
 import lombok.Getter;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -68,24 +65,19 @@ public class Auth extends Accounts implements Module {
 		this.auth = new MSAuth(AxolotlClient.LOGGER, this, () -> client.options.language);
 		if (isContained(client.getSession().getSessionId())) {
 			current = getAccounts().stream().filter(account -> account.getUuid()
-				.equals(UndashedUuid.toString(client.getSession().getPlayerUuid()))).toList().getFirst();
+				.equals(UUIDHelper.toUndashed(client.getSession().getPlayerUuid()))).toList().getFirst();
 			current.setAuthToken(client.getSession().getAccessToken());
 			current.setName(client.getSession().getUsername());
 			/*if (current.needsRefresh()) {
 				current.refresh(auth).thenRun(this::save);
 			}*/
 		} else {
-			current = new Account(client.getSession().getUsername(), UndashedUuid.toString(client.getSession().getPlayerUuid()), client.getSession().getAccessToken());
+			current = new Account(client.getSession().getUsername(), UUIDHelper.toUndashed(client.getSession().getPlayerUuid()), client.getSession().getAccessToken());
 		}
 
 		OptionCategory category = OptionCategory.create("auth");
 		category.add(showButton, viewAccounts);
 		AxolotlClient.CONFIG.general.add(category);
-	}
-
-	@Override
-	protected Path getConfigDir() {
-		return FabricLoader.getInstance().getConfigDir();
 	}
 
 	@Override
@@ -106,7 +98,7 @@ public class Auth extends Accounts implements Module {
 		} else {
 			try {
 				API.getInstance().shutdown();
-				((MinecraftClientAccessor) client).axolotlclient$setSession(new Session(account.getName(), UndashedUuid.fromString(account.getUuid()), account.getAuthToken(),
+				((MinecraftClientAccessor) client).axolotlclient$setSession(new Session(account.getName(), UUIDHelper.fromUndashed(account.getUuid()), account.getAuthToken(),
 					Optional.empty(), Optional.empty(),
 					Session.AccountType.MSA));
 				UserApiService service;
@@ -131,11 +123,6 @@ public class Auth extends Accounts implements Module {
 	}
 
 	@Override
-	protected Logger getLogger() {
-		return AxolotlClient.LOGGER;
-	}
-
-	@Override
 	void showAccountsExpiredScreen(Account account) {
 		Screen current = client.currentScreen;
 		client.execute(() -> client.setScreen(new ConfirmScreen((bl) -> {
@@ -155,7 +142,7 @@ public class Auth extends Accounts implements Module {
 		if (!loadingTexture.contains(uuid)) {
 			loadingTexture.add(uuid);
 			ThreadExecuter.scheduleTask(() -> {
-				UUID uUID = UndashedUuid.fromString(uuid);
+				UUID uUID = UUIDHelper.fromUndashed(uuid);
 				ProfileResult profileResult = client.getSessionService().fetchProfile(uUID, false);
 				if (profileResult != null) {
 					client.getSkinProvider().fetchSkin(profileResult.profile())
@@ -174,7 +161,7 @@ public class Auth extends Accounts implements Module {
 		if (!textures.containsKey(uuid)) {
 			loadTexture(uuid);
 			return Objects.requireNonNullElseGet(textures.get(uuid),
-				() -> DefaultSkinHelper.getSkin(UndashedUuid.fromString(uuid)).texture());
+				() -> DefaultSkinHelper.getSkin(UUIDHelper.fromUndashed(uuid)).texture());
 		}
 		return textures.get(uuid);
 	}

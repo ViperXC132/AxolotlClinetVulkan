@@ -55,7 +55,9 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 			}
 
 			ComboHud comboHud = (ComboHud) HudManager.getInstance().get(ComboHud.ID);
-			comboHud.onEntityAttack(entity);
+			if (comboHud != null) {
+				comboHud.onEntityAttack(entity);
+			}
 		}
 	}
 

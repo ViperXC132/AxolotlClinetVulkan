@@ -22,22 +22,25 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.freelook.Perspective;
 import io.github.axolotlclient.modules.hud.gui.hud.PlayerHud;
 import io.github.axolotlclient.modules.hypixel.nickhider.NickHider;
-import io.github.axolotlclient.util.BadgeRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.living.player.ClientPlayerEntity;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.entity.living.LivingEntity;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Constant;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -64,25 +67,18 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 		}
 	}
 
-	@Redirect(method = "renderNameTag(Lnet/minecraft/entity/living/LivingEntity;DDD)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/LivingEntity;getDisplayName()Lnet/minecraft/text/Text;"))
-	public Text axolotlclient$hideNameWhenSneaking(LivingEntity instance) {
+	@WrapOperation(method = "renderNameTag(Lnet/minecraft/entity/living/LivingEntity;DDD)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/LivingEntity;getDisplayName()Lnet/minecraft/text/Text;"))
+	public Text axolotlclient$hideNameWhenSneaking(LivingEntity instance, Operation<Text> original) {
+		var orig = original.call(instance);
 		if (instance instanceof ClientPlayerEntity) {
 			if (NickHider.getInstance().hideOwnName.get() && instance.equals(Minecraft.getInstance().player)) {
-				return new LiteralText(NickHider.getInstance().hiddenNameSelf.get());
+				orig = NickHider.getInstance().editComponent(orig, instance.getName(), NickHider.getInstance().hiddenNameSelf.get());
 			} else if (NickHider.getInstance().hideOtherNames.get()
-					   && !instance.equals(Minecraft.getInstance().player)) {
-				return new LiteralText(NickHider.getInstance().hiddenNameOthers.get());
+				&& !instance.equals(Minecraft.getInstance().player)) {
+				orig = NickHider.getInstance().editComponent(orig, instance.getName(), NickHider.getInstance().hiddenNameOthers.get());
 			}
 		}
-		return instance.getDisplayName();
-	}
-
-	@Inject(method = "renderNameTag(Lnet/minecraft/entity/living/LivingEntity;DDD)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/TextRenderer;draw(Ljava/lang/String;III)I"))
-	public void axolotlclient$addBadge(LivingEntity livingEntity, double d, double e, double f, CallbackInfo ci) {
-		if (!NickHider.getInstance().hideOwnName.get() && livingEntity.equals(Minecraft.getInstance().player))
-			BadgeRenderer.renderNametagBadge(livingEntity);
-		else if (!NickHider.getInstance().hideOtherNames.get() && !livingEntity.equals(Minecraft.getInstance().player))
-			BadgeRenderer.renderNametagBadge(livingEntity);
+		return orig;
 	}
 
 	@ModifyConstant(method = "setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;FZ)Z", constant = @Constant(floatValue = 1.0f, ordinal = 0))

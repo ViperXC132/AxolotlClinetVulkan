@@ -32,7 +32,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(VertexBuffer.class)
-public class VertexBufferMixin {
+public abstract class VertexBufferMixin {
 	@Shadow
 	private int id;
 

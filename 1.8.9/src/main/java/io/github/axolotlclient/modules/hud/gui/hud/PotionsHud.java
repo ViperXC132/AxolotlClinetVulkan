@@ -27,7 +27,9 @@ import java.util.List;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
+import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
@@ -56,6 +58,7 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 	private final EnumOption<CardinalOrder> order = DefaultOptions.getCardinalOrder(CardinalOrder.TOP_DOWN);
 	private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
 	private final BooleanOption showEffectName = new BooleanOption("showEffectNames", true);
+	private final ColorOption timerTextColor = new ColorOption("potionshud.timer_text_color", Color.parse("#7F7F7F"));
 	private final List<StatusEffectInstance> placeholder = Util.make(() -> {
 		List<StatusEffectInstance> list = new ArrayList<>();
 		StatusEffectInstance effect = new StatusEffectInstance(StatusEffect.SPEED.id, 9999);
@@ -107,7 +110,7 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 			if (direction.isXAxis()) {
 				renderPotion(effect, x + lastPos + 1, y + 1);
 				lastPos += (iconsOnly.get() ? 20 : (showEffectName.get() ? 20 + client.textRenderer.getWidth(I18n.translate(effect.getName()) + " " +
-																											 Util.toRoman(effect.getAmplifier() + 1)) : 50));
+					Util.toRoman(effect.getAmplifier() + 1)) : 50));
 			} else {
 				renderPotion(effect, x + 1, y + 1 + lastPos);
 				lastPos += 20;
@@ -124,8 +127,8 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 				return 50 * effects.size() + 2;
 			}
 			return effects.stream()
-					   .map(effect -> I18n.translate(effect.getName()) + " " + Util.toRoman(effect.getAmplifier()))
-					   .mapToInt(client.textRenderer::getWidth).map(i -> i + 20).sum() + 2;
+				.map(effect -> I18n.translate(effect.getName()) + " " + Util.toRoman(effect.getAmplifier()))
+				.mapToInt(client.textRenderer::getWidth).map(i -> i + 20).sum() + 2;
 		} else {
 			if (iconsOnly.get()) {
 				return 20;
@@ -134,8 +137,8 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 				return 50;
 			}
 			return effects.stream()
-					   .map(effect -> I18n.translate(effect.getName()) + " " + Util.toRoman(effect.getAmplifier()))
-					   .map(client.textRenderer::getWidth).max(Integer::compare).orElse(38) + 22;
+				.map(effect -> I18n.translate(effect.getName()) + " " + Util.toRoman(effect.getAmplifier()))
+				.map(client.textRenderer::getWidth).max(Integer::compare).orElse(38) + 22;
 		}
 	}
 
@@ -155,13 +158,13 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 		this.drawTexture(x, y, m % 8 * 18, 198 + m / 8 * 18, 18, 18);
 		if (!iconsOnly.get()) {
 			if (showEffectName.get()) {
-				String string = I18n.translate(effect.getName()) + " " + Util.toRoman(effect.getAmplifier());
+				String string = I18n.translate(effect.getName()) + " " + Util.toRoman(effect.getAmplifier() + 1);
 
-				drawString(string, (float) (x + 19), (float) (y + 1), 16777215, shadow.get());
+				drawString(string, (float) (x + 19), (float) (y + 1), textColor.get().toInt(), shadow.get());
 				String duration = StatusEffect.getDurationString(effect);
-				drawString(duration, (float) (x + 19), (float) (y + 1 + 10), textColor.get().toInt(), shadow.get());
+				drawString(duration, (float) (x + 19), (float) (y + 1 + 10), timerTextColor.get().toInt(), shadow.get());
 			} else {
-				drawString(StatusEffect.getDurationString(effect), x + 19, y + 5, textColor.get().toInt(), shadow.get());
+				drawString(StatusEffect.getDurationString(effect), x + 19, y + 5, timerTextColor.get().toInt(), shadow.get());
 			}
 		}
 	}
@@ -177,6 +180,8 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 		options.add(anchor);
 		options.add(order);
 		options.add(iconsOnly);
+		options.add(showEffectName);
+		options.add(timerTextColor);
 		return options;
 	}
 

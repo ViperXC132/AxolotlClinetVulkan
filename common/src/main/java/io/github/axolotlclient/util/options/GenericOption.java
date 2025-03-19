@@ -46,7 +46,7 @@ public class GenericOption extends OptionBase<GenericOption.ActionListener> {
 
 	@Override
 	public String toSerializedValue() {
-		return "";
+		return null;
 	}
 
 	@Override

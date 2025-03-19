@@ -66,11 +66,13 @@ public class BedwarsMod implements AbstractHypixelMod {
 		BedwarsLevelHeadMode.GAME_KILLS_GAME_DEATHS);
 	@Getter
 	protected final TeamUpgradesOverlay upgradesOverlay;
+	@Getter
+	protected final ResourceOverlay resourceOverlay;
 	protected final BooleanOption removeAnnoyingMessages = new BooleanOption(getTranslationKey("removeAnnoyingMessages"), true);
 	protected final BooleanOption overrideMessages = new BooleanOption(getTranslationKey("overrideMessages"), true);
 	@Getter
 	private final OptionCategory category = OptionCategory.create("bedwars");
-	private final BooleanOption enabled = new BooleanOption("enabled", false);
+	private final BooleanOption enabled = new BooleanOption("enabled", "bedwars.enabled.tooltip", false);
 	private final BooleanOption tabRenderLatencyIcon = new BooleanOption(getTranslationKey("tabRenderLatencyIcon"), false);
 
 	private final BooleanOption showChatTime = new BooleanOption(getTranslationKey("showChatTime"), true);
@@ -80,6 +82,7 @@ public class BedwarsMod implements AbstractHypixelMod {
 
 	public BedwarsMod() {
 		upgradesOverlay = new TeamUpgradesOverlay(this);
+		resourceOverlay = new ResourceOverlay(this);
 	}
 
 
@@ -88,6 +91,7 @@ public class BedwarsMod implements AbstractHypixelMod {
 		category.add(enabled, hardcoreHearts, showHunger, displayArmor, bedwarsLevelHead, bedwarsLevelHeadMode,
 			removeAnnoyingMessages, tabRenderLatencyIcon, showChatTime, overrideMessages);
 		category.add(upgradesOverlay.getAllOptions());
+		category.add(resourceOverlay.getAllOptions());
 		category.add(BedwarsDeathType.getOptions());
 
 		instance = this;

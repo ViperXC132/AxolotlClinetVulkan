@@ -26,7 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
+import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
@@ -39,6 +41,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Holder;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
@@ -63,6 +66,7 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 
 	private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
 	private final BooleanOption showEffectName = new BooleanOption("showEffectNames", true);
+	private final ColorOption timerTextColor = new ColorOption("potionshud.timer_text_color", Color.parse("#7F7F7F"));
 
 	public PotionsHud() {
 		super(50, 200, false);
@@ -103,7 +107,7 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 			if (direction.isXAxis()) {
 				renderPotion(graphics, effect, x + lastPos + 1, y + 1, tickDelta);
 				lastPos += (iconsOnly.get() ? 20 : (showEffectName.get() ? 20 + client.font.width(
-					Component.translatable(effect.getDescriptionId()).append(" ")
+					effect.getEffect().value().getDisplayName().copy().append(CommonComponents.SPACE)
 						.append(Util.toRoman(effect.getAmplifier() + 1))) : 50));
 			} else {
 				renderPotion(graphics, effect, x + 1, y + 1 + lastPos, tickDelta);
@@ -131,7 +135,7 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 			}
 			return effects.stream().map(effect -> Component.translatable(effect.getDescriptionId()).append(" ")
 				.append(Util.toRoman(effect.getAmplifier()))).map(client.font::width).max(Integer::compare).orElse(38) +
-				   22;
+				22;
 		}
 	}
 
@@ -151,16 +155,16 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 		if (!iconsOnly.get()) {
 			float tickrate = client.level != null ? client.level.tickRateManager().tickrate() : 1;
 			if (showEffectName.get()) {
-				Component string = Component.translatable(effect.getDescriptionId()).append(" ")
-					.append(Util.toRoman(effect.getAmplifier()));
+				Component string = effect.getEffect().value().getDisplayName().copy().append(CommonComponents.SPACE)
+					.append(Util.toRoman(effect.getAmplifier() + 1));
 
 				graphics.drawString(client.font, string, x + 19, y + 1, textColor.get().toInt(), shadow.get());
 				Component duration = MobEffectUtil.formatDuration(effect, 1, tickrate);
-				graphics.drawString(client.font, duration, x + 19, y + 1 + 10, 8355711, shadow.get());
+				graphics.drawString(client.font, duration, x + 19, y + 1 + 10, timerTextColor.get().toInt(), shadow.get());
 			} else {
 				graphics.drawString(client.font, MobEffectUtil.formatDuration(effect, 1, tickrate), x + 19, y + 5,
-									textColor.get().toInt(), shadow.get()
-								   );
+					timerTextColor.get().toInt(), shadow.get()
+				);
 			}
 		}
 	}
@@ -179,6 +183,8 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 		options.add(anchor);
 		options.add(order);
 		options.add(iconsOnly);
+		options.add(showEffectName);
+		options.add(timerTextColor);
 		return options;
 	}
 

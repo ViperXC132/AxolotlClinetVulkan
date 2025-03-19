@@ -48,7 +48,7 @@ public class TrapUpgrade extends TeamUpgrade {
 
 	private final static Pattern[] REGEX = {
 		Pattern.compile("^\\b[A-Za-z0-9_§]{3,16}\\b purchased (.+) Trap.?\\s*$"),
-		Pattern.compile("Trap was set (off)!"),
+		Pattern.compile("[Tt]rap (?:was )?set (off)(?: by .+ from .+ team)?!"),
 		Pattern.compile("Removed (.+) Trap from the (queue)!\\s*$")
 	};
 
@@ -142,7 +142,7 @@ public class TrapUpgrade extends TeamUpgrade {
 			if (s.contains("miner")) {
 				return MINER_FATIGUE;
 			}
-			if (s.contains("alarm")) {
+			if (s.contains("reveal")) {
 				return ALARM;
 			}
 			if (s.contains("counter")) {
