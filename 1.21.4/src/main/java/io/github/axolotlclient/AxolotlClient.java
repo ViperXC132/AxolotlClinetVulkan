@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient;
 
+import io.github.axolotlclient.bridge.impl.Bridge;
 import io.github.axolotlclient.modules.hud.HudManager0;
 import java.util.ArrayList;
 import java.util.HashMap;
