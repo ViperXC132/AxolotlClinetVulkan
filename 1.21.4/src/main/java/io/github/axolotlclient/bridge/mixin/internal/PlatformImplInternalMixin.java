@@ -22,7 +22,7 @@
 
 package io.github.axolotlclient.bridge.mixin.internal;
 
-import com.mojang.blaze3d.platform.InputUtil;
+import com.mojang.blaze3d.platform.InputConstants;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
@@ -36,13 +36,13 @@ import io.github.axolotlclient.bridge.render.AxoWindow;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.KeyBind;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -55,7 +55,7 @@ public class PlatformImplInternalMixin {
      */
     @Overwrite
     public static @Nullable AxoWindow getWindow() {
-        return MinecraftClient.getInstance().getWindow();
+        return Minecraft.getInstance().getWindow();
     }
 
     /**
@@ -64,7 +64,7 @@ public class PlatformImplInternalMixin {
      */
     @Overwrite
     public static AxoMinecraftClient getMinecraftClientInstance() {
-        return MinecraftClient.getInstance();
+        return Minecraft.getInstance();
     }
 
     /**
@@ -73,7 +73,7 @@ public class PlatformImplInternalMixin {
      */
     @Overwrite
     public static String getTranslatedString(String nameKey, Object[] args) {
-        return I18n.translate(nameKey, args);
+        return I18n.get(nameKey, args);
     }
 
     /**
@@ -101,7 +101,7 @@ public class PlatformImplInternalMixin {
      */
     @Overwrite
     public static long getMeasuringTimeMs() {
-        return Util.getMeasuringTimeMs();
+        return Util.getMillis();
     }
 
     /**
@@ -128,7 +128,7 @@ public class PlatformImplInternalMixin {
      */
     @Overwrite
     public static AxoKeybinding createKeyBinding(AxoKey defaultKey, String name, String category) {
-        final var binding = new KeyBind(name, ((InputUtil.Key) defaultKey).getKeyCode(), category);
+        final var binding = new KeyMapping(name, ((InputConstants.Key) defaultKey).getValue(), category);
         KeyBindingHelper.registerKeyBinding(binding);
         return binding;
     }
@@ -139,6 +139,6 @@ public class PlatformImplInternalMixin {
      */
     @Overwrite
     public static AxoIdentifier createIdentifier(String ns, String path) {
-        return Identifier.of(ns, path);
+        return ResourceLocation.fromNamespaceAndPath(ns, path);
     }
 }

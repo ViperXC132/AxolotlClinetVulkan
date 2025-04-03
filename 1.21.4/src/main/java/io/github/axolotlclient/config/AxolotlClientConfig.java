@@ -141,7 +141,7 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 					ConfigUI.getInstance().setStyle(s.split("\\.")[1]);
 					Minecraft.getInstance().setScreen(null);
 				}));
-				AxolotlClient.configManager.load();
+				AxolotlClient.getInstance().getConfigManager().load();
 				ConfigUI.getInstance().setStyle(configStyle.get().split("\\.")[1]);
 			}
 		});
@@ -165,7 +165,7 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 
 		rendering.add(noRain);
 
-		AxolotlClient.config.add(creditsBGM);
+		AxolotlClient.hiddenConfig.add(creditsBGM);
 
 	}
 

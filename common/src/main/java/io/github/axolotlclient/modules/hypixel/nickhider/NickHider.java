@@ -25,12 +25,11 @@ package io.github.axolotlclient.modules.hypixel.nickhider;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
+import io.github.axolotlclient.bridge.AxoMinecraftClient;
+import io.github.axolotlclient.bridge.entity.AxoPlayer;
+import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
 import lombok.Getter;
-import net.minecraft.client.Minecraft;
-import net.minecraft.entity.living.player.PlayerEntity;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Text;
 
 public class NickHider implements AbstractHypixelMod {
 
@@ -59,23 +58,24 @@ public class NickHider implements AbstractHypixelMod {
 		return category;
 	}
 
-	public Text editMessage(Text message) {
+	public AxoText editMessage(AxoText message) {
 		if (hideOwnName.get() || hideOtherNames.get()) {
-			String msg = message.getFormattedString();
-			String playerName = Minecraft.getInstance().player.getGameProfile().getName();
+			String msg = message.toString(); // TODO .getFormattedString();
+			String playerName = AxoMinecraftClient.getInstance().br$getPlayer().br$getGameProfile().br$getName();
 			if (hideOwnName.get() && msg.contains(playerName)) {
 				msg = msg.replaceAll(playerName, hiddenNameSelf.get());
 			}
 
 			if (hideOtherNames.get()) {
-				for (PlayerEntity player : Minecraft.getInstance().world.players) {
-					if (msg.contains(player.getGameProfile().getName())) {
-						msg = msg.replaceAll(player.getGameProfile().getName(), hiddenNameOthers.get());
+				for (AxoPlayer player : AxoMinecraftClient.getInstance().br$getWorld().br$getPlayers()) {
+					if (msg.contains(player.br$getGameProfile().br$getName())) {
+						msg = msg.replaceAll(player.br$getGameProfile().br$getName(), hiddenNameOthers.get());
 					}
 				}
 			}
 
-			return new LiteralText(msg).setStyle(message.getStyle().deepCopy());
+			// TODO: style api
+			return AxoText.literal(msg); //.setStyle(message.getStyle().deepCopy());
 		}
 		return message;
 	}

@@ -116,19 +116,11 @@ public interface AxoRenderContext {
 	// texture drawing
 
 	@ApiStatus.NonExtendable
-	default void br$drawTexture(Rectangle screenPos, Rectangle texturePos, AxoIdentifier texture) {
-		br$drawTexture(
-			screenPos.x, screenPos.y, texturePos.x, texturePos.y, screenPos.width, screenPos.height,
-			texturePos.width, texturePos.height,
-			texture
-		);
+	default void br$drawTexture(Rectangle coords, AxoSprite texture) {
+		br$drawTexture(coords.x, coords.y, coords.width, coords.height, texture);
 	}
 
-	default void br$drawTexture(
-		int sx, int sy, int tx, int ty, int sw, int sh,
-		int tw, int th,
-		AxoIdentifier texture
-	) {
+	default void br$drawTexture(int x, int y, int width, int height, AxoSprite sprite) {
 		throw BridgeUtil.noImpl();
 	}
 

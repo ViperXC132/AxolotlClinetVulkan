@@ -41,7 +41,7 @@ public abstract class PlayerEntityRendererMixin {
 	@ModifyArgs(method = "renderNameTag(Lnet/minecraft/client/renderer/entity/state/PlayerRenderState;Lnet/minecraft/network/chat/Component;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/LivingEntityRenderer;renderNameTag(Lnet/minecraft/client/renderer/entity/state/EntityRenderState;Lnet/minecraft/network/chat/Component;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V"))
 	private void axolotlclient$modifiyName(Args args) {
-		if (AxolotlClient.CONFIG != null) {
+		if (AxolotlClient.config() != null) {
 			PlayerRenderState state = args.get(0);
 			Level level = Minecraft.getInstance().level;
 			Entity player = level.getEntity(state.id);

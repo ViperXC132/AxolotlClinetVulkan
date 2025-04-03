@@ -22,17 +22,16 @@
 
 package io.github.axolotlclient.modules.hypixel.bedwars;
 
-import java.util.List;
-
-import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.modules.hud.gui0.entry.BoxHudEntry;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hypixel.bedwars.upgrades.BedwarsTeamUpgrades;
 import io.github.axolotlclient.modules.hypixel.bedwars.upgrades.TeamUpgrade;
 import io.github.axolotlclient.modules.hypixel.bedwars.upgrades.TrapUpgrade;
-import net.minecraft.resource.Identifier;
+import java.util.List;
 
 /**
  * @author DarkKronicle
@@ -40,9 +39,9 @@ import net.minecraft.resource.Identifier;
 
 public class TeamUpgradesOverlay extends BoxHudEntry {
 
-	public final static Identifier ID = new Identifier("axolotlclient", "bedwars_teamupgrades");
+	public final static AxoIdentifier ID = AxoIdentifier.of("axolotlclient", "bedwars_teamupgrades");
 	private final static TrapUpgrade.TrapType[] trapEdit = {TrapUpgrade.TrapType.MINER_FATIGUE, TrapUpgrade.TrapType.ITS_A_TRAP};
-	private final BooleanOption renderWhenRelevant = new BooleanOption(ID.getPath() + ".renderWhenRelevant", true);
+	private final BooleanOption renderWhenRelevant = new BooleanOption(ID.br$getPath() + ".renderWhenRelevant", true);
 	private final BedwarsMod mod;
 	private BedwarsTeamUpgrades upgrades = null;
 
@@ -60,13 +59,13 @@ public class TeamUpgradesOverlay extends BoxHudEntry {
 	}
 
 	@Override
-	public void render(float delta) {
+	public void render(AxoRenderContext context, float delta) {
 		if (!renderWhenRelevant.get() || mod.inGame()) {
-			super.render(delta);
+			super.render(context, delta);
 		}
 	}
 
-	public void drawOverlay(DrawPosition position, boolean editMode) {
+	public void drawOverlay(AxoRenderContext context, DrawPosition position, boolean editMode) {
 		if (upgrades == null && !editMode) {
 			return;
 		}
@@ -75,9 +74,9 @@ public class TeamUpgradesOverlay extends BoxHudEntry {
 		int y = position.y() + 2;
 		int width = getWidth();
 		int height = getHeight();
-		GlStateManager.enableAlphaTest();
-		GlStateManager.enableBlend();
-		GlStateManager.color3f(1, 1, 1);
+		context.enableAlphaTest();
+		context.br$glEnableBlend();
+		context.color3f(1, 1, 1);
 		boolean normalUpgrades = false;
 		if (upgrades != null) {
 			for (TeamUpgrade u : upgrades.upgrades) {
@@ -116,17 +115,17 @@ public class TeamUpgradesOverlay extends BoxHudEntry {
 	}
 
 	@Override
-	public void renderComponent(float delta) {
+	public void renderComponent(AxoRenderContext context, float delta) {
 		drawOverlay(getPos(), false);
 	}
 
 	@Override
-	public void renderPlaceholderComponent(float delta) {
+	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
 		drawOverlay(getPos(), true);
 	}
 
 	@Override
-	public Identifier getId() {
+	public AxoIdentifier getId() {
 		return ID;
 	}
 

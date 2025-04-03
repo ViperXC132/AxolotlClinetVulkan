@@ -23,9 +23,9 @@
 package io.github.axolotlclient.modules.hypixel.bedwars;
 
 
+import io.github.axolotlclient.bridge.AxoPlayerProfile;
+import io.github.axolotlclient.bridge.Platform;
 import lombok.Data;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.PlayerInfo;
 
 /**
  * @author DarkKronicle
@@ -36,7 +36,7 @@ public class BedwarsPlayer {
 
 	private final BedwarsTeam team;
 	private final int number;
-	private PlayerInfo profile;
+	private AxoPlayerProfile profile;
 	private boolean alive = true;
 	private boolean disconnected = false;
 	private boolean bed = true;
@@ -44,7 +44,7 @@ public class BedwarsPlayer {
 	private boolean triedStats = false;
 	private int tickAlive = -1;
 
-	public BedwarsPlayer(BedwarsTeam team, PlayerInfo profile, int number) {
+	public BedwarsPlayer(BedwarsTeam team, AxoPlayerProfile profile, int number) {
 		this.team = team;
 		this.profile = profile;
 		this.number = number;
@@ -59,7 +59,7 @@ public class BedwarsPlayer {
 	}
 
 	public String getName() {
-		return profile.getProfile().getName();
+		return profile.br$getName();
 	}
 
 	public String getColoredName() {
@@ -79,7 +79,7 @@ public class BedwarsPlayer {
 		return team.getColorSection() + "§l§m" + team.getPrefix() + number + "§7 §m" + getName();
 	}
 
-	public void updateListEntry(PlayerInfo entry) {
+	public void updateListEntry(AxoPlayerProfile entry) {
 		this.profile = entry;
 	}
 
@@ -91,11 +91,11 @@ public class BedwarsPlayer {
 		if (stats == null && !triedStats) {
 			triedStats = true;
 			try {
-				stats = BedwarsPlayerStats.fromAPI(profile.getProfile().getId().toString().replace("-", ""));
+				stats = BedwarsPlayerStats.fromAPI(profile.br$getId().toString().replace("-", ""));
 			} catch (Exception ignored) {
 			}
 			if (stats == null) {
-				stats = BedwarsPlayerStats.generateFake(profile.getProfile().getName());
+				stats = BedwarsPlayerStats.generateFake(profile.br$getName());
 			}
 		}
 		if (alive || tickAlive < 0) {
@@ -126,7 +126,7 @@ public class BedwarsPlayer {
 			tickAlive = -1;
 			return;
 		}
-		int currentTick = Minecraft.getInstance().gui.getTicks();
+		int currentTick = Platform.tickCount();
 		tickAlive = currentTick + 20 * 5; // 5 second respawn
 	}
 
@@ -145,7 +145,7 @@ public class BedwarsPlayer {
 
 	public void reconnected() {
 		disconnected = false;
-		int currentTick = Minecraft.getInstance().gui.getTicks();
+		int currentTick = Platform.tickCount();
 		tickAlive = currentTick + 20 * 10; // 10 second respawn
 	}
 

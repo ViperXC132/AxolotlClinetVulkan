@@ -50,8 +50,8 @@ public abstract class SplashOverlayMixin {
 	@Inject(method = "<clinit>", at = @At("TAIL"))
 	private static void axolotlclient$customBackgroundColor(CallbackInfo ci) {
 		if (!FabricLoader.getInstance().isModLoaded("dark-loading-screen")) {
-			if (AxolotlClient.CONFIG != null) {
-				Color color = AxolotlClient.CONFIG.loadingScreenColor.get();
+			if (AxolotlClient.config() != null) {
+				Color color = AxolotlClient.config().loadingScreenColor.get();
 				BRAND_BACKGROUND = color::toInt;
 				//ColorUtil.Argb32.of(color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue());
 			}

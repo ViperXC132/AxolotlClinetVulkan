@@ -42,7 +42,7 @@ import java.util.Objects;
 import net.fabricmc.loader.api.FabricLoader;
 
 public abstract class AxolotlClientCommon {
-	public static final AxoIdentifier BADGE_ICON = AxoIdentifier.of("axolotlclient", "textures/badge.png");
+	public static final AxoIdentifier BADGE_PATH = AxoIdentifier.of("axolotlclient", "textures/badge.png");
 	public static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("AxolotlClient.json");
 
 	// static utility methods
@@ -73,7 +73,7 @@ public abstract class AxolotlClientCommon {
 	private Logger logger;
 	private NotificationProvider notificationProvider;
 	private ConfigManager configManager;
-	private boolean initializing = false;
+	private boolean initializing = true;
 	public final List<Module> modules = new ArrayList<>();
 
 	protected AxolotlClientCommon() {

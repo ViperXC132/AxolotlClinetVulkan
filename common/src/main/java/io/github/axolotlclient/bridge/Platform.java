@@ -25,6 +25,7 @@ package io.github.axolotlclient.bridge;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
+import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 
 public interface Platform {
@@ -36,7 +37,11 @@ public interface Platform {
 		return PlatformImplInternal.getConfig();
 	}
 
-	static AxoIdentifier getTexture(GraphicsOption option) {
+	static AxoSprite getTexture(GraphicsOption option) {
 		return PlatformImplInternal.getTexture(option);
+	}
+
+	static int tickCount() {
+		return PlatformImplInternal.tickCount();
 	}
 }

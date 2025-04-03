@@ -84,7 +84,7 @@ public class CreditsScreen extends Screen {
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float tickDelta) {
-		if (AxolotlClient.CONFIG.creditsBGM.get() && !minecraft.getSoundManager().isActive(bgm)) {
+		if (AxolotlClient.config().creditsBGM.get() && !minecraft.getSoundManager().isActive(bgm)) {
 			minecraft.getSoundManager().play(bgm);
 		}
 
@@ -130,13 +130,13 @@ public class CreditsScreen extends Screen {
 		}).bounds(width / 2 - 75, height - 50 + 22, 150, 20).build());
 
 		this.addRenderableWidget(Button.builder(Component.translatable("creditsBGM").append(": ")
-				.append(Component.translatable(AxolotlClient.CONFIG.creditsBGM.get() ? "options.on" : "options.off")),
+				.append(Component.translatable(AxolotlClient.config().creditsBGM.get() ? "options.on" : "options.off")),
 			buttonWidget -> {
-				AxolotlClient.CONFIG.creditsBGM.toggle();
-				AxolotlClient.configManager.save();
+				AxolotlClient.config().creditsBGM.toggle();
+				AxolotlClient.getInstance().getConfigManager().save();
 				stopBGM();
 				buttonWidget.setMessage(Component.translatable("creditsBGM").append(": ").append(
-					Component.translatable(AxolotlClient.CONFIG.creditsBGM.get() ? "options.on" : "options.off")));
+					Component.translatable(AxolotlClient.config().creditsBGM.get() ? "options.on" : "options.off")));
 			}).bounds(6, this.height - 26, 100, 20).build());
 	}
 

@@ -35,7 +35,7 @@ public abstract class OverlayTextureMixin {
 	@ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/NativeImage;setPixel(III)V", ordinal = 0), index = 2)
 	private int axolotlclient$customHitColor(int constant) {
 
-		Color c = AxolotlClient.CONFIG.hitColor.get();
+		Color c = AxolotlClient.config().hitColor.get();
 		int color = 255 - c.getAlpha();
 		color = (color << 8) + c.getRed();
 		color = (color << 8) + c.getGreen();

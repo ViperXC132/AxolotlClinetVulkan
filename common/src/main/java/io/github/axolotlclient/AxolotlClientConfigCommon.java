@@ -34,6 +34,10 @@ public abstract class AxolotlClientConfigCommon {
 	public final OptionCategory hidden = OptionCategory.create("storedOptions");
 	public final StringOption datetimeFormat = new StringOption("datetime_format", "yyyy/MM/dd HH:mm:ss", s -> dateTimeFormatter = DateTimeFormatter.ofPattern(s));
 
+	public static AxolotlClientConfigCommon instance() {
+		return AxolotlClientCommon.getInstance().getConfig();
+	}
+
 	@Getter
 	private DateTimeFormatter dateTimeFormatter;
 

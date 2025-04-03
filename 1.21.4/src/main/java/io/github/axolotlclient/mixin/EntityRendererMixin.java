@@ -59,16 +59,16 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
 	public void axolotlclient$addBadges(S entityRenderState, Component text, PoseStack matrices, MultiBufferSource vertexConsumers, int light, CallbackInfo ci) {
 		if (entityRenderState instanceof PlayerRenderState state && text.equals(entityRenderState.nameTag)) {
 			if (!state.isDiscrete) {
-				if (AxolotlClient.CONFIG.showBadges.get()) {
+				if (AxolotlClient.config().showBadges.get()) {
 					RenderSystem.enableDepthTest();
 					Player entity = (Player) Minecraft.getInstance().level.getEntity(state.id);
 					if (entity != null && UserRequest.getOnline(entity.getStringUUID())) {
 						assert Minecraft.getInstance().player != null;
-						int x = -(Minecraft.getInstance().font.width(entity == Minecraft.getInstance().player ? (NickHider.getInstance().hideOwnName.get() ? NickHider.getInstance().hiddenNameSelf.get() : PlayerTeam.formatNameForTeam(entity.getTeam(), entity.getName()).getString()) : (NickHider.getInstance().hideOtherNames.get() ? NickHider.getInstance().hiddenNameOthers.get() : PlayerTeam.formatNameForTeam(entity.getTeam(), entity.getName()).getString())) / 2 + (AxolotlClient.CONFIG.customBadge.get() ? Minecraft.getInstance().font.width(" " + ChatFormatting.stripFormatting(AxolotlClient.CONFIG.badgeText.get())) : 10));
+						int x = -(Minecraft.getInstance().font.width(entity == Minecraft.getInstance().player ? (NickHider.getInstance().hideOwnName.get() ? NickHider.getInstance().hiddenNameSelf.get() : PlayerTeam.formatNameForTeam(entity.getTeam(), entity.getName()).getString()) : (NickHider.getInstance().hideOtherNames.get() ? NickHider.getInstance().hiddenNameOthers.get() : PlayerTeam.formatNameForTeam(entity.getTeam(), entity.getName()).getString())) / 2 + (AxolotlClient.config().customBadge.get() ? Minecraft.getInstance().font.width(" " + ChatFormatting.stripFormatting(AxolotlClient.config().badgeText.get())) : 10));
 
-						if (AxolotlClient.CONFIG.customBadge.get()) {
-							Component badgeText = Util.formatFromCodes(AxolotlClient.CONFIG.badgeText.get());
-							Minecraft.getInstance().font.drawInBatch(badgeText, x + 6, 0, -1, AxolotlClient.CONFIG.useShadows.get(), matrices.last().pose(), vertexConsumers, Font.DisplayMode.NORMAL, 0, 15728880);
+						if (AxolotlClient.config().customBadge.get()) {
+							Component badgeText = Util.formatFromCodes(AxolotlClient.config().badgeText.get());
+							Minecraft.getInstance().font.drawInBatch(badgeText, x + 6, 0, -1, AxolotlClient.config().useShadows.get(), matrices.last().pose(), vertexConsumers, Font.DisplayMode.NORMAL, 0, 15728880);
 						} else {
 							var type = RenderType.guiTextured(AxolotlClient.badgeIcon);
 							var builder = Minecraft.getInstance().renderBuffers().bufferSource().getBuffer(type);
@@ -88,7 +88,7 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
 
 	@ModifyArg(method = "renderNameTag", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Lnet/minecraft/network/chat/Component;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)I"), index = 8)
 	public int axolotlclient$bgColor(int color) {
-		if (AxolotlClient.CONFIG.nametagBackground.get()) {
+		if (AxolotlClient.config().nametagBackground.get()) {
 			return color;
 		} else {
 			return 0;
@@ -97,7 +97,7 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
 
 	@ModifyArg(method = "renderNameTag", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Lnet/minecraft/network/chat/Component;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)I", ordinal = 1), index = 4)
 	public boolean axolotlclient$enableShadows(boolean shadow) {
-		return AxolotlClient.CONFIG.useShadows.get();
+		return AxolotlClient.config().useShadows.get();
 	}
 
 	@Inject(method = "renderNameTag", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Lnet/minecraft/network/chat/Component;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)I", ordinal = 1))
@@ -114,7 +114,7 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
 							float y = c.getString().contains("deadmau5") ? -20 : -10;
 
 							Matrix4f matrix4f = matrices.last().pose();
-							textRenderer.drawInBatch(text, x, y, LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.CONFIG.useShadows.get(), matrix4f, vertexConsumers, Font.DisplayMode.NORMAL, LevelHead.getInstance().background.get() ? 127 : 0, light);
+							textRenderer.drawInBatch(text, x, y, LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.config().useShadows.get(), matrix4f, vertexConsumers, Font.DisplayMode.NORMAL, LevelHead.getInstance().background.get() ? 127 : 0, light);
 						}
 					} else if (LevelHead.getInstance().enabled.get()) {
 						String text = "Level: " + HypixelAbstractionLayer.getPlayerLevel(String.valueOf(entity.getUUID()), LevelHead.getInstance().mode.get());
@@ -127,7 +127,7 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
 						float y = c.getString().contains("deadmau5") ? -20 : -10;
 
 						Matrix4f matrix4f = matrices.last().pose();
-						textRenderer.drawInBatch(text, x, y, LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.CONFIG.useShadows.get(), matrix4f, vertexConsumers, Font.DisplayMode.NORMAL, LevelHead.getInstance().background.get() ? 127 : 0, light);
+						textRenderer.drawInBatch(text, x, y, LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.config().useShadows.get(), matrix4f, vertexConsumers, Font.DisplayMode.NORMAL, LevelHead.getInstance().background.get() ? 127 : 0, light);
 					}
 				}
 			}

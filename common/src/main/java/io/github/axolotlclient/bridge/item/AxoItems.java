@@ -32,4 +32,12 @@ public class AxoItems {
 	public static final AxoItem IRON_SWORD = BridgeUtil.noImplValue();
 	public static final AxoItem IRON_BOOTS = BridgeUtil.noImplValue();
 	public static final AxoItem ARROW = BridgeUtil.noImplValue();
+	public static final AxoItem IRON_INGOT = BridgeUtil.noImplValue();
+	public static final AxoItem GOLD_INGOT = BridgeUtil.noImplValue();
+	public static final AxoItem DIAMOND = BridgeUtil.noImplValue();
+	public static final AxoItem EMERALD = BridgeUtil.noImplValue();
+	public static final AxoItem STONE_SWORD = BridgeUtil.noImplValue();
+	public static final AxoItem DIAMOND_SWORD = BridgeUtil.noImplValue();
+	public static final AxoItem DIAMOND_CHESTPLATE = BridgeUtil.noImplValue();
+	public static final AxoItem DIAMOND_BOOTS = BridgeUtil.noImplValue();
 }

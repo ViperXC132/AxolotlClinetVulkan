@@ -22,20 +22,18 @@
 
 package io.github.axolotlclient.modules.hypixel.autogg;
 
+import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
+import io.github.axolotlclient.bridge.AxoMinecraftClient;
+import io.github.axolotlclient.bridge.events.Events;
+import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
+import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
-import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
-import io.github.axolotlclient.util.Util;
-import io.github.axolotlclient.util.events.Events;
-import io.github.axolotlclient.util.events.impl.ReceiveChatMessageEvent;
 import lombok.Getter;
-import net.minecraft.client.Minecraft;
 
 /**
  * Based on <a href="https://github.com/DragonEggBedrockBreaking/AutoGG/blob/trunk/src/main/java/uk/debb/autogg/mixin/MixinChatHud.java">DragonEggBedrockBreaking's AutoGG Mod</a>
@@ -54,7 +52,7 @@ public class AutoGG implements AbstractHypixelMod {
 	public final BooleanOption glhf = new BooleanOption("printGLHF", false);
 	public final StringOption glhfString = new StringOption("glhfString", "glhf");
 	private final OptionCategory category = OptionCategory.create("autogg");
-	private final Minecraft client = Minecraft.getInstance();
+	private final AxoMinecraftClient client = AxoMinecraftClient.getInstance();
 	private final BooleanOption onHypixel = new BooleanOption("onHypixel", false);
 	private final BooleanOption onBWP = new BooleanOption("onBWP", false);
 	private final BooleanOption onPVPL = new BooleanOption("onPVPL", false);
@@ -89,7 +87,7 @@ public class AutoGG implements AbstractHypixelMod {
 		category.add(onPVPL);
 		category.add(onMMC);
 
-		Events.RECEIVE_CHAT_MESSAGE_EVENT.register(this::onMessage);
+		Events.RECEIVE_CHAT_MESSAGE.register(this::onMessage);
 	}
 
 	@Override
@@ -160,7 +158,7 @@ public class AutoGG implements AbstractHypixelMod {
 		return Arrays.stream(strings).collect(Collectors.toList());
 	}
 
-	public void onMessage(ReceiveChatMessageEvent event) {
+	private void onMessage(ReceiveChatMessageEvent event) {
 		String message = event.getOriginalMessage();
 		if (client.getCurrentServerEntry() != null) {
 			serverMap.keySet().forEach(s -> {
@@ -183,7 +181,7 @@ public class AutoGG implements AbstractHypixelMod {
 		if (System.currentTimeMillis() - this.lastTime > 3000 && options != null) {
 			for (String s : options) {
 				if (messageReceived.contains(s)) {
-					Util.sendChatMessage(messageToSend);
+					AxoMinecraftClient.getInstance().br$getPlayer().br$sendToServer(messageToSend);
 					this.lastTime = System.currentTimeMillis();
 					return;
 				}

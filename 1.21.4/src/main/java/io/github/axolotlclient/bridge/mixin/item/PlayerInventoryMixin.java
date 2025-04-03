@@ -26,44 +26,47 @@ import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoPlayerInventory;
 import java.util.List;
 import java.util.stream.IntStream;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(PlayerInventory.class)
+@Mixin(Inventory.class)
 public abstract class PlayerInventoryMixin implements AxoPlayerInventory {
 	@Shadow
-	public abstract ItemStack getMainHandStack();
+	public abstract ItemStack getSelected();
 
 	@Shadow
-	public abstract ItemStack getStack(int slot);
-
-	@Shadow
-	public abstract int size();
-
-	@Shadow
-	public abstract ItemStack getArmorStack(int slot);
+	public abstract int getContainerSize();
 
 	@Shadow
 	@Final
-	public DefaultedList<ItemStack> armor;
+	public NonNullList<ItemStack> armor;
+
+	@Shadow
+	public abstract ItemStack getArmor(int slot);
+
+	@Shadow
+	public abstract ItemStack getItem(int slot);
 
 	@Override
 	public AxoItemStack br$getMainHand() {
-		return getMainHandStack();
+		return getSelected();
 	}
 
 	@Override
 	public List<? extends AxoItemStack> br$getItems() {
-		return IntStream.range(0, size())
-			.mapToObj(this::getStack)
+		return IntStream.range(0, getContainerSize())
+			.mapToObj(this::getItem)
 			.toList();
 	}
 
 	@Override
 	public List<? extends AxoItemStack> br$getArmor() {
 		return IntStream.range(0, armor.size())
-			.mapToObj(this::getArmorStack)
+			.mapToObj(this::getArmor)
 			.toList();
 	}
 }

@@ -36,7 +36,7 @@ public abstract class InGameOverlayRendererMixin {
 
 	@Inject(method = "renderFire", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V"))
 	private static void axolotlclient$lowFire(PoseStack poseStack, MultiBufferSource multiBufferSource, CallbackInfo ci) {
-		if (AxolotlClient.CONFIG.lowFire.get()) {
+		if (AxolotlClient.config().lowFire.get()) {
 			poseStack.translate(0, -0.2F, 0);
 		}
 	}

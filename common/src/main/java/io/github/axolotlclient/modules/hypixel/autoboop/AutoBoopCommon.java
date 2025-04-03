@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.hypixel.autoboop;
 
+import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -42,19 +43,25 @@ import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
 import io.github.axolotlclient.util.ThreadExecuter;
 import lombok.Getter;
 
-public abstract class AutoBoopCommon implements AbstractHypixelMod {
-
+public class AutoBoopCommon implements AbstractHypixelMod {
+	@Getter
+	private static final AutoBoopCommon instance = new AutoBoopCommon();
 	private static final Pattern FRIEND_JOINED = Pattern.compile("^Friend > (\\b[A-Za-z0-9_§]{3,16}\\b) joined\\.$");
 
 	public void handleMessage(String message) {
+		if(!enabled.get()) {
+			return;
+		}
+
 		ThreadExecuter.scheduleTask(() -> { // execute off-thread since the string manipulation for the filter list could potentially take a bit
 			Matcher matcher;
-			if (enabled.get() && (matcher = FRIEND_JOINED.matcher(message)).matches()) {
+			if ((matcher = FRIEND_JOINED.matcher(message)).matches()) {
 				String player = matcher.group(1);
 				if (FilterListMode.fromId(filterListMode.get())
 					.getFunc().apply(player, Arrays.stream(filterList.get().split(",")).map(String::trim).toList())) {
 					CompletableFuture.runAsync(() -> {
-						sendChatMessage("/boop " + player);
+						// TODO: this is not thread safe!
+						AxoMinecraftClient.getInstance().br$getPlayer().br$sendToServer("/boop " + player);
 						AxolotlClientCommon.getInstance().getLogger().info("Booped " + player);
 					}, CompletableFuture.delayedExecutor(1, TimeUnit.SECONDS, ThreadExecuter.service()));
 				}
@@ -78,8 +85,6 @@ public abstract class AutoBoopCommon implements AbstractHypixelMod {
 	public OptionCategory getCategory() {
 		return cat;
 	}
-
-	protected abstract void sendChatMessage(String message);
 
 	@Getter
 	private enum FilterListMode {

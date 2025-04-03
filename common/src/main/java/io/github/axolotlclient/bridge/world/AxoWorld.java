@@ -23,10 +23,11 @@
 package io.github.axolotlclient.bridge.world;
 
 import io.github.axolotlclient.bridge.entity.AxoEntity;
+import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import java.util.List;
 
 public interface AxoWorld {
 	long br$getTimeOfDay();
 
-	List<? extends AxoEntity> br$getPlayers();
+	List<? extends AxoPlayer> br$getPlayers();
 }

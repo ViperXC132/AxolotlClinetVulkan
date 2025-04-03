@@ -91,7 +91,7 @@ public abstract class PlayerListHudMixin {
 		target = "Lnet/minecraft/client/gui/Font;width(Lnet/minecraft/network/chat/FormattedText;)I", ordinal = 0))
 	private int axolotlclient$moveName(Font instance, FormattedText text, Operation<Integer> original, @Local PlayerInfo info) {
 		int width = original.call(instance, text);
-		if (AxolotlClient.CONFIG.showBadges.get() &&
+		if (AxolotlClient.config().showBadges.get() &&
 			UserRequest.getOnline(info.getProfile().getId().toString())) width += 10;
 		if (Tablist.getInstance().numericalPing.get())
 			width += (instance.width(String.valueOf(info.getLatency())) - 10);
@@ -101,7 +101,7 @@ public abstract class PlayerListHudMixin {
 	@WrapOperation(method = "render", at = @At(value = "INVOKE",
 		target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;III)I"))
 	public int axolotlclient$moveName2(GuiGraphics instance, Font font, Component component, int x, int y, int color, Operation<Integer> original, @Local PlayerInfo info) {
-		if (AxolotlClient.CONFIG.showBadges.get() &&
+		if (AxolotlClient.config().showBadges.get() &&
 			UserRequest.getOnline(info.getProfile().getId().toString())) {
 
 			instance.blit(RenderType::guiTextured, AxolotlClient.badgeIcon, x, y, 0, 0, 8, 8, 8, 8);

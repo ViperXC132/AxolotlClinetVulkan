@@ -135,7 +135,7 @@ public abstract class InGameHudMixin {
 
 	@Inject(method = "renderVignette", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$removeVignette(GuiGraphics graphics, Entity entity, CallbackInfo ci) {
-		if (AxolotlClient.CONFIG.removeVignette.get()) {
+		if (AxolotlClient.config().removeVignette.get()) {
 			ci.cancel();
 		}
 	}

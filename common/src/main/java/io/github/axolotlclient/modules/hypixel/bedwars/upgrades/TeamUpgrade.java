@@ -22,11 +22,11 @@
 
 package io.github.axolotlclient.modules.hypixel.bedwars.upgrades;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMessages;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMode;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.Getter;
 
 /**
@@ -52,7 +52,7 @@ public abstract class TeamUpgrade {
 		return BedwarsMessages.matched(regex, unformatedMessage, matcher -> onMatch(this, matcher));
 	}
 
-	public abstract void draw(int x, int y, int width, int height);
+	public abstract void draw(AxoRenderContext context, int x, int y, int width, int height);
 
 	public boolean isMultiUpgrade() {
 		// Basically only trap

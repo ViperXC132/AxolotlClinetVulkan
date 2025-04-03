@@ -32,6 +32,7 @@ import io.github.axolotlclient.bridge.item.AxoItem;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.key.AxoKey;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
+import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.bridge.render.AxoWindow;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import org.jetbrains.annotations.ApiStatus;
@@ -71,7 +72,7 @@ public class PlatformImplInternal {
 		throw BridgeUtil.noImpl();
 	}
 
-	public static AxoIdentifier getTexture(GraphicsOption option) {
+	public static AxoSprite getTexture(GraphicsOption option) {
 		throw BridgeUtil.noImpl();
 	}
 
@@ -84,11 +85,15 @@ public class PlatformImplInternal {
 		throw BridgeUtil.noImpl();
 	}
 
-	public static AxoKeybinding createKeyBinding(AxoKey defaultKey, String name, String category) {
+	public static AxoKeybinding createKeyBinding(@Nullable AxoKey defaultKey, String name, String category) {
 		throw BridgeUtil.noImpl();
 	}
 
 	public static AxoStatusEffectInstance createStatusEffectInstance(AxoStatusEffect jumpBoost, int duration) {
+		throw BridgeUtil.noImpl();
+	}
+
+	public static int tickCount() {
 		throw BridgeUtil.noImpl();
 	}
 }

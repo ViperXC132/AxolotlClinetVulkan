@@ -28,6 +28,7 @@ import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
 import io.github.axolotlclient.bridge.key.AxoClientKeybinds;
 import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.world.AxoWorld;
+import java.util.concurrent.CompletableFuture;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,6 +56,10 @@ public interface AxoMinecraftClient {
 	}
 
 	default AxoClientKeybinds br$getKeybinds() {
+		throw BridgeUtil.noImpl();
+	}
+
+	default CompletableFuture<Void> br$runTask(Runnable runnable) {
 		throw BridgeUtil.noImpl();
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2023 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -20,20 +20,20 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.hypixel.autoboop;
+package io.github.axolotlclient.bridge.events.types;
 
-import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
-import io.github.axolotlclient.util.Util;
-import lombok.Getter;
+import io.github.axolotlclient.bridge.util.AxoText;
+import io.github.axolotlclient.util.events.types.CancellableEvent;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-// Based on https://github.com/VeryHolyCheeeese/AutoBoop/blob/main/src/main/java/autoboop/AutoBoop.java
-public class AutoBoop extends AutoBoopCommon implements AbstractHypixelMod {
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class ReceiveChatMessageEvent extends CancellableEvent {
 
-	@Getter
-	private final static AutoBoop Instance = new AutoBoop();
+	private final boolean actionBar;
+	private final String originalMessage;
+	private final AxoText formattedMessage;
 
-	@Override
-	protected void sendChatMessage(String message) {
-		Util.sendChatMessage(message);
-	}
+	private AxoText newMessage = null;
 }

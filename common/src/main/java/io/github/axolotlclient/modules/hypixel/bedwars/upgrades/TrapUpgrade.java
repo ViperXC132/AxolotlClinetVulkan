@@ -22,23 +22,17 @@
 
 package io.github.axolotlclient.modules.hypixel.bedwars.upgrades;
 
+import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.bridge.render.AxoSprites;
+import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMode;
+import io.github.axolotlclient.util.ClientColors;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.mojang.blaze3d.platform.GlStateManager;
-import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
-import io.github.axolotlclient.modules.hud.util.ItemUtil;
-import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMode;
-import io.github.axolotlclient.util.ClientColors;
 import lombok.AllArgsConstructor;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiElement;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.resource.Identifier;
 
 /**
  * @author DarkKronicle
@@ -93,16 +87,15 @@ public class TrapUpgrade extends TeamUpgrade {
 	}
 
 	@Override
-	public void draw(int x, int y, int width, int height) {
+	public void draw(AxoRenderContext context, int x, int y, int width, int height) {
 		if (traps.isEmpty()) {
 			Color color = ClientColors.DARK_GRAY;
-			GlStateManager.color4f(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
-			Minecraft.getInstance().getTextureManager().bind(new Identifier("textures/items/barrier.png"));
-			GuiElement.drawTexture(x, y, 0, 0, 16, 16, 16, 16);
+			context.br$glColor4(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
+			context.br$drawTexture(x, y, 16, 16, AxoSprites.BARRIER_ITEM_ICON);
 		} else {
 			for (TrapType type : traps) {
-				GlStateManager.color4f(1, 1, 1, 1);
-				type.draw(x, y, width, height);
+				context.br$glColor4(1, 1, 1, 1);
+				type.draw(context, x, y, width, height);
 				x += width + 1;
 			}
 		}
@@ -120,19 +113,20 @@ public class TrapUpgrade extends TeamUpgrade {
 	@AllArgsConstructor
 	public enum TrapType {
 
-		ITS_A_TRAP((x, y, width, height, unused) -> {
-			Minecraft.getInstance().getTextureManager().bind(new Identifier("textures/gui/container/inventory.png"));
-			GuiElement.drawTexture(x, y, 5 * 18, 198 + 18, 18, 18, 16, 16, 256, 256);
+		ITS_A_TRAP((r, x, y, width, height, unused) -> {
+			//Minecraft.getInstance().getTextureManager().bind(new Identifier("textures/gui/container/inventory.png"));
+			//GuiElement.drawTexture(x, y, 5 * 18, 198 + 18, 18, 18, 16, 16, 256, 256);
 		}),
-		COUNTER_OFFENSIVE((x, y, width, height, unused) -> {
-			Minecraft.getInstance().getTextureManager().bind(new Identifier("textures/gui/container/inventory.png"));
-			GuiElement.drawTexture(x, y, 0, 198, 18, 18, 16, 16, 256, 256);
+		COUNTER_OFFENSIVE((r, x, y, width, height, unused) -> {
+//			Minecraft.getInstance().getTextureManager().bind(new Identifier("textures/gui/container/inventory.png"));
+//			GuiElement.drawTexture(x, y, 0, 198, 18, 18, 16, 16, 256, 256);
 		}),
-		ALARM((x, y, width, height, unused) ->
-			ItemUtil.renderGuiItemModel(new ItemStack(Items.ENDER_EYE), x, y)),
-		MINER_FATIGUE((x, y, width, height, unused) -> {
-			Minecraft.getInstance().getTextureManager().bind(new Identifier("textures/gui/container/inventory.png"));
-			GuiElement.drawTexture(x, y, 3 * 18, 198, 18, 18, 16, 16, 256, 256);
+		ALARM((r, x, y, width, height, unused) -> {
+//			ItemUtil.renderGuiItemModel(new ItemStack(Items.ENDER_EYE), x, y)
+		}),
+		MINER_FATIGUE((r, x, y, width, height, unused) -> {
+//			Minecraft.getInstance().getTextureManager().bind(new Identifier("textures/gui/container/inventory.png"));
+//			GuiElement.drawTexture(x, y, 3 * 18, 198, 18, 18, 16, 16, 256, 256);
 		});
 
 		private final TeamUpgradeRenderer renderer;
@@ -151,8 +145,8 @@ public class TrapUpgrade extends TeamUpgrade {
 			return ITS_A_TRAP;
 		}
 
-		public void draw(int x, int y, int width, int height) {
-			renderer.render(x, y, width, height, 0);
+		public void draw(AxoRenderContext context, int x, int y, int width, int height) {
+			renderer.render(context, x, y, width, height, 0);
 		}
 	}
 }

@@ -73,7 +73,7 @@ public class HypixelMods extends AbstractModule {
 
 		subModules.forEach(AbstractHypixelMod::init);
 
-		AxolotlClient.CONFIG.addCategory(category);
+		AxolotlClient.config().addCategory(category);
 
 		ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(HypixelMessages.getInstance());
 

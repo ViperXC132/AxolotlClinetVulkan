@@ -24,12 +24,13 @@ package io.github.axolotlclient.bridge.key;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * An abstract representation of a keybind
  */
 public interface AxoKeybinding {
-	static AxoKeybinding create(AxoKey defaultKey, String name, String category) {
+	static AxoKeybinding create(@Nullable AxoKey defaultKey, String name, String category) {
 		return PlatformImplInternal.createKeyBinding(defaultKey, name, category);
 	}
 

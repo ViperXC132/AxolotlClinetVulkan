@@ -22,27 +22,20 @@
 
 package io.github.axolotlclient.modules.hypixel.bedwars;
 
+import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
+import io.github.axolotlclient.bridge.AxoMinecraftClient;
+import io.github.axolotlclient.bridge.events.Events;
+import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
+import io.github.axolotlclient.bridge.events.types.WorldLoadEvent;
+import io.github.axolotlclient.bridge.util.AxoText;
+import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
-
-import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
-import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
-import io.github.axolotlclient.util.events.Events;
-import io.github.axolotlclient.util.events.impl.ReceiveChatMessageEvent;
-import io.github.axolotlclient.util.events.impl.ScoreboardRenderEvent;
-import io.github.axolotlclient.util.events.impl.WorldLoadEvent;
 import lombok.Getter;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.network.PlayerInfo;
-import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.scoreboard.ScoreboardScore;
-import net.minecraft.scoreboard.team.Team;
-import net.minecraft.text.Formatting;
-import net.minecraft.text.LiteralText;
 
 /**
  * @author DarkKronicle
@@ -94,9 +87,9 @@ public class BedwarsMod implements AbstractHypixelMod {
 
 		instance = this;
 
-		Events.RECEIVE_CHAT_MESSAGE_EVENT.register(this::onMessage);
-		Events.SCOREBOARD_RENDER_EVENT.register(this::onScoreboardRender);
-		Events.WORLD_LOAD_EVENT.register(this::onWorldLoad);
+		Events.RECEIVE_CHAT_MESSAGE.register(this::onMessage);
+		//Events.SCOREBOARD_RENDER_EVENT.register(this::onScoreboardRender);
+		//Events.WORLD_LOAD_EVENT.register(this::onWorldLoad);
 	}
 
 	public boolean isEnabled() {
@@ -118,6 +111,7 @@ public class BedwarsMod implements AbstractHypixelMod {
 
 	public void onMessage(ReceiveChatMessageEvent event) {
 		// Remove formatting
+		/*TODO: port this
 		String rawMessage = event.getFormattedMessage().getString();
 		if (currentGame != null) {
 			currentGame.onChatMessage(rawMessage, event);
@@ -125,15 +119,15 @@ public class BedwarsMod implements AbstractHypixelMod {
 			if (!event.isCancelled() && showChatTime.get()) {
 				// Add time to every message received in game
 				if (event.getNewMessage() != null) {
-					event.setNewMessage(new LiteralText(time).append(event.getNewMessage()));
+					event.setNewMessage(AxoText.literal(time).append(event.getNewMessage()));
 				} else {
-					event.setNewMessage(new LiteralText(time).append(event.getFormattedMessage()));
+					event.setNewMessage(AxoText.literal(time).append(event.getFormattedMessage()));
 				}
 			}
 		} else if (enabled.get() && targetTick < 0 && BedwarsMessages.matched(GAME_START, rawMessage).isPresent()) {
 			// Give time for Hypixel to sync
 			targetTick = Minecraft.getInstance().gui.getTicks() + 10;
-		}
+		}*/
 	}
 
 	public Optional<BedwarsGame> getGame() {
@@ -152,27 +146,30 @@ public class BedwarsMod implements AbstractHypixelMod {
 			if (currentGame.isStarted()) {
 				// Trigger setting the header
 				currentGame.tick();
-				Minecraft.getInstance().gui.getPlayerTabOverlay().setHeader(null);
+				// TODO: uncomment
+				// AxoMinecraftClient.getInstance().gui.getPlayerTabOverlay().setHeader(null);
 			} else {
 				if (checkReady()) {
 					currentGame.onStart();
 				}
 			}
 		} else {
-			if (targetTick > 0 && Minecraft.getInstance().gui.getTicks() > targetTick) {
+			/* TODO: don't understand the logic here
+			if (targetTick > 0 && AxoMinecraftClient.getInstance().gui.getTicks() > targetTick) {
 				currentGame = new BedwarsGame(this);
 				targetTick = -1;
-			}
+			}*/
 		}
 	}
 
 	private boolean checkReady() {
-		for (PlayerInfo player : Minecraft.getInstance().player.networkHandler.getOnlinePlayers()) {
-			String name = Minecraft.getInstance().gui.getPlayerTabOverlay().getDisplayName(player).replaceAll("§.", "");
+		/*TODO
+		for (PlayerInfo player : AxoMinecraftClient.getInstance().br$getPlayer().networkHandler.getOnlinePlayers()) {
+			String name = AxoMinecraftClient.getInstance().gui.getPlayerTabOverlay().getDisplayName(player).replaceAll("§.", "");
 			if (name.charAt(1) == ' ') {
 				return true;
 			}
-		}
+		}*/
 		return false;
 	}
 
@@ -180,6 +177,7 @@ public class BedwarsMod implements AbstractHypixelMod {
 		return currentGame != null && currentGame.isStarted();
 	}
 
+	/*TODO
 	public void onScoreboardRender(ScoreboardRenderEvent event) {
 		if (inGame()) {
 			waiting = false;
@@ -199,7 +197,7 @@ public class BedwarsMod implements AbstractHypixelMod {
 			String format = Formatting.strip(Team.getMemberDisplayName(team, score.getOwner())).replaceAll("[^A-z0-9 .:]", "");
 			return format.contains("Waiting...") || format.contains("Starting in");
 		});
-	}
+	}*/
 
 	public void gameEnd() {
 		upgradesOverlay.onEnd();

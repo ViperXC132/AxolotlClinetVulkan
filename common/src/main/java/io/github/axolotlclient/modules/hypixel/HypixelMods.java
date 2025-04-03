@@ -22,26 +22,24 @@
 
 package io.github.axolotlclient.modules.hypixel;
 
-import io.github.axolotlclient.modules.AbstractModule;
-import java.util.ArrayList;
-import java.util.List;
-
-import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.Request;
-import io.github.axolotlclient.modules.hypixel.autoboop.AutoBoop;
+import io.github.axolotlclient.bridge.events.Events;
+import io.github.axolotlclient.modules.AbstractModule0;
+import io.github.axolotlclient.modules.hypixel.autoboop.AutoBoopCommon;
 import io.github.axolotlclient.modules.hypixel.autogg.AutoGG;
 import io.github.axolotlclient.modules.hypixel.autotip.AutoTip;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.modules.hypixel.levelhead.LevelHead;
 import io.github.axolotlclient.modules.hypixel.nickhider.NickHider;
 import io.github.axolotlclient.modules.hypixel.skyblock.Skyblock;
-import io.github.axolotlclient.util.events.Events;
-import net.ornithemc.osl.resource.loader.api.ResourceLoaderEvents;
+import java.util.ArrayList;
+import java.util.List;
 
-public class HypixelMods extends AbstractModule {
+public class HypixelMods extends AbstractModule0 {
 
 	public static final HypixelMods INSTANCE = new HypixelMods();
 	public final EnumOption<HypixelApiCacheMode> cacheMode = new EnumOption<>("cache_mode", HypixelApiCacheMode.class,
@@ -66,18 +64,19 @@ public class HypixelMods extends AbstractModule {
 		addSubModule(AutoGG.getInstance());
 		addSubModule(AutoTip.getInstance());
 		addSubModule(NickHider.getInstance());
-		addSubModule(AutoBoop.getInstance());
+		addSubModule(AutoBoopCommon.getInstance());
 		addSubModule(Skyblock.getInstance());
 		addSubModule(BedwarsMod.getInstance());
 
 		subModules.forEach(AbstractHypixelMod::init);
 
-		AxolotlClient.config().addCategory(category);
+		AxolotlClientConfigCommon.instance().addCategory(category);
 
-		ResourceLoaderEvents.END_RESOURCE_RELOAD.register(HypixelMessages.getInstance());
+		Events.END_RESOURCE_RELOAD.register(HypixelMessages.getInstance());
 
-		Events.RECEIVE_CHAT_MESSAGE_EVENT.register(event -> {
-			AutoBoop.getInstance().handleMessage(event.getOriginalMessage());
+		Events.RECEIVE_CHAT_MESSAGE.register(event -> {
+			// TODO: register in init
+			AutoBoopCommon.getInstance().handleMessage(event.getOriginalMessage());
 			HypixelMessages.getInstance().process(removeLobbyJoinMessages, "lobby_join", event);
 		});
 

@@ -24,18 +24,17 @@ package io.github.axolotlclient.modules.hypixel;
 
 import io.github.axolotlclient.api.Request;
 import io.github.axolotlclient.api.requests.StatusUpdate;
+import io.github.axolotlclient.bridge.events.Events;
 import net.hypixel.data.type.ServerType;
 import net.hypixel.modapi.HypixelModAPI;
 import net.hypixel.modapi.packet.impl.clientbound.event.ClientboundLocationPacket;
-import net.ornithemc.osl.networking.api.client.ClientConnectionEvents;
-
 
 public class HypixelModApi {
 	private ClientboundLocationPacket current;
 
 	public void init() {
 		HypixelModAPI.getInstance().createHandler(ClientboundLocationPacket.class, packet -> current = packet);
-		ClientConnectionEvents.PLAY_READY.register(mc -> HypixelModAPI.getInstance().subscribeToEventPacket(ClientboundLocationPacket.class));
+		Events.CONNECTION_PLAY_READY.register(() -> HypixelModAPI.getInstance().subscribeToEventPacket(ClientboundLocationPacket.class));
 	}
 
 	public Request getStatus() {

@@ -33,7 +33,7 @@ public abstract class RenderSystemMixin {
 
 	@WrapMethod(method = "setShaderColor", remap = false)
 	private static void axolotlclient$reduceBlue(float red, float green, float blue, float alpha, Operation<Void> original) {
-		if (AxolotlClient.CONFIG.nightMode.get()) {
+		if (AxolotlClient.config().nightMode.get()) {
 			blue /= 2;
 		}
 		original.call(red, green, blue, alpha);

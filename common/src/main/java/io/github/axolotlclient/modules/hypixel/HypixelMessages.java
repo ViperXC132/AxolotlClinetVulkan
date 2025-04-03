@@ -22,21 +22,15 @@
 
 package io.github.axolotlclient.modules.hypixel;
 
-import java.io.InputStreamReader;
+import io.github.axolotlclient.AxolotlClientCommon;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.google.gson.JsonObject;
-import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.util.GsonHelper;
-import io.github.axolotlclient.util.events.impl.ReceiveChatMessageEvent;
 import lombok.Getter;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resource.manager.ResourceManager;
 
 public class HypixelMessages implements Runnable {
 
@@ -51,7 +45,8 @@ public class HypixelMessages implements Runnable {
 		languageMessageMap.clear();
 		messageLanguageMap.clear();
 
-		AxolotlClient.LOGGER.debug("Loading Hypixel Messages");
+		AxolotlClientCommon.getInstance().getLogger().debug("Loading Hypixel Messages");
+		/*
 		ResourceManager manager = Minecraft.getInstance().getResourceManager();
 		manager.findResources("", "lang",
 			identifier -> identifier.getPath().endsWith(".hypixel.json")).values().forEach(resource -> {
@@ -67,7 +62,7 @@ public class HypixelMessages implements Runnable {
 				messageLanguageMap.computeIfAbsent(entry.getKey(), s -> new HashMap<>())
 					.put(lang, pattern);
 			});
-		});
+		});*/
 	}
 
 	public void process(BooleanOption option, String messageKey, ReceiveChatMessageEvent event) {

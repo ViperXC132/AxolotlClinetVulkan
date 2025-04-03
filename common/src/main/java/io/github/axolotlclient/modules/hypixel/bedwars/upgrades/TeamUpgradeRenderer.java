@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2023 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -20,12 +20,11 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.bridge.util;
+package io.github.axolotlclient.modules.hypixel.bedwars.upgrades;
 
-import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 
-public interface AxoText {
-	static AxoText literal(String value) {
-		throw BridgeUtil.noImpl();
-	}
+public interface TeamUpgradeRenderer {
+
+	void render(AxoRenderContext context, int x, int y, int width, int height, int upgradeLevel);
 }

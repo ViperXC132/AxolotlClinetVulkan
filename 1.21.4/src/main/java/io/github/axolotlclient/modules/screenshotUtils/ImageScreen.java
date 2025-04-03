@@ -91,7 +91,7 @@ public class ImageScreen extends Screen {
 
 		if (image instanceof ImageInstance.Remote remote) {
 			layout.setHeaderHeight(38);
-			header.addChild(new StringWidget(Component.translatable("gallery.image.upload_details", UUIDHelper.getUsername(remote.uploader()), remote.sharedAt().atZone(ZoneId.systemDefault()).format(AxolotlClientCommon.getInstance().formatter)), font));
+			header.addChild(new StringWidget(Component.translatable("gallery.image.upload_details", UUIDHelper.getUsername(remote.uploader()), remote.sharedAt().atZone(ZoneId.systemDefault()).format(AxolotlClientCommon.getInstance().getConfig().getDateTimeFormatter())), font));
 		}
 
 		int buttonWidth = 75;

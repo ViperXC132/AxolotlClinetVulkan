@@ -54,7 +54,7 @@ public class MotionBlur extends AbstractModule {
 	public void init() {
 		category.add(enabled, strength, inGuis);
 
-		AxolotlClient.CONFIG.rendering.add(category);
+		AxolotlClient.config().rendering.add(category);
 	}
 
 	@SuppressWarnings("deprecation")

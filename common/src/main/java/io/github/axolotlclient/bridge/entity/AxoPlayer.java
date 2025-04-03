@@ -22,11 +22,25 @@
 
 package io.github.axolotlclient.bridge.entity;
 
+import io.github.axolotlclient.bridge.AxoPlayerProfile;
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.item.AxoPlayerInventory;
 
 public interface AxoPlayer extends AxoEntity {
 	default AxoPlayerInventory br$getInventory() {
+		throw BridgeUtil.noImpl();
+	}
+
+	/**
+	 * Sends a message <i>as</i> the client to the server.
+	 *
+	 * @param msg
+	 */
+	default void br$sendToServer(String msg) {
+		throw BridgeUtil.noImpl();
+	}
+
+	default AxoPlayerProfile br$getGameProfile() {
 		throw BridgeUtil.noImpl();
 	}
 }

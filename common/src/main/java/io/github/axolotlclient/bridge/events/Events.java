@@ -24,6 +24,7 @@ package io.github.axolotlclient.bridge.events;
 
 import io.github.axolotlclient.bridge.entity.AxoEntity;
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
+import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
 import io.github.axolotlclient.bridge.key.AxoKey;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -40,4 +41,7 @@ public class Events {
 	public static final EventBus<Runnable> CLIENT_START = EventBus.broadcast0();
 	public static final EventBus<Runnable> CLIENT_STOP = EventBus.broadcast0();
 	public static final EventBus<Runnable> TICK = EventBus.broadcast0();
+	public static final EventBus<Consumer<ReceiveChatMessageEvent>> RECEIVE_CHAT_MESSAGE = EventBus.broadcast1();
+	public static final EventBus<Runnable> END_RESOURCE_RELOAD = EventBus.broadcast0();
+	public static final EventBus<Runnable> CONNECTION_PLAY_READY = EventBus.broadcast0();
 }

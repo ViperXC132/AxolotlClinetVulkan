@@ -27,18 +27,20 @@ import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.key.AxoClientKeybinds;
 import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.world.AxoWorld;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.util.thread.ReentrantThreadExecutor;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(MinecraftClient.class)
-public class MinecraftClientMixin implements AxoMinecraftClient{
+public abstract class MinecraftClientMixin extends ReentrantThreadExecutor<Runnable> implements AxoMinecraftClient {
 	@Final
 	@Shadow
 	public TextRenderer textRenderer;
@@ -53,10 +55,15 @@ public class MinecraftClientMixin implements AxoMinecraftClient{
 	@Shadow
 	public GameOptions options;
 
+	public MinecraftClientMixin(String string) {
+		super(string);
+	}
+
 	@Override
-	public@Nullable AxoPlayer br$getPlayer() {
+	public @Nullable AxoPlayer br$getPlayer() {
 		return player;
 	}
+
 	@Override
 
 	public AxoWorld br$getWorld() {
@@ -72,5 +79,10 @@ public class MinecraftClientMixin implements AxoMinecraftClient{
 
 	public AxoClientKeybinds br$getKeybinds() {
 		return options;
+	}
+
+	@Override
+	public CompletableFuture<Void> br$runTask(Runnable runnable) {
+		return submit(runnable);
 	}
 }

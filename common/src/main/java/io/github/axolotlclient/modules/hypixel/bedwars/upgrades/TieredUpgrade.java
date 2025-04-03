@@ -22,10 +22,10 @@
 
 package io.github.axolotlclient.modules.hypixel.bedwars.upgrades;
 
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMode;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMode;
 import lombok.Getter;
 
 /**
@@ -48,8 +48,8 @@ public class TieredUpgrade extends TeamUpgrade {
 	}
 
 	@Override
-	public void draw(int x, int y, int width, int height) {
-		drawer.render(x, y, width, height, level);
+	public void draw(AxoRenderContext context, int x, int y, int width, int height) {
+		drawer.render(context, x, y, width, height, level);
 	}
 
 	@Override

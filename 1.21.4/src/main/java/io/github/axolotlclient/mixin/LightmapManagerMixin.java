@@ -40,7 +40,7 @@ public abstract class LightmapManagerMixin {
 
 	@WrapOperation(method = "updateLightTexture", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Options;gamma()Lnet/minecraft/client/OptionInstance;"))
 	public OptionInstance<Double> axolotlclient$fullBright(Options instance, Operation<OptionInstance<Double>> original) {
-		if (AxolotlClient.CONFIG.fullBright.get())
+		if (AxolotlClient.config().fullBright.get())
 			return fullBright;
 		return original.call(instance);
 	}

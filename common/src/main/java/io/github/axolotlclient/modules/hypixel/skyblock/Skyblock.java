@@ -24,11 +24,9 @@ package io.github.axolotlclient.modules.hypixel.skyblock;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
 import lombok.Getter;
-import net.minecraft.client.options.KeyBinding;
-import net.ornithemc.osl.keybinds.api.KeyBindingEvents;
-import net.ornithemc.osl.lifecycle.api.client.MinecraftClientEvents;
 
 public class Skyblock implements AbstractHypixelMod {
 
@@ -39,14 +37,8 @@ public class Skyblock implements AbstractHypixelMod {
 
 	@Override
 	public void init() {
-		KeyBinding lock = new KeyBinding("lockRotation", 0, "category.axolotlclient");
-		KeyBindingEvents.REGISTER_KEYBINDS.register(r -> r.register(lock));
-		MinecraftClientEvents.TICK_END.register(c -> {
-			if (lock.consumeClick()) {
-				rotationLocked.toggle();
-			}
-		});
-		category.add(rotationLocked);
+		AxoKeybinding.create(null, "lockRotation", "category.axolotlclient")
+			.br$registerOnClicked(rotationLocked::toggle);
 	}
 
 	@Override

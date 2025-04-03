@@ -90,9 +90,10 @@ public final class EventBus<T> {
 		return cachedInvoker;
 	}
 
-	public void register(T event) {
+	public T register(T event) {
 		events.add(event);
 		cachedInvoker = null;
+		return event;
 	}
 
 	public boolean unregister(T event) {

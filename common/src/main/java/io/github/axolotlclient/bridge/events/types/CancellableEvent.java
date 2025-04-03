@@ -20,9 +20,20 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.hypixel.bedwars.upgrades;
+package io.github.axolotlclient.bridge.events.types;
 
-public interface TeamUpgradeRenderer {
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
 
-	void render(int x, int y, int width, int height, int upgradeLevel);
+@Getter
+@ToString
+@EqualsAndHashCode
+public abstract class CancellableEvent {
+
+	private boolean cancelled;
+
+	public void setCancelled(boolean cancel) {
+		cancelled |= cancel;
+	}
 }
