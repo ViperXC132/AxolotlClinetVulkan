@@ -741,5 +741,7 @@
 	"armorhud.durability_num_color": "Durability Number Color",
 	"armorhud.custom_durability_num_color": "Custom Durability Number Color",
 	"crosshairhud.custom_attack_indicator": "Custom Attack Indicator",
-	"crosshairhud.custom_attack_indicator.tooltip": "Whether to use a custom attack indicator. <br>This only affects the \"Texture\" and \"Custom\" types. <br>\"Dot\" and \"Cross\" types always use the custom indicator."
+	"crosshairhud.custom_attack_indicator.tooltip": "Whether to use a custom attack indicator. <br>This only affects the \"Texture\" and \"Custom\" types. <br>\"Dot\" and \"Cross\" types always use the custom indicator.",
+	"enable_background": "Enable Background",
+	"custom_background_color": "Custom Background Color"
 }

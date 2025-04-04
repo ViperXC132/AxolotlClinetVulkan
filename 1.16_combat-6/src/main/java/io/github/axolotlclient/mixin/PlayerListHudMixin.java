@@ -26,6 +26,7 @@ import java.util.List;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.AxolotlClient;
@@ -283,5 +284,23 @@ public abstract class PlayerListHudMixin {
 		}
 		this.footer = BedwarsMod.getInstance().getGame().get().getBottomBarText();
 		ci.cancel();
+	}
+
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/PlayerListHud;fill(Lnet/minecraft/client/util/math/MatrixStack;IIIII)V"), slice = @Slice(to = @At(value = "INVOKE", target = "Lnet/minecraft/client/options/GameOptions;getTextBackgroundColor(I)I")))
+	private void modifyBackground(MatrixStack stack, int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
+		var tablist = Tablist.getInstance();
+		if (!tablist.backgroundEnabled.get()) {
+			return;
+		}
+		if (tablist.customBackgroundColor.get()) {
+			original.call(stack, x1, y1, x2, y2, tablist.backgroundColor.get().toInt());
+			return;
+		}
+		original.call(stack, x1, y1, x2, y2, color);
+	}
+
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/PlayerListHud;fill(Lnet/minecraft/client/util/math/MatrixStack;IIIII)V"), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/PlayerListHud;renderLatencyIcon(Lnet/minecraft/client/util/math/MatrixStack;IIILnet/minecraft/client/network/PlayerListEntry;)V")))
+	private void modifyBackground$2(MatrixStack stack, int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
+		modifyBackground(stack, x1, y1, x2, y2, color, original);
 	}
 }

@@ -54,10 +54,7 @@ import net.minecraft.world.scores.Scoreboard;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -261,5 +258,23 @@ public abstract class PlayerListHudMixin {
 		}
 		this.footer = BedwarsMod.getInstance().getGame().get().getBottomBarText();
 		ci.cancel();
+	}
+
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V"), slice = @Slice(to = @At(value = "INVOKE", target = "Lnet/minecraft/client/Options;getBackgroundColor(I)I")))
+	private void modifyBackground(GuiGraphics instance, int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
+		var tablist = Tablist.getInstance();
+		if (!tablist.backgroundEnabled.get()) {
+			return;
+		}
+		if (tablist.customBackgroundColor.get()) {
+			original.call(instance, x1, y1, x2, y2, tablist.backgroundColor.get().toInt());
+			return;
+		}
+		original.call(instance, x1, y1, x2, y2, color);
+	}
+
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V"), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/PlayerTabOverlay;renderPingIcon(Lnet/minecraft/client/gui/GuiGraphics;IIILnet/minecraft/client/multiplayer/PlayerInfo;)V")))
+	private void modifyBackground$2(GuiGraphics instance, int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
+		modifyBackground(instance, x1, y1, x2, y2, color, original);
 	}
 }
