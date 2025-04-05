@@ -134,7 +134,7 @@ modrinth {
 	versionNumber = "${project.version}"
 	versionType = "release"
 	uploadFile = tasks.remapJar.get()
-	gameVersions.set(listOf("${project.property("minecraft_1214")}"))
+	gameVersions.set(listOf(minecraft))
 	loaders.set(listOf("quilt", "fabric"))
 	additionalFiles.set(listOf(tasks.remapSourcesJar))
 	dependencies {
