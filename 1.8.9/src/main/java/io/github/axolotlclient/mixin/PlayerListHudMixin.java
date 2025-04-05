@@ -25,6 +25,8 @@ package io.github.axolotlclient.mixin;
 import java.util.List;
 import java.util.UUID;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.api.requests.UserRequest;
@@ -275,5 +277,23 @@ public abstract class PlayerListHudMixin extends GuiElement {
 		}
 		this.footer = BedwarsMod.getInstance().getGame().get().getBottomBarText();
 		ci.cancel();
+	}
+
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;fill(IIIII)V"), slice = @Slice(to = @At(value = "CONSTANT", args = "intValue=553648127")))
+	private void modifyBackground(int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
+		var tablist = Tablist.getInstance();
+		if (!tablist.backgroundEnabled.get()) {
+			return;
+		}
+		if (tablist.customBackgroundColor.get()) {
+			original.call(x1, y1, x2, y2, tablist.backgroundColor.get().toInt());
+			return;
+		}
+		original.call(x1, y1, x2, y2, color);
+	}
+
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;fill(IIIII)V"), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;renderPing(IIILnet/minecraft/client/network/PlayerInfo;)V")))
+	private void modifyBackground$2(int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
+		modifyBackground(x1, y1, x2, y2, color, original);
 	}
 }

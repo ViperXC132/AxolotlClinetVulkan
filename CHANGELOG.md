@@ -1,5 +1,11 @@
 ## Changelog:
 
+### 3.1.3
+
+- Fix a few bugs
+- Update to 1.21.5, drop 1.21.4
+- Add Tablist background customization (closes #120)
+
 ### 3.1.2
 
 - Customizable keystrokes

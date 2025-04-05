@@ -63,6 +63,7 @@ public abstract class Accounts {
 			}
 		} else {
 			try {
+				Files.createDirectories(getAccountsSaveFile().getParent());
 				Files.createFile(getAccountsSaveFile());
 			} catch (IOException e) {
 				getLogger().warn("Failed to create accounts file", e);
@@ -91,6 +92,7 @@ public abstract class Accounts {
 		JsonObject object = new JsonObject();
 		object.add("accounts", array);
 		try {
+			Files.createDirectories(getAccountsSaveFile().getParent());
 			Files.writeString(getAccountsSaveFile(), GsonHelper.GSON.toJson(object));
 		} catch (IOException e) {
 			getLogger().error("Failed to save acounts config!", e);

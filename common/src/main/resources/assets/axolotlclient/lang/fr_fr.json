@@ -741,5 +741,7 @@
   "armorhud.durability_num_color": "Couleur du nombre de durabilité",
   "armorhud.custom_durability_num_color": "Couleur personnalisée du nombre de durabilité",
 	"crosshairhud.custom_attack_indicator": "Indicateur d'attaque personnalisé",
-  "crosshairhud.custom_attack_indicator.tooltip": "Indique s'il faut utiliser un indicateur d'attaque personnalisé. <br>Cela affecte uniquement les types \"Texture\" et \"Personnalisé\". <br>Les types \"Point\" et \"Croix\" utilisent toujours l'indicateur personnalisé."
+  "crosshairhud.custom_attack_indicator.tooltip": "Indique s'il faut utiliser un indicateur d'attaque personnalisé. <br>Cela affecte uniquement les types \"Texture\" et \"Personnalisé\". <br>Les types \"Point\" et \"Croix\" utilisent toujours l'indicateur personnalisé.",
+	"enable_background": "Activé l'arrière plan",
+	"custom_background_color": "Couleur de l'arrière plan Custom"
 }

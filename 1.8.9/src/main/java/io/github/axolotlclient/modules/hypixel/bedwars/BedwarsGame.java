@@ -400,8 +400,10 @@ public class BedwarsGame {
 			while (this.seconds % 60 != target) {
 				updateClock();
 			}
-			topBarText = new LiteralText(calculateTopBarText());
-			bottomBarText = new LiteralText(calculateBottomBarText());
+			if (me != null) {
+				topBarText = new LiteralText(calculateTopBarText());
+				bottomBarText = new LiteralText(calculateBottomBarText());
+			}
 		}
 	}
 

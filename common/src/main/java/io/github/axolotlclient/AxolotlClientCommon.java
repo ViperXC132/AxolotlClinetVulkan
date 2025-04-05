@@ -87,6 +87,7 @@ public class AxolotlClientCommon {
 		var current = resolveConfigFile("axolotlclient.json");
 		try {
 			if (Files.exists(legacy)) {
+				Files.createDirectories(current.getParent());
 				Files.move(legacy, current);
 			}
 		} catch (IOException e) {
