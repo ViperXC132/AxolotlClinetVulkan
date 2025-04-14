@@ -23,14 +23,14 @@
 package io.github.axolotlclient.bridge.impl;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.ItemUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resource.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 public class AxoRenderContextImpl implements AxoRenderContext {
@@ -68,13 +68,33 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 	}
 
 	@Override
+	public void br$pushScissor(int x, int y, int w, int h) {
+		io.github.axolotlclient.AxolotlClientConfig.impl.util.DrawUtil.pushScissor(x, y, w, h);
+	}
+
+	@Override
+	public void br$popScissor() {
+		io.github.axolotlclient.AxolotlClientConfig.impl.util.DrawUtil.popScissor();
+	}
+
+	@Override
 	public void br$glEnableBlend() {
 		GlStateManager.enableBlend();
 	}
 
 	@Override
+	public void br$glEnableAlpha() {
+		GlStateManager.enableAlphaTest();
+	}
+
+	@Override
 	public void br$glDisableBlend() {
 		GlStateManager.disableBlend();
+	}
+
+	@Override
+	public void br$glDisableAlpha() {
+		GlStateManager.disableAlphaTest();
 	}
 
 	@Override
@@ -93,9 +113,8 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 	}
 
 	@Override
-	public void br$drawTexture(int sx, int sy, int tx, int ty, int sw, int sh, int tw, int th, AxoIdentifier texture) {
-		client.getTextureManager().bind((Identifier) texture);
-		DrawUtil.drawTexture(sx, sy, tx, ty, sh, sw, th, tw);
+	public void br$drawTexture(int x, int y, int width, int height, AxoSprite sprite) {
+		throw BridgeUtil.noImpl();
 	}
 
 	@Override

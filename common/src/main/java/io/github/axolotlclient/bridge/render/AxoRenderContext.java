@@ -47,12 +47,29 @@ public interface AxoRenderContext {
 		throw BridgeUtil.noImpl();
 	}
 
+	// scissor
+	default void br$pushScissor(int x, int y, int w, int h) {
+		throw BridgeUtil.noImpl();
+	}
+
+	default void br$popScissor() {
+		throw BridgeUtil.noImpl();
+	}
+
 	// GL state management
 	default void br$glEnableBlend() {
 		throw BridgeUtil.noImpl();
 	}
 
+	default void br$glEnableAlpha() {
+		throw BridgeUtil.noImpl();
+	}
+
 	default void br$glDisableBlend() {
+		throw BridgeUtil.noImpl();
+	}
+
+	default void br$glDisableAlpha() {
 		throw BridgeUtil.noImpl();
 	}
 

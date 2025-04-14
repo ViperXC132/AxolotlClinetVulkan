@@ -24,7 +24,6 @@ package io.github.axolotlclient.modules.hypixel.bedwars.upgrades;
 
 
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
-import io.github.axolotlclient.AxolotlClientConfig.impl.util.DrawUtil;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoItems;
 import io.github.axolotlclient.util.ClientColors;
@@ -67,21 +66,21 @@ public class BedwarsTeamUpgrades {
 		switch (upgradeLevel) {
 			case 1:
 				context.br$renderGuiItemModel(AxoItemStack.of(AxoItems.IRON_CHESTPLATE), x, y);
-				DrawUtil.pushScissor(x, y + height / 2, width / 2, height);
+				context.br$pushScissor(x, y + height / 2, width / 2, height);
 				context.br$renderGuiItemModel(AxoItemStack.of(AxoItems.DIAMOND_CHESTPLATE), x, y);
-				DrawUtil.popScissor();
+				context.br$popScissor();
 				break;
 			case 2:
 				context.br$renderGuiItemModel(AxoItemStack.of(AxoItems.IRON_CHESTPLATE), x, y);
-				DrawUtil.pushScissor(x, y, width / 2, height);
+				context.br$pushScissor(x, y, width / 2, height);
 				context.br$renderGuiItemModel(AxoItemStack.of(AxoItems.DIAMOND_CHESTPLATE), x, y);
-				DrawUtil.popScissor();
+				context.br$popScissor();
 				break;
 			case 3:
 				context.br$renderGuiItemModel(AxoItemStack.of(AxoItems.DIAMOND_CHESTPLATE), x, y);
-				DrawUtil.pushScissor(x + width / 2, y + height / 2, width / 2, height / 2);
+				context.br$pushScissor(x + width / 2, y + height / 2, width / 2, height / 2);
 				context.br$renderGuiItemModel(AxoItemStack.of(AxoItems.IRON_CHESTPLATE), x, y);
-				DrawUtil.popScissor();
+				context.br$popScissor();
 				break;
 			case 4:
 				context.br$renderGuiItemModel(AxoItemStack.of(AxoItems.DIAMOND_CHESTPLATE), x, y);

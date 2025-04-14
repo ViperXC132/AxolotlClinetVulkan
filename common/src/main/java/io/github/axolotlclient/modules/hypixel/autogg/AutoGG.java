@@ -139,11 +139,11 @@ public class AutoGG implements AbstractHypixelMod {
 		gfStrings.put("hypixel.net", addToList("SkyWars Experience (Kill)",
 			"coins! (Final Kill)"));
 
-		gfStrings.put("bedwarspractice.club", addToList(client.getSession().getUsername() + " FINAL KILL!"));
+		gfStrings.put("bedwarspractice.club", addToList(client.br$getSession().username() + " FINAL KILL!"));
 
-		gfStrings.put("pvp.land", addToList("slain by " + client.getSession().getUsername()));
+		gfStrings.put("pvp.land", addToList("slain by " + client.br$getSession().username()));
 
-		gfStrings.put("minemen.club", addToList("killed by " + client.getSession().getUsername() + "!"));
+		gfStrings.put("minemen.club", addToList("killed by " + client.br$getSession().username() + "!"));
 	}
 
 	private void populateGLHFStrings() {

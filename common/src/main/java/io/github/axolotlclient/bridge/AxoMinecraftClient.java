@@ -62,4 +62,8 @@ public interface AxoMinecraftClient {
 	default CompletableFuture<Void> br$runTask(Runnable runnable) {
 		throw BridgeUtil.noImpl();
 	}
+
+	default AxoSession br$getSession() {
+		throw BridgeUtil.noImpl();
+	}
 }
