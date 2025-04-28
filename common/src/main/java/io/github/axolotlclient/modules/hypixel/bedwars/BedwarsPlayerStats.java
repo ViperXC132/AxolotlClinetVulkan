@@ -105,14 +105,6 @@ public class BedwarsPlayerStats {
 		return fromAPIAsync(uuid).thenApply(x -> x.orElse(generateFake(uuid)));
 	}
 
-	public static Optional<BedwarsPlayerStats> fromAPI(String uuid) {
-		return fromAPIAsync(uuid).join();
-	}
-
-	public static BedwarsPlayerStats fromAPIOrFake(String uuid) {
-		return fromAPIOrFakeAsync(uuid).join();
-	}
-
 	public void addDeath() {
 		deaths++;
 		gameDeaths++;
