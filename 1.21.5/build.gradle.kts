@@ -7,8 +7,8 @@ plugins {
 
 val minecraft = "1.21.5"
 val minecraftFriendly = minecraft
-val parchmentMinecraft = "1.21.4"
-val parchment = "2025.03.23"
+val parchmentMinecraft = "1.21.5"
+val parchment = "2025.04.19"
 val modmenu = "14.0.0-rc.1"
 val fapi = "0.119.5"
 group = project.property("maven_group") as String
