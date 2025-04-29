@@ -22,7 +22,9 @@
 
 package io.github.axolotlclient.api;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
@@ -37,8 +39,7 @@ import io.github.axolotlclient.util.ThreadExecuter;
 
 public abstract class Options implements Module {
 
-	protected Consumer<Consumer<Boolean>> openPrivacyNoteScreen = v -> {
-	};
+	protected Supplier<CompletableFuture<Boolean>> openPrivacyNoteScreen = () -> CompletableFuture.completedFuture(false);
 	public EnumOption<PrivacyPolicyState> privacyAccepted = new EnumOption<>("privacyPolicyAccepted", PrivacyPolicyState.class, PrivacyPolicyState.UNSET, val -> AxolotlClientCommon.getInstance().saveConfig());
 	public final BooleanOption statusUpdateNotifs = new BooleanOption("statusUpdateNotifs", true);
 	public final BooleanOption friendRequestsEnabled = new BooleanOption("friendRequestsEnabled", true);
@@ -47,7 +48,7 @@ public abstract class Options implements Module {
 	public final BooleanOption enabled = new BooleanOption("enabled", true, value -> {
 		if (value) {
 			if (!privacyAccepted.get().isAccepted()) {
-				openPrivacyNoteScreen.accept(v -> {
+				openPrivacyNoteScreen.get().thenAccept(v -> {
 					if (v) ThreadExecuter.scheduleTask(() -> API.getInstance().restart());
 				});
 			} else {

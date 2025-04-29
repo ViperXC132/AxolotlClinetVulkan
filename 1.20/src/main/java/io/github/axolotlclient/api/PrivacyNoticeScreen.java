@@ -23,7 +23,7 @@
 package io.github.axolotlclient.api;
 
 import java.net.URI;
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
 
 import io.github.axolotlclient.util.OSUtil;
 import net.minecraft.client.font.MultilineText;
@@ -39,10 +39,10 @@ public class PrivacyNoticeScreen extends Screen {
 	private static final URI TERMS_URI = URI.create(Constants.TERMS);
 
 	private final Screen parent;
-	private final Consumer<Boolean> accepted;
+	private final CompletableFuture<Boolean> accepted;
 	private MultilineText message;
 
-	protected PrivacyNoticeScreen(Screen parent, Consumer<Boolean> accepted) {
+	protected PrivacyNoticeScreen(Screen parent, CompletableFuture<Boolean> accepted) {
 		super(Text.translatable("api.privacyNotice"));
 		this.parent = parent;
 		this.accepted = accepted;
@@ -75,13 +75,13 @@ public class PrivacyNoticeScreen extends Screen {
 		addDrawableChild(ButtonWidget.builder(Text.translatable("api.privacyNotice.accept"), buttonWidget -> {
 			client.setScreen(parent);
 			APIOptions.getInstance().privacyAccepted.set(Options.PrivacyPolicyState.ACCEPTED);
-			accepted.accept(true);
+			accepted.complete(true);
 		}).positionAndSize(width / 2 - 50, y, 100, 20).build());
 		addDrawableChild(ButtonWidget.builder(Text.translatable("api.privacyNotice.deny"), buttonWidget -> {
 			client.setScreen(parent);
 			APIOptions.getInstance().enabled.set(false);
 			APIOptions.getInstance().privacyAccepted.set(Options.PrivacyPolicyState.DENIED);
-			accepted.accept(false);
+			accepted.complete(false);
 		}).positionAndSize(width / 2 - 50 + 105, y, 100, 20).build());
 		addDrawableChild(ButtonWidget.builder(Text.translatable("api.privacyNotice.openPolicy"), buttonWidget -> {
 			OSUtil.getOS().open(TERMS_URI);

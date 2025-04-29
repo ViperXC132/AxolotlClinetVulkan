@@ -23,6 +23,7 @@
 package io.github.axolotlclient.api;
 
 import java.nio.file.Path;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -56,8 +57,11 @@ public class APIOptions extends Options {
 		super.init();
 		MinecraftClient client = MinecraftClient.getInstance();
 
-		openPrivacyNoteScreen = n ->
-			client.execute(() -> client.setScreen(new PrivacyNoticeScreen(client.currentScreen, n)));
+		openPrivacyNoteScreen = () -> {
+			var fut = new CompletableFuture<Boolean>();
+			client.execute(() -> client.setScreen(new PrivacyNoticeScreen(client.currentScreen, fut)));
+			return fut;
+		};
 		KeyBinds.getInstance().registerWithSimpleAction(new KeyBind("api.chats.sidebar.open",
 				InputUtil.KEY_O_CODE, "category.axolotlclient"),
 			() -> {

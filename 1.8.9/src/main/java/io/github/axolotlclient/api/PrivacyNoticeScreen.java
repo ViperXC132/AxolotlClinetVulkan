@@ -24,7 +24,7 @@ package io.github.axolotlclient.api;
 
 import java.net.URI;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.concurrent.CompletableFuture;
 
 import io.github.axolotlclient.util.OSUtil;
 import net.minecraft.client.gui.screen.Screen;
@@ -37,10 +37,10 @@ public class PrivacyNoticeScreen extends Screen {
 	private static final URI TERMS_URI = URI.create(Constants.TERMS);
 
 	private final Screen parent;
-	private final Consumer<Boolean> accepted;
+	private final CompletableFuture<Boolean> accepted;
 	private List<String> message;
 
-	protected PrivacyNoticeScreen(Screen parent, Consumer<Boolean> accepted) {
+	protected PrivacyNoticeScreen(Screen parent, CompletableFuture<Boolean> accepted) {
 		super();
 		this.parent = parent;
 		this.accepted = accepted;
@@ -83,11 +83,11 @@ public class PrivacyNoticeScreen extends Screen {
 			minecraft.openScreen(parent);
 			APIOptions.getInstance().enabled.set(false);
 			APIOptions.getInstance().privacyAccepted.set(Options.PrivacyPolicyState.DENIED);
-			accepted.accept(false);
+			accepted.complete(false);
 		} else if (buttonWidget.id == 1) {
 			minecraft.openScreen(parent);
 			APIOptions.getInstance().privacyAccepted.set(Options.PrivacyPolicyState.ACCEPTED);
-			accepted.accept(true);
+			accepted.complete(true);
 		} else if (buttonWidget.id == 2) {
 			OSUtil.getOS().open(TERMS_URI);
 		}
