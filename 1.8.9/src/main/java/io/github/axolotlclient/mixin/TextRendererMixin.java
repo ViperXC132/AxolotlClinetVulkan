@@ -49,6 +49,7 @@ public abstract class TextRendererMixin {
 
 	// Pain at its finest
 
+	@Unique
 	private final Identifier texture_g = new Identifier("axolotlclient", "textures/font/g_breve_capital.png");
 	@Shadow
 	public int fontHeight;
@@ -66,6 +67,7 @@ public abstract class TextRendererMixin {
 	private float y;
 	@Shadow
 	private int color;
+	@Unique
 	private boolean shouldHaveShadow;
 
 	@Inject(method = "drawLayer(Ljava/lang/String;FFIZ)I", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/TextRenderer;drawLayer(Ljava/lang/String;Z)V"))
@@ -93,6 +95,7 @@ public abstract class TextRendererMixin {
 		}
 	}
 
+	@Unique
 	private void drawTexture(float x, float y) {
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuilder();
