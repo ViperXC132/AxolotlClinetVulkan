@@ -736,12 +736,15 @@
 	"playerstats.duels.uhc_duel": "UHC (Duel)",
 	"playerstats.duels.uhc_four": "UHC (Fours)",
 	"playerstats.duels.mode_title": "Stats in %s:",
-	"armorhud.main_hand_item_top": "Main Hand Item above Armor",
 	"itemupdatehud.bracket_color": "Separator (Bracket) Color",
 	"armorhud.durability_num_color": "Durability Number Color",
 	"armorhud.custom_durability_num_color": "Custom Durability Number Color",
 	"crosshairhud.custom_attack_indicator": "Custom Attack Indicator",
 	"crosshairhud.custom_attack_indicator.tooltip": "Whether to use a custom attack indicator. <br>This only affects the \"Texture\" and \"Custom\" types. <br>\"Dot\" and \"Cross\" types always use the custom indicator.",
 	"enable_background": "Enable Background",
-	"custom_background_color": "Custom Background Color"
+	"custom_background_color": "Custom Background Color",
+	"armorhud.main_hand_item_position": "Main Hand Item Position",
+	"armorhud.main_hand_item_position.top": "Top",
+	"armorhud.main_hand_item_position.bottom": "Bottom",
+	"armorhud.main_hand_item_position.disabled": "Disabled"
 }

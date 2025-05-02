@@ -1,5 +1,11 @@
 ## Changelog:
 
+### *(unreleased)*
+
+- Add option to hide the main hand item for ArmorHuds
+- Remove outdated translation files
+- Fix a few bugs (as usual)
+
 ### 3.1.3
 
 - Fix a few bugs

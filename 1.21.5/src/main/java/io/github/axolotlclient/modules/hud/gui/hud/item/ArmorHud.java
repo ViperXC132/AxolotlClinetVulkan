@@ -24,6 +24,7 @@ package io.github.axolotlclient.modules.hud.gui.hud.item;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Stream;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
@@ -64,7 +65,7 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 	private final BooleanOption showMaxDurabilityNumber = new BooleanOption("show_max_durability_num", false);
 	private final BooleanOption customDurabilityNumColor = new BooleanOption("armorhud.custom_durability_num_color", false);
 	private final ColorOption durabilityNumColor = new ColorOption("armorhud.durability_num_color", Colors.WHITE);
-	private final BooleanOption mainHandItemOnTop = new BooleanOption("armorhud.main_hand_item_top", false);
+	private final EnumOption<MainHandItemPosition> mainHandItemPosition = new EnumOption<>("armorhud.main_hand_item_position", MainHandItemPosition.class, MainHandItemPosition.BOTTOM);
 
 	private final EnumOption<AnchorPoint> anchor = new EnumOption<>("anchorpoint", AnchorPoint.class,
 		AnchorPoint.TOP_RIGHT);
@@ -87,6 +88,8 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 	@Override
 	public void renderComponent(GuiGraphics graphics, float delta) {
 		int width = 20;
+		int height = 100;
+		boolean boundsChanged = false;
 		boolean showDurability = showDurabilityNumber.get();
 		boolean showMaxDurability = showMaxDurabilityNumber.get();
 		int labelWidth = showDurability || showMaxDurability ? getItemStacks()
@@ -95,12 +98,22 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		width += labelWidth;
 		if (width != getWidth()) {
 			setWidth(width);
-			onBoundsUpdate();
+			boundsChanged = true;
 		}
 		DrawPosition pos = getPos();
-		int lastY = 2 + (4 * 20);
-		boolean mainHandItemTop = mainHandItemOnTop.get();
-		if (!mainHandItemTop) {
+		MainHandItemPosition mainHandItemTop = mainHandItemPosition.get();
+		if (mainHandItemTop == MainHandItemPosition.DISABLED) {
+			height -= 20;
+		}
+		if (height != getHeight()) {
+			setHeight(height);
+			boundsChanged = true;
+		}
+		if (boundsChanged) {
+			onBoundsUpdate();
+		}
+		int lastY = 2 + (height-20);
+		if (mainHandItemTop == MainHandItemPosition.BOTTOM) {
 			renderMainItem(graphics, client.player.getInventory().getSelectedItem(), pos.x() + 2, pos.y() + lastY, labelWidth);
 			lastY = lastY - 20;
 		}
@@ -114,7 +127,7 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 			renderItem(graphics, stack, pos.x() + 2, lastY + pos.y(), labelWidth);
 			lastY = lastY - 20;
 		}
-		if (mainHandItemTop) {
+		if (mainHandItemTop == MainHandItemPosition.TOP) {
 			renderMainItem(graphics, client.player.getInventory().getSelectedItem(), pos.x() + 2, pos.y() + lastY, labelWidth);
 		}
 	}
@@ -152,6 +165,8 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 	@Override
 	public void renderPlaceholderComponent(GuiGraphics graphics, float delta) {
 		int width = 20;
+		int height = 100;
+		boolean boundsChanged = false;
 		boolean showDurability = showDurabilityNumber.get();
 		boolean showMaxDurability = showMaxDurabilityNumber.get();
 		int labelWidth = showDurability || showMaxDurability ? Arrays.stream(placeholderStacks)
@@ -160,12 +175,22 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		width += labelWidth;
 		if (width != getWidth()) {
 			setWidth(width);
-			onBoundsUpdate();
+			boundsChanged = true;
 		}
 		DrawPosition pos = getPos();
-		int lastY = 2 + (4 * 20);
-		boolean mainHandItemTop = mainHandItemOnTop.get();
-		if (!mainHandItemTop) {
+		MainHandItemPosition mainHandItemTop = mainHandItemPosition.get();
+		if (mainHandItemTop == MainHandItemPosition.DISABLED) {
+			height -= 20;
+		}
+		if (height != getHeight()) {
+			setHeight(height);
+			boundsChanged = true;
+		}
+		if (boundsChanged) {
+			onBoundsUpdate();
+		}
+		int lastY = 2 + (height-20);
+		if (mainHandItemTop == MainHandItemPosition.BOTTOM) {
 			renderItem(graphics, placeholderStacks[4], pos.x() + 2, pos.y() + lastY, labelWidth);
 			lastY = lastY - 20;
 		}
@@ -174,7 +199,7 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 			renderItem(graphics, item, pos.x() + 2, lastY + pos.y(), labelWidth);
 			lastY = lastY - 20;
 		}
-		if (mainHandItemTop) {
+		if (mainHandItemTop == MainHandItemPosition.TOP) {
 			renderItem(graphics, placeholderStacks[4], pos.x() + 2, pos.y() + lastY, labelWidth);
 		}
 	}
@@ -193,11 +218,23 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		options.add(customDurabilityNumColor);
 		options.add(durabilityNumColor);
 		options.add(anchor);
-		options.add(mainHandItemOnTop);
+		options.add(mainHandItemPosition);
 		return options;
 	}
 
 	public AnchorPoint getAnchor() {
 		return anchor.get();
+	}
+
+	private enum MainHandItemPosition {
+		BOTTOM,
+		TOP,
+		DISABLED,
+		;
+
+		@Override
+		public String toString() {
+			return "armorhud.main_hand_item_position."+super.toString().toLowerCase(Locale.ROOT);
+		}
 	}
 }

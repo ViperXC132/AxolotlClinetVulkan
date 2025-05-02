@@ -126,7 +126,7 @@ public class AxolotlClient implements ClientModInitializer {
 
 		io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig.getInstance()
 			.register(configManager = new VersionedJsonConfigManager(AxolotlClientCommon.getInstance().getMainConfigFile(),
-				CONFIG.getConfig(), 2, (oldVersion, newVersion, config, json) -> {
+				CONFIG.getConfig(), 3, (oldVersion, newVersion, config, json) -> {
 				if (oldVersion.getMajor() == 1) {
 					var keystrokes = json.get("hud").getAsJsonObject().get("keystrokehud")
 						.getAsJsonObject();
@@ -135,6 +135,15 @@ public class AxolotlClient implements ClientModInitializer {
 					mousemovement.addProperty("mouseMovementIndicator", keystrokes.get("mouseMovementIndicator").getAsString());
 					mousemovement.addProperty("mouseMovementIndicatorOuter", keystrokes.get("mouseMovementIndicatorOuter").getAsString());
 					json.get("hud").getAsJsonObject().add("mousemovementhud", mousemovement);
+				}
+				if (oldVersion.getMajor() == 2) {
+					var armorhud = json.get("hud").getAsJsonObject().get("armorhud").getAsJsonObject();
+					if (armorhud.has("armorhud.main_hand_item_top")) {
+						var mainItemTop = armorhud.get("armorhud.main_hand_item_top").getAsBoolean();
+						if (mainItemTop) {
+							armorhud.addProperty("armorhud.main_hand_item_position", "armorhud.main_hand_item_position.top");
+						}
+					}
 				}
 				return json;
 			}));
