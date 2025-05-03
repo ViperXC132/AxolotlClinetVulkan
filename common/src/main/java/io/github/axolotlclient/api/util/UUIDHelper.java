@@ -79,7 +79,7 @@ public class UUIDHelper {
 		try {
 			return CompletableFuture.completedFuture(Optional.of(API.getInstance().sanitizeUUID(nameOrUuid)));
 		} catch (IllegalArgumentException e) {
-			return UUID_TO_USERNAME.getAsync(nameOrUuid);
+			return USERNAME_TO_UUID.getAsync(nameOrUuid);
 		}
 	}
 
