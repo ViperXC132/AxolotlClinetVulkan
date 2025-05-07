@@ -28,10 +28,10 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.FloatOption;
 import io.github.axolotlclient.modules.AbstractModule;
-import io.github.axolotlclient.util.Util;
 import io.github.axolotlclient.util.keybinds.KeyBinds;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.Mth;
 
 /**
  * Based on
@@ -50,8 +50,8 @@ public class Zoom extends AbstractModule {
 	public static boolean active;
 	private static Double originalSensitivity;
 	private static boolean originalSmoothCamera;
-	private static double targetFactor = 1;
-	private static double divisor;
+	private static float targetFactor = 1;
+	private static float divisor;
 	private static float lastAnimatedFactor = 1;
 	private static float animatedFactor = 1;
 	private static double lastReturnedFov;
@@ -61,9 +61,9 @@ public class Zoom extends AbstractModule {
 		return Instance;
 	}
 
-	public static double getFov(double current, float tickDelta) {
-		double result =
-			current * (zoomSpeed.get() == 10 ? targetFactor : Util.lerp(lastAnimatedFactor, animatedFactor, tickDelta));
+	public static float getFov(float current, float tickDelta) {
+		float result =
+			current * (zoomSpeed.get() == 10 ? targetFactor : Mth.lerp(lastAnimatedFactor, animatedFactor, tickDelta));
 
 		if (lastReturnedFov != 0 && lastReturnedFov != result) {
 			Minecraft.getInstance().levelRenderer.needsUpdate();
@@ -105,7 +105,7 @@ public class Zoom extends AbstractModule {
 		return key.isDown();
 	}
 
-	private static void setDivisor(double value) {
+	private static void setDivisor(float value) {
 		divisor = value;
 		targetFactor = 1F / value;
 	}
@@ -132,7 +132,7 @@ public class Zoom extends AbstractModule {
 		}
 	}
 
-	public static boolean scroll(double amount) {
+	public static boolean scroll(float amount) {
 		if (active && zoomScrolling.get() && amount != 0) {
 			setDivisor(Math.max(1, divisor + (amount / Math.abs(amount))));
 			updateSensitivity();

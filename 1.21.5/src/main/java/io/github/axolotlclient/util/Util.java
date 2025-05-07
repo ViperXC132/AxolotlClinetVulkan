@@ -187,10 +187,6 @@ public class Util {
 		return id;
 	}
 
-	public static double lerp(double start, double end, double percent) {
-		return start + ((end - start) * percent);
-	}
-
 	public static String toRoman(int number) {
 		if (number > 0) {
 			return "I".repeat(number).replace("IIIII", "V").replace("IIII", "IV")

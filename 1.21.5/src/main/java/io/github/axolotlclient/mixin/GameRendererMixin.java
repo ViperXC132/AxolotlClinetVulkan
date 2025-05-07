@@ -22,7 +22,10 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
 import com.mojang.blaze3d.resource.CrossFrameResourcePool;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -36,9 +39,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.Profiler;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.material.FogType;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -59,31 +59,18 @@ public abstract class GameRendererMixin {
 	@Final
 	private CrossFrameResourcePool resourcePool;
 
-	@Shadow
-	public abstract void renderLevel(DeltaTracker deltaTracker);
-
-	@Inject(method = "getFov", at = @At(value = "RETURN", ordinal = 1), cancellable = true)
-	public void axolotlclient$setZoom(Camera camera, float tickDelta, boolean changingFov, CallbackInfoReturnable<Float> cir) {
-		Zoom.update();
-		double returnValue = cir.getReturnValue();
-
+	@WrapOperation(method = "getFov", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;lerp(FFF)F"))
+	private float disableDynamicFov(float delta, float start, float end, Operation<Float> original) {
 		if (!AxolotlClient.CONFIG.dynamicFOV.get()) {
-			Entity entity = this.minecraft.getCameraEntity();
-			double f = changingFov ? minecraft.options.fov().get() : 70F;
-			if (entity instanceof LivingEntity && ((LivingEntity) entity).getHealth() <= 0.0F) {
-				float g = (float) ((LivingEntity) entity).deathTime + tickDelta;
-				f /= (1.0F - 500.0F / (g + 500.0F)) * 2.0F + 1.0F;
-			}
-
-			FogType cameraSubmersionType = camera.getFluidInCamera();
-			if (cameraSubmersionType == FogType.LAVA || cameraSubmersionType == FogType.WATER) {
-				f *= Mth.lerp(this.minecraft.options.fovEffectScale().get(), 1.0, 0.85714287F);
-			}
-			returnValue = f;
+			return 1.0f;
 		}
-		returnValue = Zoom.getFov(returnValue, tickDelta);
+		return original.call(delta, start, end);
+	}
 
-		cir.setReturnValue((float) returnValue);
+	@Inject(method = "getFov", at = @At(value = "RETURN", ordinal = 1))
+	public void axolotlclient$setZoom(Camera camera, float tickDelta, boolean changingFov, CallbackInfoReturnable<Double> cir, @Local(ordinal = 1) LocalFloatRef fov) {
+		Zoom.update();
+		fov.set(Zoom.getFov(fov.get(), tickDelta));
 	}
 
 	@Inject(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/GameRenderer;postEffectId:Lnet/minecraft/resources/ResourceLocation;", ordinal = 0))

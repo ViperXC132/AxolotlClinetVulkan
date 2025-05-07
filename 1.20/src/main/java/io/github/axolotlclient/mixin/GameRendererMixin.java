@@ -22,17 +22,18 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.ref.LocalDoubleRef;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.blur.MenuBlur;
 import io.github.axolotlclient.modules.blur.MotionBlur;
 import io.github.axolotlclient.modules.zoom.Zoom;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.Camera;
-import net.minecraft.client.render.CameraSubmersionType;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Axis;
 import net.minecraft.util.math.MathHelper;
@@ -52,29 +53,18 @@ public abstract class GameRendererMixin {
 	@Shadow
 	MinecraftClient client;
 
-	@Inject(method = "getFov", at = @At(value = "RETURN", ordinal = 1), cancellable = true)
-	public void axolotlclient$setZoom(Camera camera, float tickDelta, boolean changingFov, CallbackInfoReturnable<Double> cir) {
-		Zoom.update();
-		double returnValue = cir.getReturnValue();
-
+	@WrapOperation(method = "getFov", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;lerp(FFF)F"))
+	private float disableDynamicFov(float delta, float start, float end, Operation<Float> original) {
 		if (!AxolotlClient.CONFIG.dynamicFOV.get()) {
-			Entity entity = this.client.getCameraEntity();
-			double f = changingFov ? client.options.getFov().get() : 70F;
-			if (entity instanceof LivingEntity && ((LivingEntity) entity).getHealth() <= 0.0F) {
-				float g = (float) ((LivingEntity) entity).deathTime + tickDelta;
-				f /= (1.0F - 500.0F / (g + 500.0F)) * 2.0F + 1.0F;
-			}
-
-			CameraSubmersionType cameraSubmersionType = camera.getSubmersionType();
-			if (cameraSubmersionType == CameraSubmersionType.LAVA
-				|| cameraSubmersionType == CameraSubmersionType.WATER) {
-				f *= MathHelper.lerp(this.client.options.getFovEffectScale().get(), 1.0, 0.85714287F);
-			}
-			returnValue = f;
+			return 1.0f;
 		}
-		returnValue = Zoom.getFov(returnValue, tickDelta);
+		return original.call(delta, start, end);
+	}
 
-		cir.setReturnValue(returnValue);
+	@Inject(method = "getFov", at = @At(value = "RETURN", ordinal = 1))
+	public void axolotlclient$setZoom(Camera camera, float tickDelta, boolean changingFov, CallbackInfoReturnable<Double> cir, @Local LocalDoubleRef fov) {
+		Zoom.update();
+		fov.set(Zoom.getFov(fov.get(), tickDelta));
 	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;getFramebuffer()Lcom/mojang/blaze3d/framebuffer/Framebuffer;"))
