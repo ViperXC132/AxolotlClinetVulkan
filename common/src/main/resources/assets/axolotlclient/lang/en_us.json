@@ -746,5 +746,7 @@
 	"armorhud.main_hand_item_position": "Main Hand Item Position",
 	"armorhud.main_hand_item_position.top": "Top",
 	"armorhud.main_hand_item_position.bottom": "Bottom",
-	"armorhud.main_hand_item_position.disabled": "Disabled"
+	"armorhud.main_hand_item_position.disabled": "Disabled",
+	"tablist.small_ping_text": "Small Ping Text",
+	"tablist.small_ping_text.tooltip": "Use Unicode subscript number characters instead of regular numbers"
 }

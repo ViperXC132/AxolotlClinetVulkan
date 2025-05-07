@@ -29,6 +29,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.FloatOption;
 import io.github.axolotlclient.modules.AbstractModule;
 import io.github.axolotlclient.util.keybinds.KeyBinds;
+import lombok.Getter;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
@@ -46,6 +47,7 @@ public class Zoom extends AbstractModule {
 	public static final BooleanOption zoomScrolling = new BooleanOption("zoomScrolling", false);
 	public static final BooleanOption decreaseSensitivity = new BooleanOption("decreaseSensitivity", true);
 	public static final BooleanOption smoothCamera = new BooleanOption("smoothCamera", false);
+	@Getter
 	private static final Zoom Instance = new Zoom();
 	public static boolean active;
 	private static Double originalSensitivity;
@@ -56,10 +58,6 @@ public class Zoom extends AbstractModule {
 	private static float animatedFactor = 1;
 	private static double lastReturnedFov;
 	public final OptionCategory zoom = OptionCategory.create("zoom");
-
-	public static Zoom getInstance() {
-		return Instance;
-	}
 
 	public static float getFov(float current, float tickDelta) {
 		float result =
@@ -132,9 +130,9 @@ public class Zoom extends AbstractModule {
 		}
 	}
 
-	public static boolean scroll(float amount) {
+	public static boolean scroll(double amount) {
 		if (active && zoomScrolling.get() && amount != 0) {
-			setDivisor(Math.max(1, divisor + (amount / Math.abs(amount))));
+			setDivisor((float) Math.max(1, divisor + (amount / Math.abs(amount))));
 			updateSensitivity();
 			return true;
 		}

@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.tablist;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
@@ -42,6 +43,7 @@ public class Tablist extends AbstractModule {
 	public final BooleanOption showFooter = new BooleanOption("showFooter", true);
 	public final BooleanOption alwaysShowHeadLayer = new BooleanOption("alwaysShowHeadLayer", false);
 	public final BooleanOption numericalPing = new BooleanOption("numericalPing", false);
+	private final BooleanOption smallPingText = new BooleanOption("tablist.small_ping_text", false);
 	private final ColorOption pingColor0 = new ColorOption("pingColor0", Color.parse("#FF00FFFF"));
 	private final ColorOption pingColor1 = new ColorOption("pingColor1", Color.parse("#FF00FF00"));
 	private final ColorOption pingColor2 = new ColorOption("pingColor2", Color.parse("#FF008800"));
@@ -56,7 +58,7 @@ public class Tablist extends AbstractModule {
 
 	@Override
 	public void init() {
-		tablist.add(numericalPing, showPlayerHeads, shadow, showHeader, showFooter, alwaysShowHeadLayer);
+		tablist.add(numericalPing, smallPingText, showPlayerHeads, shadow, showHeader, showFooter, alwaysShowHeadLayer);
 		tablist.add(pingColor0, pingColor1, pingColor2, pingColor3, pingColor4, pingColor5);
 		tablist.add(backgroundEnabled, customBackgroundColor, backgroundColor);
 
@@ -80,12 +82,29 @@ public class Tablist extends AbstractModule {
 				current = pingColor5.get();
 			}
 
-			DrawUtil.drawString(graphics, String.valueOf(entry.getLatency()),
-				x + width - 1 - client.font.width(String.valueOf(entry.getLatency())), y, current,
-				shadow.get()
-			);
+			String text = applySmallText(String.valueOf(entry.getLatency()));
+			PoseStack matrices = graphics.pose();
+			matrices.pushPose();
+			matrices.translate(x + width - 1, y, 0);
+			matrices.translate(-client.font.width(text), 0, 0);
+
+			if (smallPingText.get()) {
+				matrices.translate(0, -2, 0);
+			}
+
+			DrawUtil.drawString(graphics, text, 0, 0, current, shadow.get());
+			matrices.popPose();
 			return true;
 		}
 		return false;
+	}
+
+	private String applySmallText(String text) {
+		if (smallPingText.get()) {
+			StringBuilder builder = new StringBuilder(text.length());
+			text.chars().map(i -> i >= '0' && i <= '9' ? i + 0x2050 : i).forEach(builder::appendCodePoint);
+			return builder.toString();
+		}
+		return text;
 	}
 }
