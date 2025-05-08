@@ -351,6 +351,7 @@
 	"showActivity.tooltip": "Whether to show your current In-Game Activity.",
 	"showAllocated": "Show Allocated",
 	"showBadges": "Show Badges",
+	"showBadges.tooltip": "Whether Nametag and Tablist Badges are enabled. <br>Requires Social Features to be enabled.",
 	"showBeaconBeams": "Show Beacon Beams",
 	"showD": "Show D",
 	"showEffectNames": "Show Effect Names",
