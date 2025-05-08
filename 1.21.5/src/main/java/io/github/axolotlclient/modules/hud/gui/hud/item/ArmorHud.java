@@ -119,12 +119,14 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		}
 		for (int i = 0; i <= 3; i++) {
 			ItemStack stack = getArmorStack(i).copy();
+			String label = null;
 			if (showProtLvl.get() && stack.isEnchanted()) {
-				client.level.registryAccess().lookup(Registries.ENCHANTMENT).orElseThrow().get(Enchantments.PROTECTION)
-					.ifPresent(enchantmentReference -> stack.setCount(
-						EnchantmentHelper.getItemEnchantmentLevel(enchantmentReference, stack)));
+				var protection = client.level.registryAccess().lookup(Registries.ENCHANTMENT).orElseThrow().get(Enchantments.PROTECTION);
+				if (protection.isPresent()) {
+					label = String.valueOf(EnchantmentHelper.getItemEnchantmentLevel(protection.get(), stack));
+				}
 			}
-			renderItem(graphics, stack, pos.x() + 2, lastY + pos.y(), labelWidth);
+			renderItem(graphics, stack, pos.x() + 2, lastY + pos.y(), labelWidth, label);
 			lastY = lastY - 20;
 		}
 		if (mainHandItemTop == MainHandItemPosition.TOP) {
@@ -143,11 +145,11 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		graphics.renderItemDecorations(client.font, stack, x, y, total);
 	}
 
-	public void renderItem(GuiGraphics graphics, ItemStack stack, int x, int y, int offset) {
+	public void renderItem(GuiGraphics graphics, ItemStack stack, int x, int y, int offset, String labelOverride) {
 		renderDurabilityNumber(graphics, stack, x, y);
 		x += offset;
 		graphics.renderItem(stack, x, y);
-		graphics.renderItemDecorations(client.font, stack, x, y);
+		graphics.renderItemDecorations(client.font, stack, x, y, labelOverride);
 	}
 
 	private void renderDurabilityNumber(GuiGraphics graphics, ItemStack stack, int x, int y) {
@@ -191,16 +193,16 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		}
 		int lastY = 2 + (height-20);
 		if (mainHandItemTop == MainHandItemPosition.BOTTOM) {
-			renderItem(graphics, placeholderStacks[4], pos.x() + 2, pos.y() + lastY, labelWidth);
+			renderItem(graphics, placeholderStacks[4], pos.x() + 2, pos.y() + lastY, labelWidth, null);
 			lastY = lastY - 20;
 		}
 		for (int i = 0; i <= 3; i++) {
 			ItemStack item = placeholderStacks[i];
-			renderItem(graphics, item, pos.x() + 2, lastY + pos.y(), labelWidth);
+			renderItem(graphics, item, pos.x() + 2, lastY + pos.y(), labelWidth, null);
 			lastY = lastY - 20;
 		}
 		if (mainHandItemTop == MainHandItemPosition.TOP) {
-			renderItem(graphics, placeholderStacks[4], pos.x() + 2, pos.y() + lastY, labelWidth);
+			renderItem(graphics, placeholderStacks[4], pos.x() + 2, pos.y() + lastY, labelWidth, null);
 		}
 	}
 

@@ -108,6 +108,7 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		for (int i = 0; i <= 3; i++) {
 			if (client.player.inventory.armorSlots[i] != null) {
 				ItemStack stack = client.player.inventory.armorSlots[i].copy();
+				String label = null;
 				if (showProtLvl.get() && stack.hasEnchantments()) {
 					NbtList nbtList = stack.getEnchantments();
 					if (nbtList != null) {
@@ -115,12 +116,12 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 							int enchantId = nbtList.getCompound(k).getShort("id");
 							int level = nbtList.getCompound(k).getShort("lvl");
 							if (enchantId == 0 && Enchantment.byId(enchantId) != null) {
-								stack.size = level;
+								label = String.valueOf(level);
 							}
 						}
 					}
 				}
-				renderItem(stack, pos.x() + 2, lastY + pos.y(), labelWidth);
+				renderItem(stack, pos.x() + 2, lastY + pos.y(), labelWidth, label);
 			}
 
 			lastY = lastY - 20;
@@ -142,11 +143,11 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 			shadow.get());
 	}
 
-	public void renderItem(ItemStack stack, int x, int y, int offset) {
+	public void renderItem(ItemStack stack, int x, int y, int offset, String labelOverride) {
 		renderDurabilityNumber(stack, x, y);
 		x += offset;
 		ItemUtil.renderGuiItemModel(stack, x, y);
-		ItemUtil.renderGuiItemOverlay(client.textRenderer, stack, x, y, null, textColor.get().toInt(), shadow.get());
+		ItemUtil.renderGuiItemOverlay(client.textRenderer, stack, x, y, labelOverride, textColor.get().toInt(), shadow.get());
 	}
 
 	private void renderDurabilityNumber(ItemStack stack, int x, int y) {
@@ -199,16 +200,16 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		}
 		int lastY = 2 + (height-20);
 		if (mainHandItemTop == MainHandItemPosition.BOTTOM) {
-			renderItem(placeholderStacks[4], pos.x() + 2, pos.y() + lastY, labelWidth);
+			renderItem(placeholderStacks[4], pos.x() + 2, pos.y() + lastY, labelWidth, null);
 			lastY = lastY - 20;
 		}
 		for (int i = 0; i <= 3; i++) {
 			ItemStack item = placeholderStacks[i];
-			renderItem(item, pos.x() + 2, lastY + pos.y(), labelWidth);
+			renderItem(item, pos.x() + 2, lastY + pos.y(), labelWidth, null);
 			lastY = lastY - 20;
 		}
 		if (mainHandItemTop == MainHandItemPosition.TOP) {
-			renderItem(placeholderStacks[4], pos.x() + 2, pos.y() + lastY, labelWidth);
+			renderItem(placeholderStacks[4], pos.x() + 2, pos.y() + lastY, labelWidth, null);
 		}
 	}
 

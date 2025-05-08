@@ -124,12 +124,19 @@ public class Util {
 		String[] arr = formattedString.split("§");
 
 		List<ChatFormatting> modifiers = new ArrayList<>();
-		for (String s : arr) {
-			ChatFormatting formatting = ChatFormatting.getByCode(!s.isEmpty() ? s.charAt(0) : 0);
+		for (int i = 0, length = arr.length; i < length; i++) {
+			String s = arr[i];
+			if (s.isEmpty()) {
+				continue;
+			} else if (i == 0) {
+				text.append(s);
+				continue;
+			}
+			ChatFormatting formatting = ChatFormatting.getByCode(s.charAt(0));
 			if (formatting != null && formatting.isFormat()) {
 				modifiers.add(formatting);
 			}
-			MutableComponent part = Component.literal(!s.isEmpty() ? s.substring(1) : "");
+			MutableComponent part = Component.literal(formatting != null ? s.substring(1) : s);
 			if (formatting != null) {
 				part.withStyle(formatting);
 
