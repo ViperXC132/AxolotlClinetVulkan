@@ -33,6 +33,16 @@ public class HypixelModApi {
 	private ClientboundLocationPacket current;
 
 	public void init() {
+		try {
+			Class.forName("net.hypixel.modapi.HypixelModAPI");
+		} catch (ClassNotFoundException e) {
+			return;
+		}
+
+		init0();
+	}
+
+	private void init0() {
 		HypixelModAPI.getInstance().createHandler(ClientboundLocationPacket.class, packet -> current = packet);
 		Events.CONNECTION_PLAY_READY.register(() -> HypixelModAPI.getInstance().subscribeToEventPacket(ClientboundLocationPacket.class));
 	}

@@ -73,7 +73,7 @@ public abstract class AxolotlClientCommon {
 	private Logger logger;
 	private NotificationProvider notificationProvider;
 	private ConfigManager configManager;
-	private boolean initializing = true;
+	private boolean initializing = false;
 	public final List<Module> modules = new ArrayList<>();
 
 	protected AxolotlClientCommon() {

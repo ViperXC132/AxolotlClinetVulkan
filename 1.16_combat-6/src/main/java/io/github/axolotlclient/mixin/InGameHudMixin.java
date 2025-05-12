@@ -24,6 +24,7 @@ package io.github.axolotlclient.mixin;
 
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.hud.HudManager;
+import io.github.axolotlclient.modules.hud.HudManager0;
 import io.github.axolotlclient.modules.hud.gui.hud.PotionsHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ActionBarHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.CrosshairHud;
@@ -66,6 +67,7 @@ public abstract class InGameHudMixin {
 	private void axolotlclient$onHudRender(MatrixStack matrices, float tickDelta, CallbackInfo ci) {
 		if (!MinecraftClient.getInstance().options.hudHidden) {
 			HudManager.getInstance().render(matrices, tickDelta);
+			HudManager0.getInstance().render(matrices, tickDelta);
 		}
 	}
 

@@ -77,6 +77,15 @@
 			],
 			"net/minecraft/class_3675\u0024class_306": [
 				"io/github/axolotlclient/bridge/key/AxoKey"
+			],
+			"net/minecraft/class_2561": [
+				"io/github/axolotlclient/bridge/util/AxoText"
+			],
+			"net/minecraft/class_4587": [
+				"io/github/axolotlclient/bridge/render/AxoRenderContext"
+			],
+			"net/minecraft/class_640": [
+				"io/github/axolotlclient/bridge/AxoPlayerProfile"
 			]
 		}
 	},

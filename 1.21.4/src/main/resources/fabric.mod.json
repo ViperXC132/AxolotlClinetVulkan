@@ -81,6 +81,9 @@
 			],
 			"net/minecraft/class_3675\u0024class_306": [
 				"io/github/axolotlclient/bridge/key/AxoKey"
+			],
+			"net/minecraft/class_2561": [
+				"io/github/axolotlclient/bridge/util/AxoText"
 			]
 		}
 	},

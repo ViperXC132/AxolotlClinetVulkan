@@ -58,6 +58,6 @@ public abstract class ChatHudMixin {
 
 	@ModifyArg(method = "addMessage(Lnet/minecraft/text/Text;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/ChatHud;addMessage(Lnet/minecraft/text/Text;I)V"), index = 0)
 	public Text axolotlclient$editChat(Text message) {
-		return NickHider.getInstance().editMessage(message);
+		return (Text) NickHider.getInstance().editMessage(message);
 	}
 }

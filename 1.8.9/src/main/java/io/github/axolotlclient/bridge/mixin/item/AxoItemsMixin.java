@@ -23,6 +23,7 @@
 package io.github.axolotlclient.bridge.mixin.item;
 
 import io.github.axolotlclient.bridge.impl.AirItemImpl;
+import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.item.AxoItem;
 import io.github.axolotlclient.bridge.item.AxoItems;
 import net.minecraft.item.Items;
@@ -71,6 +72,46 @@ public class AxoItemsMixin {
 	@Final
 	public static AxoItem ARROW;
 
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoItem IRON_INGOT;
+
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoItem GOLD_INGOT;
+
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoItem DIAMOND;
+
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoItem EMERALD;
+
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoItem STONE_SWORD;
+
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoItem DIAMOND_SWORD;
+
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoItem DIAMOND_CHESTPLATE;
+
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoItem DIAMOND_BOOTS;
+
 	@Inject(method = "<clinit>", at = @At("HEAD"), cancellable = true)
 	private static void setStaticValues(CallbackInfo info) {
 		AIR = AirItemImpl.getInstance();
@@ -80,6 +121,15 @@ public class AxoItemsMixin {
 		IRON_BOOTS = Items.IRON_BOOTS;
 		IRON_SWORD = Items.IRON_SWORD;
 		ARROW = Items.ARROW;
+		IRON_INGOT = Items.IRON_INGOT;
+		GOLD_INGOT = Items.GOLD_INGOT;
+		DIAMOND = Items.DIAMOND;
+		EMERALD = Items.EMERALD;
+		STONE_SWORD = Items.STONE_SWORD;
+		DIAMOND_SWORD = Items.DIAMOND_SWORD;
+		DIAMOND_CHESTPLATE = Items.DIAMOND_CHESTPLATE;
+		DIAMOND_BOOTS = Items.DIAMOND_BOOTS;
+
 		info.cancel();
 	}
 }

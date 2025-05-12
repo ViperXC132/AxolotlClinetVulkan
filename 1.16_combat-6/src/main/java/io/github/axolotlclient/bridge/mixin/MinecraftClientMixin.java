@@ -23,6 +23,7 @@
 package io.github.axolotlclient.bridge.mixin;
 
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
+import io.github.axolotlclient.bridge.AxoSession;
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.key.AxoClientKeybinds;
 import io.github.axolotlclient.bridge.render.AxoFont;
@@ -32,6 +33,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.util.Session;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import org.jetbrains.annotations.Nullable;
@@ -54,6 +56,10 @@ public abstract class MinecraftClientMixin extends ReentrantThreadExecutor<Runna
 	@Final
 	@Shadow
 	public GameOptions options;
+
+	@Shadow
+	@Final
+	private Session session;
 
 	public MinecraftClientMixin(String string) {
 		super(string);
@@ -84,5 +90,10 @@ public abstract class MinecraftClientMixin extends ReentrantThreadExecutor<Runna
 	@Override
 	public CompletableFuture<Void> br$runTask(Runnable runnable) {
 		return submit(runnable);
+	}
+
+	@Override
+	public AxoSession br$getSession() {
+		return new AxoSession(session.getUsername(), session.getUuid(), session.getAccessToken());
 	}
 }

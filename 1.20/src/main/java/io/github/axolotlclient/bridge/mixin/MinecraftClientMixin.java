@@ -23,6 +23,7 @@
 package io.github.axolotlclient.bridge.mixin;
 
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
+import io.github.axolotlclient.bridge.AxoSession;
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.key.AxoClientKeybinds;
 import io.github.axolotlclient.bridge.render.AxoFont;
@@ -31,6 +32,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.GameOptions;
+import net.minecraft.client.util.Session;
 import net.minecraft.client.world.ClientWorld;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -53,6 +55,10 @@ public class MinecraftClientMixin implements AxoMinecraftClient{
 	@Shadow
 	public GameOptions options;
 
+	@Shadow
+	@Final
+	private Session session;
+
 	@Override
 	public@Nullable AxoPlayer br$getPlayer() {
 		return player;
@@ -72,5 +78,10 @@ public class MinecraftClientMixin implements AxoMinecraftClient{
 
 	public AxoClientKeybinds br$getKeybinds() {
 		return options;
+	}
+
+	@Override
+	public AxoSession br$getSession() {
+		return new AxoSession(session.getUsername(), session.getUuid(), session.getAccessToken());
 	}
 }
