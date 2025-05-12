@@ -28,6 +28,7 @@ import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
 import io.github.axolotlclient.bridge.key.AxoClientKeybinds;
 import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.world.AxoWorld;
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -37,11 +38,11 @@ public interface AxoMinecraftClient {
 		return PlatformImplInternal.getMinecraftClientInstance();
 	}
 
-    static int getCurrentFps() {
-        return PlatformImplInternal.getCurrentFps();
-    }
+	static int getCurrentFps() {
+		return PlatformImplInternal.getCurrentFps();
+	}
 
-    @Contract(pure = true)
+	@Contract(pure = true)
 	@Nullable
 	default AxoPlayer br$getPlayer() {
 		throw BridgeUtil.noImpl();
@@ -64,6 +65,14 @@ public interface AxoMinecraftClient {
 	}
 
 	default AxoSession br$getSession() {
+		throw BridgeUtil.noImpl();
+	}
+
+	default String br$getServerAddress() {
+		throw BridgeUtil.noImpl();
+	}
+
+	default boolean br$isConnectedToServer() {
 		throw BridgeUtil.noImpl();
 	}
 }

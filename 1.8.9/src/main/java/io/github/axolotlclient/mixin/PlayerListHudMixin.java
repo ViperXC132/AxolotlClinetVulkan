@@ -22,6 +22,9 @@
 
 package io.github.axolotlclient.mixin;
 
+import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -208,7 +211,9 @@ public abstract class PlayerListHudMixin extends GuiElement {
 			return;
 		}
 
-		game.renderCustomScoreboardObjective(playerEntry.getProfile().getName(), objective, y, endX);
+		game.renderCustomScoreboardObjective(
+			AxoRenderContextImpl.getInstance(), playerEntry.getProfile().getName(),
+			objective.getScoreboard().getScore(player, objective).get(), y, endX);
 		ci.cancel();
 
 
@@ -247,16 +252,17 @@ public abstract class PlayerListHudMixin extends GuiElement {
 		cir.setReturnValue(player.getTabListDisplay());
 	}
 
+	@SuppressWarnings("unchecked")
 	@ModifyVariable(method = "render", at = @At(value = "INVOKE_ASSIGN", target = "Lcom/google/common/collect/Ordering;sortedCopy(Ljava/lang/Iterable;)Ljava/util/List;", remap = false))
 	public List<PlayerInfo> axolotlclient$overrideSortedPlayers(List<PlayerInfo> original) {
 		if (!BedwarsMod.getInstance().inGame()) {
 			return original;
 		}
-		List<PlayerInfo> players = BedwarsMod.getInstance().getGame().get().getTabPlayerList(original);
+		List<? super PlayerInfo> players = BedwarsMod.getInstance().getGame().get().getTabPlayerList(Collections.unmodifiableList(original));
 		if (players == null) {
 			return original;
 		}
-		return players;
+		return (List<PlayerInfo>) players;
 	}
 
 	@Inject(method = "setHeader", at = @At("HEAD"), cancellable = true)
@@ -264,7 +270,7 @@ public abstract class PlayerListHudMixin extends GuiElement {
 		if (!BedwarsMod.getInstance().inGame()) {
 			return;
 		}
-		this.header = BedwarsMod.getInstance().getGame().get().getTopBarText();
+		this.header = (Text) BedwarsMod.getInstance().getGame().get().getTopBarText();
 		ci.cancel();
 	}
 
@@ -273,7 +279,7 @@ public abstract class PlayerListHudMixin extends GuiElement {
 		if (!BedwarsMod.getInstance().inGame()) {
 			return;
 		}
-		this.footer = BedwarsMod.getInstance().getGame().get().getBottomBarText();
+		this.footer = (Text) BedwarsMod.getInstance().getGame().get().getBottomBarText();
 		ci.cancel();
 	}
 }

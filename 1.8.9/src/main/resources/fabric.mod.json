@@ -75,6 +75,12 @@
 			],
 			"net/minecraft/unmapped/C_1331819": [
 				"io/github/axolotlclient/bridge/key/AxoClientKeybinds"
+			],
+			"net/minecraft/unmapped/C_9550253": [
+				"io/github/axolotlclient/bridge/util/AxoText"
+			],
+			"net/minecraft/unmapped/C_3543146": [
+				"io/github/axolotlclient/bridge/AxoPlayerProfile"
 			]
 		},
 		"depends": {

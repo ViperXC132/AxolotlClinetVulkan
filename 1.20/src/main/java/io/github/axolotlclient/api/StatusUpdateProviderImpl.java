@@ -22,13 +22,13 @@
 
 package io.github.axolotlclient.api;
 
+import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import java.util.Arrays;
 import java.util.Optional;
 
 import com.google.gson.JsonObject;
 import io.github.axolotlclient.api.requests.StatusUpdate;
 import io.github.axolotlclient.api.util.StatusUpdateProvider;
-import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import io.github.axolotlclient.modules.mcci.MccIslandMods;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;

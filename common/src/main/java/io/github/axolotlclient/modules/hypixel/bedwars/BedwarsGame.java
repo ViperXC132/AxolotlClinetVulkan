@@ -26,7 +26,9 @@ import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.AxoPlayerProfile;
+import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hypixel.bedwars.upgrades.BedwarsTeamUpgrades;
 import io.github.axolotlclient.util.ClientColors;
@@ -435,9 +437,9 @@ public class BedwarsGame {
 		return me;
 	}
 
-	/*
-	public String getLevelHead(ClientPlayerEntity entity) {
-		BedwarsPlayer player = getPlayer(entity.getUuid()).orElse(null);
+
+	public String getLevelHead(AxoPlayer entity) {
+		BedwarsPlayer player = getPlayer(entity.br$getUuid()).orElse(null);
 		if (player == null) {
 			return null;
 		}
@@ -449,7 +451,7 @@ public class BedwarsGame {
 		return mode.apply(stats);
 	}
 
-	public void renderCustomScoreboardObjective(String playerName, ScoreboardObjective objective, int y, int endX) {
+	public void renderCustomScoreboardObjective(AxoRenderContext context, String playerName, int objectiveValue, int y, int endX) {
 		BedwarsPlayer bedwarsPlayer = getPlayer(playerName).orElse(null);
 		if (bedwarsPlayer == null) {
 			return;
@@ -461,22 +463,23 @@ public class BedwarsGame {
 			if (bedwarsPlayer.isDisconnected()) {
 				return;
 			}
-			int tickTillLive = Math.max(0, bedwarsPlayer.getTickAlive() - mc.gui.getTicks());
+			int tickTillLive = Math.max(0, bedwarsPlayer.getTickAlive() - /*mc.gui.getTicks()*/ 0);
 			float secondsTillLive = tickTillLive / 20f;
 			render = String.format("%.1f", secondsTillLive) + "s";
 			color = new Color(200, 200, 200).toInt();
 		} else {
-			int health = objective.getScoreboard().getScore(playerName, objective).get();
+			int health = objectiveValue;
 			color = ClientColors.blend(new Color(255, 255, 255), new Color(215, 0, 64), (int) (1 - (health / 20f))).toInt();
 			render = String.valueOf(health);
 		}
 		// Health
-		/*
-		mc.text.drawWithShadow(
+
+		context.br$drawString(
 			render,
-			(float) (endX - mc.textRenderer.getWidth(render)),
-			(float) y,
-			color
+			(endX - context.br$getFont().br$getWidth(render)),
+			y,
+			color,
+			true
 		);
-	}*/
+	}
 }

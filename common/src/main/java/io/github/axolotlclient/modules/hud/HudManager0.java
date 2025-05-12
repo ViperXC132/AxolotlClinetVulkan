@@ -54,6 +54,7 @@ import io.github.axolotlclient.modules.hud.gui0.hud.simple.SpeedHud;
 import io.github.axolotlclient.modules.hud.gui0.hud.simple.TPSHud;
 import io.github.axolotlclient.modules.hud.gui0.hud.simple.ToggleSprintHud;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
+import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.util.GsonHelper;
 import io.github.axolotlclient.util.options.GenericOption;
 import java.io.IOException;
@@ -111,6 +112,9 @@ public class HudManager0 extends AbstractModule0 {
 		add(new MouseMovementHud());
 		add(new ArmorHud());
 		add(new ArrowHud());
+
+		entries.put(BedwarsMod.getInstance().getUpgradesOverlay().getId(), BedwarsMod.getInstance().getUpgradesOverlay());
+		entries.put(BedwarsMod.getInstance().getResourceOverlay().getId(), BedwarsMod.getInstance().getResourceOverlay());
 
 		entries.values().forEach(HudEntry::init);
 		refreshAllBounds();

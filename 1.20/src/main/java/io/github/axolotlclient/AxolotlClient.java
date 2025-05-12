@@ -24,6 +24,7 @@ package io.github.axolotlclient;
 
 import io.github.axolotlclient.bridge.impl.Bridge;
 import io.github.axolotlclient.modules.hud.HudManager0;
+import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +41,6 @@ import io.github.axolotlclient.modules.blur.MenuBlur;
 import io.github.axolotlclient.modules.blur.MotionBlur;
 import io.github.axolotlclient.modules.freelook.Freelook;
 import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import io.github.axolotlclient.modules.particles.Particles;
 import io.github.axolotlclient.modules.renderOptions.BeaconBeam;
 import io.github.axolotlclient.modules.rpc.DiscordRPC;

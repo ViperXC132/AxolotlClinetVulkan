@@ -23,6 +23,7 @@
 package io.github.axolotlclient.bridge.mixin.world;
 
 import io.github.axolotlclient.bridge.entity.AxoEntity;
+import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.world.AxoWorld;
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +45,7 @@ public abstract class WorldMixin implements AxoWorld, EntityView {
 	}
 
 	@Override
-	public List<? extends AxoEntity> br$getPlayers() {
+	public List<? extends AxoPlayer> br$getPlayers() {
 		return Collections.unmodifiableList(getPlayers());
 	}
 }

@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.mixin;
 
+import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import java.util.Objects;
 import java.util.function.Supplier;
 
@@ -33,7 +34,6 @@ import io.github.axolotlclient.api.ChatsSidebar;
 import io.github.axolotlclient.api.FriendsScreen;
 import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
-import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.GameMenuScreen;
@@ -92,7 +92,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 	private ButtonWidget.PressAction axolotlclient$clearFeatureRestrictions(ButtonWidget.PressAction onPress) {
 		return (buttonWidget) -> {
 			if (Objects.equals(HypixelMods.getInstance().cacheMode.get(),
-				HypixelMods.HypixelCacheMode.ON_CLIENT_DISCONNECT)) {
+				HypixelMods.HypixelApiCacheMode.ON_CLIENT_DISCONNECT)) {
 				HypixelAbstractionLayer.clearPlayerData();
 			}
 			onPress.onPress(buttonWidget);

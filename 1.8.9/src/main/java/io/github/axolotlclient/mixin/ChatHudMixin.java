@@ -81,7 +81,7 @@ public abstract class ChatHudMixin {
 		if (hud.isEnabled()) {
 			hud.resetAnimation();
 		}
-		return NickHider.getInstance().editMessage(message);
+		return (Text) NickHider.getInstance().editMessage(message);
 	}
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/chat/ChatGui;fill(IIIII)V", ordinal = 0))
