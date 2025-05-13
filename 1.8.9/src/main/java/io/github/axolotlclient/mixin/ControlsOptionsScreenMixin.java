@@ -23,7 +23,6 @@
 package io.github.axolotlclient.mixin;
 
 import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import net.minecraft.client.gui.screen.options.ControlsOptionsScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import org.spongepowered.asm.mixin.Mixin;
@@ -36,8 +35,8 @@ public abstract class ControlsOptionsScreenMixin {
 
 	@Inject(method = "buttonClicked", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;openScreen(Lnet/minecraft/client/gui/screen/Screen;)V"))
 	public void axolotlclient$updateKeystroke(ButtonWidget button, CallbackInfo ci) {
-		KeystrokeHud hud = (KeystrokeHud) HudManager.getInstance().get(KeystrokeHud.ID);
+		/*TODO KeystrokeHud hud = (KeystrokeHud) HudManager.getInstance().get(KeystrokeHud.ID);
 		if (hud.isEnabled())
-			hud.setKeystrokes();
+			hud.setKeystrokes();*/
 	}
 }

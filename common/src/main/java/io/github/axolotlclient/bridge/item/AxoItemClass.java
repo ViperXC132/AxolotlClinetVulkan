@@ -23,5 +23,5 @@
 package io.github.axolotlclient.bridge.item;
 
 public enum AxoItemClass {
-	BOW
+	RANGED_WEAPON
 }

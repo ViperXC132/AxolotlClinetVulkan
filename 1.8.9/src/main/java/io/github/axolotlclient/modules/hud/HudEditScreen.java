@@ -23,6 +23,7 @@
 package io.github.axolotlclient.modules.hud;
 
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
+import io.github.axolotlclient.modules.hud.gui0.component.HudEntry;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +32,6 @@ import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.util.ConfigStyles;
-import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
 import io.github.axolotlclient.modules.hud.snapping.SnappingHelper;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
@@ -89,7 +89,7 @@ public class HudEditScreen extends Screen {
 			bounds.remove(current.getTrueBounds());
 			snap = new SnappingHelper(bounds, current.getTrueBounds());
 		} else if (snapping.get() && current0 != null) {
-			List<Rectangle> bounds = HudManager0.getInstance().getAllBounds();
+			List<Rectangle> bounds = HudManagerCommon.getInstance().getAllBounds();
 			bounds.remove(current0.getTrueBounds());
 			snap = new SnappingHelper(bounds, current0.getTrueBounds());
 		}  else if (snap != null) {
@@ -112,15 +112,15 @@ public class HudEditScreen extends Screen {
 		{
 			Optional<HudEntry> entry = HudManager.getInstance().getEntryXY(mouseX, mouseY);
 			entry.ifPresent(abstractHudEntry -> abstractHudEntry.setHovered(true));
-			HudManager.getInstance().renderPlaceholder(delta);
+			HudManager.getInstance().renderPlaceholder(AxoRenderContextImpl.getInstance(), delta);
 			if (mouseDown && snap != null) {
 				snap.renderSnaps();
 			}
 		}
 
-		final var entry = HudManager0.getInstance().getEntryXY(mouseX, mouseY);
+		final var entry = HudManagerCommon.getInstance().getEntryXY(mouseX, mouseY);
 		entry.ifPresent(abstractHudEntry -> abstractHudEntry.setHovered(true));
-		HudManager0.getInstance().renderPlaceholder(AxoRenderContextImpl.getInstance(), delta);
+		HudManagerCommon.getInstance().renderPlaceholder(AxoRenderContextImpl.getInstance(), delta);
 		if (mouseDown && snap != null) {
 			snap.renderSnaps();
 		}
@@ -151,7 +151,7 @@ public class HudEditScreen extends Screen {
 			}
 		}
 
-		final var entry = HudManager0.getInstance().getEntryXY(mouseX, mouseY);
+		final var entry = HudManagerCommon.getInstance().getEntryXY(mouseX, mouseY);
 		if (button == 0) {
 			mouseDown = true;
 			if (entry.isPresent()) {

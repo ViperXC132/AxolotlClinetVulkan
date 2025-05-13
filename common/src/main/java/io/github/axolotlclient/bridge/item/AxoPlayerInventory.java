@@ -30,6 +30,10 @@ public interface AxoPlayerInventory {
 		throw BridgeUtil.noImpl();
 	}
 
+	default AxoItemStack br$getOffHand() {
+		throw BridgeUtil.noImpl();
+	}
+
 	default List<? extends AxoItemStack> br$getItems() {
 		throw BridgeUtil.noImpl();
 	}

@@ -33,7 +33,7 @@ public class ItemMixin implements AxoItem {
 	@Override
 	public boolean br$is(AxoItemClass itemClass) {
 		return switch (itemClass) {
-			case BOW -> ((Item) (Object) this) instanceof BowItem;
+			case RANGED_WEAPON -> ((Item) (Object) this) instanceof BowItem;
 		};
 	}
 }

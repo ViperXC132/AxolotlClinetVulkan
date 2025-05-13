@@ -22,6 +22,11 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.modules.hud.gui0.component.DynamicallyPositionable;
+import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions0;
 import java.util.List;
 
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -29,10 +34,6 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
-import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
-import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
-import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.util.ClientColors;
 import lombok.RequiredArgsConstructor;
@@ -57,14 +58,16 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 	private final BooleanOption text = new BooleanOption("text", true);
 	private final BooleanOption bar = new BooleanOption("bar", true);
 	// TODO custom color
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(AnchorPoint.TOP_MIDDLE);
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions0.getAnchorPoint(AnchorPoint.TOP_MIDDLE);
+
+	private final Minecraft client = (Minecraft) super.client;
 
 	public BossBarHud() {
 		super(184, 24, false);
 	}
 
 	@Override
-	public void renderComponent(float delta) {
+	public void renderComponent(AxoRenderContext context, float delta) {
 		GlStateManager.enableAlphaTest();
 		DrawPosition pos = getPos();
 		if (BossBar.name != null && BossBar.timer > 0) {
@@ -73,11 +76,11 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 			if (bar.get()) {
 				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				//GlStateManager.color4f(barColor.get().getRed(), barColor.get().getGreen(), barColor.get().getBlue(), barColor.get().getAlpha());
-				drawTexture(pos.x, pos.y + 12, 0, 74, 182, 5);
-				drawTexture(pos.x, pos.y + 12, 0, 74, 182, 5);
+				// drawTexture(pos.x, pos.y + 12, 0, 74, 182, 5);
+				// drawTexture(pos.x, pos.y + 12, 0, 74, 182, 5);
 				if (BossBar.health * 183F > 0) {
 					//GlStateManager.color4f(barColor.get().getRed(), barColor.get().getGreen(), barColor.get().getBlue(), barColor.get().getAlpha());
-					drawTexture(pos.x, pos.y + 12, 0, 79, (int) (BossBar.health * 183F), 5);
+					// drawTexture(pos.x, pos.y + 12, 0, 79, (int) (BossBar.health * 183F), 5);
 				}
 			}
 
@@ -92,14 +95,9 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 	}
 
 	@Override
-	public void renderPlaceholderComponent(float delta) {
+	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
 		DrawPosition pos = getPos();
 		placeholder.render(pos.x, pos.y + 14);
-	}
-
-	@Override
-	public boolean movable() {
-		return true;
 	}
 
 	@Override

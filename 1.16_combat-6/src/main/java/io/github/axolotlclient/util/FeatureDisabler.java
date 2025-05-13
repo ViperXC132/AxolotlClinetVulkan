@@ -22,7 +22,7 @@
 
 package io.github.axolotlclient.util;
 
-import io.github.axolotlclient.modules.hud.HudManager0;
+import io.github.axolotlclient.modules.hud.HudManagerCommon;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
@@ -63,7 +63,7 @@ public class FeatureDisabler {
 		setServers(AxolotlClient.config().fullBright, NONE, "gommehd");
 		setServers(AxolotlClient.config().lowFire, NONE, "gommehd");
 		setServers(Freelook.getInstance().enabled, () -> Freelook.getInstance().needsDisabling(), "hypixel", "mineplex", "gommehd", "nucleoid");
-		setServers(((ToggleSprintHud) HudManager0.getInstance().get(ToggleSprintHud.ID)).toggleSneak, NONE, "hypixel");
+		setServers(((ToggleSprintHud) HudManagerCommon.getInstance().get(ToggleSprintHud.ID)).toggleSneak, NONE, "hypixel");
 
 		ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
 			if (handler.getConnection() != null) {

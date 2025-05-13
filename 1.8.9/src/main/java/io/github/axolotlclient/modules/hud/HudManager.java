@@ -22,24 +22,10 @@
 
 package io.github.axolotlclient.modules.hud;
 
-import io.github.axolotlclient.modules.AbstractModule;
-import java.util.*;
-import java.util.stream.Collectors;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 
-import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
-import io.github.axolotlclient.modules.hud.gui.AbstractHudEntry;
-import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
-import io.github.axolotlclient.modules.hud.gui.hud.*;
-import io.github.axolotlclient.modules.hud.gui.hud.item.ItemUpdateHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
-import io.github.axolotlclient.modules.hud.util.Rectangle;
-import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.options.KeyBinding;
-import net.minecraft.resource.Identifier;
-import net.ornithemc.osl.keybinds.api.KeyBindingEvents;
-import org.lwjgl.input.Keyboard;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
@@ -47,121 +33,25 @@ import org.lwjgl.input.Keyboard;
  *
  * @license GPL-3.0
  */
+public class HudManager extends HudManagerCommon {
+	@Getter
+	private final static HudManager instance = new HudManager();
 
-public class HudManager extends AbstractModule {
-
-	private final static HudManager INSTANCE = new HudManager();
-	static KeyBinding key = new KeyBinding("key.openHud", Keyboard.KEY_RSHIFT, "category.axolotlclient");
-	private final OptionCategory hudCategory = OptionCategory.create("hud");
-	private final Map<Identifier, HudEntry> entries;
-
-	private HudManager() {
-		this.entries = new LinkedHashMap<>();
+	@Override
+	protected void openScreen() {
+		Minecraft.getInstance().openScreen(new HudEditScreen());
 	}
 
-	public static HudManager getInstance() {
-		return INSTANCE;
+	@Override
+	protected void addExtraHud() {
 	}
 
-	public void init() {
-		KeyBindingEvents.REGISTER_KEYBINDS.register(r -> r.register(key));
-
-		AxolotlClient.config().addCategory(hudCategory);
-
-		add(new PotionsHud());
-		add(new KeystrokeHud());
-		add(new IPHud());
-		add(new ScoreboardHud());
-		add(new CrosshairHud());
-		add(new ActionBarHud());
-		add(new BossBarHud());
-		add(new ItemUpdateHud());
-		add(new PackDisplayHud());
-		add(new HotbarHUD());
-		add(new PlayerHud());
-		add(new ChatHud());
-		add(new DebugCountersHud());
-
-		entries.values().forEach(HudEntry::init);
-		refreshAllBounds();
-	}
-
-	public void tick() {
-		if (key.isPressed())
-			Minecraft.getInstance().openScreen(new HudEditScreen());
-		entries.values().stream().filter(hudEntry -> hudEntry.isEnabled() && hudEntry.tickable())
-			.forEach(HudEntry::tick);
-	}
-
-	public HudManager add(AbstractHudEntry entry) {
-		entries.put(entry.getId(), entry);
-		hudCategory.add(entry.getAllOptions());
-		return this;
-	}
-
-	public void refreshAllBounds() {
-		for (HudEntry entry : getEntries()) {
-			entry.onBoundsUpdate();
+	@Override
+	public void render(AxoRenderContext context, float delta) {
+		final var mc = ((Minecraft) client);
+		mc.profiler.push("Hud render");
+		if(!(mc.screen instanceof HudEditScreen)) {
+			super.render(context, delta);
 		}
-	}
-
-	public List<HudEntry> getEntries() {
-		if (!entries.isEmpty()) {
-			return new ArrayList<>(entries.values());
-		}
-		return new ArrayList<>();
-	}
-
-	public HudEntry get(Identifier identifier) {
-		return entries.get(identifier);
-	}
-
-	public void render(Minecraft client, float delta) {
-		client.profiler.push("Hud Modules");
-		if (!(client.screen instanceof HudEditScreen)) {
-			for (HudEntry hud : getEntries()) {
-				if (hud.isEnabled() && (!client.options.debugEnabled || hud.overridesF3())) {
-					client.profiler.push(hud.getName());
-					hud.render(delta);
-					client.profiler.pop();
-				}
-			}
-		}
-		client.profiler.pop();
-	}
-
-	public Optional<HudEntry> getEntryXY(int x, int y) {
-		for (HudEntry entry : getMoveableEntries()) {
-			Rectangle bounds = entry.getTrueBounds();
-			if (bounds.x() <= x && bounds.x() + bounds.width() >= x && bounds.y() <= y
-				&& bounds.y() + bounds.height() >= y) {
-				return Optional.of(entry);
-			}
-		}
-		return Optional.empty();
-	}
-
-	public List<HudEntry> getMoveableEntries() {
-		if (!entries.isEmpty()) {
-			return entries.values().stream().filter((entry) -> entry.isEnabled() && entry.movable())
-				.collect(Collectors.toList());
-		}
-		return new ArrayList<>();
-	}
-
-	public void renderPlaceholder(float delta) {
-		for (HudEntry hud : getEntries()) {
-			if (hud.isEnabled()) {
-				hud.renderPlaceholder(delta);
-			}
-		}
-	}
-
-	public List<Rectangle> getAllBounds() {
-		ArrayList<Rectangle> bounds = new ArrayList<>();
-		for (HudEntry entry : getMoveableEntries()) {
-			bounds.add(entry.getTrueBounds());
-		}
-		return bounds;
 	}
 }

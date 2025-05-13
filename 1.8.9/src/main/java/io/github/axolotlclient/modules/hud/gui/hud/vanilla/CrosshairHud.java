@@ -22,6 +22,13 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 
+import io.github.axolotlclient.bridge.AxoMinecraftClient;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.modules.hud.gui0.component.DynamicallyPositionable;
+import io.github.axolotlclient.modules.hud.gui0.entry.AbstractHudEntry;
+import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import java.util.List;
 
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -31,9 +38,6 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
-import io.github.axolotlclient.modules.hud.gui.AbstractHudEntry;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
-import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.RenderUtil;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.Util;
@@ -42,7 +46,6 @@ import net.minecraft.block.EnderChestBlock;
 import net.minecraft.block.HopperBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
-import net.minecraft.resource.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.HitResult;
 import net.minecraft.world.World;
@@ -56,7 +59,7 @@ import net.minecraft.world.World;
 
 public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositionable {
 
-	public static final Identifier ID = new Identifier("kronhud", "crosshairhud");
+	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "crosshairhud");
 
 	private final EnumOption<Crosshair> type = new EnumOption<>("crosshair_type", Crosshair.class, Crosshair.CROSS);
 	private final BooleanOption showInF5 = new BooleanOption("showInF5", false);
@@ -84,18 +87,20 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},});
 
+	private final Minecraft client = (Minecraft) super.client;
+
 	public CrosshairHud() {
 		super(15, 15);
 	}
 
 	@Override
-	public boolean movable() {
-		return false;
+	public AxoIdentifier getId() {
+		return ID;
 	}
 
 	@Override
-	public Identifier getId() {
-		return ID;
+	public boolean movable() {
+		return false;
 	}
 
 	@Override
@@ -128,14 +133,14 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 	}
 
 	@Override
-	public void render(float delta) {
+	public void render(AxoRenderContext context, float delta) {
 		if (!(client.options.perspective == 0) && !showInF5.get())
 			return;
 
 		GlStateManager.enableAlphaTest();
 
 		GlStateManager.pushMatrix();
-		scale();
+		scale(context);
 		Color color = getColor();
 		GlStateManager.color4f((float) color.getRed() / 255, (float) color.getGreen() / 255,
 			(float) color.getBlue() / 255, 1F);
@@ -161,7 +166,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 				(int) (((Util.getWindow().getScaledHeight() / getScale()) - 14) / 2), 0, 0, 16, 16);
 		} else if (type.get().equals(Crosshair.CUSTOM)) {
 			Util.bindTexture(customTextureGraphics);
-			drawTexture(x + (width / 2) - (15 / 2), y + height / 2 - 15 / 2 - 1, 0, 0, 15, 15, 15, 15);
+			DrawUtil.drawTexture(x + (width / 2) - (15 / 2), y + height / 2 - 15 / 2 - 1, 0, 0, 15, 15, 15, 15);
 		}
 		GlStateManager.color4f(1, 1, 1, 1);
 		GlStateManager.blendFuncSeparate(770, 771, 1, 0);
@@ -190,7 +195,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 	}
 
 	@Override
-	public void renderPlaceholder(float delta) {
+	public void renderPlaceholder(AxoRenderContext context, float delta) {
 		// Shouldn't need this...
 	}
 

@@ -22,18 +22,21 @@
 
 package io.github.axolotlclient.modules.hud.gui0.hud.item;
 
-import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.bridge.entity.AxoPlayer;
+import io.github.axolotlclient.bridge.item.AxoItem;
 import io.github.axolotlclient.bridge.item.AxoItemClass;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoItems;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
-import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.util.ItemUtil;
 import java.util.List;
+
+import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.modules.hud.util.DrawPosition;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
@@ -41,50 +44,54 @@ import java.util.List;
  *
  * @license GPL-3.0
  */
+
 public class ArrowHud extends TextHudEntry {
-	private static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "arrowhud");
-	private static final AxoItemStack ITEM = AxoItemStack.of(AxoItems.ARROW);
+
+	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "arrowhud");
+	private static final List<AxoItem> ARROW_TYPES = Stream.of(
+		AxoItems.ARROW,
+		AxoItems.TIPPED_ARROW,
+		AxoItems.SPECTRAL_ARROW
+	).filter(Objects::nonNull).toList();
+	private static final AxoItemStack DUMMY = AxoItemStack.of(AxoItems.ARROW, 1);
+
 	private final BooleanOption dynamic = new BooleanOption("dynamic", false);
+	private final BooleanOption allArrowTypes = new BooleanOption("allArrowTypes", false);
+
 	private int arrows = 0;
+	private AxoItemStack currentArrow = AxoItemStack.of(AxoItems.ARROW);
 
 	public ArrowHud() {
 		super(20, 30, true);
 	}
 
 	@Override
-	public void render(AxoRenderContext context, float delta) {
-		if (dynamic.get()) {
-			AxoPlayer player = client.br$getPlayer();
-			if (player == null) {
-				return;
-			}
+	public void render(AxoRenderContext graphics, float delta) {
+		final var player = client.br$getPlayer();
 
-			if(!player.br$getInventory().br$getMainHand().br$getItem().br$is(AxoItemClass.BOW)) {
+		if (dynamic.get() && player != null) {
+			final var mainHand = player.br$getInventory().br$getMainHand().br$getItem();
+			final var offHand = player.br$getInventory().br$getOffHand().br$getItem();
+
+			if (!(mainHand.br$is(AxoItemClass.RANGED_WEAPON) || offHand.br$is(AxoItemClass.RANGED_WEAPON))) {
 				return;
 			}
 		}
-		super.render(context, delta);
+		super.render(graphics, delta);
 	}
 
-	private void doRender(AxoRenderContext context, int count) {
+	@Override
+	public void renderComponent(AxoRenderContext graphics, float delta) {
 		DrawPosition pos = getPos();
-		context.br$drawCenteredString(
-			String.valueOf(count), pos.x() + getWidth() / 2,
-			pos.y() + getHeight() - 10,
-			textColor.get().toInt(),
-			shadow.get()
-		);
-		context.br$renderGuiItemModel(ITEM, pos.x() + 2, pos.y() + 2);
+		graphics.br$renderGuiItemModel(currentArrow, pos.x() + 2, pos.y() + 2);
+		graphics.br$renderGuiItemOverlay(currentArrow, pos.x() + 2, pos.y() + 2, String.valueOf(arrows));
 	}
 
 	@Override
-	public void renderComponent(AxoRenderContext context,float delta) {
-		doRender(context, arrows);
-	}
-
-	@Override
-	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
-		doRender(context, 64);
+	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
+		DrawPosition pos = getPos();
+		graphics.br$renderGuiItemModel(DUMMY, pos.x() + 2, pos.y() + 2);
+		graphics.br$renderGuiItemOverlay(DUMMY, pos.x() + 2, pos.y() + 2, "64");
 	}
 
 	@Override
@@ -94,13 +101,27 @@ public class ArrowHud extends TextHudEntry {
 
 	@Override
 	public void tick() {
-		arrows = ItemUtil.getTotal(client, AxoItems.ARROW);
+		if (client.br$getPlayer() != null) {
+			final var projectileItem = client.br$getPlayer().br$getProjectileItem();
+			if (!allArrowTypes.get() && projectileItem != null) {
+				currentArrow = AxoItemStack.of(projectileItem);
+			} else {
+				currentArrow = AxoItemStack.of(AxoItems.ARROW);
+			}
+		}
+
+		if (allArrowTypes.get()) {
+			arrows = ARROW_TYPES.stream().mapToInt(x -> ItemUtil.getTotal(client, x)).sum();
+		} else {
+			arrows = ItemUtil.getTotal(client, currentArrow.br$getItem());
+		}
 	}
 
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
 		options.add(dynamic);
+		options.add(allArrowTypes);
 		return options;
 	}
 

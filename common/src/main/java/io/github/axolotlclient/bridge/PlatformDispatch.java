@@ -20,14 +20,34 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.bridge.key;
+package io.github.axolotlclient.bridge;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.bridge.render.AxoSprite;
+import io.github.axolotlclient.modules.hud.HudManagerCommon;
+import org.apache.commons.lang3.mutable.MutableInt;
 
-public class AxoKeys {
-	public static final AxoKey KEY_K = BridgeUtil.noImplValue();
-	public static final AxoKey KEY_I = BridgeUtil.noImplValue();
-	public static final AxoKey MOUSE_LEFT = BridgeUtil.noImplValue();
-	public static final AxoKey MOUSE_RIGHT = BridgeUtil.noImplValue();
-	public static final AxoKey KEY_RSHIFT = BridgeUtil.noImplValue();
+/**
+ * Logic to dispatch to the platform implementation whenever it is not worth it to try and abstract things in a more
+ * granular manner.
+ *
+ * TODO: it may be more advisable to not route everything through a trampoline class, instead overwriting the callee
+ */
+public class PlatformDispatch {
+	public static void pingHud$updatePing(MutableInt currentServerPing) {
+		throw BridgeUtil.noImpl();
+	}
+
+	public static AxoSprite.Dynamic ipHud$getServerIcon() {
+		throw BridgeUtil.noImpl();
+	}
+
+	public static void playerHud$renderPlayer(AxoRenderContext graphics, float i) {
+		throw BridgeUtil.noImpl();
+	}
+
+	public static HudManagerCommon hudManager$getInstance() {
+		throw BridgeUtil.noImpl();
+	}
 }

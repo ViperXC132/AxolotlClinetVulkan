@@ -22,7 +22,7 @@
 
 package io.github.axolotlclient.util;
 
-import io.github.axolotlclient.modules.hud.HudManager0;
+import io.github.axolotlclient.modules.hud.HudManagerCommon;
 import io.github.axolotlclient.modules.hud.gui0.hud.simple.ToggleSprintHud;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +60,7 @@ public class FeatureDisabler {
 		setServers(AxolotlClient.config().lowFire, NONE, "gommehd");
 		setServers(AxolotlClient.config().timeChangerEnabled, NONE, "gommehd");
 		setServers(Freelook.getInstance().enabled, () -> Freelook.getInstance().needsDisabling(), "hypixel", "mineplex", "gommehd", "nucleoid");
-		setServers(((ToggleSprintHud) HudManager0.getInstance().get(ToggleSprintHud.ID)).toggleSneak, NONE, "hypixel");
+		setServers(((ToggleSprintHud) HudManagerCommon.getInstance().get(ToggleSprintHud.ID)).toggleSneak, NONE, "hypixel");
 
 		ClientPlayNetworking.registerListener(channelName.toString().substring(0, 20), (client, handler, buf) -> {
 			List<String> array = (List<String>) GsonHelper.read(buf.readString(32767));

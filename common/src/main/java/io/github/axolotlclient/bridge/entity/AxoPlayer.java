@@ -24,7 +24,9 @@ package io.github.axolotlclient.bridge.entity;
 
 import io.github.axolotlclient.bridge.AxoPlayerProfile;
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.item.AxoItem;
 import io.github.axolotlclient.bridge.item.AxoPlayerInventory;
+import org.jetbrains.annotations.Nullable;
 
 public interface AxoPlayer extends AxoEntity {
 	default AxoPlayerInventory br$getInventory() {
@@ -41,6 +43,11 @@ public interface AxoPlayer extends AxoEntity {
 	}
 
 	default AxoPlayerProfile br$getGameProfile() {
+		throw BridgeUtil.noImpl();
+	}
+
+	@Nullable
+	default AxoItem br$getProjectileItem() {
 		throw BridgeUtil.noImpl();
 	}
 }

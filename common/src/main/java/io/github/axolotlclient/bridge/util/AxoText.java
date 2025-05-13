@@ -28,4 +28,8 @@ public interface AxoText {
 	static AxoText literal(String value) {
 		throw BridgeUtil.noImpl();
 	}
+
+	default String br$getRawString() {
+		throw BridgeUtil.noImpl();
+	}
 }

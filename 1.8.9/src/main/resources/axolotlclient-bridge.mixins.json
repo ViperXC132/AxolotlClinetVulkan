@@ -5,6 +5,7 @@
 	"compatibilityLevel": "JAVA_17",
 	"client": [
 		"MinecraftClientMixin",
+		"PlatformDispatchMixin",
 		"entity.EntityMixin",
 		"entity.PlayerEntityMixin",
 		"internal.PlatformImplInternalMixin",

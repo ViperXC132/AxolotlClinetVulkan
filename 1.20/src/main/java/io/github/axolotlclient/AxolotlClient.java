@@ -23,7 +23,7 @@
 package io.github.axolotlclient;
 
 import io.github.axolotlclient.bridge.impl.Bridge;
-import io.github.axolotlclient.modules.hud.HudManager0;
+import io.github.axolotlclient.modules.hud.HudManagerCommon;
 import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,7 +72,7 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 		registerModule(SkyResourceManager.getInstance());
 		registerModule(Zoom.getInstance());
 		registerModule(HudManager.getInstance());
-		registerModule(HudManager0.getInstance());
+		registerModule(HudManagerCommon.getInstance());
 		registerModule(HypixelMods.getInstance());
 		registerModule(MotionBlur.getInstance());
 		registerModule(MenuBlur.getInstance());

@@ -43,9 +43,9 @@ import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
 import io.github.axolotlclient.util.ThreadExecuter;
 import lombok.Getter;
 
-public class AutoBoopCommon implements AbstractHypixelMod {
+public class AutoBoop implements AbstractHypixelMod {
 	@Getter
-	private static final AutoBoopCommon instance = new AutoBoopCommon();
+	private static final AutoBoop instance = new AutoBoop();
 	private static final Pattern FRIEND_JOINED = Pattern.compile("^Friend > (\\b[A-Za-z0-9_§]{3,16}\\b) joined\\.$");
 
 	public void handleMessage(String message) {

@@ -30,7 +30,7 @@ import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.blur.MenuBlur;
 import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hud.HudManager0;
+import io.github.axolotlclient.modules.hud.HudManagerCommon;
 import io.github.axolotlclient.modules.rpc.DiscordRPC;
 import io.github.axolotlclient.modules.zoom.Zoom;
 import io.github.axolotlclient.util.Util;
@@ -136,7 +136,7 @@ public abstract class MinecraftClientMixin {
 	@Inject(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/texture/TextureManager;close(Lnet/minecraft/resource/Identifier;)V"))
 	private void axolotlclient$onLaunch(CallbackInfo ci) {
 		HudManager.getInstance().refreshAllBounds();
-		HudManager0.getInstance().refreshAllBounds();
+		HudManagerCommon.getInstance().refreshAllBounds();
 		if (!API.getInstance().isSocketConnected() && !Auth.getInstance().getCurrent().isOffline()) {
 			API.getInstance().startup(Auth.getInstance().getCurrent());
 		}
@@ -177,7 +177,7 @@ public abstract class MinecraftClientMixin {
 	public void axolotlclient$onResize(CallbackInfo ci) {
 		Util.window = null;
 		HudManager.getInstance().refreshAllBounds();
-		HudManager0.getInstance().refreshAllBounds();
+		HudManagerCommon.getInstance().refreshAllBounds();
 	}
 
 	@Inject(method = "openScreen", at = @At("HEAD"))

@@ -23,7 +23,7 @@
 package io.github.axolotlclient.modules.hud.gui0.hud.simple;
 
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
-import io.github.axolotlclient.modules.hud.HudManager0;
+import io.github.axolotlclient.modules.hud.HudManagerCommon;
 import io.github.axolotlclient.modules.hud.gui0.entry.SimpleTextHudEntry;
 import java.util.List;
 import java.util.UUID;
@@ -41,8 +41,8 @@ public class CustomHudEntry extends SimpleTextHudEntry {
 	public CustomHudEntry() {
 		this.id = AxoIdentifier.of("axolotlclient", "custom_hud/" + UUID.randomUUID());
 		removeEntry = new GenericOption("custom_hud.remove", "custom_hud.remove.label", () -> {
-			HudManager0.getInstance().removeEntry(this.id);
-			HudManager0.getInstance().saveCustomEntries();
+			HudManagerCommon.getInstance().removeEntry(this.id);
+			HudManagerCommon.getInstance().saveCustomEntries();
 		});
 	}
 

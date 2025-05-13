@@ -150,6 +150,12 @@ public interface AxoRenderContext {
 	default void br$renderGuiItemOverlay(AxoItemStack stack, int x, int y, String countLabel, int textColor, boolean shadow) {
 		throw BridgeUtil.noImpl();
 	}
+
+	@ApiStatus.NonExtendable
+	default void br$renderGuiItemOverlay(AxoItemStack stack, int x, int y, String countLabel) {
+		br$renderGuiItemOverlay(stack, x, y, countLabel, 0xffffffff, true);
+	}
+
 	// misc methods
 	default AxoFont br$getFont() {
 		throw BridgeUtil.noImpl();

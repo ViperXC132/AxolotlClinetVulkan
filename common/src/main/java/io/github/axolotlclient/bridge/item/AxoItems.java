@@ -40,4 +40,6 @@ public class AxoItems {
 	public static final AxoItem DIAMOND_SWORD = BridgeUtil.noImplValue();
 	public static final AxoItem DIAMOND_CHESTPLATE = BridgeUtil.noImplValue();
 	public static final AxoItem DIAMOND_BOOTS = BridgeUtil.noImplValue();
+	public static final AxoItem TIPPED_ARROW = BridgeUtil.noImplValue();
+	public static final AxoItem SPECTRAL_ARROW = BridgeUtil.noImplValue();
 }

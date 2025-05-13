@@ -27,7 +27,10 @@ import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.bridge.Platform;
+import io.github.axolotlclient.bridge.PlatformDispatch;
 import io.github.axolotlclient.bridge.events.Events;
+import io.github.axolotlclient.bridge.key.AxoKeybinding;
+import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.AbstractModule0;
@@ -73,25 +76,21 @@ import java.util.stream.Collectors;
  *
  * @license GPL-3.0
  */
-
-public class HudManager0 extends AbstractModule0 {
+public abstract class HudManagerCommon extends AbstractModule0 {
 	private final static Path CUSTOM_MODULE_SAVE_PATH = AxolotlClientCommon.resolveConfigFile("custom_hud.json");
-	private final static HudManager0 INSTANCE = new HudManager0();
-	//static KeyBinding key = new KeyBinding("key.openHud", Keyboard.KEY_RSHIFT, "category.axolotlclient");
+	private final AxoKeybinding key = AxoKeybinding.create(AxoKeys.KEY_RSHIFT, "key.openHud", "category.axolotlclient");
 	private final OptionCategory hudCategory = OptionCategory.create("hud");
 	private final Map<AxoIdentifier, HudEntry> entries;
 
-	private HudManager0() {
+	public static HudManagerCommon getInstance() {
+		return PlatformDispatch.hudManager$getInstance();
+	}
+
+	protected HudManagerCommon() {
 		this.entries = new LinkedHashMap<>();
 	}
 
-	public static HudManager0 getInstance() {
-		return INSTANCE;
-	}
-
 	public void init() {
-		//	KeyBindingEvents.REGISTER_KEYBINDS.register(r -> r.register(key));
-
 		Platform.getConfig().addCategory(hudCategory);
 
 		add(new ComboHud());
@@ -113,10 +112,13 @@ public class HudManager0 extends AbstractModule0 {
 		add(new ArmorHud());
 		add(new ArrowHud());
 
+		addExtraHud();
+
 		entries.put(BedwarsMod.getInstance().getUpgradesOverlay().getId(), BedwarsMod.getInstance().getUpgradesOverlay());
 		entries.put(BedwarsMod.getInstance().getResourceOverlay().getId(), BedwarsMod.getInstance().getResourceOverlay());
 
 		entries.values().forEach(HudEntry::init);
+
 		refreshAllBounds();
 
 		hudCategory.add(new GenericOption("hud.custom_entry", "hud.custom_entry.add", () -> {
@@ -188,13 +190,16 @@ public class HudManager0 extends AbstractModule0 {
 
 	@Override
 	public void tick() {
-		// if (key.isPressed())
-		//	Minecraft.getInstance().openScreen(new HudEditScreen());
-		entries.values().stream().filter(hudEntry -> hudEntry.isEnabled() && hudEntry.tickable())
+		if (key.br$isPressed()) {
+			openScreen();
+		}
+
+		entries.values().stream()
+			.filter(hudEntry -> hudEntry.isEnabled() && hudEntry.tickable())
 			.forEach(HudEntry::tick);
 	}
 
-	public HudManager0 add(AbstractHudEntry entry) {
+	public HudManagerCommon add(AbstractHudEntry entry) {
 		entries.put(entry.getId(), entry);
 		hudCategory.add(entry.getAllOptions());
 		return this;
@@ -262,4 +267,8 @@ public class HudManager0 extends AbstractModule0 {
 			.map(Positionable::getTrueBounds)
 			.collect(Collectors.toList());
 	}
+
+	protected abstract void openScreen();
+
+	protected abstract void addExtraHud();
 }

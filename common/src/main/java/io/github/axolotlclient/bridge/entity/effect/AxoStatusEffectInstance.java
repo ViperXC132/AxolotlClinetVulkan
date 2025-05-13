@@ -24,6 +24,7 @@ package io.github.axolotlclient.bridge.entity.effect;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
+import io.github.axolotlclient.bridge.render.AxoSprite;
 
 public interface AxoStatusEffectInstance {
 	static AxoStatusEffectInstance create(AxoStatusEffect jumpBoost, int duration) {
@@ -33,4 +34,6 @@ public interface AxoStatusEffectInstance {
 	default void setPermanent(boolean b) {
 		throw BridgeUtil.noImpl();
 	}
+
+	AxoSprite br$getSprite();
 }

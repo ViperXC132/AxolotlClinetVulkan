@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud;
 
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import java.util.List;
 
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -31,9 +33,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.mixin.ChatHudAccessor;
-import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.chat.ChatMessage;
 import net.minecraft.client.gui.screen.ChatScreen;
@@ -65,6 +65,8 @@ public class ChatHud extends TextHudEntry {
 	private long prevMillis = System.currentTimeMillis();
 	public float animationPercent;
 
+	private final Minecraft client = (Minecraft) super.client;
+
 	private void updatePercentage(long diff) {
 		if (percentComplete < 1)
 			percentComplete += 0.004f * diff;
@@ -86,7 +88,7 @@ public class ChatHud extends TextHudEntry {
 	}
 
 	@Override
-	public void render(float delta) {
+	public void render(AxoRenderContext context, float delta) {
 		long current = System.currentTimeMillis();
 		long diff = current - prevMillis;
 		prevMillis = current;
@@ -98,7 +100,7 @@ public class ChatHud extends TextHudEntry {
 
 		if (this.client.options.chatVisibility != PlayerEntity.ChatVisibility.HIDDEN) {
 			GlStateManager.pushMatrix();
-			scale();
+			scale(context);
 			DrawPosition pos = getPos();
 
 			int i = getVisibleLineCount();
@@ -133,7 +135,7 @@ public class ChatHud extends TextHudEntry {
 									if (!isChatFocused()) {
 										bg = bg.withAlpha((int) (bg.getAlpha() * d));
 									}
-									fill(pos.x, y - (9 + lineSpacing.get()), pos.x + l + 4, y,
+									context.br$fillRect(pos.x, y - (9 + lineSpacing.get()), pos.x + l + 4, y,
 										bg.toInt());
 								}
 								String string = chatHudLine.getText().getFormattedString();
@@ -142,7 +144,7 @@ public class ChatHud extends TextHudEntry {
 								if (!isChatFocused()) {
 									text = text.withAlpha((int) (text.getAlpha() * d));
 								}
-								DrawUtil.drawString(string, pos.x, (y - 8),
+								context.br$drawString(string, pos.x, (y - 8),
 									text, shadow.get());
 								GlStateManager.disableAlphaTest();
 								GlStateManager.disableBlend();
@@ -160,7 +162,7 @@ public class ChatHud extends TextHudEntry {
 					if (((ChatHudAccessor) client.gui.getChat()).getMessages()
 						.size() > getVisibleLineCount()) {
 						int height = n * n / r;
-						fillRect(pos.x, y, 2, -height, scrollbarColor.get().toInt());
+						context.br$fillRect(pos.x, y, 2, -height, scrollbarColor.get().toInt());
 					}
 				}
 
@@ -171,11 +173,11 @@ public class ChatHud extends TextHudEntry {
 	}
 
 	@Override
-	public void renderComponent(float delta) {
+	public void renderComponent(AxoRenderContext context, float delta) {
 	}
 
 	@Override
-	public void renderPlaceholderComponent(float delta) {
+	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
 		DrawPosition pos = getPos();
 		if (Minecraft.getInstance().player != null) {
 			client.textRenderer.drawWithShadow("<" + Minecraft.getInstance().player.getDisplayName().getFormattedString()

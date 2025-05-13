@@ -22,7 +22,9 @@
 
 package io.github.axolotlclient.modules.hud.gui.keystrokes;
 
+import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.modules.hud.HudManager;
+import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -31,8 +33,6 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.modules.hud.HudEditScreen;
-import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import io.github.axolotlclient.modules.hud.snapping.SnappingHelper;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
@@ -94,7 +94,7 @@ public class KeystrokePositioningScreen extends Screen {
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef(0, 0, -300);
 		super.renderBackground();
-		HudManager.getInstance().renderPlaceholder(partialTick);
+		HudManager.getInstance().renderPlaceholder(AxoRenderContextImpl.getInstance(), partialTick);
 		GlStateManager.popMatrix();
 		fillGradient(0, 0, this.width, this.height, -1072689136, -804253680);
 	}

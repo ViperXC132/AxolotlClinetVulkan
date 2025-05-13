@@ -29,7 +29,7 @@ import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.Request;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.modules.AbstractModule0;
-import io.github.axolotlclient.modules.hypixel.autoboop.AutoBoopCommon;
+import io.github.axolotlclient.modules.hypixel.autoboop.AutoBoop;
 import io.github.axolotlclient.modules.hypixel.autogg.AutoGG;
 import io.github.axolotlclient.modules.hypixel.autotip.AutoTip;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
@@ -64,7 +64,7 @@ public class HypixelMods extends AbstractModule0 {
 		addSubModule(AutoGG.getInstance());
 		addSubModule(AutoTip.getInstance());
 		addSubModule(NickHider.getInstance());
-		addSubModule(AutoBoopCommon.getInstance());
+		addSubModule(AutoBoop.getInstance());
 		addSubModule(Skyblock.getInstance());
 		addSubModule(BedwarsMod.getInstance());
 
@@ -76,7 +76,7 @@ public class HypixelMods extends AbstractModule0 {
 
 		Events.RECEIVE_CHAT_MESSAGE.register(event -> {
 			// TODO: register in init
-			AutoBoopCommon.getInstance().handleMessage(event.getOriginalMessage());
+			AutoBoop.getInstance().handleMessage(event.getOriginalMessage());
 			HypixelMessages.getInstance().process(removeLobbyJoinMessages, "lobby_join", event);
 		});
 

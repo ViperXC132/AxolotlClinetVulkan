@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud;
 
+import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -30,7 +32,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
@@ -59,7 +61,7 @@ public class PackDisplayHud extends TextHudEntry {
 	}
 
 	@Override
-	public void renderComponent(float f) {
+	public void renderComponent(AxoRenderContext context, float f) {
 		DrawPosition pos = getPos();
 
 		if (widgets.isEmpty())
@@ -104,7 +106,7 @@ public class PackDisplayHud extends TextHudEntry {
 	}
 
 	@Override
-	public void renderPlaceholderComponent(float delta) {
+	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
 		boolean updateBounds = false;
 		if (getHeight() < 18) {
 			setHeight(18);
@@ -162,7 +164,7 @@ public class PackDisplayHud extends TextHudEntry {
 				GlStateManager.bindTexture(texture);
 				GuiElement.drawTexture(x, y, 0, 0, 16, 16, 16, 16);
 			}
-			drawString(name, x + 18, y + 6, textColor.get().toInt(), shadow.get());
+			AxoRenderContextImpl.getInstance().br$drawString(name, x + 18, y + 6, textColor.get().toInt(), shadow.get());
 		}
 	}
 }

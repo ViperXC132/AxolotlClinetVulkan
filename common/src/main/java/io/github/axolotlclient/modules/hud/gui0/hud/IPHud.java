@@ -20,25 +20,22 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.hud.gui.hud;
+package io.github.axolotlclient.modules.hud.gui0.hud;
 
-import java.util.Base64;
-import java.util.List;
-
-import com.google.common.hash.Hashing;
-import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
-import io.github.axolotlclient.AxolotlClientConfig.impl.util.GraphicsImpl;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
-import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
-import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.bridge.PlatformDispatch;
+import io.github.axolotlclient.bridge.events.Events;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.bridge.render.AxoSprite;
+import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.modules.hud.gui0.component.DynamicallyPositionable;
+import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
-import io.github.axolotlclient.util.Util;
-import net.minecraft.resource.Identifier;
-import net.ornithemc.osl.networking.api.client.ClientConnectionEvents;
+import java.util.List;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
@@ -46,44 +43,46 @@ import net.ornithemc.osl.networking.api.client.ClientConnectionEvents;
  *
  * @license GPL-3.0
  */
-
 public class IPHud extends TextHudEntry implements DynamicallyPositionable {
 
-	public static final Identifier ID = new Identifier("kronhud", "iphud");
+	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "iphud");
 	private final BooleanOption showIcon = new BooleanOption("iphud.show_icon", false);
-	private Identifier icon;
+	private AxoSprite.Dynamic sprite;
 	private final IntegerOption height = new IntegerOption("iphud.height", 13, 9, 64);
 	private final EnumOption<AnchorPoint> anchor = new EnumOption<>("anchorpoint", AnchorPoint.class,
 		AnchorPoint.TOP_LEFT);
 
-	@SuppressWarnings("UnstableApiUsage")
 	public IPHud() {
 		super(115, 13, true);
-		ClientConnectionEvents.DISCONNECT.register((minecraft) -> {
-			if (icon != null) {
-				minecraft.getTextureManager().close(icon);
-				icon = null;
+
+		Events.DISCONNECT.register(() -> {
+			if (sprite != null) {
+				sprite.close();
+				sprite = null;
 			}
 		});
-		ClientConnectionEvents.LOGIN.register((minecraft) -> {
+
+		Events.CONNECT.register(() -> {
 			if (showIcon.get()) {
-				if (!minecraft.isInSingleplayer() && minecraft.getCurrentServerEntry() != null) {
-					try {
-						var graphics = new GraphicsImpl(0, 0);
-						graphics.setPixelData(Base64.getDecoder().decode(minecraft.getCurrentServerEntry().getIcon()));
-						icon = Util.getTexture(graphics, "servers/" + Hashing.sha1().hashUnencodedChars(minecraft.getCurrentServerEntry().address) + "/icon");
-					} catch (Exception e) {
-						if (icon != null) {
-							minecraft.getTextureManager().close(icon);
-							icon = null;
-						}
-					}
-				}
+				sprite = PlatformDispatch.ipHud$getServerIcon();
 			}
 		});
 	}
 
-	private void updateSize() {
+	@Override
+	public AxoIdentifier getId() {
+		return ID;
+	}
+
+	public String getValue() {
+		if (client.br$isConnectedToServer() || client.br$getServerAddress() == null) {
+			return "Singleplayer";
+		}
+
+		return client.br$getServerAddress();
+	}
+
+	private void updateSize(AxoRenderContext graphics) {
 		int w = getWidth();
 		int h = getHeight();
 		int hNew = height.get();
@@ -92,7 +91,7 @@ public class IPHud extends TextHudEntry implements DynamicallyPositionable {
 			setHeight(hNew);
 			updated = true;
 		}
-		int req = client.textRenderer.getWidth(getValue()) + 4;
+		int req = graphics.br$getFont().br$getWidth(getValue()) + 4;
 		if (showIcon.get()) {
 			req += getHeight() + 1;
 		}
@@ -106,18 +105,6 @@ public class IPHud extends TextHudEntry implements DynamicallyPositionable {
 	}
 
 	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
-	public String getValue() {
-		if (client.isInSingleplayer() || client.getCurrentServerEntry() == null) {
-			return "Singleplayer";
-		}
-		return client.getCurrentServerEntry().address;
-	}
-
-	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		var options = super.getConfigurationOptions();
 		options.add(showIcon);
@@ -127,24 +114,23 @@ public class IPHud extends TextHudEntry implements DynamicallyPositionable {
 	}
 
 	@Override
-	public void renderComponent(float delta) {
-		updateSize();
+	public void renderComponent(AxoRenderContext graphics, float delta) {
+		updateSize(graphics);
 		DrawPosition pos = getPos();
-		int textX = pos.x() + getWidth() / 2 + 1;
-		if (showIcon.get() && icon != null) {
-			int imageSize = getHeight() - 2;
+		int textX = pos.x() + getWidth() / 2;
+
+		if (showIcon.get() && sprite != null) {
+			int imageSize = getHeight() - 2 + 1;
 			textX += imageSize / 2;
-			client.getTextureManager().bind(icon);
-			GlStateManager.color4f(1, 1, 1, 1);
-			drawTexture(pos.x() + 1, pos.y() + 1, 0, 0, imageSize, imageSize, imageSize, imageSize);
+			graphics.br$drawTexture(pos.x() + 1, pos.y() + 1, imageSize, imageSize, sprite);
 		}
 
-		drawCenteredString(client.textRenderer, getValue(), textX, pos.y() + getHeight() / 2 - client.textRenderer.fontHeight / 2, textColor.get().toInt(), shadow.get());
+		graphics.br$drawCenteredString(getValue(), textX, pos.y() + getHeight() / 2 - client.br$getFont().br$getFontHeight() / 2, textColor.get().toInt(), true);
 	}
 
 	@Override
-	public void renderPlaceholderComponent(float delta) {
-		renderComponent(delta);
+	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
+		renderComponent(graphics, delta);
 	}
 
 	@Override

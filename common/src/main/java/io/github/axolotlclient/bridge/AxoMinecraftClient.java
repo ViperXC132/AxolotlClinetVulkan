@@ -75,4 +75,8 @@ public interface AxoMinecraftClient {
 	default boolean br$isConnectedToServer() {
 		throw BridgeUtil.noImpl();
 	}
+
+	default float br$getTickrate() {
+		throw BridgeUtil.noImpl();
+	}
 }

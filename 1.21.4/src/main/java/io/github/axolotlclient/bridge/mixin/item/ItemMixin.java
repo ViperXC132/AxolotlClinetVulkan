@@ -24,8 +24,8 @@ package io.github.axolotlclient.bridge.mixin.item;
 
 import io.github.axolotlclient.bridge.item.AxoItem;
 import io.github.axolotlclient.bridge.item.AxoItemClass;
-import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ProjectileWeaponItem;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(Item.class)
@@ -33,7 +33,7 @@ public class ItemMixin implements AxoItem {
 	@Override
 	public boolean br$is(AxoItemClass itemClass) {
 		return switch (itemClass) {
-			case BOW -> ((Item) (Object) this) instanceof BowItem;
+			case RANGED_WEAPON -> ((Item) (Object) this) instanceof ProjectileWeaponItem;
 		};
 	}
 }
