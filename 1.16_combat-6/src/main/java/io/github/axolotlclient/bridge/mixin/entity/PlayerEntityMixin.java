@@ -23,21 +23,34 @@
 package io.github.axolotlclient.bridge.mixin.entity;
 
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
+import io.github.axolotlclient.bridge.item.AxoItem;
 import io.github.axolotlclient.bridge.item.AxoPlayerInventory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import net.minecraft.item.RangedWeaponItem;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(PlayerEntity.class)
-public class PlayerEntityMixin implements AxoPlayer {
+public abstract class PlayerEntityMixin implements AxoPlayer {
 	@Final
 	@Shadow
 	public PlayerInventory inventory;
 
+	@Shadow
+	public abstract ItemStack getArrowType(ItemStack stack);
+
 	@Override
 	public AxoPlayerInventory br$getInventory() {
 		return this.inventory;
+	}
+
+	@Override
+	public @Nullable AxoItem br$getProjectileItem() {
+		return getArrowType(Items.BOW.getDefaultStack()).getItem();
 	}
 }

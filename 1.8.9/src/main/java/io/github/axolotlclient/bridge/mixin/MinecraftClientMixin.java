@@ -98,6 +98,6 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 
 	@Override
 	public String br$getServerAddress() {
-		return Optional.of(getCurrentServerEntry()).map(x -> x.address).orElse(null);
+		return Optional.ofNullable(getCurrentServerEntry()).map(x -> x.address).orElse(null);
 	}
 }

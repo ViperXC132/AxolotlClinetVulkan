@@ -55,6 +55,9 @@ public abstract class EntityMixin implements AxoEntity {
 	@Shadow
 	public abstract Vec3d getVelocity();
 
+	@Shadow
+	public float pitch;
+
 	@Override
 	public @Nullable AxoEntity br$getVehicle() {
 		return vehicle;
@@ -78,6 +81,11 @@ public abstract class EntityMixin implements AxoEntity {
 	@Override
 	public float br$getYaw() {
 		return yaw;
+	}
+
+	@Override
+	public float br$getPitch() {
+		return pitch;
 	}
 
 	@Override

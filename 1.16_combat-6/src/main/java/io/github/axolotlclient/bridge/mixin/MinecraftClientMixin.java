@@ -28,10 +28,12 @@ import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.key.AxoClientKeybinds;
 import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.world.AxoWorld;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.world.ClientWorld;
@@ -60,6 +62,13 @@ public abstract class MinecraftClientMixin extends ReentrantThreadExecutor<Runna
 	@Shadow
 	@Final
 	private Session session;
+
+	@Shadow
+	public abstract boolean isInSingleplayer();
+
+	@Shadow
+	@Nullable
+	public abstract ServerInfo getCurrentServerEntry();
 
 	public MinecraftClientMixin(String string) {
 		super(string);
@@ -95,5 +104,15 @@ public abstract class MinecraftClientMixin extends ReentrantThreadExecutor<Runna
 	@Override
 	public AxoSession br$getSession() {
 		return new AxoSession(session.getUsername(), session.getUuid(), session.getAccessToken());
+	}
+
+	@Override
+	public boolean br$isLocalServer() {
+		return isInSingleplayer();
+	}
+
+	@Override
+	public String br$getServerAddress() {
+		return Optional.ofNullable(getCurrentServerEntry()).map(x -> x.address).orElse(null);
 	}
 }

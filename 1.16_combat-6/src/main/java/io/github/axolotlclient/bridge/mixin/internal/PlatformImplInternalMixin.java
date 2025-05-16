@@ -23,14 +23,20 @@
 package io.github.axolotlclient.bridge.mixin.internal;
 
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.BridgeVersion;
+import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffect;
+import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffectInstance;
+import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
+import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
 import io.github.axolotlclient.bridge.item.AxoItem;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.key.AxoKey;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
+import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.bridge.render.AxoWindow;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
@@ -39,6 +45,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
@@ -142,4 +150,31 @@ public class PlatformImplInternalMixin {
     public static AxoIdentifier createIdentifier(String ns, String path) {
         return new Identifier(ns, path);
     }
+
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static AxoSprite getTexture(GraphicsOption option) {
+		return new AxoSpriteImpl.Config(option);
+	}
+
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static AxoSprite createSprite(AxoIdentifier id, int texX, int texY, int width, int height) {
+		return new AxoSpriteImpl.Simple((Identifier) id, texX, texY, width, height);
+	}
+
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static AxoStatusEffectInstance createStatusEffectInstance(AxoStatusEffect effect, int duration) {
+		return new StatusEffectInstance((StatusEffect) effect, duration);
+	}
 }
