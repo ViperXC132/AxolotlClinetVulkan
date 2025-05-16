@@ -86,6 +86,10 @@ public interface Positionable {
 		return 1f;
 	}
 
+	default void setScale(float scale) {
+
+	}
+
 	/**
 	 * Gets the x value that is stored locally. This may not be correct so use {@link #getX()}
 	 *

@@ -118,6 +118,11 @@ public abstract class AbstractHudEntry extends DrawUtil implements HudEntry {
 		return scale.get().floatValue();
 	}
 
+	@Override
+	public void setScale(float scale) {
+		this.scale.set((double) scale);
+	}
+
 	public int getRawX() {
 		return getPos().x();
 	}

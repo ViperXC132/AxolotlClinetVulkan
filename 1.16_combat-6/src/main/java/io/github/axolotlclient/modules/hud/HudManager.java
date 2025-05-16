@@ -250,8 +250,7 @@ public class HudManager extends AbstractModule {
 	public Optional<HudEntry> getEntryXY(int x, int y) {
 		for (HudEntry entry : getMoveableEntries()) {
 			Rectangle bounds = entry.getTrueBounds();
-			if (bounds.x() <= x && bounds.x() + bounds.width() >= x && bounds.y() <= y
-				&& bounds.y() + bounds.height() >= y) {
+			if (bounds.isMouseOver(x, y)) {
 				return Optional.of(entry);
 			}
 		}
