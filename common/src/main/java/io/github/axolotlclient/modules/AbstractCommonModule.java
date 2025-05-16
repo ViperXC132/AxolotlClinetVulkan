@@ -24,11 +24,11 @@ package io.github.axolotlclient.modules;
 
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 
-public abstract class AbstractModule0 implements Module {
+public abstract class AbstractCommonModule implements Module {
 
 	protected final AxoMinecraftClient client;
 
-	public AbstractModule0() {
+	public AbstractCommonModule() {
 		client = AxoMinecraftClient.getInstance();
 	}
 }

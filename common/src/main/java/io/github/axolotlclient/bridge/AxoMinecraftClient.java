@@ -28,7 +28,6 @@ import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
 import io.github.axolotlclient.bridge.key.AxoClientKeybinds;
 import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.world.AxoWorld;
-import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -72,11 +71,7 @@ public interface AxoMinecraftClient {
 		throw BridgeUtil.noImpl();
 	}
 
-	default boolean br$isConnectedToServer() {
-		throw BridgeUtil.noImpl();
-	}
-
-	default float br$getTickrate() {
+	default boolean br$isLocalServer() {
 		throw BridgeUtil.noImpl();
 	}
 }

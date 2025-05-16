@@ -24,16 +24,13 @@ package io.github.axolotlclient.bridge.entity.effect;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
-import io.github.axolotlclient.bridge.render.AxoSprite;
 
 public interface AxoStatusEffectInstance {
-	static AxoStatusEffectInstance create(AxoStatusEffect jumpBoost, int duration) {
-		return PlatformImplInternal.createStatusEffectInstance(jumpBoost, duration);
+	static AxoStatusEffectInstance create(AxoStatusEffect effect, int duration) {
+		return PlatformImplInternal.createStatusEffectInstance(effect, duration);
 	}
 
-	default void setPermanent(boolean b) {
+	default AxoStatusEffect br$getType() {
 		throw BridgeUtil.noImpl();
 	}
-
-	AxoSprite br$getSprite();
 }

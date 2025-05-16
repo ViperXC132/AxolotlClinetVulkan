@@ -22,12 +22,12 @@
 
 package io.github.axolotlclient.bridge.render;
 
-import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 
 public interface AxoSprite {
 	static AxoSprite from(AxoIdentifier id, int texX, int texY, int width, int height) {
-		throw BridgeUtil.noImpl();
+		return PlatformImplInternal.createSprite(id, texX, texY, width, height);
 	}
 
 	interface Dynamic extends AxoSprite, AutoCloseable {

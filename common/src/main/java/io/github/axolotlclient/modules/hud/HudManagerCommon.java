@@ -33,17 +33,21 @@ import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
-import io.github.axolotlclient.modules.AbstractModule0;
+import io.github.axolotlclient.modules.AbstractCommonModule;
 import io.github.axolotlclient.modules.hud.gui0.component.HudEntry;
 import io.github.axolotlclient.modules.hud.gui0.component.Positionable;
 import io.github.axolotlclient.modules.hud.gui0.entry.AbstractHudEntry;
 import io.github.axolotlclient.modules.hud.gui0.hud.CompassHud;
 import io.github.axolotlclient.modules.hud.gui0.hud.CoordsHud;
+import io.github.axolotlclient.modules.hud.gui0.hud.IPHud;
 import io.github.axolotlclient.modules.hud.gui0.hud.IconHud;
 import io.github.axolotlclient.modules.hud.gui0.hud.MemoryHud;
 import io.github.axolotlclient.modules.hud.gui0.hud.MouseMovementHud;
+import io.github.axolotlclient.modules.hud.gui0.hud.PlayerHud;
+import io.github.axolotlclient.modules.hud.gui0.hud.PotionsHud;
 import io.github.axolotlclient.modules.hud.gui0.hud.item.ArmorHud;
 import io.github.axolotlclient.modules.hud.gui0.hud.item.ArrowHud;
+import io.github.axolotlclient.modules.hud.gui0.hud.item.ItemUpdateHud;
 import io.github.axolotlclient.modules.hud.gui0.hud.simple.CPSHud;
 import io.github.axolotlclient.modules.hud.gui0.hud.simple.ComboHud;
 import io.github.axolotlclient.modules.hud.gui0.hud.simple.CustomHudEntry;
@@ -76,7 +80,7 @@ import java.util.stream.Collectors;
  *
  * @license GPL-3.0
  */
-public abstract class HudManagerCommon extends AbstractModule0 {
+public abstract class HudManagerCommon extends AbstractCommonModule {
 	private final static Path CUSTOM_MODULE_SAVE_PATH = AxolotlClientCommon.resolveConfigFile("custom_hud.json");
 	private final AxoKeybinding key = AxoKeybinding.create(AxoKeys.KEY_RSHIFT, "key.openHud", "category.axolotlclient");
 	private final OptionCategory hudCategory = OptionCategory.create("hud");
@@ -93,6 +97,12 @@ public abstract class HudManagerCommon extends AbstractModule0 {
 	public void init() {
 		Platform.getConfig().addCategory(hudCategory);
 
+		// hud.item
+		add(new ArmorHud());
+		add(new ArrowHud());
+		add(new ItemUpdateHud());
+
+		// hud.simple
 		add(new ComboHud());
 		add(new CPSHud());
 		add(new DayCounterHud());
@@ -104,18 +114,21 @@ public abstract class HudManagerCommon extends AbstractModule0 {
 		add(new SpeedHud());
 		add(new ToggleSprintHud());
 		add(new TPSHud());
+
+		// hud
 		add(new CompassHud());
-		add(new IconHud());
-		add(new MemoryHud());
 		add(new CoordsHud());
+		add(new IconHud());
+		add(new IPHud());
+		add(new MemoryHud());
 		add(new MouseMovementHud());
-		add(new ArmorHud());
-		add(new ArrowHud());
+		add(new PlayerHud());
+		add(new PotionsHud());
 
 		addExtraHud();
 
-		entries.put(BedwarsMod.getInstance().getUpgradesOverlay().getId(), BedwarsMod.getInstance().getUpgradesOverlay());
-		entries.put(BedwarsMod.getInstance().getResourceOverlay().getId(), BedwarsMod.getInstance().getResourceOverlay());
+		addNonConfigured(BedwarsMod.getInstance().getUpgradesOverlay());
+		addNonConfigured(BedwarsMod.getInstance().getResourceOverlay());
 
 		entries.values().forEach(HudEntry::init);
 
@@ -189,7 +202,7 @@ public abstract class HudManagerCommon extends AbstractModule0 {
 	}
 
 	@Override
-	public void tick() {
+	public final void tick() {
 		if (key.br$isPressed()) {
 			openScreen();
 		}
@@ -199,30 +212,35 @@ public abstract class HudManagerCommon extends AbstractModule0 {
 			.forEach(HudEntry::tick);
 	}
 
-	public HudManagerCommon add(AbstractHudEntry entry) {
-		entries.put(entry.getId(), entry);
+	public final HudManagerCommon add(AbstractHudEntry entry) {
+		addNonConfigured(entry);
 		hudCategory.add(entry.getAllOptions());
 		return this;
 	}
 
-	public void refreshAllBounds() {
+	public final HudManagerCommon addNonConfigured(AbstractHudEntry entry) {
+		entries.put(entry.getId(), entry);
+		return this;
+	}
+
+	public final void refreshAllBounds() {
 		for (HudEntry entry : getEntries()) {
 			entry.onBoundsUpdate();
 		}
 	}
 
-	public List<HudEntry> getEntries() {
+	public final List<HudEntry> getEntries() {
 		if (!entries.isEmpty()) {
 			return new ArrayList<>(entries.values());
 		}
 		return new ArrayList<>();
 	}
 
-	public HudEntry get(AxoIdentifier identifier) {
+	public final HudEntry get(AxoIdentifier identifier) {
 		return entries.get(identifier);
 	}
 
-	public void removeEntry(AxoIdentifier identifier) {
+	public final void removeEntry(AxoIdentifier identifier) {
 		hudCategory.getSubCategories().remove(entries.remove(identifier).getCategory());
 	}
 
@@ -234,7 +252,7 @@ public abstract class HudManagerCommon extends AbstractModule0 {
 		}
 	}
 
-	public Optional<HudEntry> getEntryXY(int x, int y) {
+	public final Optional<HudEntry> getEntryXY(int x, int y) {
 		for (HudEntry entry : getMoveableEntries()) {
 			Rectangle bounds = entry.getTrueBounds();
 			if (bounds.x() <= x && bounds.x() + bounds.width() >= x && bounds.y() <= y
@@ -245,7 +263,7 @@ public abstract class HudManagerCommon extends AbstractModule0 {
 		return Optional.empty();
 	}
 
-	public List<HudEntry> getMoveableEntries() {
+	public final List<HudEntry> getMoveableEntries() {
 		if (!entries.isEmpty()) {
 			return entries.values().stream().filter((entry) -> entry.isEnabled() && entry.movable())
 				.collect(Collectors.toList());
@@ -253,7 +271,7 @@ public abstract class HudManagerCommon extends AbstractModule0 {
 		return new ArrayList<>();
 	}
 
-	public void renderPlaceholder(AxoRenderContext context, float delta) {
+	public final void renderPlaceholder(AxoRenderContext context, float delta) {
 		for (HudEntry hud : getEntries()) {
 			if (hud.isEnabled()) {
 				hud.renderPlaceholder(context, delta);
@@ -261,7 +279,7 @@ public abstract class HudManagerCommon extends AbstractModule0 {
 		}
 	}
 
-	public List<Rectangle> getAllBounds() {
+	public final List<Rectangle> getAllBounds() {
 		return getMoveableEntries()
 			.stream()
 			.map(Positionable::getTrueBounds)

@@ -28,7 +28,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.Request;
 import io.github.axolotlclient.bridge.events.Events;
-import io.github.axolotlclient.modules.AbstractModule0;
+import io.github.axolotlclient.modules.AbstractCommonModule;
 import io.github.axolotlclient.modules.hypixel.autoboop.AutoBoop;
 import io.github.axolotlclient.modules.hypixel.autogg.AutoGG;
 import io.github.axolotlclient.modules.hypixel.autotip.AutoTip;
@@ -39,7 +39,7 @@ import io.github.axolotlclient.modules.hypixel.skyblock.Skyblock;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HypixelMods extends AbstractModule0 {
+public class HypixelMods extends AbstractCommonModule {
 
 	public static final HypixelMods INSTANCE = new HypixelMods();
 	public final EnumOption<HypixelApiCacheMode> cacheMode = new EnumOption<>("cache_mode", HypixelApiCacheMode.class,

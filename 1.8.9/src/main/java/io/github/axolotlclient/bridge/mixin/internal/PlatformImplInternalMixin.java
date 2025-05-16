@@ -23,23 +23,31 @@
 package io.github.axolotlclient.bridge.mixin.internal;
 
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.BridgeVersion;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
+import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffect;
+import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffectInstance;
 import io.github.axolotlclient.bridge.impl.AxoKeyImpl;
+import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
 import io.github.axolotlclient.bridge.impl.Bridge;
+import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
 import io.github.axolotlclient.bridge.item.AxoItem;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoItems;
 import io.github.axolotlclient.bridge.key.AxoKey;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
+import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.bridge.render.AxoWindow;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.util.Util;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.options.KeyBinding;
+import net.minecraft.entity.living.effect.StatusEffect;
+import net.minecraft.entity.living.effect.StatusEffectInstance;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.locale.I18n;
@@ -147,5 +155,23 @@ public class PlatformImplInternalMixin {
 	@Overwrite
 	public static AxoIdentifier createIdentifier(String ns, String path) {
 		return new Identifier(ns, path);
+	}
+
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static AxoStatusEffectInstance createStatusEffectInstance(AxoStatusEffect effect, int duration) {
+		return new StatusEffectInstance(((StatusEffect) effect).getId(), duration);
+	}
+
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static AxoSprite getTexture(GraphicsOption option) {
+		return new AxoSpriteImpl.Config(option);
 	}
 }

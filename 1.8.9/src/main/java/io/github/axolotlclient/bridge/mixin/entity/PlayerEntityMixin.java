@@ -23,9 +23,12 @@
 package io.github.axolotlclient.bridge.mixin.entity;
 
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
+import io.github.axolotlclient.bridge.item.AxoItem;
+import io.github.axolotlclient.bridge.item.AxoItems;
 import io.github.axolotlclient.bridge.item.AxoPlayerInventory;
 import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -37,5 +40,10 @@ public class PlayerEntityMixin implements AxoPlayer {
 	@Override
 	public AxoPlayerInventory br$getInventory() {
 		return this.inventory;
+	}
+
+	@Override
+	public @Nullable AxoItem br$getProjectileItem() {
+		return AxoItems.ARROW;
 	}
 }

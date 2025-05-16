@@ -27,6 +27,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
+import io.github.axolotlclient.bridge.Platform;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffect;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffectInstance;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffects;
@@ -145,11 +146,11 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 	}
 
 	private int renderPotion(AxoRenderContext graphics, AxoStatusEffectInstance effect, int x, int y, float tickDelta) {
-		final var sprite = effect.br$getSprite();
+		final var sprite = effect.br$getType().br$getSprite();
 
 		graphics.br$drawTexture(x, y, 18, 18, sprite);
 		if (!iconsOnly.get()) {
-			float tickrate = client.br$getTickrate();
+			float tickrate = Platform.tickRate();
 
 			return 0;
 

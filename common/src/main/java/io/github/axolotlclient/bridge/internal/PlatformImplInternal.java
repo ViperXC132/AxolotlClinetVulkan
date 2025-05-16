@@ -89,11 +89,19 @@ public class PlatformImplInternal {
 		throw BridgeUtil.noImpl();
 	}
 
-	public static AxoStatusEffectInstance createStatusEffectInstance(AxoStatusEffect jumpBoost, int duration) {
+	public static AxoStatusEffectInstance createStatusEffectInstance(AxoStatusEffect effect, int duration) {
 		throw BridgeUtil.noImpl();
 	}
 
 	public static int tickCount() {
 		throw BridgeUtil.noImpl();
+	}
+
+	public static AxoSprite createSprite(AxoIdentifier id, int texX, int texY, int width, int height) {
+		throw BridgeUtil.noImpl();
+	}
+
+	public static float tickRate() {
+		return 1; // just provide a default impl
 	}
 }

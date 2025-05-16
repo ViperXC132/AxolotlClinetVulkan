@@ -22,7 +22,6 @@
 
 package io.github.axolotlclient.modules.hud.gui0.hud;
 
-import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.bridge.BridgeVersion;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoSprites;

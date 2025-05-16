@@ -31,6 +31,7 @@ import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.ItemUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiElement;
 import org.jetbrains.annotations.Nullable;
 
 public class AxoRenderContextImpl implements AxoRenderContext {
@@ -114,7 +115,7 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 
 	@Override
 	public void br$drawTexture(int x, int y, int width, int height, AxoSprite sprite) {
-		throw BridgeUtil.noImpl();
+		((AxoSpriteImpl) sprite).draw(client, x, y, width, height);
 	}
 
 	@Override
@@ -134,12 +135,11 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 
 	@Override
 	public void br$renderGuiItemModel(AxoItemStack stack, int x, int y) {
-		Minecraft.getInstance().getItemRenderer().renderGuiItemModel(Bridge.unwrapStack(stack), x, y);
+		client.getItemRenderer().renderGuiItemModel(Bridge.unwrapStack(stack), x, y);
 	}
 
 	@Override
-	public void br$renderGuiItemOverlay(AxoItemStack stack, int x, int y, String countLabel, int textColor,
-										boolean shadow) {
+	public void br$renderGuiItemOverlay(AxoItemStack stack, int x, int y, String countLabel, int textColor, boolean shadow) {
 		ItemUtil.renderGuiItemOverlay(client.textRenderer, Bridge.unwrapStack(stack), x, y, countLabel, textColor,
 			shadow);
 	}

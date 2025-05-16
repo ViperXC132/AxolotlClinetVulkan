@@ -30,7 +30,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringArrayOption;
-import io.github.axolotlclient.modules.AbstractModule0;
+import io.github.axolotlclient.modules.AbstractCommonModule;
 import io.github.axolotlclient.util.FeatureDisabler;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -40,7 +40,7 @@ import net.minecraft.client.options.Perspective;
 import net.minecraft.entity.Entity;
 import org.lwjgl.glfw.GLFW;
 
-public class Freelook extends AbstractModule0 {
+public class Freelook extends AbstractCommonModule {
 
 	private static final Freelook INSTANCE = new Freelook();
 	private static final KeyBinding KEY = new KeyBinding("key.freelook", GLFW.GLFW_KEY_V, "category.axolotlclient");

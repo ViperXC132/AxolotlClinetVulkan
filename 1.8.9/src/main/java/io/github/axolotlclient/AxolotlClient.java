@@ -23,7 +23,7 @@
 package io.github.axolotlclient;
 
 import io.github.axolotlclient.bridge.impl.Bridge;
-import io.github.axolotlclient.modules.hud.HudManagerCommon;
+import io.github.axolotlclient.config.AxolotlClientConfig;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -73,7 +73,6 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 		registerModule(SkyResourceManager.getInstance());
 		registerModule(Zoom.getInstance());
 		registerModule(HudManager.getInstance());
-		registerModule(HudManagerCommon.getInstance());
 		registerModule(HypixelMods.getInstance());
 		registerModule(MotionBlur.getInstance());
 		registerModule(MenuBlur.getInstance());
@@ -112,10 +111,10 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 
 	@Override
 	protected AxolotlClientConfigCommon createConfig() {
-		return new io.github.axolotlclient.config.AxolotlClientConfig();
+		return new AxolotlClientConfig();
 	}
 
-	public static io.github.axolotlclient.config.AxolotlClientConfig config() {
-		return (io.github.axolotlclient.config.AxolotlClientConfig) getInstance().getConfig();
+	public static AxolotlClientConfig config() {
+		return (AxolotlClientConfig) getInstance().getConfig();
 	}
 }

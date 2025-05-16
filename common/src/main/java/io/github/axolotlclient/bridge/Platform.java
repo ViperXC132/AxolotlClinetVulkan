@@ -44,4 +44,8 @@ public interface Platform {
 	static int tickCount() {
 		return PlatformImplInternal.tickCount();
 	}
+
+	static float tickRate() {
+		return PlatformImplInternal.tickRate();
+	}
 }

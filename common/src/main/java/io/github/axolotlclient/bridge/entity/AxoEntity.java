@@ -67,7 +67,6 @@ public interface AxoEntity {
 		throw BridgeUtil.noImpl();
 	}
 
-	// renamed to prevent collision
 	default List<AxoStatusEffectInstance> br$getStatusEffects() {
 		throw BridgeUtil.noImpl();
 	}

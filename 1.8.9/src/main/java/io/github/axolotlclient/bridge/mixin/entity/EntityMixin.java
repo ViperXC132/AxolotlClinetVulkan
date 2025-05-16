@@ -23,7 +23,9 @@
 package io.github.axolotlclient.bridge.mixin.entity;
 
 import io.github.axolotlclient.bridge.entity.AxoEntity;
+import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffectInstance;
 import io.github.axolotlclient.bridge.math.Vec3;
+import java.util.List;
 import java.util.UUID;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
@@ -67,6 +69,9 @@ public abstract class EntityMixin implements AxoEntity {
 	@Shadow
 	public abstract UUID getUuid();
 
+	@Shadow
+	public float pitch;
+
 	@Override
 	public @Nullable AxoEntity br$getVehicle() {
 		return vehicle;
@@ -93,6 +98,11 @@ public abstract class EntityMixin implements AxoEntity {
 	}
 
 	@Override
+	public float br$getPitch() {
+		return pitch;
+	}
+
+	@Override
 	public Vec3 br$getRotation(float deltaTick) {
 		final var vec = getRotationVec(deltaTick);
 		return new Vec3(vec.x, vec.y, vec.z);
@@ -101,5 +111,10 @@ public abstract class EntityMixin implements AxoEntity {
 	@Override
 	public UUID br$getUuid() {
 		return getUuid();
+	}
+
+	@Override
+	public List<AxoStatusEffectInstance> br$getStatusEffects() {
+		return List.of(); // we don't have a concept of LivingEntity vs Entity in the bridge...
 	}
 }

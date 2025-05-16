@@ -75,7 +75,7 @@ public class IPHud extends TextHudEntry implements DynamicallyPositionable {
 	}
 
 	public String getValue() {
-		if (client.br$isConnectedToServer() || client.br$getServerAddress() == null) {
+		if (client.br$isLocalServer() || client.br$getServerAddress() == null) {
 			return "Singleplayer";
 		}
 

@@ -28,21 +28,21 @@ import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.key.AxoClientKeybinds;
 import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.world.AxoWorld;
+import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Session;
 import net.minecraft.client.entity.living.player.LocalClientPlayerEntity;
 import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.options.ServerListEntry;
 import net.minecraft.client.render.TextRenderer;
 import net.minecraft.client.world.ClientWorld;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Implements;
-import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(Minecraft.class)
-public class MinecraftClientMixin implements AxoMinecraftClient{
+public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	@Shadow
 	public TextRenderer textRenderer;
 
@@ -59,12 +59,18 @@ public class MinecraftClientMixin implements AxoMinecraftClient{
 	@Final
 	private Session session;
 
+	@Shadow
+	public abstract boolean isInSingleplayer();
+
+	@Shadow
+	public abstract ServerListEntry getCurrentServerEntry();
+
 	@Override
-	public@Nullable AxoPlayer br$getPlayer() {
+	public @Nullable AxoPlayer br$getPlayer() {
 		return player;
 	}
-	@Override
 
+	@Override
 	public AxoWorld br$getWorld() {
 		return world;
 	}
@@ -83,5 +89,15 @@ public class MinecraftClientMixin implements AxoMinecraftClient{
 	@Override
 	public AxoSession br$getSession() {
 		return new AxoSession(session.getUsername(), session.getUuid(), session.getAccessToken());
+	}
+
+	@Override
+	public boolean br$isLocalServer() {
+		return isInSingleplayer();
+	}
+
+	@Override
+	public String br$getServerAddress() {
+		return Optional.of(getCurrentServerEntry()).map(x -> x.address).orElse(null);
 	}
 }

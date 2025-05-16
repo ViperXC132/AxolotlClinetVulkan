@@ -24,6 +24,15 @@ package io.github.axolotlclient.modules.hud;
 
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 
+import io.github.axolotlclient.modules.hud.gui.hud.ChatHud;
+import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
+import io.github.axolotlclient.modules.hud.gui.hud.PackDisplayHud;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ActionBarHud;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.BossBarHud;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.CrosshairHud;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.DebugCountersHud;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.HotbarHUD;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ScoreboardHud;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 
@@ -44,6 +53,15 @@ public class HudManager extends HudManagerCommon {
 
 	@Override
 	protected void addExtraHud() {
+		add(new ActionBarHud());
+		add(new BossBarHud());
+		add(new CrosshairHud());
+		add(new DebugCountersHud());
+		add(new HotbarHUD());
+		add(new ScoreboardHud());
+		add(new ChatHud());
+		add(new KeystrokeHud());
+		add(new PackDisplayHud());
 	}
 
 	@Override
@@ -53,5 +71,6 @@ public class HudManager extends HudManagerCommon {
 		if(!(mc.screen instanceof HudEditScreen)) {
 			super.render(context, delta);
 		}
+		mc.profiler.pop();
 	}
 }
