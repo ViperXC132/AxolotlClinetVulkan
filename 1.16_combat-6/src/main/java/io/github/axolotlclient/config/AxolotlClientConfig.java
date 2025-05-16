@@ -113,7 +113,6 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 	public final OptionCategory rendering = OptionCategory.create("rendering");
 	public final OptionCategory outlines = OptionCategory.create("blockOutlines");
 	public final OptionCategory timeChanger = OptionCategory.create("timeChanger");
-	public final OptionCategory config = OptionCategory.create("config");
 	@Getter
 	private final List<Option<?>> options = new ArrayList<>();
 

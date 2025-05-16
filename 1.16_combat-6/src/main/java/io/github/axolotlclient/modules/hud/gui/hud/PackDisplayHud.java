@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud;
 
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
@@ -43,34 +44,39 @@ import net.minecraft.resource.ResourcePack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawString;
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.fillRect;
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.outlineRect;
+
 public class PackDisplayHud extends TextHudEntry {
 
 	public static final Identifier ID = new Identifier("axolotlclient", "packdisplayhud");
-	public final List<PackWidget> widgets = new ArrayList<>();
+	private final List<PackWidget> widgets = new ArrayList<>();
 	private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
 	private PackWidget placeholder;
+	private final MinecraftClient client = (MinecraftClient) super.client;
 
 	public PackDisplayHud() {
 		super(200, 50, true);
 	}
 
 	@Override
-	public void renderComponent(MatrixStack matrices, float f) {
+	public void renderComponent(AxoRenderContext matrices, float f) {
 		DrawPosition pos = getPos();
 
 		if (widgets.isEmpty())
 			init();
 
 		if (background.get()) {
-			fillRect(matrices, getBounds(), backgroundColor.get());
+			fillRect((MatrixStack) matrices, getBounds(), backgroundColor.get());
 		}
 
 		if (outline.get())
-			outlineRect(matrices, getBounds(), outlineColor.get());
+			outlineRect((MatrixStack) matrices, getBounds(), outlineColor.get());
 
 		int y = pos.y + 1;
 		for (int i = widgets.size() - 1; i >= 0; i--) { // Badly reverse the order (I'm sure there are better ways to do this)
-			widgets.get(i).render(matrices, pos.x + 1, y);
+			widgets.get(i).render((MatrixStack) matrices, pos.x + 1, y);
 			y += 18;
 		}
 		if (y - pos.y + 1 != getHeight()) {
@@ -116,7 +122,7 @@ public class PackDisplayHud extends TextHudEntry {
 	}
 
 	@Override
-	public void renderPlaceholderComponent(MatrixStack matrices, float f) {
+	public void renderPlaceholderComponent(AxoRenderContext matrices, float f) {
 		boolean updateBounds = false;
 		if (getHeight() < 18) {
 			setHeight(18);
@@ -135,7 +141,7 @@ public class PackDisplayHud extends TextHudEntry {
 			} catch (Exception ignored) {
 			}
 		} else {
-			placeholder.render(matrices, getPos().x + 1, getPos().y + 1);
+			placeholder.render((MatrixStack) matrices, getPos().x + 1, getPos().y + 1);
 		}
 	}
 

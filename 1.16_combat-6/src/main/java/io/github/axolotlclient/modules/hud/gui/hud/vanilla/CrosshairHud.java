@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.modules.hud.gui0.entry.AbstractHudEntry;
 import java.util.List;
 
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -32,9 +34,8 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
-import io.github.axolotlclient.modules.hud.gui.AbstractHudEntry;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
-import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.gui0.component.DynamicallyPositionable;
+import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.RenderUtil;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.Util;
@@ -56,6 +57,8 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import static net.minecraft.client.gui.DrawableHelper.drawTexture;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
@@ -97,6 +100,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		});
+	private final MinecraftClient client = (MinecraftClient) super.client;
 
 	public CrosshairHud() {
 		super(15, 15);
@@ -144,7 +148,9 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 	}
 
 	@Override
-	public void render(MatrixStack matrices, float delta) {
+	public void render(AxoRenderContext context, float delta) {
+		MatrixStack matrices = (MatrixStack) context;
+
 		if (!client.options.getPerspective().isFirstPerson() && !showInF5.get()) {
 			return;
 		}
@@ -179,8 +185,9 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			RenderUtil.fillBlend(matrices, x + (getWidth() / 2) - 1, y + (getHeight() / 2) - 6, 1, 5, color);
 			RenderUtil.fillBlend(matrices, x + (getWidth() / 2) - 1, y + (getHeight() / 2), 1, 5, color);
 		} else if (type.get().equals(Crosshair.DIRECTION)) {
+			// TODO... uh
 			RenderSystem.pushMatrix();
-			RenderSystem.translatef(client.getWindow().getScaledWidth() / 2F, client.getWindow().getScaledHeight() / 2F, (float) this.getZOffset());
+			RenderSystem.translatef(client.getWindow().getScaledWidth() / 2F, client.getWindow().getScaledHeight() / 2F, 0);
 			Camera camera = this.client.gameRenderer.getCamera();
 			RenderSystem.rotatef(camera.getPitch(), -1.0F, 0.0F, 0.0F);
 			RenderSystem.rotatef(camera.getYaw(), 0.0F, 1.0F, 0.0F);
@@ -196,7 +203,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 					(float) color.getBlue() / 255, (float) color.getAlpha() / 255);
 				drawTexture(matrices,
 					(int) (((client.getWindow().getScaledWidth() / getScale()) - 15) / 2),
-					(int) (((client.getWindow().getScaledHeight() / getScale()) - 15) / 2), 0, 0, 15, 15);
+					(int) (((client.getWindow().getScaledHeight() / getScale()) - 15) / 2), 0, 0, 15, 15, 256, 256);
 			} else {
 				Util.bindTexture(customTextureGraphics);
 				// Draw crosshair
@@ -218,9 +225,9 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			ItemStack itemStack = this.client.player.getStackInHand(Hand.OFF_HAND);
 			boolean bl = this.client.options.field_26808 == class_5512.field_26811;
 			if (bl && itemStack.getItem() == Items.SHIELD && this.client.player.method_31233(itemStack)) {
-				this.drawTexture(matrices, x, y, 52, 112, 16, 16);
+				drawTexture(matrices, x, y, 52, 112, 16, 16, 256, 256);
 			} else if (bl && this.client.player.isBlocking()) {
-				this.drawTexture(matrices, x, y, 36, 112, 16, 16);
+				drawTexture(matrices, x, y, 36, 112, 16, 16, 256, 256);
 			} else if (this.client.options.attackIndicator == AttackIndicator.CROSSHAIR) {
 				float f = this.client.player.getAttackCooldownProgress(0.0F);
 				boolean bl2 = false;
@@ -230,12 +237,12 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 				}
 
 				if (bl2) {
-					this.drawTexture(matrices, x, y, 68, 94, 16, 16);
+					drawTexture(matrices, x, y, 68, 94, 16, 16, 256, 256);
 				} else if (f > 1.3F && f < 2.0F) {
 					float h = (f - 1.0F);
 					int l = (int) (h * 17.0F);
-					this.drawTexture(matrices, x, y, 36, 94, 16, 4);
-					this.drawTexture(matrices, x, y, 52, 94, l, 4);
+					drawTexture(matrices, x, y, 36, 94, 16, 4, 256, 256);
+					drawTexture(matrices, x, y, 52, 94, l, 4, 256, 256);
 				}
 			}
 		}
@@ -270,7 +277,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 	}
 
 	@Override
-	public void renderPlaceholder(MatrixStack matrices, float delta) {
+	public void renderPlaceholder(AxoRenderContext matrices, float delta) {
 		// Shouldn't need this...
 	}
 

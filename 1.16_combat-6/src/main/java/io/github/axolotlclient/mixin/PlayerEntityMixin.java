@@ -22,9 +22,10 @@
 
 package io.github.axolotlclient.mixin;
 
+import io.github.axolotlclient.bridge.entity.AxoPlayer;
+import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hud.gui.hud.simple.ComboHud;
-import io.github.axolotlclient.modules.hud.gui.hud.simple.ReachHud;
+import io.github.axolotlclient.modules.hud.gui0.hud.simple.ReachHud;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.modules.particles.Particles;
 import net.minecraft.client.MinecraftClient;
@@ -50,16 +51,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
 	@Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;getAttributeValue(Lnet/minecraft/entity/attribute/EntityAttribute;)D"))
 	public void axolotlclient$getReach(Entity entity, CallbackInfo ci) {
-		if ((Object) this == MinecraftClient.getInstance().player
-			|| entity.equals(MinecraftClient.getInstance().player)) {
-			ReachHud reachDisplayHud = (ReachHud) HudManager.getInstance().get(ReachHud.ID);
-			if (reachDisplayHud != null && reachDisplayHud.isEnabled()) {
-				reachDisplayHud.updateDistance(this, entity);
-			}
-
-			ComboHud comboHud = (ComboHud) HudManager.getInstance().get(ComboHud.ID);
-			comboHud.onEntityAttack(entity);
-		}
+		Events.PLAYER_ATTACK.invoker().accept((AxoPlayer) this, entity);
 	}
 
 	@Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;onAttacking(Lnet/minecraft/entity/Entity;)V"))
@@ -74,17 +66,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
 	@Inject(method = "damage", at = @At("HEAD"))
 	public void axolotlclient$damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-		if (source.getAttacker() != null && getUuid() == MinecraftClient.getInstance().player.getUuid()) {
-			ReachHud reachDisplayHud = (ReachHud) HudManager.getInstance().get(ReachHud.ID);
-			if (reachDisplayHud != null && reachDisplayHud.isEnabled()) {
-				reachDisplayHud.updateDistance(source.getAttacker(), this);
-			}
-		}
-
-		if (source.getAttacker() instanceof PlayerEntity) {
-			ComboHud comboHud = (ComboHud) HudManager.getInstance().get(ComboHud.ID);
-			comboHud.onEntityDamage(this);
-		}
+		Events.PLAYER_HURT.invoker().accept((AxoPlayer) this, source.getAttacker());
 	}
 
 	@Override

@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import java.io.File;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
@@ -35,8 +36,9 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(net.minecraft.client.util.ScreenshotUtils.class)
 public abstract class ScreenshotRecorderMixin {
 
-	@WrapOperation(method = "method_1661", at = @At(value = "INVOKE", target = "Lnet/minecraft/text/TranslatableText;<init>(Ljava/lang/String;[Ljava/lang/Object;)V", ordinal = 0))
+	/**TODO: this injector fails?
+	@ModifyExpressionValue(method = "method_1661", at = @At(value = "INVOKE", target = "Lnet/minecraft/text/TranslatableText;<init>(Ljava/lang/String;[Ljava/lang/Object;)V", ordinal = 0))
 	private static MutableText axolotlclient$onScreenshotSaveSuccess(String s, Object[] objects, Operation<MutableText> original, @Local(argsOnly = true) File target) {
 		return ScreenshotUtils.getInstance().onScreenshotTaken(original.call(s, objects), target);
-	}
+	}*/
 }

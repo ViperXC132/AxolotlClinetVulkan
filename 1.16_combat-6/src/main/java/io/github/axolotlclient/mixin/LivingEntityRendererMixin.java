@@ -23,7 +23,7 @@
 package io.github.axolotlclient.mixin;
 
 import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.modules.hud.gui.hud.PlayerHud;
+import io.github.axolotlclient.modules.hud.gui0.hud.PlayerHud;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;

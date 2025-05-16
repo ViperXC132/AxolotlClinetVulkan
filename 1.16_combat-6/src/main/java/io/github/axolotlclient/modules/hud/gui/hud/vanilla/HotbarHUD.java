@@ -22,12 +22,13 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
-import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.ItemUtil;
 import net.minecraft.client.MinecraftClient;
@@ -39,18 +40,24 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawCenteredString;
+import static net.minecraft.client.gui.DrawableHelper.drawTexture;
+
 public class HotbarHUD extends TextHudEntry {
 
 	public static final Identifier ID = new Identifier("axolotlclient", "hotbarhud");
 	private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
+
+	private final MinecraftClient client = (MinecraftClient) super.client;
 
 	public HotbarHUD() {
 		super(182, 22, false);
 	}
 
 	@Override
-	public void renderComponent(MatrixStack matrices, float delta) {
-		matrices.push();
+	public void renderComponent(AxoRenderContext context, float delta) {
+		final var matrices = (MatrixStack) context;
+		matrices.br$pushMatrix();
 		PlayerEntity playerEntity = MinecraftClient.getInstance().cameraEntity instanceof PlayerEntity
 			? (PlayerEntity) MinecraftClient.getInstance().cameraEntity
 			: null;
@@ -63,20 +70,21 @@ public class HotbarHUD extends TextHudEntry {
 			RenderSystem.enableBlend();
 			ItemStack itemStack = playerEntity.getOffHandStack();
 			Arm arm = playerEntity.getMainArm().getOpposite();
-			int j = this.getZOffset();
-			this.setZOffset(-90);
-			this.drawTexture(matrices, pos.x, pos.y, 0, 0, 182, 22);
-			this.drawTexture(matrices, pos.x - 1 + playerEntity.inventory.selectedSlot * 20, pos.y - 1, 0, 22, 24,
-				22);
+
+			matrices.br$pushMatrix();
+			matrices.br$translateMatrix(0, -90, 0);
+			drawTexture(matrices, pos.x, pos.y, 0, 0, 182, 22, 256, 256);
+			drawTexture(matrices, pos.x - 1 + playerEntity.inventory.selectedSlot * 20, pos.y - 1, 0, 22, 24,
+				22, 256, 256);
 			if (!itemStack.isEmpty()) {
 				if (arm == Arm.LEFT) {
-					this.drawTexture(matrices, pos.x - 29, pos.y - 1, 24, 22, 29, 24);
+					drawTexture(matrices, pos.x - 29, pos.y - 1, 24, 22, 29, 24, 256, 256);
 				} else {
-					this.drawTexture(matrices, pos.x + width, pos.y - 1, 53, 22, 29, 24);
+					drawTexture(matrices, pos.x + width, pos.y - 1, 53, 22, 29, 24, 256, 256);
 				}
 			}
 
-			this.setZOffset(j);
+			matrices.br$popMatrix();
 
 			for (int n = 0; n < 9; ++n) {
 				int k = pos.x + n * 20 + 3;
@@ -110,21 +118,21 @@ public class HotbarHUD extends TextHudEntry {
 					MinecraftClient.getInstance().getTextureManager().bindTexture(DrawableHelper.GUI_ICONS_TEXTURE);
 					int q = (int) (f * 19.0F);
 					RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
-					this.drawTexture(matrices, p, o, 0, 94, 18, 18);
-					this.drawTexture(matrices, p, o + 18 - q, 18, 112 - q, 18, q);
+					drawTexture(matrices, p, o, 0, 94, 18, 18, 256, 256);
+					drawTexture(matrices, p, o + 18 - q, 18, 112 - q, 18, q, 256, 256);
 				}
 			}
 
 			RenderSystem.disableBlend();
 		}
-		matrices.pop();
+		matrices.br$popMatrix();
 	}
 
 	@Override
-	public void renderPlaceholderComponent(MatrixStack matrices, float delta) {
+	public void renderPlaceholderComponent(AxoRenderContext matrices, float delta) {
 		DrawPosition pos = getPos();
 
-		drawCenteredString(matrices, MinecraftClient.getInstance().textRenderer, getName(), pos.x + width / 2,
+		drawCenteredString((MatrixStack) matrices, MinecraftClient.getInstance().textRenderer, getName(), pos.x + width / 2,
 			pos.y + height / 2 - 4, -1, true);
 	}
 

@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud;
 
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -33,7 +34,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.mixin.KeyBindAccessor;
-import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.keystrokes.KeystrokePositioningScreen;
 import io.github.axolotlclient.modules.hud.gui.keystrokes.KeystrokesScreen;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
@@ -56,6 +57,10 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawString;
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.fillRect;
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.outlineRect;
+
 /**
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
@@ -68,6 +73,8 @@ public class KeystrokeHud extends TextHudEntry {
 	private static final Path KEYSTROKE_SAVE_FILE = AxolotlClient.resolveConfigFile("keystrokes.json");
 	public static final Identifier ID = new Identifier("kronhud", "keystrokehud");
 
+	private final MinecraftClient client = (MinecraftClient) super.client;
+
 	private final ColorOption pressedTextColor = new ColorOption("heldtextcolor", new Color(0xFF000000));
 	private final ColorOption pressedBackgroundColor = new ColorOption("heldbackgroundcolor", new Color(0x64FFFFFF));
 	private final ColorOption pressedOutlineColor = new ColorOption("heldoutlinecolor", ClientColors.BLACK);
@@ -77,7 +84,6 @@ public class KeystrokeHud extends TextHudEntry {
 		() -> client.openScreen(new KeystrokePositioningScreen(client.currentScreen, this)));
 	private final IntegerOption animationTime = new IntegerOption("keystrokes.animation_time", 100, 0, 500);
 	public ArrayList<Keystroke> keystrokes;
-
 
 	public KeystrokeHud() {
 		super(53, 61, true);
@@ -148,25 +154,25 @@ public class KeystrokeHud extends TextHudEntry {
 	}
 
 	@Override
-	public void render(MatrixStack graphics, float delta) {
-		graphics.push();
+	public void render(AxoRenderContext graphics, float delta) {
+		graphics.br$pushMatrix();
 		scale(graphics);
 		renderComponent(graphics, delta);
-		graphics.pop();
+		graphics.br$popMatrix();
 	}
 
 	@Override
-	public void renderComponent(MatrixStack graphics, float delta) {
+	public void renderComponent(AxoRenderContext graphics, float delta) {
 		if (keystrokes == null) {
 			setKeystrokes();
 		}
 		for (Keystroke stroke : keystrokes) {
-			stroke.render(graphics);
+			stroke.render((MatrixStack) graphics);
 		}
 	}
 
 	@Override
-	public void renderPlaceholderComponent(MatrixStack graphics, float delta) {
+	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
 		renderComponent(graphics, delta);
 	}
 

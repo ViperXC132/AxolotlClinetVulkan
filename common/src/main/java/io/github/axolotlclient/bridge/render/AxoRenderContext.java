@@ -122,6 +122,7 @@ public interface AxoRenderContext {
 		br$outlineRect(rect.x, rect.y, rect.width, rect.height, color.toInt());
 	}
 
+	@ApiStatus.NonExtendable
 	default void br$outlineRect(int x, int y, int width, int height, Color color) {
 		br$outlineRect(x, y, width, height, color.toInt());
 	}
