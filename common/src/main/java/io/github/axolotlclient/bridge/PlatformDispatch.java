@@ -46,8 +46,4 @@ public class PlatformDispatch {
 	public static void playerHud$renderPlayer(AxoRenderContext graphics, float i) {
 		throw BridgeUtil.noImpl();
 	}
-
-	public static HudManagerCommon hudManager$getInstance() {
-		throw BridgeUtil.noImpl();
-	}
 }

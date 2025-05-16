@@ -78,13 +78,4 @@ public class PlatformDispatchMixin {
 			currentServerPing.setValue(1);
 		}
 	}
-
-	/**
-	 * @author Flowey
-	 * @reason Implement bridge.
-	 */
-	@Overwrite
-	public static HudManagerCommon hudManager$getInstance() {
-		return HudManager.getInstance();
-	}
 }

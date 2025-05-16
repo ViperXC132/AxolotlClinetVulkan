@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.hud;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.stream.JsonWriter;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
@@ -73,6 +74,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.Getter;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
@@ -81,16 +83,18 @@ import java.util.stream.Collectors;
  * @license GPL-3.0
  */
 public abstract class HudManagerCommon extends AbstractCommonModule {
+	@Getter
+	private static HudManagerCommon instance;
+
 	private final static Path CUSTOM_MODULE_SAVE_PATH = AxolotlClientCommon.resolveConfigFile("custom_hud.json");
 	private final AxoKeybinding key = AxoKeybinding.create(AxoKeys.KEY_RSHIFT, "key.openHud", "category.axolotlclient");
 	private final OptionCategory hudCategory = OptionCategory.create("hud");
 	private final Map<AxoIdentifier, HudEntry> entries;
 
-	public static HudManagerCommon getInstance() {
-		return PlatformDispatch.hudManager$getInstance();
-	}
-
 	protected HudManagerCommon() {
+		Preconditions.checkState(instance == null, "singleton already initialized");
+		// bad antipattern, but whatever
+		instance = this;
 		this.entries = new LinkedHashMap<>();
 	}
 
