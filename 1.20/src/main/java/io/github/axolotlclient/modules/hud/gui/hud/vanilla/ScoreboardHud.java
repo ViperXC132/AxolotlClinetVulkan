@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -37,11 +39,12 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
-import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
-import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.gui0.component.DynamicallyPositionable;
+import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.modules.hud.util.RenderUtil;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.scoreboard.*;
 import net.minecraft.text.MutableText;
@@ -85,20 +88,22 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 	private final EnumOption<AnchorPoint> anchor = new EnumOption<>("anchorpoint", AnchorPoint.class,
 		AnchorPoint.MIDDLE_RIGHT);
 
+	private final MinecraftClient client = (MinecraftClient) super.client;
+
 	public ScoreboardHud() {
 		super(200, 146, true);
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, float delta) {
-		graphics.getMatrices().push();
+	public void render(AxoRenderContext graphics, float delta) {
+		graphics.br$pushMatrix();
 		scale(graphics);
 		renderComponent(graphics, delta);
-		graphics.getMatrices().pop();
+		graphics.br$popMatrix();
 	}
 
 	@Override
-	public void renderComponent(GuiGraphics graphics, float delta) {
+	public void renderComponent(AxoRenderContext graphics, float delta) {
 		Scoreboard scoreboard = this.client.world.getScoreboard();
 		ScoreboardObjective scoreboardObjective = null;
 		Team team = scoreboard.getPlayerTeam(this.client.player.getEntityName());
@@ -112,13 +117,13 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 		ScoreboardObjective scoreboardObjective2 = scoreboardObjective != null ? scoreboardObjective
 			: scoreboard.getObjectiveForSlot(Scoreboard.SIDEBAR_DISPLAY_SLOT_ID);
 		if (scoreboardObjective2 != null) {
-			this.renderScoreboardSidebar(graphics, scoreboardObjective2);
+			this.renderScoreboardSidebar((GuiGraphics) graphics, scoreboardObjective2);
 		}
 	}
 
 	@Override
-	public void renderPlaceholderComponent(GuiGraphics graphics, float delta) {
-		renderScoreboardSidebar(graphics, placeholder);
+	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
+		renderScoreboardSidebar((GuiGraphics) graphics, placeholder);
 	}
 
 	// Abusing this could break some stuff/could allow for unfair advantages. The goal is not to do this, so it won't
@@ -203,7 +208,7 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 
 			graphics.drawText(client.textRenderer, scoreText, scoreX, relativeY, Colors.WHITE.withAlpha(textAlpha.get()).toInt(), shadow.get());
 			if (this.scores.get()) {
-				drawString(graphics, score, (float) (scoreX + maxWidth - client.textRenderer.getWidth(score) - 6),
+				DrawUtil.drawString(graphics, score, (float) (scoreX + maxWidth - client.textRenderer.getWidth(score) - 6),
 					(float) relativeY, scoreColor.get().toInt(), shadow.get());
 			}
 			if (num == scoresSize) {

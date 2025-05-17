@@ -4,7 +4,7 @@ import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
 import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.bridge.render.AxoSprites;
-import net.minecraft.resource.Identifier;
+import net.minecraft.util.Identifier;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;

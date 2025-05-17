@@ -22,12 +22,14 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
-import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
@@ -41,14 +43,17 @@ public class HotbarHUD extends TextHudEntry {
 
 	public static final Identifier ID = new Identifier("axolotlclient", "hotbarhud");
 	private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
+	public static final Identifier ICONS_TEXTURE = new Identifier("textures/gui/icons.png");
+
+	private final MinecraftClient client = (MinecraftClient) super.client;
 
 	public HotbarHUD() {
 		super(182, 22, false);
 	}
 
 	@Override
-	public void renderComponent(GuiGraphics graphics, float delta) {
-		graphics.getMatrices().push();
+	public void renderComponent(AxoRenderContext graphics, float delta) {
+		graphics.br$pushMatrix();
 		PlayerEntity playerEntity = MinecraftClient.getInstance().cameraEntity instanceof PlayerEntity
 			? (PlayerEntity) MinecraftClient.getInstance().cameraEntity
 			: null;
@@ -57,19 +62,19 @@ public class HotbarHUD extends TextHudEntry {
 			Arm arm = playerEntity.getMainArm().getOpposite();
 			DrawPosition pos = getPos();
 			int i = pos.x() + getWidth() / 2;
-			graphics.getMatrices().push();
-			graphics.getMatrices().translate(0.0F, 0.0F, -90.0F);
-			graphics.drawTexture(WIDGETS_TEXTURE, i - 91, pos.y(), 0, 0, 182, 22);
-			graphics.drawTexture(WIDGETS_TEXTURE, i - 91 - 1 + playerEntity.getInventory().selectedSlot * 20, pos.y() - 1, 0, 22, 24, 22);
+			graphics.br$pushMatrix();
+			graphics.br$translateMatrix(0.0F, 0.0F, -90.0F);
+			((GuiGraphics) graphics).drawTexture(WIDGETS_TEXTURE, i - 91, pos.y(), 0, 0, 182, 22);
+			((GuiGraphics) graphics).drawTexture(WIDGETS_TEXTURE, i - 91 - 1 + playerEntity.getInventory().selectedSlot * 20, pos.y() - 1, 0, 22, 24, 22);
 			if (!itemStack.isEmpty()) {
 				if (arm == Arm.LEFT) {
-					graphics.drawTexture(WIDGETS_TEXTURE, i - 91 - 29, pos.y() - 1, 24, 22, 29, 24);
+					((GuiGraphics) graphics).drawTexture(WIDGETS_TEXTURE, i - 91 - 29, pos.y() - 1, 24, 22, 29, 24);
 				} else {
-					graphics.drawTexture(WIDGETS_TEXTURE, i + 91, pos.y() - 1, 53, 22, 29, 24);
+					((GuiGraphics) graphics).drawTexture(WIDGETS_TEXTURE, i + 91, pos.y() - 1, 53, 22, 29, 24);
 				}
 			}
 
-			graphics.getMatrices().pop();
+			graphics.br$popMatrix();
 			int l = 1;
 
 			for (int m = 0; m < 9; ++m) {
@@ -98,41 +103,41 @@ public class HotbarHUD extends TextHudEntry {
 					}
 
 					int p = (int) (f * 19.0F);
-					graphics.drawTexture(ICONS_TEXTURE, o, n, 0, 94, 18, 18);
-					graphics.drawTexture(ICONS_TEXTURE, o, n + 18 - p, 18, 112 - p, 18, p);
+					((GuiGraphics) graphics).drawTexture(ICONS_TEXTURE, o, n, 0, 94, 18, 18);
+					((GuiGraphics) graphics).drawTexture(ICONS_TEXTURE, o, n + 18 - p, 18, 112 - p, 18, p);
 				}
 			}
 
 			RenderSystem.disableBlend();
 		}
-		graphics.getMatrices().pop();
+		graphics.br$popMatrix();
 	}
 
-	private void renderHotbarItem(GuiGraphics graphics, int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed) {
+	private void renderHotbarItem(AxoRenderContext graphics, int x, int y, float tickDelta, PlayerEntity player, ItemStack stack, int seed) {
 		if (!stack.isEmpty()) {
 			float f = (float) stack.getCooldown() - tickDelta;
 			if (f > 0.0F) {
 				float g = 1.0F + f / 5.0F;
-				graphics.getMatrices().push();
-				graphics.getMatrices().translate((float) (x + 8), (float) (y + 12), 0.0F);
-				graphics.getMatrices().scale(1.0F / g, (g + 1.0F) / 2.0F, 1.0F);
-				graphics.getMatrices().translate((float) (-(x + 8)), (float) (-(y + 12)), 0.0F);
+				graphics.br$pushMatrix();
+				graphics.br$translateMatrix((float) (x + 8), (float) (y + 12), 0.0F);
+				graphics.br$scaleMatrix(1.0F / g, (g + 1.0F) / 2.0F, 1.0F);
+				graphics.br$translateMatrix((float) (-(x + 8)), (float) (-(y + 12)), 0.0F);
 			}
 
-			graphics.drawItem(player, stack, x, y, seed);
+			((GuiGraphics) graphics).drawItem(player, stack, x, y, seed);
 			if (f > 0.0F) {
-				graphics.getMatrices().pop();
+				graphics.br$popMatrix();
 			}
 
-			graphics.drawItemInSlot(this.client.textRenderer, stack, x, y);
+			((GuiGraphics) graphics).drawItemInSlot(this.client.textRenderer, stack, x, y);
 		}
 	}
 
 	@Override
-	public void renderPlaceholderComponent(GuiGraphics graphics, float delta) {
+	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
 		DrawPosition pos = getPos();
 
-		drawCenteredString(graphics, MinecraftClient.getInstance().textRenderer, getName(), pos.x() + width / 2,
+		DrawUtil.drawCenteredString((GuiGraphics) graphics, MinecraftClient.getInstance().textRenderer, getName(), pos.x() + width / 2,
 			pos.y() + height / 2 - 4, -1, true);
 	}
 

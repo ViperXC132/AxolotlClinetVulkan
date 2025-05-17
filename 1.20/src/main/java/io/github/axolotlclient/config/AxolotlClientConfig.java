@@ -115,7 +115,7 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 	@Getter
 	private final List<Option<?>> options = new ArrayList<>();
 
-	public void init() {
+	public AxolotlClientConfig() {
 
 		config.add(general);
 		config.add(nametagOptions);

@@ -7,6 +7,9 @@
 		"MinecraftClientMixin",
 		"entity.EntityMixin",
 		"entity.PlayerEntityMixin",
+		"entity.effect.AxoStatusEffectsMixin",
+		"entity.effect.StatusEffectInstanceMixin",
+		"entity.effect.StatusEffectMixin",
 		"internal.PlatformImplInternalMixin",
 		"item.AxoEnchantsMixin",
 		"item.AxoItemsMixin",
@@ -18,6 +21,7 @@
 		"key.GameOptionsMixin",
 		"key.KeyBindingMixin",
 		"key.KeyMixin",
+		"render.GuiGraphicsMixin",
 		"render.TextRendererMixin",
 		"render.WindowMixin",
 		"util.IdentifierMixin",
@@ -26,5 +30,10 @@
 	],
 	"injectors": {
 		"defaultRequire": 1
-	}
+	},
+	"mixins": [
+		"PlatformDispatchMixin",
+		"entity.LivingEntityMixin",
+		"render.AxoSpritesMixin"
+	]
 }

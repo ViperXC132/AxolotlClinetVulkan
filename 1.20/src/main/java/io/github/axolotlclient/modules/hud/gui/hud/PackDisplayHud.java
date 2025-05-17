@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud;
 
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.texture.NativeImage;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
@@ -42,6 +43,10 @@ import net.minecraft.resource.ResourceIoSupplier;
 import net.minecraft.resource.pack.ResourcePack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawString;
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.fillRect;
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.outlineRect;
 
 public class PackDisplayHud extends TextHudEntry {
 
@@ -55,22 +60,22 @@ public class PackDisplayHud extends TextHudEntry {
 	}
 
 	@Override
-	public void renderComponent(GuiGraphics graphics, float f) {
+	public void renderComponent(AxoRenderContext graphics, float f) {
 		DrawPosition pos = getPos();
 
 		if (widgets.isEmpty())
 			init();
 
 		if (background.get()) {
-			fillRect(graphics, getBounds(), backgroundColor.get());
+			fillRect((GuiGraphics) graphics, getBounds(), backgroundColor.get());
 		}
 
 		if (outline.get())
-			outlineRect(graphics, getBounds(), outlineColor.get());
+			outlineRect((GuiGraphics) graphics, getBounds(), outlineColor.get());
 
 		int y = pos.y() + 1;
 		for (int i = widgets.size() - 1; i >= 0; i--) { // Badly reverse the order (I'm sure there are better ways to do this)
-			widgets.get(i).render(graphics, pos.x() + 1, y);
+			widgets.get(i).render((GuiGraphics) graphics, pos.x() + 1, y);
 			y += 18;
 		}
 		if (y - pos.y() + 1 != getHeight()) {
@@ -81,7 +86,7 @@ public class PackDisplayHud extends TextHudEntry {
 
 	@Override
 	public void init() {
-		int listSize = client.getResourcePackManager().getProfiles().size();
+		int listSize = MinecraftClient.getInstance().getResourcePackManager().getProfiles().size();
 		MinecraftClient.getInstance().getResourcePackManager().getEnabledProfiles().forEach(profile -> {
 			try (ResourcePack pack = profile.createResourcePack()) {
 
@@ -112,7 +117,7 @@ public class PackDisplayHud extends TextHudEntry {
 		assert supplier != null;
 		InputStream stream = supplier.get();
 		if (stream != null) {
-			Identifier id = client.getTextureManager().registerDynamicTexture(ID.getPath(), new NativeImageBackedTexture(NativeImage.read(stream)));
+			Identifier id = MinecraftClient.getInstance().getTextureManager().registerDynamicTexture(ID.getPath(), new NativeImageBackedTexture(NativeImage.read(stream)));
 			stream.close();
 			return new PackWidget(displayName, id);
 		}
@@ -120,7 +125,7 @@ public class PackDisplayHud extends TextHudEntry {
 	}
 
 	@Override
-	public void renderPlaceholderComponent(GuiGraphics graphics, float f) {
+	public void renderPlaceholderComponent(AxoRenderContext graphics, float f) {
 		boolean updateBounds = false;
 		if (getHeight() < 18) {
 			setHeight(18);
@@ -139,7 +144,7 @@ public class PackDisplayHud extends TextHudEntry {
 			} catch (Exception ignored) {
 			}
 		} else {
-			placeholder.render(graphics, getPos().x() + 1, getPos().y() + 1);
+			placeholder.render((GuiGraphics) graphics, getPos().x() + 1, getPos().y() + 1);
 		}
 	}
 

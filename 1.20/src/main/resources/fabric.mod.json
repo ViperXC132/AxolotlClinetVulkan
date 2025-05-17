@@ -87,6 +87,12 @@
 			],
 			"net/minecraft/class_640": [
 				"io/github/axolotlclient/bridge/AxoPlayerProfile"
+			],
+			"net/minecraft/class_1293": [
+				"io/github/axolotlclient/bridge/entity/effect/AxoStatusEffectInstance"
+			],
+			"net/minecraft/class_1291": [
+				"io/github/axolotlclient/bridge/entity/effect/AxoStatusEffect"
 			]
 		}
 	},
