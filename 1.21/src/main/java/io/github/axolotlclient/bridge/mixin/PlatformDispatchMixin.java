@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -20,13 +20,12 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.hud.gui.hud.simple;
+package io.github.axolotlclient.bridge.mixin;
 
-import java.util.List;
-
-import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
-import io.github.axolotlclient.modules.hud.gui.entry.SimpleTextHudEntry;
+import io.github.axolotlclient.bridge.PlatformDispatch;
+import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.util.ThreadExecuter;
 import net.minecraft.class_9191;
 import net.minecraft.client.MinecraftClient;
@@ -42,56 +41,16 @@ import net.minecraft.network.packet.c2s.query.QueryPingC2SPacket;
 import net.minecraft.network.packet.s2c.query.QueryPongS2CPacket;
 import net.minecraft.network.packet.s2c.query.ServerMetadataS2CPacket;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
+import org.apache.commons.lang3.mutable.MutableInt;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Unique;
 
-/**
- * This implementation of Hud modules is based on KronHUD.
- * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
- *
- * @license GPL-3.0
- */
-
-public class PingHud extends SimpleTextHudEntry {
-
-	public static final Identifier ID = Identifier.of("kronhud", "pinghud");
-	private final IntegerOption refreshDelay = new IntegerOption("refreshTime", 4, 1, 15);
-	private int currentServerPing;
-	private int second;
-
-	public PingHud() {
-		super();
-	}
-
-	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
-	@Override
-	public boolean tickable() {
-		return true;
-	}
-
-	@Override
-	public void tick() {
-		if (second >= refreshDelay.get() * 20) {
-			updatePing();
-			second = 0;
-		} else
-			second++;
-	}
-
-	private void updatePing() {
-		if (MinecraftClient.getInstance().getCurrentServerEntry() != null) {
-			getRealTimeServerPing(MinecraftClient.getInstance().getCurrentServerEntry());
-		} else if (MinecraftClient.getInstance().isIntegratedServerRunning()) {
-			currentServerPing = 1;
-		}
-	}
-
-	//Indicatia removed this feature...
-	//We still need it :(
-	private void getRealTimeServerPing(ServerInfo server) {
+@Mixin(value = PlatformDispatch.class, remap = false)
+public class PlatformDispatchMixin {
+	@Unique
+	private static void getRealTimeServerPing(ServerInfo server, MutableInt currentServerPing) {
 		ThreadExecuter.scheduleTask(() -> {
 			try {
 				var address = ServerAddress.parse(server.address);
@@ -105,15 +64,15 @@ public class PingHud extends SimpleTextHudEntry {
 
 						@Override
 						public void onServerMetadata(ServerMetadataS2CPacket packet) {
-							this.currentSystemTime = net.minecraft.util.Util.getMeasuringTimeMs();
+							this.currentSystemTime = Util.getMeasuringTimeMs();
 							clientConnection.send(new QueryPingC2SPacket(this.currentSystemTime));
 						}
 
 						@Override
 						public void onQueryPong(QueryPongS2CPacket packet) {
 							var time = this.currentSystemTime;
-							var latency = net.minecraft.util.Util.getMeasuringTimeMs();
-							currentServerPing = (int) (latency - time);
+							var latency = Util.getMeasuringTimeMs();
+							currentServerPing.setValue((int) (latency - time));
 							clientConnection.disconnect(Text.translatable("multiplayer.status.finished"));
 						}
 
@@ -134,20 +93,35 @@ public class PingHud extends SimpleTextHudEntry {
 		});
 	}
 
-	@Override
-	public List<Option<?>> getConfigurationOptions() {
-		List<Option<?>> options = super.getConfigurationOptions();
-		options.add(refreshDelay);
-		return options;
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge.
+	 */
+	@Overwrite
+	public static void pingHud$updatePing(MutableInt currentServerPing) {
+		final var minecraft = MinecraftClient.getInstance();
+		if (minecraft.getCurrentServerEntry() != null) {
+			getRealTimeServerPing(minecraft.getCurrentServerEntry(), currentServerPing);
+		} else if (minecraft.isIntegratedServerRunning()) {
+			currentServerPing.setValue(1);
+		}
 	}
 
-	@Override
-	public String getValue() {
-		return currentServerPing + " ms";
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge.
+	 */
+	@Overwrite
+	public static AxoSprite.Dynamic ipHud$getServerIcon() {
+		throw BridgeUtil.noImpl();
 	}
 
-	@Override
-	public String getPlaceholder() {
-		return "68 ms";
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge.
+	 */
+	@Overwrite
+	public static void playerHud$renderPlayer(AxoRenderContext graphics, float i) {
+		throw BridgeUtil.noImpl();
 	}
 }

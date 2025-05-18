@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud;
 
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.texture.NativeImage;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
@@ -43,19 +44,25 @@ import net.minecraft.resource.pack.ResourcePack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawString;
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.fillRect;
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.outlineRect;
+
 public class PackDisplayHud extends TextHudEntry {
 
 	public static final Identifier ID = Identifier.of("axolotlclient", "packdisplayhud");
-	public final List<PackWidget> widgets = new ArrayList<>();
+	private final List<PackWidget> widgets = new ArrayList<>();
 	private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
 	private PackWidget placeholder;
+	private final MinecraftClient client = (MinecraftClient) super.client;
 
 	public PackDisplayHud() {
 		super(200, 50, true);
 	}
 
 	@Override
-	public void renderComponent(GuiGraphics graphics, float f) {
+	public void renderComponent(AxoRenderContext context, float f) {
+		final var graphics = (GuiGraphics) context;
 		DrawPosition pos = getPos();
 
 		if (widgets.isEmpty())
@@ -120,7 +127,7 @@ public class PackDisplayHud extends TextHudEntry {
 	}
 
 	@Override
-	public void renderPlaceholderComponent(GuiGraphics graphics, float f) {
+	public void renderPlaceholderComponent(AxoRenderContext graphics, float f) {
 		boolean updateBounds = false;
 		if (getHeight() < 18) {
 			setHeight(18);
@@ -139,7 +146,7 @@ public class PackDisplayHud extends TextHudEntry {
 			} catch (Exception ignored) {
 			}
 		} else {
-			placeholder.render(graphics, getPos().x() + 1, getPos().y() + 1);
+			placeholder.render((GuiGraphics) graphics, getPos().x() + 1, getPos().y() + 1);
 		}
 	}
 

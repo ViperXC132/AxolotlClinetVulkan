@@ -128,9 +128,10 @@ public class PlatformImplInternalMixin {
      */
     @Overwrite
     public static AxoKeybinding createKeyBinding(AxoKey defaultKey, String name, String category) {
-        final var binding = new KeyMapping(name, ((InputConstants.Key) defaultKey).getValue(), category);
-        KeyBindingHelper.registerKeyBinding(binding);
-        return binding;
+		int code = defaultKey == null ? -1 : ((InputConstants.Key) defaultKey).getValue();
+		final var binding = new KeyMapping(name, code, category);
+		KeyBindingHelper.registerKeyBinding(binding);
+		return binding;
     }
 
     /**

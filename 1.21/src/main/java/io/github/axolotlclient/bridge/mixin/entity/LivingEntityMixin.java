@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -20,28 +20,27 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.hud.gui.hud.simple;
+package io.github.axolotlclient.bridge.mixin.entity;
 
-import io.github.axolotlclient.modules.hud.gui.entry.SimpleTextHudEntry;
-import net.minecraft.client.resource.language.I18n;
-import net.minecraft.util.Identifier;
+import io.github.axolotlclient.bridge.entity.AxoEntity;
+import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffectInstance;
+import java.util.List;
+import java.util.Map;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
-public class PlayerCountHud extends SimpleTextHudEntry {
-
-	public static final Identifier ID = Identifier.of("axolotlclient", "playercounthud");
+@Mixin(LivingEntity.class)
+public class LivingEntityMixin implements AxoEntity {
+	@Shadow
+	@Final
+	private Map<StatusEffect, StatusEffectInstance> activeStatusEffects;
 
 	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
-	@Override
-	public String getValue() {
-		return client.world.getPlayers().size() + " " + I18n.translate("players");
-	}
-
-	@Override
-	public String getPlaceholder() {
-		return 3.141592 + " " + I18n.translate("players");
+	public List<AxoStatusEffectInstance> br$getStatusEffects() {
+		return List.copyOf(activeStatusEffects.values());
 	}
 }

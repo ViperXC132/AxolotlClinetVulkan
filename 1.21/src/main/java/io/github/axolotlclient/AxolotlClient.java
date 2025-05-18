@@ -70,7 +70,6 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 		// registerModule(SkyResourceManager.getInstance());
 		registerModule(Zoom.getInstance());
 		registerModule(HudManager.getInstance());
-		registerModule(HudManagerCommon.getInstance());
 		registerModule(HypixelMods.getInstance());
 		registerModule(MotionBlur.getInstance());
 		// registerModule(MenuBlur.getInstance());

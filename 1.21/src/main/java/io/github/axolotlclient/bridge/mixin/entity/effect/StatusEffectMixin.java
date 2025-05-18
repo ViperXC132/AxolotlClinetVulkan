@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -20,26 +20,24 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.hud.gui.layout;
+package io.github.axolotlclient.bridge.mixin.entity.effect;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffect;
+import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
+import io.github.axolotlclient.bridge.render.AxoSprite;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.registry.Holder;
+import org.spongepowered.asm.mixin.Mixin;
 
-/**
- * This implementation of Hud modules is based on KronHUD.
- * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
- *
- * @license GPL-3.0
- */
-
-@AllArgsConstructor
-public enum CardinalOrder {
-
-	TOP_DOWN(false, -1), DOWN_TOP(false, 1), LEFT_RIGHT(true, 1), RIGHT_LEFT(true, -1),
-	;
-
-	@Getter
-	private final boolean xAxis;
-	@Getter
-	private final int direction;
+@Mixin(StatusEffect.class)
+public abstract class StatusEffectMixin implements AxoStatusEffect {
+	@Override
+	public AxoSprite br$getSprite() {
+		return new AxoSpriteImpl.Vanilla(
+			MinecraftClient.getInstance().getStatusEffectSpriteManager().getSprite(
+				new Holder.Direct<>((StatusEffect) (Object) this)
+			)
+		);
+	}
 }

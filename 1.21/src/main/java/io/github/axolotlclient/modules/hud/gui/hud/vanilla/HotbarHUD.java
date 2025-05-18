@@ -22,12 +22,13 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
-import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
@@ -37,17 +38,23 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 
-public class HotbarHUD extends TextHudEntry {
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawCenteredString;
 
+public class HotbarHUD extends TextHudEntry {
+	public static final Identifier ICONS_TEXTURE = Identifier.ofDefault("textures/gui/icons.png");
 	public static final Identifier ID = Identifier.of("axolotlclient", "hotbarhud");
 	private static final Identifier WIDGETS_TEXTURE = Identifier.ofDefault("textures/gui/widgets.png");
+
+	private final MinecraftClient client = (MinecraftClient) super.client;
 
 	public HotbarHUD() {
 		super(182, 22, false);
 	}
 
 	@Override
-	public void renderComponent(GuiGraphics graphics, float delta) {
+	public void renderComponent(AxoRenderContext context, float delta) {
+		final var graphics = (GuiGraphics) context;
+
 		graphics.getMatrices().push();
 		PlayerEntity playerEntity = MinecraftClient.getInstance().cameraEntity instanceof PlayerEntity
 			? (PlayerEntity) MinecraftClient.getInstance().cameraEntity
@@ -129,7 +136,9 @@ public class HotbarHUD extends TextHudEntry {
 	}
 
 	@Override
-	public void renderPlaceholderComponent(GuiGraphics graphics, float delta) {
+	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
+		final var graphics = (GuiGraphics) context;
+
 		DrawPosition pos = getPos();
 
 		drawCenteredString(graphics, MinecraftClient.getInstance().textRenderer, getName(), pos.x() + width / 2,

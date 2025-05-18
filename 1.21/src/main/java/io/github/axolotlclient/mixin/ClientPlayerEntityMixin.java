@@ -24,7 +24,7 @@ package io.github.axolotlclient.mixin;
 
 import com.mojang.authlib.GameProfile;
 import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hud.gui.hud.simple.ToggleSprintHud;
+import io.github.axolotlclient.modules.hud.gui0.hud.simple.ToggleSprintHud;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.world.ClientWorld;

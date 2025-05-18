@@ -84,6 +84,18 @@
 			],
 			"net/minecraft/class_2561": [
 				"io/github/axolotlclient/bridge/util/AxoText"
+			],
+			"net/minecraft/class_332": [
+				"io/github/axolotlclient/bridge/render/AxoRenderContext"
+			],
+			"net/minecraft/class_640": [
+				"io/github/axolotlclient/bridge/AxoPlayerProfile"
+			],
+			"net/minecraft/class_1293": [
+				"io/github/axolotlclient/bridge/entity/effect/AxoStatusEffectInstance"
+			],
+			"net/minecraft/class_1291": [
+				"io/github/axolotlclient/bridge/entity/effect/AxoStatusEffect"
 			]
 		}
 	},

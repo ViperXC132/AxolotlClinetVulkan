@@ -34,7 +34,6 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.mixin.ParticleAccessor;
-import io.github.axolotlclient.modules.AbstractModule0;
 import io.github.axolotlclient.util.ClientColors;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.particle.ParticleType;

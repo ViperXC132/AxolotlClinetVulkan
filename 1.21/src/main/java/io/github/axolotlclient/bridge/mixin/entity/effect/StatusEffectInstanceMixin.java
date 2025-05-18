@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -20,39 +20,25 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.hud.gui.hud.simple;
+package io.github.axolotlclient.bridge.mixin.entity.effect;
 
-import io.github.axolotlclient.mixin.MinecraftClientAccessor;
-import io.github.axolotlclient.modules.hud.gui.entry.SimpleTextHudEntry;
-import net.minecraft.util.Identifier;
+import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffect;
+import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.registry.Holder;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
-/**
- * This implementation of Hud modules is based on KronHUD.
- * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
- *
- * @license GPL-3.0
- */
-
-public class FPSHud extends SimpleTextHudEntry {
-
-	public static final Identifier ID = Identifier.of("kronhud", "fpshud");
-
-	public FPSHud() {
-		super();
-	}
+@Mixin(StatusEffectInstance.class)
+public abstract class StatusEffectInstanceMixin implements AxoStatusEffectInstance {
+	@Shadow
+	@Final
+	private Holder<StatusEffect> type;
 
 	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
-	@Override
-	public String getValue() {
-		return MinecraftClientAccessor.axolotlclient$getCurrentFps() + " FPS";
-	}
-
-	@Override
-	public String getPlaceholder() {
-		return "60 FPS";
+	public AxoStatusEffect br$getType() {
+		return type.value();
 	}
 }

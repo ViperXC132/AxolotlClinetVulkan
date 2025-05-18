@@ -18,6 +18,7 @@
 		"key.GameOptionsMixin",
 		"key.KeyBindingMixin",
 		"key.KeyMixin",
+		"render.GuiGraphicsMixin",
 		"render.TextRendererMixin",
 		"render.WindowMixin",
 		"util.IdentifierMixin",
@@ -26,5 +27,13 @@
 	],
 	"injectors": {
 		"defaultRequire": 1
-	}
+	},
+	"mixins": [
+		"PlatformDispatchMixin",
+		"entity.LivingEntityMixin",
+		"entity.effect.AxoStatusEffectsMixin",
+		"entity.effect.StatusEffectInstanceMixin",
+		"entity.effect.StatusEffectMixin",
+		"render.AxoSpritesMixin"
+	]
 }

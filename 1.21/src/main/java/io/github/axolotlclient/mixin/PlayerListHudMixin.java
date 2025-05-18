@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.mixin;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -42,6 +43,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.hud.PlayerListHud;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.text.MutableText;
@@ -221,7 +223,7 @@ public abstract class PlayerListHudMixin {
 			return;
 		}
 
-		game.renderCustomScoreboardObjective(graphics, c_hyyqqfbu.name().getString(), objective, y, endX);
+		game.renderCustomScoreboardObjective(graphics, c_hyyqqfbu.name().getString(), objective.getScoreboard().getScore(ScoreHolder.of(c_hyyqqfbu.name().getString()), objective).getScore(), y, endX);
 
 		ci.cancel();
 	}
@@ -259,16 +261,17 @@ public abstract class PlayerListHudMixin {
 		cir.setReturnValue(Text.of(player.getTabListDisplay()));
 	}
 
+	@SuppressWarnings("unchecked")
 	@ModifyVariable(method = "render", at = @At(value = "STORE"), ordinal = 0)
 	public List<PlayerListEntry> axolotlclient$overrideSortedPlayers(List<PlayerListEntry> original) {
 		if (!BedwarsMod.getInstance().inGame()) {
 			return original;
 		}
-		List<PlayerListEntry> players = BedwarsMod.getInstance().getGame().get().getTabPlayerList(original);
+		List<?> players = BedwarsMod.getInstance().getGame().get().getTabPlayerList(Collections.unmodifiableList(original));
 		if (players == null) {
 			return original;
 		}
-		return players;
+		return (List<PlayerListEntry>) players;
 	}
 
 	@Inject(method = "setHeader", at = @At("HEAD"), cancellable = true)
@@ -276,7 +279,7 @@ public abstract class PlayerListHudMixin {
 		if (!BedwarsMod.getInstance().inGame()) {
 			return;
 		}
-		this.header = BedwarsMod.getInstance().getGame().get().getTopBarText();
+		this.header = (Text) BedwarsMod.getInstance().getGame().get().getTopBarText();
 		ci.cancel();
 	}
 
@@ -285,7 +288,7 @@ public abstract class PlayerListHudMixin {
 		if (!BedwarsMod.getInstance().inGame()) {
 			return;
 		}
-		this.footer = BedwarsMod.getInstance().getGame().get().getBottomBarText();
+		this.footer = (Text) BedwarsMod.getInstance().getGame().get().getBottomBarText();
 		ci.cancel();
 	}
 }

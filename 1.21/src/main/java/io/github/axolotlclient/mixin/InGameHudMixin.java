@@ -24,11 +24,11 @@ package io.github.axolotlclient.mixin;
 
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hud.gui.hud.PotionsHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ActionBarHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.CrosshairHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.HotbarHUD;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ScoreboardHud;
+import io.github.axolotlclient.modules.hud.gui0.hud.PotionsHud;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.util.events.Events;
 import io.github.axolotlclient.util.events.impl.ScoreboardRenderEvent;
@@ -60,14 +60,14 @@ public abstract class InGameHudMixin {
 	@Inject(method = "render", at = @At(value = "TAIL"))
 	private void onHudRender(GuiGraphics graphics, DeltaTracker tracker, CallbackInfo ci) {
 		if (!MinecraftClient.getInstance().options.hudHidden) {
-			HudManager.getInstance().render(graphics, tracker);
+			HudManager.getInstance().render(graphics, tracker.getLastDuration());
 		}
 	}
 
 	@Inject(method = "renderStatusEffectOverlay", at = @At(value = "HEAD"))
 	private void axolotlclient$onHudRender(GuiGraphics graphics, DeltaTracker tickDelta, CallbackInfo ci) {
 		if (!MinecraftClient.getInstance().options.hudHidden) {
-			HudManager.getInstance().render(graphics, tickDelta);
+			HudManager.getInstance().render(graphics, tickDelta.getLastDuration());
 		}
 	}
 

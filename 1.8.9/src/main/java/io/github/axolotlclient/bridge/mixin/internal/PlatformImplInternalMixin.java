@@ -141,7 +141,6 @@ public class PlatformImplInternalMixin {
 	 */
 	@Overwrite
 	public static AxoKeybinding createKeyBinding(AxoKey defaultKey, String name, String category) {
-		// TODO: is -1 the proper value?
 		final var id = defaultKey == null ? -1 : ((AxoKeyImpl) defaultKey).id();
 		final var binding = new KeyBinding(name, id, category);
 		Bridge.addKeybind(binding);

@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud;
 
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -34,7 +35,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.mixin.KeyBindAccessor;
-import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.keystrokes.KeystrokePositioningScreen;
 import io.github.axolotlclient.modules.hud.gui.keystrokes.KeystrokesScreen;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
@@ -56,6 +57,10 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawString;
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.fillRect;
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.outlineRect;
+
 /**
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
@@ -67,6 +72,7 @@ public class KeystrokeHud extends TextHudEntry {
 
 	private static final Path KEYSTROKE_SAVE_FILE = AxolotlClient.resolveConfigFile("keystrokes.json");
 	public static final Identifier ID = Identifier.of("kronhud", "keystrokehud");
+	private final MinecraftClient client = (MinecraftClient) super.client;
 
 	private final ColorOption pressedTextColor = new ColorOption("heldtextcolor", new Color(0xFF000000));
 	private final ColorOption pressedBackgroundColor = new ColorOption("heldbackgroundcolor", new Color(0x64FFFFFF));
@@ -148,7 +154,9 @@ public class KeystrokeHud extends TextHudEntry {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, float delta) {
+	public void render(AxoRenderContext context, float delta) {
+		final var graphics = (GuiGraphics) context;
+
 		graphics.getMatrices().push();
 		scale(graphics);
 		renderComponent(graphics, delta);
@@ -156,17 +164,17 @@ public class KeystrokeHud extends TextHudEntry {
 	}
 
 	@Override
-	public void renderComponent(GuiGraphics graphics, float delta) {
+	public void renderComponent(AxoRenderContext graphics, float delta) {
 		if (keystrokes == null) {
 			setKeystrokes();
 		}
 		for (Keystroke stroke : keystrokes) {
-			stroke.render(graphics);
+			stroke.render((GuiGraphics) graphics);
 		}
 	}
 
 	@Override
-	public void renderPlaceholderComponent(GuiGraphics graphics, float delta) {
+	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
 		renderComponent(graphics, delta);
 	}
 
