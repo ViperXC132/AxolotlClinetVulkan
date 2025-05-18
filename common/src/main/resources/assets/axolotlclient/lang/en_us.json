@@ -482,7 +482,7 @@
 	"api.privacyNotice.accept": "Accept",
 	"api.privacyNotice.deny": "Deny/Decide later",
 	"api.privacyNotice.openPolicy": "View Terms",
-	"api.privacyNotice.description": "The social features of AxolotlClient are subject to our terms of service and our privacy policy. You are free to accept or deny them, but in case of the latter some features will not be available. You can update this decision at any time.",
+	"api.privacyNotice.description": "The social features of AxolotlClient are subject to our terms of service and our privacy policy. \n\nYou are free to accept or deny them, but in case of the latter some features will not be available.\n You can update this decision at any time.",
 	"api.users.block": "Block User",
 	"api.users.unblock": "Unblock User",
 	"api.friends.createGroup": "Create Group",
@@ -763,5 +763,9 @@
 	"menu_button_mode.modmenu": "Only without ModMenu",
 	"menu_button_mode.always": "Always",
 	"title_screen_button_mode": "Title Screen Options Button Mode",
-	"game_menu_screen_button_mode": "Game Menu Screen Options Button Mode"
+	"game_menu_screen_button_mode": "Game Menu Screen Options Button Mode",
+	"privacy_policy_state.accepted": "Accepted",
+	"privacy_policy_state.denied": "Denied",
+	"privacy_policy_state.unset": "Unset",
+	"api.privacy_policy_accepted": "Terms Acceptance"
 }

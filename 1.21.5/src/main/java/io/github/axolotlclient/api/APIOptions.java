@@ -114,7 +114,6 @@ public class APIOptions extends Options {
 		};
 		if (Constants.ENABLED) {
 			AxolotlClient.CONFIG.addCategory(category);
-			AxolotlClient.config.add(privacyAccepted);
 		}
 	}
 }

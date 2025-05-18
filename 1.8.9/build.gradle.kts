@@ -60,22 +60,8 @@ dependencies {
 
 	compileOnly("org.lwjgl:lwjgl-glfw:${lwjglVersion}")
 
-	modCompileOnly("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}") {
-		exclude(group = "org.lwjgl", module = "lwjgl-glfw")
-		exclude(group = "org.lwjgl", module = "lwjgl-openal")
-		exclude(group = "org.lwjgl", module = "lwjgl-opengl")
-		exclude(group = "org.lwjgl", module = "lwjgl")
-		exclude(group = "net.fabricmc")
-		exclude(group = "org.javassist")
-	}
-	modLocalRuntime("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}:all-remapped") {
-		exclude(group = "org.lwjgl", module = "lwjgl-glfw")
-		exclude(group = "org.lwjgl", module = "lwjgl-openal")
-		exclude(group = "org.lwjgl", module = "lwjgl-opengl")
-		exclude(group = "org.lwjgl", module = "lwjgl")
-		exclude(group = "net.fabricmc")
-		exclude(group = "org.javassist")
-	}
+	modCompileOnly("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}")
+	modLocalRuntime("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}:all-remapped")
 
 	include(implementation("org.lwjgl", "lwjgl-tinyfd", "3.3.5"))
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", "3.3.5", classifier = "natives-linux"))

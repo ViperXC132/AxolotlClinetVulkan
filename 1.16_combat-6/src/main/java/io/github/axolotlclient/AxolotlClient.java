@@ -25,6 +25,7 @@ package io.github.axolotlclient;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import com.google.gson.JsonObject;
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
@@ -123,7 +124,7 @@ public class AxolotlClient implements ClientModInitializer {
 
 		io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig.getInstance()
 			.register(configManager = new VersionedJsonConfigManager(AxolotlClientCommon.getInstance().getMainConfigFile(),
-				CONFIG.config, 3, (oldVersion, newVersion, config, json) -> {
+				CONFIG.config, 4, (oldVersion, newVersion, config, json) -> {
 				if (oldVersion.getMajor() <= 1) {
 					if (json.has("hud")) {
 						var hud = json.get("hud").getAsJsonObject();
@@ -150,6 +151,21 @@ public class AxolotlClient implements ClientModInitializer {
 								}
 							}
 						}
+					}
+				}
+				if (oldVersion.getMajor() <= 3) {
+					if (json.has("storedOptions")) {
+						var hiddenOptions = json.get("storedOptions").getAsJsonObject();
+
+						JsonObject apiOptions;
+						if (json.has("api.category")) {
+							apiOptions = json.get("api.category").getAsJsonObject();
+						} else {
+							apiOptions = new JsonObject();
+							json.add("api.category", apiOptions);
+						}
+
+						apiOptions.addProperty("api.privacy_policy_accepted", "privacy_policy_state."+hiddenOptions.get("privacyPolicyAccepted").getAsString().toLowerCase(Locale.ROOT));
 					}
 				}
 				return json;
