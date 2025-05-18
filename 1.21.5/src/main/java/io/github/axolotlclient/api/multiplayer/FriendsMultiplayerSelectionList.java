@@ -125,7 +125,6 @@ public class FriendsMultiplayerSelectionList extends ObjectSelectionList<Friends
 				this.friendEntries.add(createEntry(friend));
 			}
 		}
-
 		this.refreshEntries();
 	}
 
@@ -173,9 +172,9 @@ public class FriendsMultiplayerSelectionList extends ObjectSelectionList<Friends
 		}
 	}
 
+	@Getter
 	public class StatusFriendEntry extends Entry {
 
-		@Getter
 		protected final User user;
 
 		protected StatusFriendEntry(final FriendsMultiplayerScreen screen, final User friend) {
@@ -220,6 +219,7 @@ public class FriendsMultiplayerSelectionList extends ObjectSelectionList<Friends
 		private static final int STATUS_ICON_HEIGHT = 8;
 		private final FriendsMultiplayerScreen screen;
 		private final Minecraft minecraft;
+		@Getter
 		protected final ServerData serverData;
 		private final FaviconTexture icon;
 		private byte @Nullable [] lastIconBytes;
@@ -239,7 +239,6 @@ public class FriendsMultiplayerSelectionList extends ObjectSelectionList<Friends
 			this.serverData = serverData;
 			this.icon = FaviconTexture.forServer(minecraft.getTextureManager(), serverData.ip != null ? serverData.ip : user.getUuid() + "_" + serverData.name);
 			this.user = user;
-			refreshStatus();
 		}
 
 
@@ -492,6 +491,7 @@ public class FriendsMultiplayerSelectionList extends ObjectSelectionList<Friends
 		private ExternalServerFriendEntry(FriendsMultiplayerScreen screen, Status.Activity.ExternalServerMetadata statusDescription, ServerData serverData, User friend) {
 			super(screen, serverData, friend);
 			this.statusDescription = statusDescription;
+			refreshStatus();
 		}
 
 		@Override
@@ -519,6 +519,7 @@ public class FriendsMultiplayerSelectionList extends ObjectSelectionList<Friends
 		protected E4mcServerFriendEntry(FriendsMultiplayerScreen screen, Status.Activity.E4mcMetadata statusDescription, ServerData serverData, User friend) {
 			super(screen, serverData, friend);
 			this.statusDescription = statusDescription;
+			refreshStatus();
 		}
 
 		@Override

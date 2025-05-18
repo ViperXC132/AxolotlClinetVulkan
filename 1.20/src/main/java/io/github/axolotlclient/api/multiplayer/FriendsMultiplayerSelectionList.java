@@ -231,6 +231,10 @@ public class FriendsMultiplayerSelectionList extends AlwaysSelectedEntryListWidg
 			this.user = user;
 		}
 
+		@Override
+		public ServerInfo getServerData() {
+			return serverData.serverInfo();
+		}
 
 		protected void refreshStatus() {
 			this.onlinePlayersTooltip = null;

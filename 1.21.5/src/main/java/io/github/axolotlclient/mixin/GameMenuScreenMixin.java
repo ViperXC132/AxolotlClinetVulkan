@@ -27,6 +27,7 @@ import java.util.function.Supplier;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.CommonOptions;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.APIOptions;
 import io.github.axolotlclient.api.ChatsSidebar;
@@ -34,7 +35,6 @@ import io.github.axolotlclient.api.FriendsScreen;
 import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
 import io.github.axolotlclient.modules.hypixel.HypixelMods;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.GridLayout;
@@ -43,7 +43,6 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -54,11 +53,6 @@ public abstract class GameMenuScreenMixin extends Screen {
 
 	protected GameMenuScreenMixin(Component title) {
 		super(title);
-	}
-
-	@Unique
-	private static boolean axolotlclient$hasModMenu() {
-		return FabricLoader.getInstance().isModLoaded("modmenu") && !FabricLoader.getInstance().isModLoaded("axolotlclient-modmenu");
 	}
 
 	@Inject(method = "createPauseMenu", at = @At("TAIL"))
@@ -75,7 +69,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 					button -> minecraft.setScreen(new ChatsSidebar(this)))
 				.bounds(10, buttonY, 75, 20).build());
 		}
-		if (!axolotlclient$hasModMenu()) {
+		if (CommonOptions.gameMenuScreenOptionButtonMode.get().showButton()) {
 			addRenderableWidget(new Button(widget.getX() + widget.getWidth(),
 				widget.getY() + 50, 20, 20,
 				Component.empty(),

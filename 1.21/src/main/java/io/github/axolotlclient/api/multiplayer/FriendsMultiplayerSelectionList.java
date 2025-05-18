@@ -219,6 +219,7 @@ public class FriendsMultiplayerSelectionList extends AlwaysSelectedEntryListWidg
 		private static final int STATUS_ICON_HEIGHT = 8;
 		private final FriendsMultiplayerScreen screen;
 		private final MinecraftClient minecraft;
+		@Getter
 		protected final ServerInfo serverData;
 		private final FaviconTexture icon;
 		private byte @Nullable [] lastIconBytes;
@@ -239,7 +240,6 @@ public class FriendsMultiplayerSelectionList extends AlwaysSelectedEntryListWidg
 			this.icon = FaviconTexture.createServerFaviconTexture(minecraft.getTextureManager(), serverData.address != null ? serverData.address : user.getUuid() + "_" + serverData.name);
 			this.user = user;
 		}
-
 
 		protected void refreshStatus() {
 			this.onlinePlayersTooltip = null;

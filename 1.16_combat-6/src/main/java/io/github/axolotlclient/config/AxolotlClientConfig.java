@@ -148,6 +148,8 @@ public class AxolotlClientConfig {
 		general.add(openCredits);
 		general.add(debugLogOutput);
 		general.add(CommonOptions.datetimeFormat);
+		general.add(CommonOptions.titleScreenOptionButtonMode);
+		general.add(CommonOptions.gameMenuScreenOptionButtonMode);
 		ConfigUI.getInstance().runWhenLoaded(() -> {
 			general.getOptions().removeIf(o -> "configStyle".equals(o.getName()));
 			String[] themes = ConfigUI.getInstance().getStyleNames().stream().map(s -> "configStyle." + s)

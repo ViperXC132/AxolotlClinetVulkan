@@ -243,6 +243,10 @@ public class FriendsMultiplayerSelectionList extends EntryListWidget<FriendsMult
 			this.user = user;
 		}
 
+		@Override
+		public ServerListEntry getServerData() {
+			return serverData.serverInfo();
+		}
 
 		protected void refreshStatus() {
 			this.onlinePlayersTooltip = null;

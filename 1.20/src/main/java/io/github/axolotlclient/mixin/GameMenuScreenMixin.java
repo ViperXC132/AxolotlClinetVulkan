@@ -25,13 +25,13 @@ package io.github.axolotlclient.mixin;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import io.github.axolotlclient.CommonOptions;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.ChatsSidebar;
 import io.github.axolotlclient.api.FriendsScreen;
 import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
 import io.github.axolotlclient.modules.hypixel.HypixelMods;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -51,10 +51,6 @@ public abstract class GameMenuScreenMixin extends Screen {
 		super(title);
 	}
 
-	private static boolean axolotlclient$hasModMenu() {
-		return FabricLoader.getInstance().isModLoaded("modmenu") && !FabricLoader.getInstance().isModLoaded("axolotlclient-modmenu");
-	}
-
 	@Inject(method = "initWidgets", at = @At("TAIL"))
 	private void axolotlclient$addSidebarButton(CallbackInfo ci) {
 		if (API.getInstance().isSocketConnected()) {
@@ -69,8 +65,9 @@ public abstract class GameMenuScreenMixin extends Screen {
 
 	@Redirect(method = "initWidgets", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/GameMenuScreen;createLinkConfirmationButton(Lnet/minecraft/text/Text;Ljava/lang/String;)Lnet/minecraft/client/gui/widget/ButtonWidget;", ordinal = 1))
 	private ButtonWidget axolotlclient$addClientOptionsButton(GameMenuScreen instance, Text text, String string) {
-		if (axolotlclient$hasModMenu())
+		if (!CommonOptions.gameMenuScreenOptionButtonMode.get().showButton()) {
 			return createLinkConfirmationButton(text, string);
+		}
 
 		return createButton(Text.translatable("title_short"), () -> new HudEditScreen(this));
 	}

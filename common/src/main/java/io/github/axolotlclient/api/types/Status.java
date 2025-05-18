@@ -251,6 +251,9 @@ public class Status {
 				}
 
 				public static Favicon fromString(String base64String) {
+					if (!base64String.startsWith(PREFIX)) {
+						return new Favicon(null);
+					}
 					return new Favicon(Base64.getDecoder().decode(base64String.substring(PREFIX.length()).replaceAll("\n", "").getBytes(StandardCharsets.UTF_8)));
 				}
 
@@ -258,6 +261,10 @@ public class Status {
 
 					@Override
 					public void write(JsonWriter out, Favicon value) throws IOException {
+						if (value.iconBytes() == null) {
+							out.nullValue();
+							return;
+						}
 						out.value(value.toString());
 					}
 

@@ -758,5 +758,10 @@
 	"api.allow_friends_server_join.tooltip": "This will expose your current server's address.<br> Includes worlds shared using e4mc & WorldHost!",
 	"api.status.title.unknown_server": "Playing on a Server",
 	"api.servers.friends.no_online_friends": "No online friends!",
-	"api.worldhost.joinability.not_joinable": "Player does not allow joining!"
+	"api.worldhost.joinability.not_joinable": "Player does not allow joining!",
+	"menu_button_mode.disabled": "Disabled",
+	"menu_button_mode.modmenu": "Only without ModMenu",
+	"menu_button_mode.always": "Always",
+	"title_screen_button_mode": "Title Screen Options Button Mode",
+	"game_menu_screen_button_mode": "Game Menu Screen Options Button Mode"
 }

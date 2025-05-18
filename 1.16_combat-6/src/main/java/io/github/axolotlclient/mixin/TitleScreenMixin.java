@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.CommonOptions;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.APIOptions;
 import io.github.axolotlclient.api.FriendsScreen;
@@ -129,7 +130,7 @@ public abstract class TitleScreenMixin extends Screen {
 		target = "Lnet/minecraft/client/gui/widget/ButtonWidget;<init>(IIIILnet/minecraft/text/Text;Lnet/minecraft/client/gui/widget/ButtonWidget$PressAction;Lnet/minecraft/client/gui/widget/ButtonWidget$TooltipSupplier;)V",
 		ordinal = 1))
 	public void axolotlclient$noRealmsbutOptionsButton(Args args) {
-		if (!FabricLoader.getInstance().isModLoaded("modmenu")) {
+		if (CommonOptions.titleScreenOptionButtonMode.get().showButton()) {
 			args.set(4, new TranslatableText("config"));
 			args.set(5, (ButtonWidget.PressAction) buttonWidget -> MinecraftClient.getInstance()
 				.openScreen(new HudEditScreen(this)));
