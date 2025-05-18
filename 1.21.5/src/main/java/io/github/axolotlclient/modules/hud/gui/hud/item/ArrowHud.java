@@ -55,7 +55,7 @@ public class ArrowHud extends TextHudEntry {
 	private ItemStack currentArrow = arrowTypes[0];
 
 	public ArrowHud() {
-		super(20, 30, true);
+		super(20, 22, true);
 	}
 
 	@Override
