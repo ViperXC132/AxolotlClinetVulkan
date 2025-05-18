@@ -123,21 +123,31 @@ public class AxolotlClient implements ClientModInitializer {
 		io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig.getInstance().register(configManager =
 			new VersionedJsonConfigManager(AxolotlClientCommon.getInstance().getMainConfigFile(),
 				CONFIG.getConfig(), 3, (oldVersion, newVersion, config, json) -> {
-				if (oldVersion.getMajor() == 1) {
-					var keystrokes = json.get("hud").getAsJsonObject().get("keystrokehud")
-						.getAsJsonObject();
-					var mousemovement = new JsonObject();
-					mousemovement.addProperty("enabled", keystrokes.get("enabled").getAsBoolean() && keystrokes.get("mousemovement").getAsBoolean());
-					mousemovement.addProperty("mouseMovementIndicator", keystrokes.get("mouseMovementIndicator").getAsString());
-					mousemovement.addProperty("mouseMovementIndicatorOuter", keystrokes.get("mouseMovementIndicatorOuter").getAsString());
-					json.get("hud").getAsJsonObject().add("mousemovementhud", mousemovement);
+				if (oldVersion.getMajor() <= 1) {
+					if (json.has("hud")) {
+						var hud = json.get("hud").getAsJsonObject();
+						if (hud.has("keystrokehud")) {
+							var keystrokes = hud.get("keystrokehud")
+								.getAsJsonObject();
+							var mousemovement = new JsonObject();
+							mousemovement.addProperty("enabled", keystrokes.get("enabled").getAsBoolean() && keystrokes.get("mousemovement").getAsBoolean());
+							mousemovement.addProperty("mouseMovementIndicator", keystrokes.get("mouseMovementIndicator").getAsString());
+							mousemovement.addProperty("mouseMovementIndicatorOuter", keystrokes.get("mouseMovementIndicatorOuter").getAsString());
+							hud.add("mousemovementhud", mousemovement);
+						}
+					}
 				}
-				if (oldVersion.getMajor() == 2) {
-					var armorhud = json.get("hud").getAsJsonObject().get("armorhud").getAsJsonObject();
-					if (armorhud.has("armorhud.main_hand_item_top")) {
-						var mainItemTop = armorhud.get("armorhud.main_hand_item_top").getAsBoolean();
-						if (mainItemTop) {
-							armorhud.addProperty("armorhud.main_hand_item_position", "armorhud.main_hand_item_position.top");
+				if (oldVersion.getMajor() <= 2) {
+					if (json.has("hud")) {
+						var hud = json.get("hud").getAsJsonObject();
+						if (hud.has("armorhud")) {
+							var armorhud = hud.get("armorhud").getAsJsonObject();
+							if (armorhud.has("armorhud.main_hand_item_top")) {
+								var mainItemTop = armorhud.get("armorhud.main_hand_item_top").getAsBoolean();
+								if (mainItemTop) {
+									armorhud.addProperty("armorhud.main_hand_item_position", "armorhud.main_hand_item_position.top");
+								}
+							}
 						}
 					}
 				}
