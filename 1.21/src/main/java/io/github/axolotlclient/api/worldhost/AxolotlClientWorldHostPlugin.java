@@ -22,30 +22,32 @@
 
 package io.github.axolotlclient.api.worldhost;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Consumer;
 
-import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
-import com.mojang.serialization.JsonOps;
 import com.mojang.util.UndashedUuid;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.handlers.StatusUpdateHandler;
+import io.github.axolotlclient.api.multiplayer.ServerInfoUtil;
 import io.github.axolotlclient.api.requests.FriendRequest;
 import io.github.axolotlclient.api.requests.UserRequest;
+import io.github.axolotlclient.api.types.Status;
 import io.github.axolotlclient.api.types.User;
 import io.github.axolotlclient.api.util.UUIDHelper;
-import io.github.axolotlclient.util.GsonHelper;
 import io.github.gaming32.worldhost.FriendsListUpdate;
 import io.github.gaming32.worldhost.WorldHost;
 import io.github.gaming32.worldhost.gui.screen.PlayerInfoScreen;
 import io.github.gaming32.worldhost.plugin.*;
 import io.github.gaming32.worldhost.plugin.vanilla.GameProfileBasedProfilable;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.ConnectScreen;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.server.ServerMetadata;
+import net.minecraft.client.network.ServerAddress;
+import net.minecraft.client.network.ServerInfo;
 import net.minecraft.text.Text;
-import org.jetbrains.annotations.Nullable;
 
 public class AxolotlClientWorldHostPlugin implements WorldHostPlugin {
 
@@ -55,9 +57,9 @@ public class AxolotlClientWorldHostPlugin implements WorldHostPlugin {
 	public AxolotlClientWorldHostPlugin() {
 		Instance = this;
 		API.addStartupListener(() -> WorldHost.reconnect(false, true));
-		StatusUpdateHandler.addUpdateListener(user -> {
+		StatusUpdateHandler.addUpdateListener("world_host_plugin", user -> {
 			if (user.getStatus().isOnline() && user.getStatus().getActivity() != null) {
-				if (user.getStatus().getActivity().title().equals("api.status.title.world_host")) {
+				if (user.getStatus().getActivity().hasMetadata()) {
 					AxolotlClientOnlineFriend friend = AxolotlClientOnlineFriend.of(user);
 					WorldHost.ONLINE_FRIENDS.put(friend.uuid(), friend);
 					WorldHost.ONLINE_FRIEND_UPDATES.forEach(FriendsListUpdate::friendsListUpdate);
@@ -66,21 +68,18 @@ public class AxolotlClientWorldHostPlugin implements WorldHostPlugin {
 		});
 	}
 
-	String getWhStatusDescription() {
-		Map<String, Object> fields = new HashMap<>();
-		fields.put("value", MinecraftClient.getInstance().getServer().getSaveProperties().getWorldName());
-		if (MinecraftClient.getInstance().getServer().isRemote()) {
-			fields.put("connection_id", WorldHost.CONNECTION_ID);
-			fields.put("server_metadata", ServerMetadata.CODEC.encodeStart(JsonOps.INSTANCE, MinecraftClient.getInstance().getServer().getServerMetadata()).getOrThrow());
-		}
-		return GsonHelper.GSON.toJson(fields);
+	Status.Activity.WorldHostMetadata getWhStatusDescription() {
+		var server = MinecraftClient.getInstance().getServer();
+		var status = server.getServerMetadata();
+		String connectionId = server.isRemote() ? WorldHost.connectionIdToString(WorldHost.CONNECTION_ID) : null;
+		String externalIp = server.isRemote() && API.getInstance().getApiOptions().allowFriendsServerJoin.get() ? WorldHost.getExternalIp() : null;
+		return new Status.Activity.WorldHostMetadata(connectionId, externalIp,
+			ServerInfoUtil.getServerInfo(server.getSaveProperties().getWorldName(), status));
 	}
 
 	@Override
 	public void listFriends(Consumer<FriendListFriend> friendConsumer) {
-		FriendRequest.getInstance().getFriends().thenAccept(list -> {
-			list.stream().map(AxolotlClientFriendListFriend::new).forEach(friendConsumer);
-		});
+		FriendRequest.getInstance().getFriends().thenAccept(list -> list.stream().map(AxolotlClientFriendListFriend::new).forEach(friendConsumer));
 	}
 
 	@Override
@@ -91,38 +90,34 @@ public class AxolotlClientWorldHostPlugin implements WorldHostPlugin {
 	@Override
 	public void pingFriends(Collection<OnlineFriend> friends) {
 		friends.stream().filter(AxolotlClientOnlineFriend.class::isInstance).forEach(friend -> {
-			WorldHost.ONLINE_FRIEND_PINGS.put(friend.uuid(), AxolotlClientUserInfo.parse(((AxolotlClientOnlineFriend) friend).user.getStatus().getActivity().rawDescription()).metadata());
+			Status.Activity.ServerInfo info = switch (((AxolotlClientOnlineFriend) friend).metadata.attributes()) {
+				case Status.Activity.WorldHostMetadata wh -> wh.serverInfo();
+				case Status.Activity.E4mcMetadata e4 -> e4.serverInfo();
+				case Status.Activity.ExternalServerMetadata ex ->
+					new Status.Activity.ServerInfo(ex.serverName(), ex.serverName(), null, null, null);
+				default ->
+					throw new IllegalStateException("Unexpected value: " + ((AxolotlClientOnlineFriend) friend).metadata.attributes());
+			};
+			WorldHost.ONLINE_FRIEND_PINGS.put(friend.uuid(), ServerInfoUtil.getServerStatus(info));
 		});
 	}
 
 	@Override
 	public void refreshOnlineFriends() {
 		FriendRequest.getInstance().getFriends().thenAccept(list -> {
-			list.stream().filter(u -> u.getStatus().getTitle().equals("api.status.title.world_host")).map(AxolotlClientFriendListFriend::new).forEach(friend -> {
-				WorldHost.ONLINE_FRIENDS.put(friend.profile.getId(), AxolotlClientOnlineFriend.of(friend.friend));
-			});
+			list.stream().filter(u -> u.getStatus().getTitle().equals("api.status.title.world_host")).map(AxolotlClientFriendListFriend::new).forEach(friend ->
+				WorldHost.ONLINE_FRIENDS.put(friend.profile.getId(), AxolotlClientOnlineFriend.of(friend.friend)));
 			WorldHost.ONLINE_FRIEND_UPDATES.forEach(FriendsListUpdate::friendsListUpdate);
 		});
 	}
 
-	private record AxolotlClientUserInfo(long connectionId, @Nullable ServerMetadata metadata) {
-		public static AxolotlClientUserInfo parse(String json) {
-			JsonObject map = GsonHelper.fromJson(json);
-			long connectionId = map.has("connection_id") ? map.get("connection_id").getAsLong() : -1;
-			ServerMetadata metadata = map.has("server_metadata") ? ServerMetadata.CODEC.parse(JsonOps.INSTANCE, map.get("server_metadata")).getOrThrow() : null;
-			return new AxolotlClientUserInfo(connectionId, metadata);
-		}
-	}
-
 	private record AxolotlClientOnlineFriend(User user, GameProfile profile,
-											 long connectionId) implements OnlineFriend, GameProfileBasedProfilable {
+											 Status.Activity.Metadata metadata) implements OnlineFriend, GameProfileBasedProfilable {
 		private static AxolotlClientOnlineFriend of(User user) {
 			if (user.getStatus().isOnline() && user.getStatus().getActivity() != null) {
-				if (user.getStatus().getActivity().title().equals("api.status.title.world_host")) {
-					String data = user.getStatus().getActivity().rawDescription();
-					long connectionId = AxolotlClientUserInfo.parse(data).connectionId();
-					return new AxolotlClientOnlineFriend(user, new GameProfile(UndashedUuid.fromStringLenient(user.getUuid()), user.getName()), connectionId);
-
+				if (user.getStatus().getActivity().hasMetadata()) {
+					Status.Activity.Metadata data = user.getStatus().getActivity().metadata();
+					return new AxolotlClientOnlineFriend(user, new GameProfile(UndashedUuid.fromStringLenient(user.getUuid()), user.getName()), data);
 				}
 			}
 			throw new IllegalArgumentException();
@@ -135,7 +130,25 @@ public class AxolotlClientWorldHostPlugin implements WorldHostPlugin {
 
 		@Override
 		public void joinWorld(Screen screen) {
-			WorldHost.join(connectionId, screen);
+			switch (metadata.attributes()) {
+				case Status.Activity.WorldHostMetadata wh -> {
+					Long id = WorldHost.tryParseConnectionId(wh.connectionId());
+					if (id != null) {
+						WorldHost.join(id, screen);
+					}
+				}
+				case Status.Activity.E4mcMetadata e4 ->
+					connectToServer(screen, e4.domain(), e4.serverInfo().levelName());
+				case Status.Activity.ExternalServerMetadata ex ->
+					connectToServer(screen, ex.address(), ex.serverName());
+				default -> throw new IllegalStateException("Unexpected value: " + metadata.attributes());
+			}
+		}
+
+		private void connectToServer(Screen parent, String address, String name) {
+			if (address != null) {
+				ConnectScreen.connect(parent, MinecraftClient.getInstance(), ServerAddress.parse(address), new ServerInfo(name, address, ServerInfo.ServerType.OTHER), false, null);
+			}
 		}
 
 		@Override
@@ -145,7 +158,26 @@ public class AxolotlClientWorldHostPlugin implements WorldHostPlugin {
 
 		@Override
 		public Joinability joinability() {
-			return connectionId == -1 ? new Joinability.Unjoinable(Text.translatable("api.worldhost.joinability.not_published")) : Joinability.Joinable.INSTANCE;
+			switch (metadata.attributes()) {
+				case Status.Activity.WorldHostMetadata a -> {
+					if (a.connectionId() != null) {
+						return Joinability.Joinable.INSTANCE;
+					}
+				}
+				case Status.Activity.E4mcMetadata e -> {
+					if (e.domain() != null) {
+						return Joinability.Joinable.INSTANCE;
+					}
+				}
+				case Status.Activity.ExternalServerMetadata ex -> {
+					if (ex.address() != null) {
+						return Joinability.Joinable.INSTANCE;
+					}
+					return new Joinability.Unjoinable(Text.translatable("api.worldhost.joinability.not_joinable"));
+				}
+				default -> throw new IllegalStateException("Unexpected value: " + metadata.attributes());
+			}
+			return new Joinability.Unjoinable(Text.translatable("api.worldhost.joinability.not_published"));
 		}
 	}
 

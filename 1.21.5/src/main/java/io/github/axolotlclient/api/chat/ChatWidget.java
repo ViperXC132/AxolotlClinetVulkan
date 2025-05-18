@@ -194,9 +194,7 @@ public class ChatWidget extends ObjectSelectionList<ChatWidget.ChatLine> {
 						}
 						client.setScreen(previous);
 					}, Component.translatable("api.channels.confirm_report"), Component.translatable("api.channels.confirm_report.desc", origin.content())));
-				}).spacer().entry(Component.translatable("action.copy"), buttonWidget -> {
-					client.keyboardHandler.setClipboard(origin.content());
-				});
+				}).spacer().entry(Component.translatable("action.copy"), buttonWidget -> client.keyboardHandler.setClipboard(origin.content()));
 				screen.setContextMenu(builder.build());
 				return true;
 			}
@@ -255,7 +253,7 @@ public class ChatWidget extends ObjectSelectionList<ChatWidget.ChatLine> {
 			graphics.pose().pushPose();
 			graphics.pose().translate(0, 0, 5);
 			ResourceLocation texture =
-				Auth.getInstance().getSkinTexture(getOrigin().sender().getUuid(), getOrigin().sender().getName());
+				Auth.getInstance().getSkinTexture(getOrigin().sender().getUuid());
 			PlayerFaceRenderer.draw(graphics, texture, x - 22, y, 18, true, false, -1);
 			graphics.drawString(client.font, formattedTime, client.font.width(getContent()) + x + 5, y,
 				ClientColors.GRAY.toInt(), false

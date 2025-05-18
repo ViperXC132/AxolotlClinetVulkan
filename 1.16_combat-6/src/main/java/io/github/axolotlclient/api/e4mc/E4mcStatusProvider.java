@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -20,12 +20,17 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.api.util;
+package io.github.axolotlclient.api.e4mc;
 
-import java.time.Instant;
+import io.github.axolotlclient.api.types.Status;
+import net.fabricmc.loader.api.FabricLoader;
 
-public class TimestampParser {
-	public static Instant parse(String timestamp) {
-		return Instant.parse(timestamp);
+public class E4mcStatusProvider {
+
+	public static Status.Activity.E4mcMetadata getStatusDescription() {
+		if (FabricLoader.getInstance().isModLoaded("e4mc_minecraft")) {
+			return AxolotlClientE4mcPlugin.INSTANCE.getStatusDescription();
+		}
+		return null;
 	}
 }

@@ -22,10 +22,8 @@
 
 package io.github.axolotlclient.api;
 
-import java.util.Arrays;
-import java.util.Optional;
-
 import com.google.gson.JsonObject;
+import io.github.axolotlclient.api.e4mc.E4mcStatusProvider;
 import io.github.axolotlclient.api.requests.StatusUpdate;
 import io.github.axolotlclient.api.util.StatusUpdateProvider;
 import net.minecraft.client.MinecraftClient;
@@ -47,14 +45,20 @@ public class StatusUpdateProviderImpl implements StatusUpdateProvider {
 		if (entry != null) {
 
 			if (!entry.isLocal()) {
-				Optional<StatusUpdate.SupportedServer> optional = Arrays.stream(StatusUpdate.SupportedServer.values()).filter(s -> s.getAddress().matcher(entry.address).matches()).findFirst();
+				// None of these selected servers support CTS versions
+				/*Optional<StatusUpdate.SupportedServer> optional = Arrays.stream(StatusUpdate.SupportedServer.values()).filter(s -> s.getAddress().matcher(entry.address).matches()).findFirst();
 				if (optional.isPresent()) {
 					StatusUpdate.SupportedServer server = optional.get();
 
-				}
+				}*/
+				return StatusUpdate.inGameServer(entry.name, entry.address);
 			}
 			return StatusUpdate.inGameUnknown(entry.name);
 		} else if (MinecraftClient.getInstance().getServer() != null) {
+			var e4mcStatus = E4mcStatusProvider.getStatusDescription();
+			if (e4mcStatus != null) {
+				return StatusUpdate.e4mcStatusUpdate(e4mcStatus);
+			}
 			return StatusUpdate.inGameUnknown(MinecraftClient.getInstance().getServer().getSaveProperties().getLevelName());
 		}
 		Screen current = MinecraftClient.getInstance().currentScreen;

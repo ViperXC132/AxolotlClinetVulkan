@@ -170,10 +170,9 @@ public class ChatWidget extends AlwaysSelectedEntryListWidget<ChatWidget.ChatLin
 					.title(Text.of(origin.sender().getName()))
 					.spacer();
 				if (!origin.sender().equals(API.getInstance().getSelf())) {
-					builder.entry(Text.translatable("api.friends.chat"), buttonWidget -> {
+					builder.entry(Text.translatable("api.friends.chat"), buttonWidget ->
 							ChannelRequest.getOrCreateDM(origin.sender())
-								.whenCompleteAsync((channel, throwable) -> client.execute(() -> client.setScreen(new ChatScreen(screen.getParent(), channel))));
-						})
+						.whenCompleteAsync((channel, throwable) -> client.execute(() -> client.setScreen(new ChatScreen(screen.getParent(), channel)))))
 						.spacer();
 				}
 				builder.entry(Text.translatable("api.chat.report.message"), buttonWidget -> {
@@ -186,9 +185,7 @@ public class ChatWidget extends AlwaysSelectedEntryListWidget<ChatWidget.ChatLin
 						}, Text.translatable("api.channels.confirm_report"), Text.translatable("api.channels.confirm_report.desc", origin.content())));
 					})
 					.spacer()
-					.entry(Text.translatable("action.copy"), buttonWidget -> {
-						client.keyboard.setClipboard(origin.content());
-					});
+					.entry(Text.translatable("action.copy"), buttonWidget -> client.keyboard.setClipboard(origin.content()));
 				screen.setContextMenu(builder.build());
 				return true;
 			}
@@ -242,8 +239,8 @@ public class ChatWidget extends AlwaysSelectedEntryListWidget<ChatWidget.ChatLin
 		@Override
 		protected void renderExtras(GuiGraphics graphics, int x, int y, int mouseX, int mouseY) {
 			RenderSystem.disableBlend();
-			Identifier texture = Auth.getInstance().getSkinTexture(getOrigin().sender().getUuid(),
-				getOrigin().sender().getName());
+			Identifier texture = Auth.getInstance().getSkinTexture(getOrigin().sender().getUuid()
+			);
 			graphics.drawTexture(texture, x - 22, y, 18, 18, 8, 8, 8, 8, 64, 64);
 			graphics.drawTexture(texture, x - 22, y, 18, 18, 40, 8, 8, 8, 64, 64);
 			RenderSystem.enableBlend();
