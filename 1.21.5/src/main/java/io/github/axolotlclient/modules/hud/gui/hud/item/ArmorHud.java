@@ -80,7 +80,7 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 	}
 
 	private ItemStack getArmorStack(int slot) {
-		return Inventory.EQUIPMENT_SLOT_MAPPING.int2ObjectEntrySet().stream().filter(e -> e.getValue().getIndex() == slot)
+		return Inventory.EQUIPMENT_SLOT_MAPPING.int2ObjectEntrySet().stream().filter(e -> e.getValue().getId() == slot+1)
 			.findFirst().map(e -> client.player.getInventory().getItem(e.getIntKey()))
 			.orElse(ItemStack.EMPTY);
 	}
