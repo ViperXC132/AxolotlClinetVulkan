@@ -79,7 +79,8 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		boolean boundsChanged = false;
 		boolean showDurability = showDurabilityNumber.get();
 		boolean showMaxDurability = showMaxDurabilityNumber.get();
-		int labelWidth = showDurability || showMaxDurability ? Stream.concat(Stream.of(client.player.inventory.getMainHandStack()), Arrays.stream(client.player.inventory.armorSlots))
+		int labelWidth = showDurability || showMaxDurability ? Stream.concat(Stream.of(mainHandItemPosition.get() == MainHandItemPosition.DISABLED ? null :
+				client.player.inventory.getMainHandStack()), Arrays.stream(client.player.inventory.armorSlots))
 			.filter(Objects::nonNull)
 			.map(stack -> showDurability && showMaxDurability ? (stack.getMaxDamage() - stack.getDamage()) + "/" + stack.getMaxDamage() : String.valueOf((showDurability ? stack.getMaxDamage() - stack.getDamage() : stack.getMaxDamage())))
 			.mapToInt(text -> client.textRenderer.getWidth(text) + 2).max().orElse(0) : 0;
@@ -100,7 +101,7 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		if (boundsChanged) {
 			onBoundsUpdate();
 		}
-		int lastY = 2 + (height-20);
+		int lastY = 2 + (height - 20);
 		if (mainHandItemTop == MainHandItemPosition.BOTTOM) {
 			renderMainItem(client.player.inventory.getMainHandStack(), pos.x() + 2, pos.y() + lastY, labelWidth);
 			lastY = lastY - 20;
@@ -198,7 +199,7 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		if (boundsChanged) {
 			onBoundsUpdate();
 		}
-		int lastY = 2 + (height-20);
+		int lastY = 2 + (height - 20);
 		if (mainHandItemTop == MainHandItemPosition.BOTTOM) {
 			renderItem(placeholderStacks[4], pos.x() + 2, pos.y() + lastY, labelWidth, null);
 			lastY = lastY - 20;
@@ -243,7 +244,7 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 
 		@Override
 		public String toString() {
-			return "armorhud.main_hand_item_position."+super.toString().toLowerCase(Locale.ROOT);
+			return "armorhud.main_hand_item_position." + super.toString().toLowerCase(Locale.ROOT);
 		}
 	}
 }

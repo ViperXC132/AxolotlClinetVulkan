@@ -84,11 +84,15 @@ public class AxolotlClientConfig {
 	public final BooleanOption creditsBGM = new BooleanOption("creditsBGM", true);
 	public final BooleanOption customWindowTitle = new BooleanOption("customWindowTitle", true);
 
+	public final BooleanOption scaleTitles = new BooleanOption("titles.scaling", false);
+	public  final IntegerOption titlePadding = new IntegerOption("titles.padding", 4, 1, 10);
+
 	public final OptionCategory general = OptionCategory.create("general");
 	public final OptionCategory nametagOptions = OptionCategory.create("nametagOptions");
 	public final OptionCategory rendering = OptionCategory.create("rendering");
 	public final OptionCategory outlines = OptionCategory.create("blockOutlines");
 	public final OptionCategory timeChanger = OptionCategory.create("timeChanger");
+	public final OptionCategory titles = OptionCategory.create("titles");
 	@Getter
 	private final OptionCategory config = OptionCategory.create("config");
 
@@ -164,6 +168,8 @@ public class AxolotlClientConfig {
 		rendering.add(outlines);
 
 		rendering.add(noRain);
+		titles.add(scaleTitles, titlePadding);
+		rendering.add(titles);
 
 		AxolotlClient.config.add(creditsBGM);
 

@@ -422,18 +422,13 @@ public class API {
 
 		if (apiOptions.enabled.get()) {
 			switch (apiOptions.privacyAccepted.get()) {
-				case UNSET:
-					return apiOptions.openPrivacyNoteScreen.get().thenCompose(v -> {
-						if (v) {
-							return startupAPI();
-						} else {
-							return CompletableFuture.failedStage(new UnsupportedOperationException("Terms not accepter"));
-						}
-					});
-				case ACCEPTED:
+				case UNSET -> {
+					return apiOptions.openPrivacyNoteScreen.get().thenCompose(v ->
+						v ? startupAPI() : CompletableFuture.failedStage(new UnsupportedOperationException("Terms not accepter")));
+				}
+				case ACCEPTED -> {
 					return startupAPI();
-				default:
-					break;
+				}
 			}
 		}
 		return CompletableFuture.failedFuture(new UnsupportedOperationException("API is disabled"));

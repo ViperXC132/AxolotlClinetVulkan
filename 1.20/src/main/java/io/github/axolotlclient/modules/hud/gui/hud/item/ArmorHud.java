@@ -25,6 +25,7 @@ package io.github.axolotlclient.modules.hud.gui.hud.item;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
@@ -79,7 +80,9 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		boolean boundsChanged = false;
 		boolean showDurability = showDurabilityNumber.get();
 		boolean showMaxDurability = showMaxDurabilityNumber.get();
-		int labelWidth = showDurability || showMaxDurability ? Stream.concat(Stream.of(client.player.getInventory().getMainHandStack()), client.player.getInventory().armor.stream())
+		int labelWidth = showDurability || showMaxDurability ? Stream.concat(Stream.of(mainHandItemPosition.get() == MainHandItemPosition.DISABLED ? null :
+				client.player.getInventory().getMainHandStack()), client.player.getInventory().armor.stream())
+			.filter(Objects::nonNull)
 			.map(stack -> showDurability && showMaxDurability ? (stack.getMaxDamage() - stack.getDamage()) + "/" + stack.getMaxDamage() : String.valueOf((showDurability ? stack.getMaxDamage() - stack.getDamage() : stack.getMaxDamage())))
 			.mapToInt(text -> client.textRenderer.getWidth(text) + 2).max().orElse(0) : 0;
 		width += labelWidth;

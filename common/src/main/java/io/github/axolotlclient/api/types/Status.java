@@ -31,6 +31,7 @@ import java.util.List;
 
 import com.google.gson.JsonObject;
 import com.google.gson.TypeAdapter;
+import com.google.gson.annotations.JsonAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
@@ -131,6 +132,7 @@ public class Status {
 		@Accessors(fluent = true)
 		@ToString
 		@EqualsAndHashCode
+		@JsonAdapter(Metadata.MetadataTypeAdapter.class)
 		public static class Metadata {
 			public final String type;
 			public final MetadataAttributes attributes;
@@ -240,6 +242,7 @@ public class Status {
 			@Getter
 			@Accessors(fluent = true)
 			@EqualsAndHashCode
+			@JsonAdapter(Favicon.FaviconTypeAdapter.class)
 			public static class Favicon {
 				private static final String PREFIX = "data:image/png;base64,";
 				private final byte[] iconBytes;

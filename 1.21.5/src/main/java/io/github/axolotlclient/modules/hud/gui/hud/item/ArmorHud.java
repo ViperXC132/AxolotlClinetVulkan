@@ -25,6 +25,7 @@ package io.github.axolotlclient.modules.hud.gui.hud.item;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
@@ -40,6 +41,7 @@ import io.github.axolotlclient.modules.hud.util.ItemUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -75,12 +77,14 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 	}
 
 	private Stream<ItemStack> getItemStacks() {
-		return Stream.concat(Stream.of(client.player.getInventory().getSelectedItem()), Inventory.EQUIPMENT_SLOT_MAPPING.int2ObjectEntrySet().stream().filter(e -> e.getValue().isArmor())
-			.map(e -> client.player.getInventory().getItem(e.getIntKey())));
+		return Stream.concat(Stream.of(mainHandItemPosition.get() == MainHandItemPosition.DISABLED ? null : client.player.getInventory().getSelectedItem()),
+			Inventory.EQUIPMENT_SLOT_MAPPING.int2ObjectEntrySet().stream().filter(e -> e.getValue().isArmor())
+			.map(e -> client.player.getInventory().getItem(e.getIntKey()))).filter(Objects::nonNull);
 	}
 
 	private ItemStack getArmorStack(int slot) {
-		return Inventory.EQUIPMENT_SLOT_MAPPING.int2ObjectEntrySet().stream().filter(e -> e.getValue().getId() == slot+1)
+		return Inventory.EQUIPMENT_SLOT_MAPPING.int2ObjectEntrySet().stream().filter(e -> e.getValue().getType() == EquipmentSlot.Type.HUMANOID_ARMOR)
+			.filter(e -> e.getValue().getIndex() == slot)
 			.findFirst().map(e -> client.player.getInventory().getItem(e.getIntKey()))
 			.orElse(ItemStack.EMPTY);
 	}
