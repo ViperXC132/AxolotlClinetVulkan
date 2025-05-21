@@ -63,6 +63,7 @@ public abstract class AbstractHudEntry extends DrawUtil implements HudEntry {
 	@Getter
 	protected int height;
 	@Setter
+	@Getter
 	protected boolean hovered = false;
 	private Rectangle trueBounds = null;
 	private Rectangle renderBounds = null;

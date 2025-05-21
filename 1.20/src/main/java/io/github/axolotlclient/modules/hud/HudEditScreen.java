@@ -155,6 +155,9 @@ public class HudEditScreen extends Screen {
 	@Override
 	public void init() {
 		mode = ModificationMode.NONE;
+
+		HudManager.getInstance().getMoveableEntries().forEach(e -> addDrawableChild(new HudEntryWidget(e)));
+
 		this.addDrawableChild(new ButtonWidget.Builder(Text.translatable("hud.snapping").append(": ")
 			.append(Text.translatable(snapping.get() ? "options.on" : "options.off")),
 			buttonWidget -> {
@@ -288,14 +291,14 @@ public class HudEditScreen extends Screen {
 				current.setScale(Math.max(0.1f, newScale));
 				if (mode == ModificationMode.TOP_LEFT) {
 					// top-left corner
-					current.setX(bounds.xEnd() - current.getTrueWidth());
-					current.setY(bounds.yEnd() - current.getTrueHeight());
+					current.setX(bounds.xEnd() - current.getTrueWidth() + current.offsetTrueWidth());
+					current.setY(bounds.yEnd() - current.getTrueHeight() + current.offsetTrueHeight());
 				} else if (mode == ModificationMode.BOTTOM_LEFT) {
 					// bottom-left corner
-					current.setX(bounds.xEnd() - current.getTrueWidth());
+					current.setX(bounds.xEnd() - current.getTrueWidth() + current.offsetTrueWidth());
 				} else if (mode == ModificationMode.TOP_RIGHT) {
 					// top-right corner
-					current.setY(bounds.yEnd() - current.getTrueHeight());
+					current.setY(bounds.yEnd() - current.getTrueHeight() + current.offsetTrueHeight());
 				}
 			}
 			if (current.tickable()) {

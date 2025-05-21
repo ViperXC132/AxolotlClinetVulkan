@@ -112,7 +112,7 @@ public interface Positionable {
 	 * @param trueY Pixel value of y
 	 */
 	default void setTrueY(int trueY) {
-		setX((int) (trueY / getScale()));
+		setY((int) (trueY / getScale()));
 	}
 
 	/**

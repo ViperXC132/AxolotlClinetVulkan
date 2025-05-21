@@ -280,6 +280,13 @@ public class HudEditScreen extends Screen {
 	}
 
 	@Override
+	public void removed() {
+		super.removed();
+		setCursor(DEFAULT_CURSOR);
+		mode = ModificationMode.NONE;
+	}
+
+	@Override
 	protected void buttonClicked(ButtonWidget button) {
 		switch (button.id) {
 			case 3:
@@ -290,18 +297,12 @@ public class HudEditScreen extends Screen {
 				break;
 			case 1:
 				Screen screen = ConfigStyles.createScreen(this, AxolotlClient.configManager.getRoot());
-				setCursor(DEFAULT_CURSOR);
-				mode = ModificationMode.NONE;
 				Minecraft.getInstance().openScreen(screen);
 				break;
 			case 0:
-				setCursor(DEFAULT_CURSOR);
-				mode = ModificationMode.NONE;
 				Minecraft.getInstance().openScreen(parent);
 				break;
 			case 2:
-				setCursor(DEFAULT_CURSOR);
-				mode = ModificationMode.NONE;
 				Minecraft.getInstance().openScreen(null);
 				break;
 		}

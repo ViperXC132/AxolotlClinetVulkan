@@ -767,5 +767,8 @@
 	"privacy_policy_state.accepted": "Accepted",
 	"privacy_policy_state.denied": "Denied",
 	"privacy_policy_state.unset": "Unset",
-	"api.privacy_policy_accepted": "Terms Acceptance"
+	"api.privacy_policy_accepted": "Terms Acceptance",
+	"hud.entry.name": "HUD Entry: %s",
+	"hud.entry.usage": "Press Space to enter movement mode. Press Enter to open this module's options.",
+	"hud.entry.usage.move": "Press Escape or Space to exit movement mode, use arrow keys to move this HUD. Press Enter to open this module's options."
 }

@@ -252,7 +252,7 @@ public class HudManager extends AbstractModule {
 	public List<HudEntry> getMoveableEntries() {
 		if (!entries.isEmpty()) {
 			return entries.values().stream().filter((entry) -> entry.isEnabled() && entry.movable())
-				.collect(Collectors.toList());
+				.toList();
 		}
 		return new ArrayList<>();
 	}
