@@ -30,7 +30,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.ContextMenu;
 import io.github.axolotlclient.api.ContextMenuScreen;
@@ -41,45 +40,51 @@ import io.github.axolotlclient.api.types.ChatMessage;
 import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.util.ClientColors;
 import lombok.Getter;
-import net.minecraft.client.MinecraftClient;
+import lombok.Setter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screen.ConfirmScreen;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
-import net.minecraft.text.OrderedText;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.components.ObjectSelectionList;
+import net.minecraft.client.gui.components.PlayerFaceRenderer;
+import net.minecraft.client.gui.screens.ConfirmScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 
-public class ChatWidget extends AlwaysSelectedEntryListWidget<ChatWidget.ChatLine> {
+public class ChatWidget extends ObjectSelectionList<ChatWidget.ChatLine> {
 
 	private final List<ChatMessage> messages = new ArrayList<>();
 	private final Channel channel;
-	private final MinecraftClient client;
+	private final Minecraft client;
 	private final ContextMenuScreen screen;
+	@Setter
+	@Getter
+	private int x, y, width, height;
 
 	public ChatWidget(Channel channel, int x, int y, int width, int height, ContextMenuScreen screen) {
-		super(MinecraftClient.getInstance(), width, height, y, y + height, 13);
+		super(Minecraft.getInstance(), width, height, y, 13);
 		this.channel = channel;
-		this.client = MinecraftClient.getInstance();
-		setLeftPos(x + 5);
+		this.client = Minecraft.getInstance();
+		setX(x + 5);
 
-		setRenderHeader(false, 0);
-		setRenderHorizontalShadows(false);
-		setRenderBackground(false);
 		this.screen = screen;
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
 		channel.getMessages().forEach(this::addMessage);
 
 		ChatHandler.getInstance().setMessagesConsumer(chatMessages -> chatMessages.forEach(this::addMessage));
 		ChatHandler.getInstance().setMessageConsumer(this::addMessage);
 		ChatHandler.getInstance().setEnableNotifications(message -> !message.channelId().equals(channel.getId()));
 
-		setScrollAmount(getMaxScroll());
+		setScrollAmount(maxScrollAmount());
 	}
 
 	@Override
-	protected int getScrollbarPositionX() {
-		return getRowLeft() + width - 6;
+	protected int scrollBarX() {
+		return x + width - 6;
 	}
 
 	@Override
@@ -88,13 +93,14 @@ public class ChatWidget extends AlwaysSelectedEntryListWidget<ChatWidget.ChatLin
 	}
 
 	private void addMessage(ChatMessage message) {
-		List<OrderedText> list = client.textRenderer.wrapLines(Text.of(message.content()), getRowWidth());
+		List<FormattedCharSequence> list = client.font.split(Component.literal(message.content()), getRowWidth());
 
-		boolean scrollToBottom = getScrollAmount() == getMaxScroll();
+		boolean scrollToBottom = scrollAmount() == maxScrollAmount();
 
 		if (!messages.isEmpty()) {
-			ChatMessage prev = messages.get(messages.size() - 1);
-			if (!(prev.sender().equals(message.sender()) && prev.senderDisplayName().equals(message.senderDisplayName()))) {
+			ChatMessage prev = messages.getLast();
+			if (!(prev.sender().equals(message.sender()) &&
+				prev.senderDisplayName().equals(message.senderDisplayName()))) {
 				addEntry(new NameChatLine(message));
 			} else {
 				if (message.timestamp().getEpochSecond() - prev.timestamp().getEpochSecond() > 150) {
@@ -111,7 +117,7 @@ public class ChatWidget extends AlwaysSelectedEntryListWidget<ChatWidget.ChatLin
 		children().sort(Comparator.comparingLong(c -> c.getOrigin().timestamp().getEpochSecond()));
 
 		if (scrollToBottom) {
-			setScrollAmount(getMaxScroll());
+			setScrollAmount(maxScrollAmount());
 		}
 		messages.sort(Comparator.comparingLong(value -> value.timestamp().getEpochSecond()));
 	}
@@ -119,7 +125,7 @@ public class ChatWidget extends AlwaysSelectedEntryListWidget<ChatWidget.ChatLin
 	private void loadMessages() {
 		long before;
 		if (!messages.isEmpty()) {
-			before = messages.get(0).timestamp().getEpochSecond();
+			before = messages.getFirst().timestamp().getEpochSecond();
 		} else {
 			before = Instant.now().getEpochSecond();
 		}
@@ -127,8 +133,8 @@ public class ChatWidget extends AlwaysSelectedEntryListWidget<ChatWidget.ChatLin
 	}
 
 	@Override
-	public boolean mouseScrolled(double mouseX, double mouseY, double amountY) {
-		double scrollAmount = (this.getScrollAmount() - amountY * (double) this.itemHeight / 2.0);
+	public boolean mouseScrolled(double mouseX, double mouseY, double amountX, double amountY) {
+		double scrollAmount = (this.scrollAmount() - amountY * (double) this.itemHeight / 2.0);
 		if (scrollAmount < 0) {
 			loadMessages();
 		}
@@ -143,17 +149,22 @@ public class ChatWidget extends AlwaysSelectedEntryListWidget<ChatWidget.ChatLin
 	}
 
 	@Override
-	protected void drawEntrySelectionHighlight(GuiGraphics graphics, int y, int entryWidth, int entryHeight, int borderColor, int fillColor) {
+	protected void renderSelection(GuiGraphics graphics, int y, int entryWidth, int entryHeight, int borderColor, int fillColor) {
 	}
 
-	public class ChatLine extends AlwaysSelectedEntryListWidget.Entry<ChatLine> {
-		protected final MinecraftClient client = MinecraftClient.getInstance();
+	@Override
+	protected boolean isValidClickButton(int index) {
+		return true;
+	}
+
+	public class ChatLine extends Entry<ChatLine> {
+		protected final Minecraft client = ChatWidget.this.client;
 		@Getter
-		private final OrderedText content;
+		private final FormattedCharSequence content;
 		@Getter
 		private final ChatMessage origin;
 
-		public ChatLine(OrderedText content, ChatMessage origin) {
+		public ChatLine(FormattedCharSequence content, ChatMessage origin) {
 			super();
 			this.content = content;
 			this.origin = origin;
@@ -166,26 +177,24 @@ public class ChatWidget extends AlwaysSelectedEntryListWidget<ChatWidget.ChatLin
 				return true;
 			}
 			if (button == 1) {
-				ContextMenu.Builder builder = ContextMenu.builder()
-					.title(Text.of(origin.sender().getName()))
-					.spacer();
+				ContextMenu.Builder builder =
+					ContextMenu.builder().title(Component.literal(origin.sender().getName())).spacer();
 				if (!origin.sender().equals(API.getInstance().getSelf())) {
-					builder.entry(Text.translatable("api.friends.chat"), buttonWidget ->
-							ChannelRequest.getOrCreateDM(origin.sender())
-						.whenCompleteAsync((channel, throwable) -> client.execute(() -> client.setScreen(new ChatScreen(screen.getParent(), channel)))))
-						.spacer();
+					builder.entry(Component.translatable("api.friends.chat"), buttonWidget -> {
+						ChannelRequest.getOrCreateDM(origin.sender()).whenCompleteAsync(
+							(channel, throwable) -> client.execute(
+								() -> client.setScreen(new ChatScreen(screen.getParent(), channel))));
+					}).spacer();
 				}
-				builder.entry(Text.translatable("api.chat.report.message"), buttonWidget -> {
-						Screen previous = client.currentScreen;
-						client.setScreen(new ConfirmScreen(b -> {
-							if (b) {
-								ChatHandler.getInstance().reportMessage(origin);
-							}
-							client.setScreen(previous);
-						}, Text.translatable("api.channels.confirm_report"), Text.translatable("api.channels.confirm_report.desc", origin.content())));
-					})
-					.spacer()
-					.entry(Text.translatable("action.copy"), buttonWidget -> client.keyboard.setClipboard(origin.content()));
+				builder.entry(Component.translatable("api.chat.report.message"), buttonWidget -> {
+					Screen previous = client.screen;
+					client.setScreen(new ConfirmScreen(b -> {
+						if (b) {
+							ChatHandler.getInstance().reportMessage(origin);
+						}
+						client.setScreen(previous);
+					}, Component.translatable("api.channels.confirm_report"), Component.translatable("api.channels.confirm_report.desc", origin.content())));
+				}).spacer().entry(Component.translatable("action.copy"), buttonWidget -> client.keyboardHandler.setClipboard(origin.content()));
 				screen.setContextMenu(builder.build());
 				return true;
 			}
@@ -199,7 +208,7 @@ public class ChatWidget extends AlwaysSelectedEntryListWidget<ChatWidget.ChatLin
 		public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			for (ChatLine l : children()) {
 				if (l.getOrigin().equals(origin)) {
-					if (Objects.equals(getHoveredEntry(), l)) {
+					if (Objects.equals(getHovered(), l)) {
 						hovered = true;
 						break;
 					}
@@ -208,19 +217,22 @@ public class ChatWidget extends AlwaysSelectedEntryListWidget<ChatWidget.ChatLin
 			if (hovered && !screen.hasContextMenu()) {
 				graphics.fill(x - 2 - 22, y - 2, x + entryWidth + 20, y + entryHeight - 1, 0x33FFFFFF);
 				if (index < children().size() - 1 && children().get(index + 1).getOrigin().equals(origin)) {
-					graphics.fill(x - 2 - 22, y + entryHeight - 1, x + entryWidth + 20, y + entryHeight + 2, 0x33FFFFFF);
+					graphics.fill(x - 2 - 22, y + entryHeight - 1, x + entryWidth + 20, y + entryHeight + 2,
+						0x33FFFFFF
+					);
 				}
-				if ((index < children().size() - 1 && !children().get(index + 1).getOrigin().equals(origin)) || index == children().size() - 1) {
+				if ((index < children().size() - 1 && !children().get(index + 1).getOrigin().equals(origin)) ||
+					index == children().size() - 1) {
 					graphics.fill(x - 2 - 22, y + entryHeight - 1, x + entryWidth + 20, y + entryHeight, 0x33FFFFFF);
 				}
 			}
 			renderExtras(graphics, x, y, mouseX, mouseY);
-			graphics.drawText(MinecraftClient.getInstance().textRenderer, content, x, y, -1, false);
+			graphics.drawString(client.font, content, x, y, -1, false);
 		}
 
 		@Override
-		public Text getNarration() {
-			return Text.of(origin.content());
+		public Component getNarration() {
+			return Component.literal(origin.content());
 		}
 	}
 
@@ -229,8 +241,8 @@ public class ChatWidget extends AlwaysSelectedEntryListWidget<ChatWidget.ChatLin
 		private final String formattedTime;
 
 		public NameChatLine(ChatMessage message) {
-			super(Text.literal(message.senderDisplayName())
-				.setStyle(Style.EMPTY.withBold(true)).asOrderedText(), message);
+			super(Component.literal(message.senderDisplayName()).setStyle(Style.EMPTY.withBold(true))
+				.getVisualOrderText(), message);
 
 			DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d/M/yyyy H:mm");
 			formattedTime = DATE_FORMAT.format(message.timestamp().atZone(ZoneId.systemDefault()));
@@ -238,13 +250,15 @@ public class ChatWidget extends AlwaysSelectedEntryListWidget<ChatWidget.ChatLin
 
 		@Override
 		protected void renderExtras(GuiGraphics graphics, int x, int y, int mouseX, int mouseY) {
-			RenderSystem.disableBlend();
-			Identifier texture = Auth.getInstance().getSkinTexture(getOrigin().sender().getUuid()
+			graphics.pose().pushMatrix();
+			//graphics.pose().translate(0, 0, 5);
+			ResourceLocation texture =
+				Auth.getInstance().getSkinTexture(getOrigin().sender().getUuid());
+			PlayerFaceRenderer.draw(graphics, texture, x - 22, y, 18, true, false, -1);
+			graphics.drawString(client.font, formattedTime, client.font.width(getContent()) + x + 5, y,
+				ClientColors.GRAY.toInt(), false
 			);
-			graphics.drawTexture(texture, x - 22, y, 18, 18, 8, 8, 8, 8, 64, 64);
-			graphics.drawTexture(texture, x - 22, y, 18, 18, 40, 8, 8, 8, 64, 64);
-			RenderSystem.enableBlend();
-			graphics.drawText(client.textRenderer, formattedTime, client.textRenderer.getWidth(getContent()) + x + 5, y, ClientColors.GRAY.toInt(), false);
+			graphics.pose().popMatrix();
 		}
 	}
 }

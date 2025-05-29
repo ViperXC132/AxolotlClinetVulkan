@@ -103,7 +103,7 @@ public class ChatWidget extends AlwaysSelectedEntryListWidget<ChatWidget.ChatLin
 			if (!(prev.sender().equals(message.sender()) && prev.senderDisplayName().equals(message.senderDisplayName()))) {
 				addEntry(new NameChatLine(message));
 			} else {
-				if (prev.timestamp().getEpochSecond() - message.timestamp().getEpochSecond() > 150) {
+				if (message.timestamp().getEpochSecond() - prev.timestamp().getEpochSecond() > 150) {
 					addEntry(new NameChatLine(message));
 				}
 			}

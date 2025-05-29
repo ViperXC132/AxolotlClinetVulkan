@@ -105,7 +105,7 @@ public class ChatWidget extends EntryListWidget {
 			if (!(prev.sender().equals(message.sender()) && prev.senderDisplayName().equals(message.senderDisplayName()))) {
 				entries.add(new NameChatLine(message));
 			} else {
-				if (prev.timestamp().getEpochSecond() - message.timestamp().getEpochSecond() > 150) {
+				if (message.timestamp().getEpochSecond() - prev.timestamp().getEpochSecond() > 150) {
 					entries.add(new NameChatLine(message));
 				}
 			}
