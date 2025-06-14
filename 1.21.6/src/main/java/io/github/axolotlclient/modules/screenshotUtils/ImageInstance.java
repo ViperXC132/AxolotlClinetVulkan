@@ -63,7 +63,7 @@ public interface ImageInstance {
 	}
 
 	private static void register(ResourceLocation id, NativeImage img) {
-		Minecraft.getInstance().getTextureManager().register(id, new DynamicTexture(id::toString, img));
+		Minecraft.getInstance().execute(() -> Minecraft.getInstance().getTextureManager().register(id, new DynamicTexture(id::toString, img)));
 	}
 
 	record LocalImpl(ResourceLocation id, NativeImage image, String filename, Path location) implements Local {

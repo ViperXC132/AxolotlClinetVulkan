@@ -5,7 +5,7 @@ plugins {
 	id("io.github.p03w.machete")
 }
 
-val minecraft = "1.21.6-pre3"
+val minecraft = "1.21.6-rc1"
 val minecraftFriendly = "1.21.6"
 val parchmentMinecraft = "1.21.5"
 val parchment = "2025.04.19"

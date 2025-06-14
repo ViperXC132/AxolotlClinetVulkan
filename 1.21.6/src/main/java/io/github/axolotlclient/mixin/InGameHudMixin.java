@@ -56,18 +56,9 @@ public abstract class InGameHudMixin {
 	@Final
 	private Minecraft minecraft;
 
-	@Inject(method = "render", at = @At(value = "TAIL"))
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderEffects(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
 	private void onHudRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-		if (!minecraft.options.hideGui) {
-			HudManager.getInstance().render(guiGraphics, deltaTracker);
-		}
-	}
-
-	@Inject(method = "renderEffects", at = @At(value = "HEAD"))
-	private void axolotlclient$onHudRender(GuiGraphics graphics, DeltaTracker tracker, CallbackInfo ci) {
-		if (!minecraft.options.hideGui) {
-			HudManager.getInstance().render(graphics, tracker);
-		}
+		HudManager.getInstance().render(guiGraphics, deltaTracker);
 	}
 
 	@Inject(method = "renderEffects", at = @At("HEAD"), cancellable = true)

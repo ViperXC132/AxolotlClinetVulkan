@@ -80,7 +80,7 @@ public class ScreenshotUtils extends AbstractModule {
 			file -> {
 				try {
 					ImageInstance instance = new ImageInstance.LocalImpl(file);
-					Minecraft.getInstance().execute(() -> Minecraft.getInstance().setScreen(ImageScreen.create(null, CompletableFuture.completedFuture(instance), true)));
+					Minecraft.getInstance().submit(() -> Minecraft.getInstance().setScreen(ImageScreen.create(null, CompletableFuture.completedFuture(instance), true)));
 				} catch (Exception ignored) {
 					io.github.axolotlclient.util.Util.addMessageToChatHud(Component.translatable("screenshot.gallery.view.error"));
 				}

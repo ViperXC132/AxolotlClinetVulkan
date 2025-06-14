@@ -22,23 +22,28 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Cancellable;
 import io.github.axolotlclient.modules.screenshotUtils.ScreenshotUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.ClickEvent;
+import org.slf4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Screen.class)
 public abstract class ScreenMixin {
 
-	@Inject(method = "defaultHandleClickEvent", at = @At(value = "INVOKE",
+	@WrapOperation(method = "defaultHandleClickEvent", at = @At(value = "INVOKE",
 		target = "Lorg/slf4j/Logger;error(Ljava/lang/String;Ljava/lang/Object;)V", remap = false))
-	private static void axolotlclient$customClickEvents(ClickEvent clickEvent, Minecraft minecraft, Screen screen, CallbackInfo ci) {
+	private static void axolotlclient$customClickEvents(Logger instance, String s, Object o, Operation<Void> original, ClickEvent clickEvent, @Cancellable CallbackInfo ci) {
 		if (clickEvent instanceof ScreenshotUtils.CustomClickEvent) {
 			((ScreenshotUtils.CustomClickEvent) clickEvent).doAction();
+			ci.cancel();
+			return;
 		}
+		original.call(instance, s, o);
 	}
 }

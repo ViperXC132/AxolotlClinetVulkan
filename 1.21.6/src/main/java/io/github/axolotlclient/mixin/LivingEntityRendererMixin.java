@@ -23,7 +23,6 @@
 package io.github.axolotlclient.mixin;
 
 import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.modules.hud.gui.hud.PlayerHud;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -48,8 +47,8 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
 	@Inject(method = "shouldShowName(Lnet/minecraft/world/entity/LivingEntity;D)Z", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$showOwnNametag(T entity, double d, CallbackInfoReturnable<Boolean> cir) {
 		if (AxolotlClient.CONFIG.showOwnNametag.get()
-			&& entity.getId() == Minecraft.getInstance().player.getId()
-			&& !PlayerHud.isCurrentlyRendering()) {
+			&& entity == Minecraft.getInstance().getCameraEntity()
+			&& ((EntityRendererDispatcherAccessor) entityRenderDispatcher).getShouldRenderShadow()) {
 			cir.setReturnValue(true);
 		}
 	}
