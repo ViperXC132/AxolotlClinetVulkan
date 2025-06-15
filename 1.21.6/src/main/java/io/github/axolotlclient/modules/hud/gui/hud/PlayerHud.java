@@ -24,19 +24,23 @@ package io.github.axolotlclient.modules.hud.gui.hud;
 
 import java.util.List;
 
-import com.mojang.math.Axis;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.DoubleOption;
+import io.github.axolotlclient.mixin.GuiGraphicsAccessor;
 import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
+import io.github.axolotlclient.modules.hud.util.PlayerHudEntityRenderState;
 import io.github.axolotlclient.util.events.Events;
 import io.github.axolotlclient.util.events.impl.PlayerDirectionChangeEvent;
-import lombok.Getter;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -50,8 +54,6 @@ import org.joml.Vector3f;
 public class PlayerHud extends BoxHudEntry {
 
 	public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("kronhud", "playerhud");
-	@Getter
-	private static boolean currentlyRendering;
 	private final DoubleOption rotation = new DoubleOption("rotation", 0d, 0d, 360d);
 	private final BooleanOption dynamicRotation = new BooleanOption("dynamicrotation", true);
 	private final BooleanOption autoHide = new BooleanOption("autoHide", false);
@@ -60,6 +62,7 @@ public class PlayerHud extends BoxHudEntry {
 	private float lastYOffset = 0;
 	private float yOffset = 0;
 	private long hide;
+	private LivingEntityRenderState reusedPlayerRendererState = null;
 
 	public PlayerHud() {
 		super(62, 94, true);
@@ -86,7 +89,7 @@ public class PlayerHud extends BoxHudEntry {
 			float height = client.player.getBbHeight();
 			// sin = opposite / hypotenuse
 			float offset = (float) (Math.sin(Math.toRadians(pitch)) * height);
-			yOffset = Math.abs(offset) + 35;
+			yOffset = Math.abs(offset);
 		} else if (client.player != null && client.player.isFallFlying()) {
 			// Elytra!
 
@@ -94,12 +97,11 @@ public class PlayerHud extends BoxHudEntry {
 			float k = Mth.clamp(j * j / 100.0F, 0.0F, 1.0F);
 
 			float pitch = k * (-90.0F - client.player.getXRot()) + 90;
-			float height = client.player.getBbHeight();
+			float height = client.player.getBbHeight() / 2f;
 			// sin = opposite / hypotenuse
-			float offset = (float) (Math.sin(Math.toRadians(pitch)) * height) * 50;
-			yOffset = 35 - offset;
+			yOffset = (float) (Math.sin(Math.toRadians(pitch)) * height);
 			if (pitch < 0) {
-				yOffset -= (float) (((1 / (1 + Math.exp(-pitch / 4))) - .5) * 20);
+				yOffset -= (float) (((1 / (1 + Math.exp(-pitch / 4))) - .5) * 2);
 			}
 		} else {
 			yOffset *= .8f;
@@ -122,12 +124,12 @@ public class PlayerHud extends BoxHudEntry {
 
 	@Override
 	public void renderComponent(GuiGraphics graphics, float delta) {
-		renderPlayer(graphics, false, getTruePos().x() + 31 * getScale(), getTruePos().y() + 86 * getScale(), delta);
+		renderPlayer(graphics, false, getTruePos().x(), getTruePos().y(), delta);
 	}
 
 	@Override
 	public void renderPlaceholderComponent(GuiGraphics graphics, float delta) {
-		renderPlayer(graphics, true, getTruePos().x() + 31 * getScale(), getTruePos().y() + 86 * getScale(),
+		renderPlayer(graphics, true, getTrueX(), getTrueY(),
 			0
 		); // If delta was delta, it would start jittering
 	}
@@ -151,27 +153,60 @@ public class PlayerHud extends BoxHudEntry {
 
 		float lerpY = (lastYOffset + ((yOffset - lastYOffset) * delta));
 
-		float scale = getScale() * 40;
+		float scale = getScale() * 30;
 
-		Quaternionf quaternion = Axis.ZP.rotationDegrees(180.0F);
+
+		Quaternionf quaternion = new Quaternionf().rotateZ((float) Math.PI);
 
 		// Rotate to whatever is wanted. Also make sure to offset the yaw
 		float deltaYaw = client.player.getYRot(delta);
 		if (dynamicRotation.get()) {
 			deltaYaw -= (lastYawOffset + ((yawOffset - lastYawOffset) * delta));
 		}
+
 		Quaternionf quaternionf2 = new Quaternionf().fromAxisAngleDeg(new Vector3f(0, 1, 0), deltaYaw - 180 + rotation.get().floatValue());
 		quaternion.mul(quaternionf2);
 
 		// Save these to set them back later
 		float pastYaw = client.player.getYRot();
 		float pastPrevYaw = client.player.yRotO;
-		currentlyRendering = true;
-		InventoryScreen.renderEntityInInventory(graphics, (int) ((float) x / getScale()), (int) (((float) y - lerpY) / getScale()), (int) ((x+getWidth())/getScale()), (int) ((y-lerpY+getHeight())/getScale()), scale, new Vector3f(), quaternion, quaternionf2, client.player);
-		currentlyRendering = false;
+		renderEntityInInventory(graphics,
+			(int) (x),
+			(int) (y),
+			(int) (x + getWidth() * getScale()),
+			(int) (y + getHeight() * getScale()),
+			scale / client.player.getScale(),
+			new Vector3f(0, client.player.getBbHeight() / 2f - lerpY * client.player.getScale(), 0),
+			quaternion,
+			quaternionf2,
+			client.player);
 
 		client.player.setYRot(pastYaw);
 		client.player.yRotO = pastPrevYaw;
+	}
+
+	@SuppressWarnings("unchecked")
+	private void renderEntityInInventory(
+		GuiGraphics guiGraphics,
+		int i,
+		int j,
+		int k,
+		int l,
+		float f,
+		Vector3f vector3f,
+		Quaternionf quaternionf,
+		@Nullable Quaternionf quaternionf2,
+		LivingEntity livingEntity
+	) {
+		EntityRenderDispatcher entityRenderDispatcher = client.getEntityRenderDispatcher();
+		EntityRenderer<LivingEntity, LivingEntityRenderState> entityRenderer = (EntityRenderer<LivingEntity, LivingEntityRenderState>) entityRenderDispatcher.getRenderer(livingEntity);
+		if (reusedPlayerRendererState == null) {
+			reusedPlayerRendererState = entityRenderer.createRenderState();
+		}
+		entityRenderer.extractRenderState(livingEntity, reusedPlayerRendererState, 1.0f);
+		reusedPlayerRendererState.nameTag = null;
+		reusedPlayerRendererState.hitboxesRenderState = null;
+		((GuiGraphicsAccessor) guiGraphics).getGuiRenderState().submitPicturesInPictureState(new PlayerHudEntityRenderState(reusedPlayerRendererState, vector3f, quaternionf, quaternionf2, i, j, k, l, f, ((GuiGraphicsAccessor) guiGraphics).getScissorStack().peek()));
 	}
 
 	private boolean isPerformingAction() {

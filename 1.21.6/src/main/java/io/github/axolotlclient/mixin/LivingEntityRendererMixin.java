@@ -47,8 +47,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, S extend
 	@Inject(method = "shouldShowName(Lnet/minecraft/world/entity/LivingEntity;D)Z", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$showOwnNametag(T entity, double d, CallbackInfoReturnable<Boolean> cir) {
 		if (AxolotlClient.CONFIG.showOwnNametag.get()
-			&& entity == Minecraft.getInstance().getCameraEntity()
-			&& ((EntityRendererDispatcherAccessor) entityRenderDispatcher).getShouldRenderShadow()) {
+			&& entity == Minecraft.getInstance().getCameraEntity()) {
 			cir.setReturnValue(true);
 		}
 	}

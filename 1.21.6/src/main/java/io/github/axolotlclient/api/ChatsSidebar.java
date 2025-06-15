@@ -96,7 +96,9 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 
 	@Override
 	public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-
+		if (parent != null) {
+			super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+		}
 	}
 
 	@Override

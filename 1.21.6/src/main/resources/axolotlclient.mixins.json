@@ -19,7 +19,6 @@
 		"DownloadingTerrainScreenMixin",
 		"EmitterParticleMixin",
 		"EntityMixin",
-		"EntityRendererDispatcherAccessor",
 		"EntityRendererMixin",
 		"GameMenuScreenMixin",
 		"GameOptionsMixin",

@@ -22,6 +22,9 @@
 
 package io.github.axolotlclient.mixin;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -32,11 +35,14 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.blur.MotionBlur;
+import io.github.axolotlclient.modules.hud.util.PlayerHudEntityRenderer;
 import io.github.axolotlclient.modules.zoom.Zoom;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.Profiler;
 import org.joml.Matrix4f;
@@ -45,6 +51,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameRenderer.class)
@@ -56,6 +63,13 @@ public abstract class GameRendererMixin {
 
 	@Shadow
 	private boolean panoramicMode;
+
+	@ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/render/GuiRenderer;<init>(Lnet/minecraft/client/gui/render/state/GuiRenderState;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;Ljava/util/List;)V"), index = 2)
+	private List<PictureInPictureRenderer<?>> addPlayerHudEntityRenderer(List<PictureInPictureRenderer<?>> list, @Local MultiBufferSource.BufferSource source, @Local(argsOnly = true) Minecraft minecraft) {
+		List<PictureInPictureRenderer<?>> mutable = new ArrayList<>(list);
+		mutable.add(new PlayerHudEntityRenderer(source, minecraft.getEntityRenderDispatcher()));
+		return mutable;
+	}
 
 	@WrapOperation(method = "getFov", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;lerp(FFF)F"))
 	private float disableDynamicFov(float delta, float start, float end, Operation<Float> original) {
