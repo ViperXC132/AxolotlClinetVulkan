@@ -40,6 +40,9 @@ import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import io.github.axolotlclient.util.options.GenericOption;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.options.KeyBinding;
+import net.ornithemc.osl.keybinds.api.KeyBindingEvents;
+import net.ornithemc.osl.lifecycle.api.client.MinecraftClientEvents;
 import org.lwjgl.glfw.GLFW;
 
 public class AxolotlClientConfig {
@@ -85,7 +88,7 @@ public class AxolotlClientConfig {
 	public final BooleanOption customWindowTitle = new BooleanOption("customWindowTitle", true);
 
 	public final BooleanOption scaleTitles = new BooleanOption("titles.scaling", false);
-	public  final IntegerOption titlePadding = new IntegerOption("titles.padding", 4, 1, 10);
+	public final IntegerOption titlePadding = new IntegerOption("titles.padding", 4, 1, 10);
 
 	public final OptionCategory general = OptionCategory.create("general");
 	public final OptionCategory nametagOptions = OptionCategory.create("nametagOptions");
@@ -180,6 +183,14 @@ public class AxolotlClientConfig {
 					System.setProperty("org.lwjgl.input.Mouse.disableRawInput", "true");
 				}
 				GLFWUtil.runUsingGlfwHandle(h -> GLFW.glfwSetInputMode(h, GLFW.GLFW_RAW_MOUSE_MOTION, rawMouseInput.get() ? 1 : 0));
+			}
+		});
+
+		var toggleFullbright = new KeyBinding("toggle_fullbright", 0, "category.axolotlclient");
+		KeyBindingEvents.REGISTER_KEYBINDS.register(reg -> reg.register(toggleFullbright));
+		MinecraftClientEvents.TICK_END.register(minecraft -> {
+			if (toggleFullbright.consumeClick()) {
+				fullBright.toggle();
 			}
 		});
 	}

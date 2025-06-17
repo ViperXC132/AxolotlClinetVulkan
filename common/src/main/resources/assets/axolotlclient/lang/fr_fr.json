@@ -770,5 +770,6 @@
     "api.privacy_policy_accepted": "Acceptation des conditions",
     "hud.entry.name": "Élément HUD : %s",
     "hud.entry.usage": "Appuyez sur Espace pour activer le mode déplacement. Appuyez sur Entrée pour ouvrir les options de ce module.",
-    "hud.entry.usage.move": "Appuyez sur Échap ou Espace pour quitter le mode déplacement, utilisez les flèches pour déplacer cet élément HUD. Appuyez sur Entrée pour ouvrir les options de ce module."
+    "hud.entry.usage.move": "Appuyez sur Échap ou Espace pour quitter le mode déplacement, utilisez les flèches pour déplacer cet élément HUD. Appuyez sur Entrée pour ouvrir les options de ce module.",
+    "toggle_fullbright": "Basculer la Luminosité Max"
 }

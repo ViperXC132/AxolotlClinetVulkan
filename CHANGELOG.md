@@ -1,12 +1,14 @@
 ## Changelog:
 
-### 3.1.4 *(unreleased)*
+### 3.1.4
 
 - Add option to hide the main hand item for ArmorHuds
 - Remove outdated translation files
 - Fix a few bugs (as usual)
 - Add online friends multiplayer menu & ability to join friends' servers
-- Add integration with emc
+- Add integration with e4mc
+- update to 1.21.6
+- add keybind to toggle fullbright
 
 ### 3.1.3
 

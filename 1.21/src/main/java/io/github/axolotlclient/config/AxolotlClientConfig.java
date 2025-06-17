@@ -40,7 +40,10 @@ import io.github.axolotlclient.mixin.OverlayTextureAccessor;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import io.github.axolotlclient.util.options.GenericOption;
 import lombok.Getter;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.option.KeyBind;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 
 public class AxolotlClientConfig {
@@ -190,6 +193,12 @@ public class AxolotlClientConfig {
 
 		AxolotlClient.config.add(creditsBGM);
 
+		var toggleFullbright = new KeyBind("toggle_fullbright", -1, "category.axolotlclient");
+		KeyBindingHelper.registerKeyBinding(toggleFullbright);
+		ClientTickEvents.END_CLIENT_TICK.register(minecraft -> {
+			if (toggleFullbright.wasPressed()) {
+				fullBright.toggle();
+			}
+		});
 	}
-
 }
