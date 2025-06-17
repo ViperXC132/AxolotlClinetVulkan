@@ -60,8 +60,7 @@ dependencies {
 
 	compileOnly("org.lwjgl:lwjgl-glfw:${lwjglVersion}")
 
-	modCompileOnly("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}")
-	modLocalRuntime("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}:all-remapped")
+	modImplementation("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}")
 
 	include(implementation("org.lwjgl", "lwjgl-tinyfd", "3.3.5"))
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", "3.3.5", classifier = "natives-linux"))
