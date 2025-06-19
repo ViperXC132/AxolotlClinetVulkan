@@ -41,9 +41,9 @@ public abstract class ClientWorldMixin {
 	@Inject(method = "removeEntity", at = @At("HEAD"))
 	public void axolotlclient$onEntityRemoved(int entityId, CallbackInfo ci) {
 		Entity entity = this.getEntityById(entityId);
-		if (entity instanceof PlayerEntity && HypixelMods.getInstance().cacheMode.get() ==
-			HypixelMods.HypixelApiCacheMode.ON_PLAYER_DISCONNECT) {
-			HypixelAbstractionLayer.handleDisconnectEvents(entity.getUuid());
+		if (entity instanceof PlayerEntity && HypixelMods.getInstance().cacheMode.get()
+			.equals(HypixelMods.HypixelApiCacheMode.ON_PLAYER_DISCONNECT)) {
+			HypixelAbstractionLayer.getInstance().handleDisconnectEvents(entity.getUuid());
 		}
 	}
 

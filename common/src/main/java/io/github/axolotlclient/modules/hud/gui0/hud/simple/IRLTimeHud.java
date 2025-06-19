@@ -78,7 +78,7 @@ public class IRLTimeHud extends SimpleTextHudEntry {
 		}
 		if (formatter == null) {
 			updateDateTimeFormatter(format.get());
-			return getValue();
+			return getPlaceholder();
 		}
 		return formatter.format(LocalDateTime.now());
 	}
@@ -90,7 +90,7 @@ public class IRLTimeHud extends SimpleTextHudEntry {
 		}
 		if (formatter == null) {
 			updateDateTimeFormatter(format.get());
-			return getValue();
+			return getPlaceholder();
 		}
 		return formatter.format(LocalDateTime.of(2020, Month.AUGUST, 22, 14, 28, 32, 1595135));
 	}

@@ -79,6 +79,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 	private final ColorOption attackIndicatorForegroundColor = new ColorOption("attackindicatorfg", ClientColors.WHITE);
 	private final BooleanOption applyBlend = new BooleanOption("applyBlend", true);
 	private final BooleanOption overrideF3 = new BooleanOption("overrideF3", false);
+	private final BooleanOption customAttackIndicator = new BooleanOption("crosshairhud.custom_attack_indicator", false);
 
 	private final GraphicsOption customTextureGraphics = new GraphicsOption("customTextureGraphics",
 		new int[][]{
@@ -125,6 +126,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		options.add(defaultColor);
 		options.add(entityColor);
 		options.add(containerColor);
+		options.add(customAttackIndicator);
 		options.add(attackIndicatorBackgroundColor);
 		options.add(attackIndicatorForegroundColor);
 		return options;
@@ -219,7 +221,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			RenderSystem.setShaderColor(1, 1, 1, 1);
 
 			// Draw attack indicator
-			if (indicator == AttackIndicator.CROSSHAIR) {
+			if (!customAttackIndicator.get() && indicator == AttackIndicator.CROSSHAIR) {
 				float progress = this.client.player.getAttackCooldownProgress(0.0F);
 
 				// Whether a cross should be displayed under the indicator
@@ -242,7 +244,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 				}
 			}
 		}
-		if (indicator == AttackIndicator.CROSSHAIR && !type.get().equals(Crosshair.TEXTURE)) {
+		if (((type.get().equals(Crosshair.TEXTURE) || type.get().equals(Crosshair.CUSTOM)) ? customAttackIndicator.get() : true) && indicator == AttackIndicator.CROSSHAIR) {
 			float progress = this.client.player.getAttackCooldownProgress(0.0F);
 			if (progress != 1.0F) {
 				RenderUtil.drawRectangle(graphics, getRawX() + (getWidth() / 2) - 6, getRawY() + (getHeight() / 2) + 9,

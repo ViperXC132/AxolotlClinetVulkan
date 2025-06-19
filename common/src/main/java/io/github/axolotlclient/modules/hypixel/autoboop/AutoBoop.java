@@ -23,6 +23,7 @@
 package io.github.axolotlclient.modules.hypixel.autoboop;
 
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -38,9 +39,9 @@ import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringArrayOption;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
 import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
 import io.github.axolotlclient.util.ThreadExecuter;
+import io.github.axolotlclient.util.options.GenericOption;
 import lombok.Getter;
 
 public class AutoBoop implements AbstractHypixelMod {
@@ -58,7 +59,7 @@ public class AutoBoop implements AbstractHypixelMod {
 			if ((matcher = FRIEND_JOINED.matcher(message)).matches()) {
 				String player = matcher.group(1);
 				if (FilterListMode.fromId(filterListMode.get())
-					.getFunc().apply(player, Arrays.stream(filterList.get().split(",")).map(String::trim).toList())) {
+					.getFunc().apply(player, filters)) {
 					CompletableFuture.runAsync(() -> {
 						// TODO: this is not thread safe!
 						AxoMinecraftClient.getInstance().br$getPlayer().br$sendToServer("/boop " + player);
@@ -69,9 +70,24 @@ public class AutoBoop implements AbstractHypixelMod {
 		});
 	}
 
+	protected final List<String> filters = new ArrayList<>();
 	protected final OptionCategory cat = OptionCategory.create("autoboop");
 	protected final BooleanOption enabled = new BooleanOption("enabled", "autoboop.enabled.tooltip", false);
-	protected final StringOption filterList = new StringOption("autoboop.filterlist", "autoboop.filterlist.tooltip", "");
+	protected final GenericOption filterList = new GenericOption("autoboop.filterlist", "autoboop.filterlist.configure", () -> {
+		// TODO: handle this?
+		// openFiltersScreen(filters)
+	}) {
+		@Override
+		public String toSerializedValue() {
+			return String.join(",", filters);
+		}
+
+		@Override
+		public void fromSerializedValue(String s) {
+			filters.clear();
+			filters.addAll(Arrays.asList(s.split(",")));
+		}
+	};
 	protected final StringArrayOption filterListMode = new StringArrayOption("autoboop.filterlist.mode", Arrays.stream(FilterListMode.values()).map(FilterListMode::getId).toArray(String[]::new));
 
 	@Override

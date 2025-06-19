@@ -22,9 +22,9 @@
 
 package io.github.axolotlclient.modules.hypixel.bedwars;
 
-
 import io.github.axolotlclient.bridge.AxoPlayerProfile;
 import io.github.axolotlclient.bridge.Platform;
+import io.github.axolotlclient.api.util.UUIDHelper;
 import lombok.Data;
 
 /**
@@ -90,13 +90,7 @@ public class BedwarsPlayer {
 	public void tick(int currentTick) {
 		if (stats == null && !triedStats) {
 			triedStats = true;
-			try {
-				stats = BedwarsPlayerStats.fromAPI(profile.br$getId().toString().replace("-", ""));
-			} catch (Exception ignored) {
-			}
-			if (stats == null) {
-				stats = BedwarsPlayerStats.generateFake(profile.br$getName());
-			}
+			BedwarsPlayerStats.fromAPIOrFakeAsync(UUIDHelper.toUndashed(profile.br$getId())).thenAccept(stat -> stats = stat);
 		}
 		if (alive || tickAlive < 0) {
 			return;

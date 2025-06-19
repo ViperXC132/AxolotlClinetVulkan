@@ -26,6 +26,8 @@ import io.github.axolotlclient.bridge.render.AxoRenderContext;
 
 import io.github.axolotlclient.modules.hud.gui.hud.*;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
+import io.github.axolotlclient.modules.hud.gui0.hud.simple.ComboHud;
+import io.github.axolotlclient.modules.hud.gui0.hud.simple.ReachHud;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 
@@ -35,7 +37,6 @@ import net.minecraft.client.MinecraftClient;
  *
  * @license GPL-3.0
  */
-
 public class HudManager extends HudManagerCommon {
 	@Getter
 	private final static HudManager instance = new HudManager();
@@ -55,6 +56,9 @@ public class HudManager extends HudManagerCommon {
 		add(new ScoreboardHud());
 		add(new KeystrokeHud());
 		add(new PackDisplayHud());
+
+		((ReachHud) get(ReachHud.ID)).getEnabled().setForceOff(true, "feature.broken");
+		((ComboHud) get(ComboHud.ID)).getEnabled().setForceOff(true, "feature.broken");
 	}
 
 	@Override

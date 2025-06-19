@@ -23,10 +23,11 @@
 package io.github.axolotlclient.modules.hud.gui0.hud.item;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
+import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.item.AxoEnchants;
-import io.github.axolotlclient.bridge.item.AxoPlayerInventory;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoItems;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
@@ -37,6 +38,7 @@ import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.util.ItemUtil;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Stream;
 
 /**
@@ -46,10 +48,10 @@ import java.util.stream.Stream;
  * @license GPL-3.0
  */
 public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
-	private static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "armorhud");
 
-	private static final List<AxoItemStack> PLACEHOLDER_STACKS = List.of(
-		AxoItemStack.of(AxoItems.IRON_SWORD),
+	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "armorhud");
+	private static final AxoItemStack PLACEHOLDER_MAIN_HAND = AxoItemStack.of(AxoItems.IRON_SWORD);
+	private static final List<AxoItemStack> PLACEHOLDER_GEAR = List.of(
 		AxoItemStack.of(AxoItems.IRON_BOOTS),
 		AxoItemStack.of(AxoItems.IRON_LEGGINGS),
 		AxoItemStack.of(AxoItems.IRON_CHESTPLATE),
@@ -59,113 +61,119 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 	protected final BooleanOption showProtLvl = new BooleanOption("showProtectionLevel", false);
 	private final BooleanOption showDurabilityNumber = new BooleanOption("show_durability_num", false);
 	private final BooleanOption showMaxDurabilityNumber = new BooleanOption("show_max_durability_num", false);
-	private final EnumOption<AnchorPoint> anchor = new EnumOption<>("anchorpoint", AnchorPoint.class, AnchorPoint.TOP_RIGHT);
+	private final BooleanOption customDurabilityNumColor = new BooleanOption("armorhud.custom_durability_num_color", false);
+	private final ColorOption durabilityNumColor = new ColorOption("armorhud.durability_num_color", Colors.WHITE);
+	private final EnumOption<MainHandItemPosition> mainHandItemPosition = new EnumOption<>("armorhud.main_hand_item_position", MainHandItemPosition.class, MainHandItemPosition.BOTTOM);
+
+	private final EnumOption<AnchorPoint> anchor = new EnumOption<>("anchorpoint", AnchorPoint.class,
+		AnchorPoint.TOP_RIGHT);
 
 	public ArmorHud() {
 		super(20, 100, true);
 	}
 
-	private int computeLabelWidth(AxoRenderContext context, List<AxoItemStack> items) {
-		boolean showDurability = showDurabilityNumber.get();
-		boolean showMaxDurability = showMaxDurabilityNumber.get();
-		return showDurability || showMaxDurability ? items
-			.stream()
-			.filter(x -> !x.br$isEmpty())
-			.map(this::getItemString)
-			.mapToInt(text -> context.br$getFont().br$getWidth(text) + 2)
-			.max()
-			.orElse(0) : 0;
-	}
-
-	private String getItemString(AxoItemStack stack) {
-		boolean showDurability = showDurabilityNumber.get();
-		boolean showMaxDurability = showMaxDurabilityNumber.get();
-		if (showDurability && showMaxDurability) {
-			return (stack.br$getMaxDamage() - stack.br$getDamage()) + "/" + stack.br$getMaxDamage();
-		}
-
-		return String.valueOf(showDurability ? stack.br$getMaxDamage() - stack.br$getDamage() : stack.br$getMaxDamage());
-	}
-
-	private void renderDurabilityNumber(AxoRenderContext context, AxoItemStack stack, int x, int y) {
-		boolean showDurability = showDurabilityNumber.get();
-		boolean showMaxDurability = showMaxDurabilityNumber.get();
-		if (stack == null || !(showMaxDurability || showDurability) || stack.br$getMaxDamage() == 0) {
+	@Override
+	public void renderComponent(AxoRenderContext graphics, float delta) {
+		final var player = client.br$getPlayer();
+		if(player == null) {
 			return;
 		}
-		String text = getItemString(stack);
-		int textY = y + 10 - context.br$getFont().br$getFontHeight() / 2;
-		float f = (float) stack.br$getDamage();
-		float g = (float) stack.br$getMaxDamage();
-		float h = Math.max(0.0F, (g - f) / g);
-		int j = java.awt.Color.HSBtoRGB(h / 3.0F, 1.0F, 1.0F);
-		context.br$drawString(text, x, textY, (((255 << 8) + (j >> 16 & 255) << 8) + (j >> 8 & 255) << 8) + (j & 255), false);
+		renderInternal(graphics, player.br$getInventory().br$getMainHand(), player.br$getInventory().br$getArmor());
 	}
 
-	private void renderItem(AxoRenderContext context, AxoItemStack stack, int x, int y, int offset, String mainItemOverride) {
-		renderDurabilityNumber(context, stack, x, y);
-		x += offset;
-		context.br$renderGuiItemModel(stack, x, y);
-		context.br$renderGuiItemOverlay(stack, x, y, mainItemOverride, textColor.get().toInt(), shadow.get());
+	@Override
+	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
+		renderInternal(graphics, PLACEHOLDER_MAIN_HAND, PLACEHOLDER_GEAR);
 	}
 
-	private void renderComponent(AxoRenderContext context, List<AxoItemStack> items, int mainItemCountOverride) {
+	private void renderInternal(AxoRenderContext graphics, AxoItemStack mainHand, List<? extends AxoItemStack> armorStacks) {
 		int width = 20;
-		int labelWidth = computeLabelWidth(context, items);
+		int height = 100;
+		boolean boundsChanged = false;
+		boolean showDurability = showDurabilityNumber.get();
+		boolean showMaxDurability = showMaxDurabilityNumber.get();
+
+		int labelWidth = (showDurability || showMaxDurability) ?
+			Stream.concat(Stream.of(mainHand), armorStacks.stream())
+				.map(stack -> {
+					String text = showDurability && showMaxDurability
+						? (stack.br$getMaxDamage() - stack.br$getDamage()) + "/" + stack.br$getMaxDamage()
+						: String.valueOf(showDurability ? stack.br$getMaxDamage() - stack.br$getDamage()
+						: stack.br$getMaxDamage());
+					return graphics.br$getFont().br$getWidth(text) + 2;
+				}).mapToInt(Integer::intValue).max().orElse(0) : 0;
+
 		width += labelWidth;
 		if (width != getWidth()) {
 			setWidth(width);
+			boundsChanged = true;
+		}
+
+		DrawPosition pos = getPos();
+		MainHandItemPosition mhPos = mainHandItemPosition.get();
+
+		if (mhPos == MainHandItemPosition.DISABLED) {
+			height -= 20;
+		}
+
+		if (height != getHeight()) {
+			setHeight(height);
+			boundsChanged = true;
+		}
+		if (boundsChanged) {
 			onBoundsUpdate();
 		}
-		DrawPosition pos = getPos();
-		int lastY = 2 + (4 * 20);
 
-		for (int i = 0; i < items.size(); i++) {
-			AxoItemStack item = items.get(i);
-			if (!item.br$isEmpty()) {
+		int lastY = 2 + (height - 20);
 
-				final var itemForRendering = item.br$copy();
+		if (mhPos == MainHandItemPosition.BOTTOM) {
+			renderMainItem(graphics, mainHand, pos.x() + 2, pos.y() + lastY, labelWidth);
+			lastY -= 20;
+		}
 
-				if (showProtLvl.get()) {
-					if (itemForRendering.br$hasEnchantment(AxoEnchants.PROTECTION)) {
-						itemForRendering.br$setCount(itemForRendering.br$getEnchantment(AxoEnchants.PROTECTION));
-					}
-				}
+		for (AxoItemStack stack : armorStacks) {
+			String label = null;
 
-				// first item
-				if (i == 0) {
-					String override = mainItemCountOverride == 1 ? null : String.valueOf(mainItemCountOverride);
-					renderItem(context, itemForRendering, pos.x() + 2, lastY + pos.y(), labelWidth, override);
-				} else {
-					renderItem(context, itemForRendering, pos.x() + 2, lastY + pos.y(), labelWidth, null);
-				}
+			if (showProtLvl.get() && stack.br$hasEnchantment(AxoEnchants.PROTECTION)) {
+				label = String.valueOf(stack.br$getEnchantment(AxoEnchants.PROTECTION));
 			}
 
-			lastY = lastY - 20;
+			renderItem(graphics, stack, pos.x() + 2, pos.y() + lastY, labelWidth, label);
+			lastY -= 20;
+		}
+
+		if (mhPos == MainHandItemPosition.TOP) {
+			renderMainItem(graphics, mainHand, pos.x() + 2, pos.y() + lastY, labelWidth);
 		}
 	}
 
-	@Override
-	public void renderComponent(AxoRenderContext context, float delta) {
-		if (client.br$getPlayer() == null) {
+	public void renderMainItem(AxoRenderContext graphics, AxoItemStack stack, int x, int y, int offset) {
+		renderDurabilityNumber(graphics, stack, x, y);
+		x += offset;
+		String total = String.valueOf(ItemUtil.getTotal(client, stack.br$getItem()));
+		if (total.equals("1")) {
+			total = null;
+		}
+		graphics.br$renderGuiItemModel(stack, x, y);
+		graphics.br$renderGuiItemOverlay(stack, x, y, total);
+	}
+
+	public void renderItem(AxoRenderContext graphics, AxoItemStack stack, int x, int y, int offset, String labelOverride) {
+		renderDurabilityNumber(graphics, stack, x, y);
+		x += offset;
+		graphics.br$renderGuiItemModel(stack, x, y);
+		graphics.br$renderGuiItemOverlay(stack, x, y, labelOverride);
+	}
+
+	private void renderDurabilityNumber(AxoRenderContext graphics, AxoItemStack stack, int x, int y) {
+		boolean showDurability = showDurabilityNumber.get();
+		boolean showMaxDurability = showMaxDurabilityNumber.get();
+		if (stack.br$isEmpty() || !(showMaxDurability || showDurability) || stack.br$getMaxDamage() == 0) {
 			return;
 		}
-
-		AxoPlayerInventory inventory = client.br$getPlayer().br$getInventory();
-
-		renderComponent(
-			context,
-			Stream.concat(
-				Stream.of(inventory.br$getMainHand()),
-				inventory.br$getArmor().stream()
-			).toList(),
-			ItemUtil.getTotal(inventory, inventory.br$getMainHand().br$getItem())
-		);
-	}
-
-	@Override
-	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
-		renderComponent(context, PLACEHOLDER_STACKS, 1);
+		String text = showDurability && showMaxDurability ? (stack.br$getMaxDamage() - stack.br$getDamage()) + "/" + stack.br$getMaxDamage() : String.valueOf((showDurability ? stack.br$getMaxDamage() - stack.br$getDamage() : stack.br$getMaxDamage()));
+		int textY = y + 10 - graphics.br$getFont().br$getFontHeight() / 2;
+		graphics.br$drawString(text, x, textY, customDurabilityNumColor.get() ? durabilityNumColor.get().toInt() : stack.br$getBarColor(), true);
 	}
 
 	@Override
@@ -179,11 +187,26 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		options.add(showProtLvl);
 		options.add(showDurabilityNumber);
 		options.add(showMaxDurabilityNumber);
+		options.add(customDurabilityNumColor);
+		options.add(durabilityNumColor);
 		options.add(anchor);
+		options.add(mainHandItemPosition);
 		return options;
 	}
 
 	public AnchorPoint getAnchor() {
 		return anchor.get();
+	}
+
+	private enum MainHandItemPosition {
+		BOTTOM,
+		TOP,
+		DISABLED,
+		;
+
+		@Override
+		public String toString() {
+			return "armorhud.main_hand_item_position."+super.toString().toLowerCase(Locale.ROOT);
+		}
 	}
 }

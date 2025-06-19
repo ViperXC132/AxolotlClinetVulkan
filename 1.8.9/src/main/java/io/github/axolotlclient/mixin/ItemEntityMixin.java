@@ -29,7 +29,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(ItemEntity.class)
-public class ItemEntityMixin {
+public abstract class ItemEntityMixin {
 
 	@Redirect(method = "getItemStack", at = @At(value = "INVOKE", target = "Lorg/apache/logging/log4j/Logger;error(Ljava/lang/String;)V", remap = false))
 	private void removeErrorLogging(Logger instance, String s) {

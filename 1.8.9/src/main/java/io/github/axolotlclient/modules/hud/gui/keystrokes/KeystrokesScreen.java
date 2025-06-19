@@ -28,6 +28,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.Vanil
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resource.language.I18n;
+import org.lwjgl.input.Keyboard;
 
 public class KeystrokesScreen extends io.github.axolotlclient.AxolotlClientConfig.impl.ui.Screen {
 
@@ -69,6 +70,15 @@ public class KeystrokesScreen extends io.github.axolotlclient.AxolotlClientConfi
 	public void closeScreen() {
 		this.minecraft.openScreen(this.screen);
 		hud.saveKeystrokes();
+	}
+
+	@Override
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (keyCode == Keyboard.KEY_ESCAPE) {
+			closeScreen();
+			return true;
+		}
+		return super.keyPressed(keyCode, scanCode, modifiers);
 	}
 
 	public void removeKey(KeystrokeHud.Keystroke key) {

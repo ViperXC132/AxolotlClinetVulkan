@@ -3,13 +3,13 @@ import java.nio.file.FileSystems
 import kotlin.io.path.*
 
 plugins {
-	id("io.freefair.lombok") version "8.11" apply false
+	id("io.freefair.lombok") version "8.12" apply false
 	id("com.modrinth.minotaur") version "2.+" apply false
 	id("com.gradleup.shadow") version "8.+" apply false
 	id("dev.yumi.gradle.licenser") version "2.0.+"
 	id("io.github.p03w.machete") version "2.+" apply false
-	id("fabric-loom") version "1.9.+" apply false
-	id("ploceus") version "1.9.+" apply false
+	id("fabric-loom") version "1.10.+" apply false
+	id("ploceus") version "1.10.3" apply false
 }
 
 version = "${project.version}"
@@ -110,5 +110,30 @@ subprojects {
 	}
 }
 
+tasks.register("generateVersionChangelog") {
+	actions.addLast {
+		val changelogText = project.layout.projectDirectory.file("CHANGELOG.md").asFile.readText()
+		val regexVersion =
+			((project.version) as String).split("+")[0].replace("\\.".toRegex(), "\\.").replace("\\+".toRegex(), "+")
+		val changelogRegex = "###? ${regexVersion}\\n\\n(( *- .+\\n)+)".toRegex()
+		val matcher = changelogRegex.find(changelogText)
 
+		val out = project.layout.buildDirectory.file("changelog").get().asFile.toPath()
+		if (matcher != null) {
+			var changelogContent = matcher.groups[1]?.value
+
+			val changelogLines = changelogText.split("\n")
+			val linkRefRegex = "^\\[([A-z0-9 _\\-/+.]+)]: ".toRegex()
+			for (line in changelogLines.reversed()) {
+				if ((linkRefRegex.matches(line)))
+					changelogContent += "\n" + line
+				else break
+			}
+
+			out.writeText(changelogContent.toString())
+		} else {
+			out.writeText("")
+		}
+	}
+}
 

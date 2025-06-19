@@ -23,6 +23,7 @@
 package io.github.axolotlclient.bridge;
 
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
+
 import lombok.Getter;
 
 @Getter

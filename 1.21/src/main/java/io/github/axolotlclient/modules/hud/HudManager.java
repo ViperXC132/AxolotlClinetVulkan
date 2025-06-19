@@ -24,14 +24,10 @@ package io.github.axolotlclient.modules.hud;
 
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 
-import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
-import io.github.axolotlclient.modules.hud.gui.hud.PackDisplayHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ActionBarHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.BossBarHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.CrosshairHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.DebugCountersHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.HotbarHUD;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ScoreboardHud;
+import io.github.axolotlclient.modules.hud.gui.hud.*;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
+import io.github.axolotlclient.modules.hud.gui0.hud.simple.ComboHud;
+import io.github.axolotlclient.modules.hud.gui0.hud.simple.ReachHud;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 
@@ -60,6 +56,9 @@ public class HudManager extends HudManagerCommon {
 		add(new ScoreboardHud());
 		add(new KeystrokeHud());
 		add(new PackDisplayHud());
+
+		((ReachHud) get(ReachHud.ID)).getEnabled().setForceOff(true, "feature.broken");
+		((ComboHud) get(ComboHud.ID)).getEnabled().setForceOff(true, "feature.broken");
 	}
 
 	@Override

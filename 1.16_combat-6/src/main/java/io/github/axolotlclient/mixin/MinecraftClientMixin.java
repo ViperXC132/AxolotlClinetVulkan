@@ -88,7 +88,7 @@ public abstract class MinecraftClientMixin {
 		Events.WORLD_LOAD_EVENT.invoker().invoke(new WorldLoadEvent(world));
 	}
 
-	@Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/TitleScreen;<init>()V"))
+	@Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;openScreen(Lnet/minecraft/client/gui/screen/Screen;)V"))
 	private void onGameLoad(CallbackInfo ci) {
 		Events.GAME_LOAD_EVENT.invoker().invoke((MinecraftClient) (Object) this);
 	}

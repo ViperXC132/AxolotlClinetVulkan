@@ -87,6 +87,7 @@ dependencies {
 
 	api("net.hypixel:mod-api:1.0.1")
 	include(modImplementation("io.github.moehreag.hypixel:mod-api-fabric:1.0.1+build.4+mc1.8.9")!!)
+	include(implementation("com.mojang:brigadier:1.0.18")!!)
 }
 
 configurations.configureEach {
@@ -107,6 +108,7 @@ tasks.processResources {
 }
 
 tasks.runClient {
+	// might not be set
 	if (project.properties["native_glfw"] == "true") {
 		val glfwPath = project.properties.getOrDefault("native_glfw_path", "/usr/lib/libglfw.so")
 		jvmArgs("-Dorg.lwjgl.glfw.libname=$glfwPath")

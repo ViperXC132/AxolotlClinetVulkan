@@ -42,7 +42,6 @@
 		"ParticleManagerMixin",
 		"PlayerEntityMixin",
 		"PlayerEntityModelMixin",
-		"PlayerEntityRendererMixin",
 		"PlayerInventoryScreenMixin",
 		"PlayerListEntryMixin",
 		"PlayerListHudMixin",
@@ -57,12 +56,17 @@
 		"SoundManagerAccessor",
 		"SoundSystemAccessor",
 		"TextRendererMixin",
+		"TextRenderUtilsMixin",
 		"TextureManagerAccessor",
 		"TitleScreenMixin",
 		"TntEntityRendererMixin",
 		"VertexBufferMixin",
 		"WorldRendererAccessor",
-		"WorldRendererMixin"
+		"WorldRendererMixin",
+		"commands.ChatScreenMixin",
+		"commands.LocalClientPlayerEntityMixin",
+		"translation.LanguageMixin",
+		"translation.TranslationStorageMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

@@ -24,6 +24,7 @@ package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui0.entry.AbstractHudEntry;
+import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import java.util.List;
 
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -81,6 +82,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 	private final ColorOption attackIndicatorForegroundColor = new ColorOption("attackindicatorfg", ClientColors.WHITE);
 	private final BooleanOption applyBlend = new BooleanOption("applyBlend", true);
 	private final BooleanOption overrideF3 = new BooleanOption("overrideF3", false);
+	private final BooleanOption customAttackIndicator = new BooleanOption("crosshairhud.custom_attack_indicator", false);
 
 	private final GraphicsOption customTextureGraphics = new GraphicsOption("customTextureGraphics",
 		new int[][]{
@@ -127,6 +129,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		options.add(defaultColor);
 		options.add(entityColor);
 		options.add(containerColor);
+		options.add(customAttackIndicator);
 		options.add(attackIndicatorBackgroundColor);
 		options.add(attackIndicatorForegroundColor);
 		return options;
@@ -219,34 +222,36 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 
 			RenderSystem.color4f(1, 1, 1, 1);
 
-			// Draw attack indicator
-			x = (int) ((client.getWindow().getScaledWidth() / getScale()) / 2 - 8);
-			y = (int) ((client.getWindow().getScaledHeight() / getScale()) / 2 - 7 + 16);
-			ItemStack itemStack = this.client.player.getStackInHand(Hand.OFF_HAND);
-			boolean bl = this.client.options.field_26808 == class_5512.field_26811;
-			if (bl && itemStack.getItem() == Items.SHIELD && this.client.player.method_31233(itemStack)) {
-				drawTexture(matrices, x, y, 52, 112, 16, 16, 256, 256);
-			} else if (bl && this.client.player.isBlocking()) {
-				drawTexture(matrices, x, y, 36, 112, 16, 16, 256, 256);
-			} else if (this.client.options.attackIndicator == AttackIndicator.CROSSHAIR) {
-				float f = this.client.player.getAttackCooldownProgress(0.0F);
-				boolean bl2 = false;
-				if (this.client.targetedEntity != null && this.client.targetedEntity instanceof LivingEntity && f >= 2.0F) {
-					bl2 = ((EntityHitResult) this.client.crosshairTarget).method_31252() <= this.client.player.method_31239(0.0F);
-					bl2 &= this.client.targetedEntity.isAlive();
-				}
+			if (!customAttackIndicator.get()) {
+				// Draw attack indicator
+				x = (int) ((client.getWindow().getScaledWidth() / getScale()) / 2 - 8);
+				y = (int) ((client.getWindow().getScaledHeight() / getScale()) / 2 - 7 + 16);
+				ItemStack itemStack = this.client.player.getStackInHand(Hand.OFF_HAND);
+				boolean bl = this.client.options.field_26808 == class_5512.field_26811;
+				if (bl && itemStack.getItem() == Items.SHIELD && this.client.player.method_31233(itemStack)) {
+					new DrawUtil().drawTexture(matrices, x, y, 52, 112, 16, 16);
+				} else if (bl && this.client.player.isBlocking()) {
+					new DrawUtil().drawTexture(matrices, x, y, 36, 112, 16, 16);
+				} else if (this.client.options.attackIndicator == AttackIndicator.CROSSHAIR) {
+					float f = this.client.player.getAttackCooldownProgress(0.0F);
+					boolean bl2 = false;
+					if (this.client.targetedEntity != null && this.client.targetedEntity instanceof LivingEntity && f >= 2.0F) {
+						bl2 = ((EntityHitResult) this.client.crosshairTarget).method_31252() <= this.client.player.method_31239(0.0F);
+						bl2 &= this.client.targetedEntity.isAlive();
+					}
 
-				if (bl2) {
-					drawTexture(matrices, x, y, 68, 94, 16, 16, 256, 256);
-				} else if (f > 1.3F && f < 2.0F) {
-					float h = (f - 1.0F);
-					int l = (int) (h * 17.0F);
-					drawTexture(matrices, x, y, 36, 94, 16, 4, 256, 256);
-					drawTexture(matrices, x, y, 52, 94, l, 4, 256, 256);
+					if (bl2) {
+						new DrawUtil().drawTexture(matrices, x, y, 68, 94, 16, 16);
+					} else if (f > 1.3F && f < 2.0F) {
+						float h = (f - 1.0F);
+						int l = (int) (h * 17.0F);
+						new DrawUtil().drawTexture(matrices, x, y, 36, 94, 16, 4);
+						new DrawUtil().drawTexture(matrices, x, y, 52, 94, l, 4);
+					}
 				}
 			}
 		}
-		if (indicator == AttackIndicator.CROSSHAIR && !type.get().equals(Crosshair.TEXTURE) && !type.get().equals(Crosshair.CUSTOM)) {
+		if (((type.get().equals(Crosshair.TEXTURE) || type.get().equals(Crosshair.CUSTOM)) ? customAttackIndicator.get() : true) && indicator == AttackIndicator.CROSSHAIR) {
 			float progress = this.client.player.getAttackCooldownProgress(0.0F) / 2;
 			if (progress != 1.0F) {
 				RenderUtil.drawRectangle(matrices, getRawX() + (getWidth() / 2) - 6, getRawY() + (getHeight() / 2) + 9,

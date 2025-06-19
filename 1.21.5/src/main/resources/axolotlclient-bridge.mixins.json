@@ -1,0 +1,29 @@
+{
+	"required": true,
+	"minVersion": "0.8",
+	"package": "io.github.axolotlclient.bridge.mixin",
+	"compatibilityLevel": "JAVA_17",
+	"client": [
+		"MinecraftClientMixin",
+		"entity.EntityMixin",
+		"entity.PlayerEntityMixin",
+		"internal.PlatformImplInternalMixin",
+		"item.AxoEnchantsMixin",
+		"item.AxoItemsMixin",
+		"item.EnchantmentMixin",
+		"item.ItemStackMixin",
+		"item.PlayerInventoryMixin",
+		"key.AxoKeysMixin",
+		"key.GameOptionsMixin",
+		"key.KeyBindingMixin",
+		"key.KeyMixin",
+		"render.FontMixin",
+		"render.WindowMixin",
+		"util.IdentifierMixin",
+		"util.TextMixin",
+		"world.WorldMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}

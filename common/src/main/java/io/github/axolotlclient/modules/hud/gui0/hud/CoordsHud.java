@@ -141,9 +141,10 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		String direction = getWordedDirection(dir);
 
 		int width, height;
+		int xStart = pos.x() + 2;
 
 		if (minimal.get()) {
-			int currPos = pos.x() + 1;
+			int currPos = xStart;
 			String separator = this.separator.get();
 			currPos = context.br$drawString("XYZ" + delimiter.get(), currPos, pos.y() + 2, firstColor.get().toInt(), shadow.get());
 			currPos = context.br$drawString(fx, currPos, pos.y() + 2, secondColor.get().toInt(),
@@ -159,18 +160,18 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		} else {
 			int xEnd;
 			int yEnd = pos.y() + 2;
-			context.br$drawString("X", pos.x() + 1, yEnd, firstColor.get().toInt(), shadow.get());
+			context.br$drawString("X", xStart, yEnd, firstColor.get().toInt(), shadow.get());
 			xEnd = context.br$drawString(fx, pos.x() + 11, yEnd,
 				secondColor.get().toInt(), shadow.get());
 			yEnd += 10;
 
-			context.br$drawString("Y", pos.x() + 1, yEnd, firstColor.get().toInt(), shadow.get());
+			context.br$drawString("Y", xStart, yEnd, firstColor.get().toInt(), shadow.get());
 			xEnd = Math.max(xEnd, context.br$drawString(fy, pos.x() + 11, yEnd,
 				secondColor.get().toInt(), shadow.get()));
 
 			yEnd += 10;
 
-			context.br$drawString("Z", pos.x() + 1, yEnd, firstColor.get().toInt(), shadow.get());
+			context.br$drawString("Z", xStart, yEnd, firstColor.get().toInt(), shadow.get());
 
 			xEnd = Math.max(xEnd, context.br$drawString(fz, pos.x() + 11, yEnd, secondColor.get().toInt(), shadow.get()));
 
@@ -184,13 +185,13 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 				shadow.get());
 			context.br$drawString(getZDir(dir), xEnd, pos.y() + 22, secondColor.get().toInt(),
 				shadow.get());
-			xEnd += 19;
+			xEnd += 14;
 			width = xEnd - pos.x();
 			height = yEnd + 1 - pos.y();
 		}
 
 		if (biome.get()) {
-			int bX = context.br$drawString(AxoI18n.translate("coordshud.biome"), pos.x() + 1, height + pos.y(), firstColor.get().toInt(), shadow.get());
+			int bX = context.br$drawString(AxoI18n.translate("coordshud.biome"), xStart, height + pos.y(), firstColor.get().toInt(), shadow.get());
 			bX += 5;
 			width = Math.max(width + pos.x() - 1, context.br$drawString(biomeName, bX, height + pos.y(), secondColor.get().toInt(), shadow.get())) - pos.x() + 1;
 			height += 10;

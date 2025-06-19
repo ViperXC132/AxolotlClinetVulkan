@@ -1,12 +1,29 @@
 ## Changelog:
 
+### *(unreleased)*
+
+- Add option to hide the main hand item for ArmorHuds
+- Remove outdated translation files
+- Fix a few bugs (as usual)
+
+### 3.1.3
+
+- Fix a few bugs
+- Update to 1.21.5, drop 1.21.4
+- Add Tablist background customization (closes #120)
+
 ### 3.1.2
 
 - Customizable keystrokes
-  - Mouse movement is now its own HUD element
+- Mouse movement is now its own HUD element
 - Custom text-based HUD elements
 - Add DebugCountersHud, displaying Counters from the F3 screen
 - Add Bedwars resources HUD
+- Update NickHider
+- Add /playerstats command to display stats of hypixel gamemodes (`@Floweynt`)
+- Move config file location
+- Add various additional options to some HUD elements
+- Mark Reach & Combo HUDs as broken
 
 ### 3.1.1
 

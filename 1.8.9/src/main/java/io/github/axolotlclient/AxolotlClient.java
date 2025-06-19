@@ -63,7 +63,7 @@ import net.minecraft.resource.Identifier;
 public class AxolotlClient extends AxolotlClientCommon implements ClientModInitializer {
 
 	public static final HashMap<Identifier, Resource> runtimeResources = new HashMap<>();
-	public static final Identifier badgeIcon = new Identifier("axolotlclient", "textures/badge.png");
+	public static final Identifier badgeIcon = new Identifier(MODID, "textures/badge.png");
 	public static final OptionCategory hiddenConfig = OptionCategory.create("storedOptions");
 	public static final BooleanOption someNiceBackground = new BooleanOption("defNoSecret", false);
 	public static final List<Module> modules = new ArrayList<>();

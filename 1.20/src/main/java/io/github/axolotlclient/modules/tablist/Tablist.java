@@ -30,9 +30,9 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.modules.AbstractModule;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import lombok.Getter;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.util.math.MatrixStack;
 
 public class Tablist extends AbstractModule {
 
@@ -43,6 +43,7 @@ public class Tablist extends AbstractModule {
 	public final BooleanOption showFooter = new BooleanOption("showFooter", true);
 	public final BooleanOption alwaysShowHeadLayer = new BooleanOption("alwaysShowHeadLayer", false);
 	private final BooleanOption numericalPing = new BooleanOption("numericalPing", false);
+	private final BooleanOption smallPingText = new BooleanOption("tablist.small_ping_text", false);
 	private final ColorOption pingColor0 = new ColorOption("pingColor0", Color.parse("#FF00FFFF"));
 	private final ColorOption pingColor1 = new ColorOption("pingColor1", Color.parse("#FF00FF00"));
 	private final ColorOption pingColor2 = new ColorOption("pingColor2", Color.parse("#FF008800"));
@@ -50,12 +51,16 @@ public class Tablist extends AbstractModule {
 	private final ColorOption pingColor4 = new ColorOption("pingColor4", Color.parse("#FFFF8800"));
 	private final ColorOption pingColor5 = new ColorOption("pingColor5", Color.parse("#FFFF0000"));
 	private final BooleanOption shadow = new BooleanOption("shadow", true);
+	public final BooleanOption backgroundEnabled = new BooleanOption("enable_background", true);
+	public final BooleanOption customBackgroundColor = new BooleanOption("custom_background_color", false);
+	public final ColorOption backgroundColor = new ColorOption("bgcolor", new Color(Integer.MIN_VALUE));
 	private final OptionCategory tablist = OptionCategory.create("tablist");
 
 	@Override
 	public void init() {
-		tablist.add(numericalPing, showPlayerHeads, shadow, showHeader, showFooter, alwaysShowHeadLayer);
+		tablist.add(numericalPing, smallPingText, showPlayerHeads, shadow, showHeader, showFooter, alwaysShowHeadLayer);
 		tablist.add(pingColor0, pingColor1, pingColor2, pingColor3, pingColor4, pingColor5);
+		tablist.add(backgroundEnabled, customBackgroundColor, backgroundColor);
 
 		AxolotlClient.config().rendering.add(tablist);
 	}
@@ -77,12 +82,30 @@ public class Tablist extends AbstractModule {
 				current = pingColor5.get();
 			}
 
-			DrawUtil.drawString(graphics,
-				String.valueOf(entry.getLatency()),
-				x + width - 1 - MinecraftClient.getInstance().textRenderer.getWidth(String.valueOf(entry.getLatency())),
-				y, current, shadow.get());
+			String text = applySmallText(String.valueOf(entry.getLatency()));
+
+			MatrixStack matrices = graphics.getMatrices();
+			matrices.push();
+			matrices.translate(x + width - 1, y, 0);
+			matrices.translate(-client.textRenderer.getWidth(text), 0, 0);
+
+			if (smallPingText.get()) {
+				matrices.translate(0, -2, 0);
+			}
+
+			DrawUtil.drawString(graphics, text, 0, 0, current, shadow.get());
+			matrices.pop();
 			return true;
 		}
 		return false;
+	}
+
+	private String applySmallText(String text) {
+		if (smallPingText.get()) {
+			StringBuilder builder = new StringBuilder(text.length());
+			text.chars().map(i -> i >= '0' && i <= '9' ? i + 0x2050 : i).forEach(builder::appendCodePoint);
+			return builder.toString();
+		}
+		return text;
 	}
 }

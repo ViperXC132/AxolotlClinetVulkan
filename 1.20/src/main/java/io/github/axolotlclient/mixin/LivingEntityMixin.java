@@ -47,6 +47,7 @@ public abstract class LivingEntityMixin extends Entity {
 		// 2 ticks or so? Defintely not perfect tho
 		/* TODO???
 		if (source.getAttacker() instanceof PlayerEntity) {
+		// comboHud != null
 			ComboHud comboHud = (ComboHud) HudManager.getInstance().get(ComboHud.ID);
 			comboHud.onEntityDamage(this);
 		}*/

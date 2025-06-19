@@ -63,7 +63,7 @@ public class ScreenshotCopying {
 
 	private void copyWayland(Path f) {
 		try {
-			ProcessBuilder builder = new ProcessBuilder("bash", "-c", "wl-copy -t image/png < " + f.toAbsolutePath());
+			ProcessBuilder builder = new ProcessBuilder("bash", "-c", "wl-copy -t image/png < '" + f.toAbsolutePath()+"'");
 			Process p = builder.start();
 			p.waitFor();
 		} catch (IOException | InterruptedException ignored) {

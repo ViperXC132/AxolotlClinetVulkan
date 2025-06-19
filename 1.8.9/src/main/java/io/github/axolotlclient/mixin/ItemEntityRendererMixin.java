@@ -34,7 +34,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemEntityRenderer.class)
-public class ItemEntityRendererMixin {
+public abstract class ItemEntityRendererMixin {
 
 	@Inject(method = "applyItemBobbing", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V", ordinal = 0), cancellable = true)
 	private void axolotlclient$transformItems(ItemEntity itemEntity, double d, double e, double f, float g, BakedModel bakedModel, CallbackInfoReturnable<Integer> cir, @Local int i) {

@@ -43,7 +43,6 @@ import org.apache.commons.lang3.ArrayUtils;
 public class SpecialKeystrokeSelectionList extends ElementListWidget<SpecialKeystrokeSelectionList.Entry> {
 	private static final int ITEM_HEIGHT = 20;
 	final AddSpecialKeystrokeScreen keyBindsScreen;
-	private int maxNameWidth;
 
 	public SpecialKeystrokeSelectionList(AddSpecialKeystrokeScreen keyBindsScreen, MinecraftClient minecraft) {
 		super(minecraft, keyBindsScreen.width, keyBindsScreen.height, 33, keyBindsScreen.height - 33, ITEM_HEIGHT);
@@ -52,13 +51,7 @@ public class SpecialKeystrokeSelectionList extends ElementListWidget<SpecialKeys
 		Arrays.sort(strokes);
 
 		for (KeystrokeHud.SpecialKeystroke keyMapping : strokes) {
-			Text component = new TranslatableText(keyMapping.getKey().getTranslationKey());
-			int i = minecraft.textRenderer.getWidth(component);
-			if (i > this.maxNameWidth) {
-				this.maxNameWidth = i;
-			}
-
-			this.addEntry(new KeyEntry(keyMapping, component));
+			this.addEntry(new KeyEntry(keyMapping));
 		}
 	}
 
@@ -79,15 +72,14 @@ public class SpecialKeystrokeSelectionList extends ElementListWidget<SpecialKeys
 
 	@Environment(EnvType.CLIENT)
 	public class KeyEntry extends Entry {
-		private final Text name, boundKey;
+		private final Text boundKey;
 		private final ButtonWidget addButton;
 		private final KeystrokeHud.Keystroke keystroke;
 
-		KeyEntry(final KeystrokeHud.SpecialKeystroke key, final Text name) {
-			this.name = name;
+		KeyEntry(final KeystrokeHud.SpecialKeystroke key) {
 			this.keystroke = keyBindsScreen.hud.newSpecialStroke(key);
 			this.boundKey = key.getKey().getBoundKeyLocalizedText();
-			this.addButton = new ButtonWidget(0, 0, 75, 20, new TranslatableText("keystrokes.stroke.add"), button -> keyBindsScreen.hud.keystrokes.add(keystroke));
+			this.addButton = new ButtonWidget(0, 0, 75, 20, new TranslatableText("keystrokes.stroke.add"), button -> keyBindsScreen.hud.keystrokes.add(keyBindsScreen.hud.newSpecialStroke(key)));
 		}
 
 		@Override

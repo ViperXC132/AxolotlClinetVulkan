@@ -23,7 +23,6 @@
 package io.github.axolotlclient;
 
 import io.github.axolotlclient.bridge.impl.Bridge;
-import io.github.axolotlclient.modules.hud.HudManagerCommon;
 import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import java.util.ArrayList;
 import java.util.HashMap;

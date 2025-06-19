@@ -23,20 +23,26 @@
 package io.github.axolotlclient.modules.hud.gui.hud;
 
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.modules.hud.ClickInputTracker;
 import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.gui0.layout.Justification;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.mixin.KeyBindAccessor;
+import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.keystrokes.KeystrokePositioningScreen;
 import io.github.axolotlclient.modules.hud.gui.keystrokes.KeystrokesScreen;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
@@ -57,6 +63,9 @@ import net.minecraft.resource.Identifier;
 import net.minecraft.text.Formatting;
 import net.minecraft.util.math.MathHelper;
 
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawCenteredString;
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawString;
+
 /**
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
@@ -66,7 +75,7 @@ import net.minecraft.util.math.MathHelper;
 
 public class KeystrokeHud extends TextHudEntry {
 
-	private static final Path KEYSTROKE_SAVE_FILE = AxolotlClient.resolveConfigFile("keystrokes.json");
+	private static final Path KEYSTROKE_SAVE_FILE = AxolotlClientCommon.resolveConfigFile("keystrokes.json");
 	public static final Identifier ID = new Identifier("kronhud", "keystrokehud");
 
 	private final ColorOption pressedTextColor = new ColorOption("heldtextcolor", new Color(0xFF000000));
@@ -318,19 +327,15 @@ public class KeystrokeHud extends TextHudEntry {
 	}
 
 	@SuppressWarnings("unchecked")
-	private Keystroke deserializeKey(Map<String, ?> json) {
+	private Keystroke deserializeKey(Map<String, Object> json) {
 		if ("option".equals(json.get("type"))) {
-			KeyBinding key = KeyBindAccessor.getAllKeyBinds().stream().filter(k -> k.getName().equals(json.get("option"))).findFirst().orElseThrow();
-			if (json.containsKey("editable_label")) {
-				String label = (String) json.get("label");
-				return new LabelKeystroke(getRectangle((Map<String, ?>) json.get("bounds")), getPos(), key,
-					label);
-			} else {
-				return new CustomRenderKeystroke(SpecialKeystroke.valueOf((String) json.get("special_name")), getRectangle((Map<String, ?>) json.get("bounds")), getPos(), key);
-			}
+			KeyBinding key = KeyBindAccessor.getAllKeyBinds().stream().filter(k -> k.getName().equals(json.getOrDefault("key_name", json.get("option")))).findFirst().orElseThrow();
+			return new CustomRenderKeystroke(SpecialKeystroke.byId.get(((String) json.get("special_name")).toLowerCase(Locale.ROOT)),
+				getRectangle((Map<String, ?>) json.get("bounds")), getPos(), key);
 		} else {
-			KeyBinding key = KeyBindAccessor.getAllKeyBinds().stream().filter(k -> k.getName().equals(json.get("key_name"))).findFirst().orElseThrow();
-			return new LabelKeystroke(getRectangle((Map<String, ?>) json.get("bounds")), getPos(), key, (String) json.get("label"), (boolean) json.get("synchronize_label"));
+			var key = KeyBindAccessor.getAllKeyBinds().stream().filter(k -> k.getName().equals(json.get("key_name"))).findFirst().orElseThrow();
+			return new LabelKeystroke(getRectangle((Map<String, ?>) json.get("bounds")), getPos(), key, (String) json.get("label"), (boolean) json.get("synchronize_label"),
+				Justification.valueOf((String) json.getOrDefault("justification", "CENTER")));
 		}
 	}
 
@@ -357,8 +362,8 @@ public class KeystrokeHud extends TextHudEntry {
 		public Map<String, Object> serialize() {
 			Map<String, Object> json = super.serialize();
 			json.put("type", "option");
-			json.put("option", key.getName());
-			json.put("special_name", parent.name());
+			json.put("key_name", key.getName());
+			json.put("special_name", parent.getId());
 			return json;
 		}
 
@@ -383,7 +388,7 @@ public class KeystrokeHud extends TextHudEntry {
 	}
 
 	public LabelKeystroke newStroke() {
-		return new LabelKeystroke(new Rectangle(0, 0, 17, 17), getPos(), null, "", false);
+		return new LabelKeystroke(new Rectangle(0, 0, 17, 17), getPos(), null, "", false, Justification.CENTER);
 	}
 
 	@Setter
@@ -392,24 +397,26 @@ public class KeystrokeHud extends TextHudEntry {
 		private String label;
 		@Getter
 		private boolean synchronizeLabel;
+		@Getter
+		private Justification justification;
 
 		public LabelKeystroke(Rectangle bounds, DrawPosition offset, KeyBinding key, String label) {
-			this(bounds, offset, key, label, true);
+			this(bounds, offset, key, label, true, Justification.CENTER);
 		}
 
-		public LabelKeystroke(Rectangle bounds, DrawPosition offset, KeyBinding key, String label, boolean synchronizeLabel) {
+		public LabelKeystroke(Rectangle bounds, DrawPosition offset, KeyBinding key, String label, boolean synchronizeLabel, Justification justification) {
 			super(bounds, offset, key, (stroke) -> {
 			});
 			this.label = label;
 			this.render = (stroke) -> {
 				Rectangle strokeBounds = stroke.bounds;
-				float x = (strokeBounds.x() + stroke.offset.x() + ((float) strokeBounds.width() / 2))
-					- ((float) client.textRenderer.getWidth(getLabel()) / 2);
+				int x = strokeBounds.x() + stroke.offset.x() + 2 + this.justification.getXOffset(getLabel(), strokeBounds.width() - 3);
 				float y = strokeBounds.y() + stroke.offset.y() + ((float) strokeBounds.height() / 2) - 4;
 
-				DrawUtil.drawString(getLabel(), (int) x, (int) y, stroke.getFGColor().toInt(), shadow.get());
+				drawString(getLabel(), x, (int) y, stroke.getFGColor().toInt(), shadow.get());
 			};
 			setSynchronizeLabel(synchronizeLabel);
+			this.justification = justification;
 		}
 
 		@Override
@@ -419,6 +426,7 @@ public class KeystrokeHud extends TextHudEntry {
 			json.put("key_name", key.getName());
 			json.put("label", label);
 			json.put("synchronize_label", synchronizeLabel);
+			json.put("justification", justification.name());
 			return json;
 		}
 
@@ -488,7 +496,7 @@ public class KeystrokeHud extends TextHudEntry {
 	@AllArgsConstructor
 	@Getter
 	public enum SpecialKeystroke {
-		SPACE(new Rectangle(0, 54, 53, 7), Minecraft.getInstance().options.jumpKey, (hud, stroke) -> {
+		SPACE("space", new Rectangle(0, 54, 53, 7), Minecraft.getInstance().options.jumpKey, (hud, stroke) -> {
 			Rectangle bounds = stroke.bounds;
 			Rectangle spaceBounds = new Rectangle(bounds.x() + stroke.offset.x() + 4,
 				bounds.y() + stroke.offset.y() + bounds.height() / 2 - 1, bounds.width() - 8, 1);
@@ -497,8 +505,40 @@ public class KeystrokeHud extends TextHudEntry {
 				DrawUtil.fillRect(spaceBounds.offset(1, 1), new Color(
 					(stroke.getFGColor().toInt() & 16579836) >> 2 | stroke.getFGColor().toInt() & -16777216));
 			}
+		}),
+		LMB_CPS("lmb_cps", new Rectangle(0, 36, 26, 17), Minecraft.getInstance().options.attackKey, (hud, stroke) -> {
+			Rectangle bounds = stroke.bounds;
+			int centerX = bounds.x() + stroke.offset.x() + bounds.width() / 2;
+			int y = bounds.y() + stroke.offset.y() + 3;
+			int nameY = y + bounds.height() / 4 - hud.client.textRenderer.fontHeight / 2;
+			drawCenteredString(hud.client.textRenderer, "LMB", centerX, nameY, stroke.getFGColor(), hud.shadow.get());
+			int cpsY = y + bounds.height() * 3 / 4 - hud.client.textRenderer.fontHeight / 2;
+			GlStateManager.pushMatrix();
+			GlStateManager.translatef(centerX, cpsY, 0);
+			GlStateManager.scalef(0.5f, 0.5f, 1);
+			String cpsText = ClickInputTracker.getInstance().leftMouse.clicks() + " CPS";
+			GlStateManager.translatef(-hud.client.textRenderer.getWidth(cpsText) / 2f, 0, 0);
+			drawString(cpsText, 0, 0, stroke.getFGColor(), hud.shadow.get());
+			GlStateManager.popMatrix();
+		}),
+		RMB_CPS("rmb_cps", new Rectangle(27, 36, 26, 17), Minecraft.getInstance().options.useKey, (hud, stroke) -> {
+			Rectangle bounds = stroke.bounds;
+			int centerX = bounds.x() + stroke.offset.x() + bounds.width() / 2;
+			int y = bounds.y() + stroke.offset.y() + 3;
+			int nameY = y + bounds.height() / 4 - hud.client.textRenderer.fontHeight / 2;
+			drawCenteredString(hud.client.textRenderer, "RMB", centerX, nameY, stroke.getFGColor(), hud.shadow.get());
+			int cpsY = y + bounds.height() * 3 / 4 - hud.client.textRenderer.fontHeight / 2;
+			GlStateManager.pushMatrix();
+			GlStateManager.translatef(centerX, cpsY, 0);
+			GlStateManager.scalef(0.5f, 0.5f, 1);
+			String cpsText = ClickInputTracker.getInstance().rightMouse.clicks() + " CPS";
+			GlStateManager.translatef(-hud.client.textRenderer.getWidth(cpsText) / 2f, 0, 0);
+			drawString(cpsText, 0, 0, stroke.getFGColor(), hud.shadow.get());
+			GlStateManager.popMatrix();
 		});
+		private static final Map<String, SpecialKeystroke> byId = Arrays.stream(values()).collect(Collectors.toMap(SpecialKeystroke::getId, Function.identity()));
 
+		private final String id;
 		private final Rectangle rect;
 		private final KeyBinding key;
 		private final SpecialKeystrokeRenderer renderer;

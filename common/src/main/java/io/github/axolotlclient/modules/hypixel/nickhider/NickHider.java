@@ -22,17 +22,19 @@
 
 package io.github.axolotlclient.modules.hypixel.nickhider;
 
+import io.github.axolotlclient.api.util.BiContainer;
+import io.github.axolotlclient.bridge.AxoMinecraftClient;
+import java.util.ArrayList;
+import java.util.List;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
-import io.github.axolotlclient.bridge.AxoMinecraftClient;
-import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
 import lombok.Getter;
 
 public class NickHider implements AbstractHypixelMod {
-
 	@Getter
 	private static final NickHider Instance = new NickHider();
 	public final StringOption hiddenNameSelf = new StringOption("hiddenNameSelf", "You");
@@ -59,24 +61,52 @@ public class NickHider implements AbstractHypixelMod {
 	}
 
 	public AxoText editMessage(AxoText message) {
+		final var minecraft = AxoMinecraftClient.getInstance();
+
 		if (hideOwnName.get() || hideOtherNames.get()) {
-			String msg = message.toString(); // TODO .getFormattedString();
-			String playerName = AxoMinecraftClient.getInstance().br$getPlayer().br$getGameProfile().br$getName();
-			if (hideOwnName.get() && msg.contains(playerName)) {
-				msg = msg.replaceAll(playerName, hiddenNameSelf.get());
+			String msg = message.br$getRawString();
+
+			List<BiContainer<String, String>> replacements = new ArrayList<>();
+			if (minecraft.br$getPlayer() != null) {
+				// TODO: is .br$getGameProfile().br$getName() good?
+				String playerName = minecraft.br$getPlayer().br$getGameProfile().br$getName();
+				if (hideOwnName.get() && msg.contains(playerName)) {
+					replacements.add(BiContainer.of(playerName, hiddenNameSelf.get()));
+				}
 			}
 
-			if (hideOtherNames.get()) {
-				for (AxoPlayer player : AxoMinecraftClient.getInstance().br$getWorld().br$getPlayers()) {
+			if (hideOtherNames.get() && minecraft.br$getWorld() != null) {
+				for (final var player : minecraft.br$getWorld().br$getPlayers()) {
+					if (player == minecraft.br$getPlayer()) {
+						continue;
+					}
+
+					// TODO: is .br$getGameProfile().br$getName() good?
 					if (msg.contains(player.br$getGameProfile().br$getName())) {
-						msg = msg.replaceAll(player.br$getGameProfile().br$getName(), hiddenNameOthers.get());
+						replacements.add(BiContainer.of(player.br$getGameProfile().br$getName(), hiddenNameOthers.get()));
 					}
 				}
 			}
 
-			// TODO: style api
-			return AxoText.literal(msg); //.setStyle(message.getStyle().deepCopy());
+			if (!replacements.isEmpty()) {
+				return editComponent(message, replacements, AxoText.literal(""));
+			}
 		}
 		return message;
+	}
+
+	public AxoText editComponent(AxoText text, String find, String replace) {
+		return editComponent(text, List.of(BiContainer.of(find, replace)), AxoText.literal(""));
+	}
+
+	private AxoText.Mutable editComponent(AxoText component, List<BiContainer<String, String>> replacements, AxoText.Mutable edited) {
+		component.br$visit((edit, style) -> {
+			for (var entry : replacements) {
+				edit = edit.replace(entry.getLeft(), entry.getRight());
+			}
+			edited.br$append(AxoText.literal(edit).br$setStyle(style));
+		});
+
+		return edited;
 	}
 }

@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.bridge.events;
 
+import io.github.axolotlclient.bridge.commands.Commands;
 import io.github.axolotlclient.bridge.entity.AxoEntity;
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
@@ -48,4 +49,5 @@ public class Events {
 	public static final EventBus<Runnable> DISCONNECT = EventBus.broadcast0();
 	public static final EventBus<Runnable> CONNECT = EventBus.broadcast0();
 
+	public static final EventBus<Consumer<Commands>> COMMAND_REGISTER = EventBus.broadcast1();
 }

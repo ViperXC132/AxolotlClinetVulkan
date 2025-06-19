@@ -22,31 +22,34 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.hypixel.nickhider.NickHider;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
-import net.minecraft.text.LiteralText;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArgs;
-import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(PlayerEntityRenderer.class)
 public abstract class PlayerEntityRendererMixin {
-
-	@ModifyArgs(method = "renderLabelIfPresent(Lnet/minecraft/client/network/AbstractClientPlayerEntity;Lnet/minecraft/text/Text;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;renderLabelIfPresent(Lnet/minecraft/entity/Entity;Lnet/minecraft/text/Text;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V"))
-	public void axolotlclient$modifiyName(Args args) {
+	@WrapOperation(method = "renderLabelIfPresent(Lnet/minecraft/client/network/AbstractClientPlayerEntity;Lnet/minecraft/text/Text;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;renderLabelIfPresent(Lnet/minecraft/entity/Entity;Lnet/minecraft/text/Text;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V"))
+	private void axolotlclient$modifiyName(PlayerEntityRenderer instance, Entity entity, Text text, MatrixStack stack, VertexConsumerProvider vertexConsumerProvider, int i, Operation<Void> original, @Local(argsOnly = true) AbstractClientPlayerEntity player) {
 		if (AxolotlClient.config() != null) {
-			AbstractClientPlayerEntity player = args.get(0);
 			if (player.getUuid() == MinecraftClient.getInstance().player.getUuid()
 				&& NickHider.getInstance().hideOwnName.get()) {
-				args.set(1, new LiteralText(NickHider.getInstance().hiddenNameSelf.get()));
+				text = (Text) NickHider.getInstance().editComponent(text, player.getName().getString(), NickHider.getInstance().hiddenNameSelf.get());
 			} else if (player.getUuid() != MinecraftClient.getInstance().player.getUuid()
 				&& NickHider.getInstance().hideOtherNames.get()) {
-				args.set(1, new LiteralText(NickHider.getInstance().hiddenNameOthers.get()));
+				text = (Text) NickHider.getInstance().editComponent(text, player.getName().getString(), NickHider.getInstance().hiddenNameOthers.get());
 			}
 		}
+		original.call(instance, entity, text, stack, vertexConsumerProvider, i);
 	}
 }

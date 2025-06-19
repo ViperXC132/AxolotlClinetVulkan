@@ -31,6 +31,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.world.HitResult;
 import net.minecraft.world.dimension.Dimension;
+import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -82,6 +83,11 @@ public abstract class WorldRendererMixin {
 			return 1.0F + AxolotlClient.config().outlineWidth.get();
 		}
 		return width;
+	}
+
+	@Inject(method = "renderBlockOutline", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;depthMask(Z)V", ordinal = 1))
+	private void resetOutlineWidth(PlayerEntity playerEntity, HitResult hitResult, int i, float f4, CallbackInfo ci) {
+		GL11.glLineWidth(2.0F);
 	}
 
 	@Inject(method = "renderBlockOutline", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;color4f(FFFF)V", shift = At.Shift.AFTER))

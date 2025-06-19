@@ -22,12 +22,10 @@
 
 package io.github.axolotlclient.mixin;
 
-import io.github.axolotlclient.modules.hud.HudManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -49,6 +47,7 @@ public abstract class LivingEntityMixin extends Entity {
 		// 2 ticks or so? Defintely not perfect tho
 		/*TODO if (source.getAttacker() instanceof PlayerEntity) {
 			ComboHud comboHud = (ComboHud) HudManager.getInstance().get(ComboHud.ID);
+<<<<<<< HEAD
 			comboHud.onEntityDamage(this);
 		}*/
 	}

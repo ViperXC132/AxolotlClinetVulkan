@@ -28,6 +28,7 @@ import io.github.axolotlclient.bridge.Platform;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.modules.hud.ClickInputTracker;
 import io.github.axolotlclient.modules.hud.gui0.entry.SimpleTextHudEntry;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,40 +47,6 @@ public class CPSHud extends SimpleTextHudEntry {
 	private final BooleanOption fromKeybindings = new BooleanOption("cpskeybind", false);
 	private final BooleanOption rmb = new BooleanOption("rightcps", false);
 
-	public final ClickList left = new ClickList();
-	public final ClickList right = new ClickList();
-
-	public CPSHud() {
-		super();
-
-		Events.KEY_INPUT.register(key -> {
-			if (fromKeybindings.get()) {
-				if (key.equals(client.br$getKeybinds().br$getAttackKey().br$getBoundKey())) {
-					left.click();
-				} else if (key.equals(client.br$getKeybinds().br$getUseKey().br$getBoundKey())) {
-					right.click();
-				}
-			} else {
-				if (key.equals(AxoKeys.MOUSE_LEFT)) {
-					left.click();
-				} else if (key.equals(AxoKeys.MOUSE_RIGHT)) {
-					right.click();
-				}
-			}
-		});
-	}
-
-	@Override
-	public boolean tickable() {
-		return true;
-	}
-
-	@Override
-	public void tick() {
-		left.update();
-		right.update();
-	}
-
 	@Override
 	public AxoIdentifier getId() {
 		return ID;
@@ -93,41 +60,24 @@ public class CPSHud extends SimpleTextHudEntry {
 		return options;
 	}
 
+	private String render(int left, int right) {
+		if (rmb.get()) {
+			return left + " | " + right + " CPS";
+		} else {
+			return left + " CPS";
+		}
+	}
+
 	@Override
 	public String getValue() {
-		if (rmb.get()) {
-			return left.clicks() + " | " + right.clicks() + " CPS";
-		} else {
-			return left.clicks() + " CPS";
-		}
+		final var tracker = ClickInputTracker.getInstance();
+		return fromKeybindings.get() ?
+			render(tracker.leftBind.clicks(), tracker.rightBind.clicks()) :
+			render(tracker.leftMouse.clicks(), tracker.rightMouse.clicks());
 	}
 
 	@Override
 	public String getPlaceholder() {
-		if (rmb.get()) {
-			return "0 | 0 CPS";
-		} else {
-			return "0 CPS";
-		}
-	}
-
-	public static class ClickList {
-		private final List<Long> clicks;
-
-		public ClickList() {
-			clicks = new ArrayList<>();
-		}
-
-		public void update() {
-			clicks.removeIf((click) -> Platform.getMeasuringTimeMs() - click > 1000);
-		}
-
-		public void click() {
-			clicks.add(Platform.getMeasuringTimeMs());
-		}
-
-		public int clicks() {
-			return clicks.size();
-		}
+		return render(0, 0);
 	}
 }

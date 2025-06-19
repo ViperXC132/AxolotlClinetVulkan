@@ -85,8 +85,8 @@ public abstract class GameMenuScreenMixin extends Screen {
 	private ButtonWidget.PressAction axolotlclient$clearFeatureRestrictions(ButtonWidget.PressAction onPress) {
 		return (buttonWidget) -> {
 			if (Objects.equals(HypixelMods.getInstance().cacheMode.get(),
-				HypixelMods.HypixelApiCacheMode.ON_CLIENT_DISCONNECT.toString())) {
-				HypixelAbstractionLayer.clearPlayerData();
+				HypixelMods.HypixelApiCacheMode.ON_CLIENT_DISCONNECT)) {
+				HypixelAbstractionLayer.getInstance().clearPlayerData();
 			}
 			onPress.onPress(buttonWidget);
 		};

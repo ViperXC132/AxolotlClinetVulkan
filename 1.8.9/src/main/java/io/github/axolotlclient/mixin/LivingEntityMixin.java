@@ -25,8 +25,10 @@ package io.github.axolotlclient.mixin;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.living.LivingEntity;
+import net.minecraft.entity.living.effect.StatusEffect;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -34,14 +36,35 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
 
+	@Shadow
+	public abstract float getHealth();
+
+	@Shadow
+	public abstract boolean hasStatusEffect(StatusEffect statusEffect);
+
+	@Shadow
+	public int defaultMaxHealth;
+
 	public LivingEntityMixin(World world) {
 		super(world);
 	}
 
-	@Inject(method = "damage", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/living/LivingEntity;hurtTime:I"))
+	@Inject(method = "damage", at = @At(value = "HEAD"))
 	private void axolotlclient$onDamage(DamageSource source, float damage, CallbackInfoReturnable<Boolean> ci) {
+		if (this.isInvulnerable(source)) {
+			return;
+		}
+		if (getHealth() <= 0.0F) {
+			return;
+		} else if (source.isFire() && hasStatusEffect(StatusEffect.FIRE_RESISTANCE)) {
+			return;
+		}
+		if (this.maxHealth > this.defaultMaxHealth / 2.0F) {
+			return;
+		}
+
 		// The client doesn't really get any sort of information about why a person is damaged
-		// Kinda sucks since that means combos can't be guarenteed (i.e. fall damage, or other person hits)
+		// Kinda sucks since that means combos can't be guaranteed (i.e. fall damage, or other person hits)
 		// Possible fixes: Could wait for swing animation from a player to be played. Could then track eyes to see if hit, give or take
 		// 2 ticks or so? Defintely not perfect tho
 
@@ -51,6 +74,15 @@ public abstract class LivingEntityMixin extends Entity {
 		if (source.getAttacker() instanceof PlayerEntity) {
 			ComboHud comboHud = (ComboHud) HudManager.getInstance().get(ComboHud.ID);
 			comboHud.onEntityDamage(this);
-		}*/
+		}
+=======
+		// 2 ticks or so? Definitely not perfect tho
+		if (source.getAttacker() instanceof PlayerEntity) {
+			ComboHud comboHud = (ComboHud) HudManager.getInstance().get(ComboHud.ID);
+			if (comboHud != null) {
+				comboHud.onEntityDamage(this);
+			}
+		}
+>>>>>>> dev*/
 	}
 }

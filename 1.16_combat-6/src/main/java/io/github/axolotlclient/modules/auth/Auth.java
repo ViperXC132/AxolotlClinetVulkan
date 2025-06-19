@@ -22,24 +22,21 @@
 
 package io.github.axolotlclient.modules.auth;
 
-import java.nio.file.Path;
 import java.util.*;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
-import com.mojang.util.UUIDTypeAdapter;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.api.API;
+import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
 import io.github.axolotlclient.modules.Module;
-import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.ThreadExecuter;
 import io.github.axolotlclient.util.notifications.Notifications;
 import io.github.axolotlclient.util.options.GenericOption;
 import lombok.Getter;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -81,11 +78,6 @@ public class Auth extends Accounts implements Module {
 	}
 
 	@Override
-	protected Path getConfigDir() {
-		return FabricLoader.getInstance().getConfigDir();
-	}
-
-	@Override
 	protected void login(Account account) {
 		if (client.world != null) {
 			return;
@@ -117,11 +109,6 @@ public class Auth extends Accounts implements Module {
 		}
 	}
 
-	@Override
-	protected Logger getLogger() {
-		return AxolotlClient.LOGGER;
-	}
-
 	public void loadTextures(String uuid, String name) {
 		if (!textures.containsKey(uuid) && !loadingTexture.contains(uuid)) {
 			ThreadExecuter.scheduleTask(() -> {
@@ -131,7 +118,7 @@ public class Auth extends Accounts implements Module {
 					gameProfile = profileCache.get(uuid);
 				} else {
 					try {
-						UUID uUID = UUIDTypeAdapter.fromString(uuid);
+						UUID uUID = UUIDHelper.fromUndashed(uuid);
 						gameProfile = new GameProfile(uUID, name);
 						gameProfile = client.getSessionService().fillProfileProperties(gameProfile, false);
 					} catch (IllegalArgumentException var2) {
@@ -176,7 +163,7 @@ public class Auth extends Accounts implements Module {
 			return id;
 		}
 		try {
-			UUID uUID = UUIDTypeAdapter.fromString(uuid);
+			UUID uUID = UUID.fromString(uuid);
 			return DefaultSkinHelper.getTexture(uUID);
 		} catch (IllegalArgumentException ignored) {
 			return DefaultSkinHelper.getTexture();

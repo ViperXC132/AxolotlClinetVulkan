@@ -26,6 +26,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -82,6 +83,10 @@ public interface AxoRenderContext {
 		throw BridgeUtil.noImpl();
 	}
 
+	default int br$drawString(AxoText value, int x, int y, int color, boolean shadow) {
+		throw BridgeUtil.noImpl();
+	}
+
 	@ApiStatus.NonExtendable
 	default int br$drawString(String value, int x, int y, Color color, boolean shadow) {
 		return br$drawString(value, x, y, color.toInt(), shadow);
@@ -96,6 +101,22 @@ public interface AxoRenderContext {
 	default void br$drawCenteredString(String value, int x, int y, Color color, boolean shadow) {
 		br$drawCenteredString(value, x, y, color.toInt(), shadow);
 	}
+
+	@ApiStatus.NonExtendable
+	default int br$drawString(AxoText value, int x, int y, Color color, boolean shadow) {
+		return br$drawString(value, x, y, color.toInt(), shadow);
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawCenteredString(AxoText value, int x, int y, int color, boolean shadow) {
+		br$drawString(value, x - br$getFont().br$getWidth(value) / 2, y, color, shadow);
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawCenteredString(AxoText value, int x, int y, Color color, boolean shadow) {
+		br$drawCenteredString(value, x, y, color.toInt(), shadow);
+	}
+
 	// fillRect overloads
 	@ApiStatus.NonExtendable
 	default void br$fillRect(Rectangle rect, Color color) {

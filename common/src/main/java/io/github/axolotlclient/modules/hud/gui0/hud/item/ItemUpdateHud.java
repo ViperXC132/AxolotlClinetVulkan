@@ -24,15 +24,20 @@ package io.github.axolotlclient.modules.hud.gui0.hud.item;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
+import io.github.axolotlclient.bridge.item.AxoItemStack;
+import io.github.axolotlclient.bridge.item.AxoItems;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.ItemUtil;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
+import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
@@ -42,12 +47,21 @@ import java.util.Optional;
  */
 
 public class ItemUpdateHud extends TextHudEntry {
-
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "itemupdatehud");
+
+	private static final List<ItemUtil.TimedItemStorage> PLACEHOLDER_ADDED = List.of(
+		new ItemUtil.TimedItemStorage(AxoItemStack.of(AxoItems.DIAMOND, 2), 0)
+	);
+
+	private static final List<ItemUtil.TimedItemStorage> PLACEHOLDER_REMOVED = List.of(
+		new ItemUtil.TimedItemStorage(AxoItemStack.of(AxoItems.EMERALD, 3), 0)
+	);
+
 	private final IntegerOption timeout = new IntegerOption("timeout", 6, 1, 60);
 	private List<ItemUtil.ItemStorage> oldItems = new ArrayList<>();
 	private ArrayList<ItemUtil.TimedItemStorage> removed;
 	private ArrayList<ItemUtil.TimedItemStorage> added;
+	private final ColorOption bracketColor = new ColorOption("itemupdatehud.bracket_color", Colors.DARK_GRAY);
 
 	public ItemUpdateHud() {
 		super(200, 11 * 6 - 2, true);
@@ -76,91 +90,87 @@ public class ItemUpdateHud extends TextHudEntry {
 	}
 
 	private void updateAdded() {
-		List<ItemUtil.ItemStorage> added = ItemUtil.compare(ItemUtil.storageFromItem(ItemUtil.getItems(client)),
-			oldItems);
-		ArrayList<ItemUtil.TimedItemStorage> timedAdded = new ArrayList<>();
-		for (ItemUtil.ItemStorage stack : added) {
-			timedAdded.add(stack.timed());
-		}
-		for (ItemUtil.TimedItemStorage stack : timedAdded) {
-			Optional<ItemUtil.TimedItemStorage> item = ItemUtil.getTimedItemFromItem(stack.stack, this.added);
-			if (item.isPresent()) {
-				item.get().incrementTimes(stack.times);
-			} else {
-				this.added.add(stack);
-			}
-		}
+		ItemUtil.compare(ItemUtil.storageFromItem(ItemUtil.getItems(client)), oldItems).stream()
+			.map(ItemUtil.ItemStorage::timed)
+			.forEach(stack -> {
+				final var item = ItemUtil.getTimedItemFromItem(stack.stack, this.added);
+				if (item.isPresent()) {
+					item.get().incrementTimes(stack.times);
+				} else {
+					this.added.add(stack);
+				}
+			});
+
 		this.added.sort((o1, o2) -> Float.compare(o1.getPassedTime(), o2.getPassedTime()));
 	}
 
 	private void updateRemoved() {
-		List<ItemUtil.ItemStorage> removed = ItemUtil.compare(oldItems,
-			ItemUtil.storageFromItem(ItemUtil.getItems(client)));
-		List<ItemUtil.TimedItemStorage> timed = ItemUtil.untimedToTimed(removed);
-		for (ItemUtil.TimedItemStorage stack : timed) {
-			Optional<ItemUtil.TimedItemStorage> item = ItemUtil.getTimedItemFromItem(stack.stack, this.removed);
-			if (item.isPresent()) {
-				item.get().incrementTimes(stack.times);
-			} else {
-				this.removed.add(stack);
-			}
-		}
+		ItemUtil.compare(oldItems, ItemUtil.storageFromItem(ItemUtil.getItems(client))).stream()
+			.map(ItemUtil.ItemStorage::timed)
+			.forEach(stack -> {
+				final var item = ItemUtil.getTimedItemFromItem(stack.stack, this.removed);
+				if (item.isPresent()) {
+					item.get().incrementTimes(stack.times);
+				} else {
+					this.removed.add(stack);
+				}
+			});
+
 		this.removed.sort((o1, o2) -> Float.compare(o1.getPassedTime(), o2.getPassedTime()));
+	}
+
+	private void renderInternal(AxoRenderContext context, List<ItemUtil.TimedItemStorage> added, List<ItemUtil.TimedItemStorage> removed) {
+		final AxoText openBracket = AxoText.literal("[").br$color(bracketColor.get().toInt());
+		final AxoText closingBracket = AxoText.literal("]").br$color(bracketColor.get().toInt());
+		final int deltaY = context.br$getFont().br$getFontHeight() + 2;
+
+		DrawPosition pos = getPos();
+		int lastY = 1;
+		int entryCount = 0;
+
+		for (ItemUtil.ItemStorage item : this.added) {
+			if (entryCount > 5) {
+				return;
+			}
+
+			AxoText message = AxoText.literal("+ ")
+				.br$append(openBracket)
+				.br$append(item.times)
+				.br$append(closingBracket)
+				.br$append(item.stack.br$getHoverName());
+
+			context.br$drawString(message, pos.x, pos.y + lastY, ClientColors.SELECTOR_GREEN.toInt(), shadow.get());
+
+			lastY += deltaY;
+			entryCount++;
+		}
+
+		for (ItemUtil.ItemStorage item : this.removed) {
+			if (entryCount > 5) {
+				return;
+			}
+
+			AxoText message = AxoText.literal("- ")
+				.br$append(openBracket)
+				.br$append(item.times)
+				.br$append(closingBracket)
+				.br$append(item.stack.br$getHoverName());
+
+			context.br$drawString(message, pos.x, pos.y + lastY, ClientColors.SELECTOR_GREEN.toInt(), shadow.get());
+
+			lastY += deltaY;
+			entryCount++;
+		}
 	}
 
 	@Override
 	public void renderComponent(AxoRenderContext context, float delta) {
-		DrawPosition pos = getPos();
-		int lastY = 1;
-		int i = 0;
-		for (ItemUtil.ItemStorage item : this.added) {
-			if (i > 5) {
-				context.br$popMatrix();
-				return;
-			}
-			// TODO: i might've changed semantics
-			// TODO: figure out formatting API, probably want to take some inspiration from kyori - also no legacy strings (use AxoText & styling)
-
-			String message = "+ " /*+ Formatting.DARK_GRAY + "[" + Formatting.WHITE + item.times + Formatting.DARK_GRAY
-				+ "] " + Formatting.RESET + item.stack.getHoverName()*/;
-			context.br$drawString(message, pos.x, pos.y + lastY, ClientColors.SELECTOR_GREEN.toInt(), shadow.get());
-			lastY += lastY + context.br$getFont().br$getFontHeight() + 2;
-			i++;
-		}
-		for (ItemUtil.ItemStorage item : this.removed) {
-			if (i > 5) {
-				context.br$popMatrix();
-				return;
-			}
-			String message = "- " /*+ Formatting.DARK_GRAY + "[" + Formatting.WHITE + item.times + Formatting.DARK_GRAY
-				+ "] " + Formatting.RESET + item.stack.getHoverName()*/;
-			context.br$drawString(message, pos.x, pos.y + lastY, ClientColors.SELECTOR_RED.toInt(), shadow.get());
-			lastY += context.br$getFont().br$getFontHeight() + 2;
-			i++;
-		}
+		renderInternal(context, added, removed);
 	}
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
-		DrawPosition pos = getPos();
-		/*
-		String addM = "+ " + Formatting.DARK_GRAY + "[" + Formatting.WHITE + 2 + Formatting.DARK_GRAY + "] "
-			+ Formatting.RESET + new ItemStack(Blocks.DIRT).getHoverName();
-		if (shadow.get()) {
-			client.textRenderer.drawWithShadow(addM, pos.x + 1, pos.y + 1, ClientColors.SELECTOR_GREEN.toInt());
-		} else {
-			client.textRenderer.draw(addM, pos.x + 1, pos.y + 1 + client.textRenderer.fontHeight + 2,
-				ClientColors.SELECTOR_GREEN.toInt());
-		}
-		String removeM = "- " + Formatting.DARK_GRAY + "[" + Formatting.WHITE + 4 + Formatting.DARK_GRAY + "] "
-			+ Formatting.RESET + new ItemStack(Blocks.GRASS).getHoverName();
-		if (shadow.get()) {
-			client.textRenderer.drawWithShadow(removeM, pos.x + 1, pos.y + 1 + client.textRenderer.fontHeight + 2,
-				ClientColors.SELECTOR_RED.toInt());
-		} else {
-			client.textRenderer.draw(removeM, pos.x + 1, pos.y + 1 + client.textRenderer.fontHeight + 3,
-				ClientColors.SELECTOR_RED.toInt());
-		}*/
+		renderInternal(context, PLACEHOLDER_ADDED, PLACEHOLDER_REMOVED);
 	}
 
 	@Override
@@ -168,6 +178,7 @@ public class ItemUpdateHud extends TextHudEntry {
 		List<Option<?>> options = super.getConfigurationOptions();
 		options.add(shadow);
 		options.add(timeout);
+		options.add(bracketColor);
 		return options;
 	}
 

@@ -28,74 +28,63 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.WeakHashMap;
+import java.util.concurrent.CompletableFuture;
 
 import io.github.axolotlclient.api.API;
+import io.github.axolotlclient.util.CachedAPI;
 import io.github.axolotlclient.util.GsonHelper;
 import io.github.axolotlclient.util.NetworkUtil;
 
 public class UUIDHelper {
+	private static final HttpClient CLIENT = NetworkUtil.createHttpClient("UUIDHelper");
 
-	private static final WeakHashMap<String, String> nameCache = new WeakHashMap<>();
-	private static final WeakHashMap<String, String> uuidCache = new WeakHashMap<>();
-	private static final HttpClient client = NetworkUtil.createHttpClient("UUIDHelper");
+	private static CachedAPI<String, String> create(String endpoint, String jsonKey, String log) {
+		return new CachedAPI<>(val -> {
+			HttpRequest req = HttpRequest.newBuilder(URI.create(endpoint + val))
+				.GET()
+				.build();
 
-	public static String getUsername(String uuid) {
-		return getUsername0(uuid).orElse(uuid);
-	}
-
-	private static Optional<String> getUsername0(String uuid) {
-		return Optional.ofNullable(nameCache.computeIfAbsent(uuid, s ->
-			client.sendAsync(HttpRequest.newBuilder(URI.create("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid)).GET().build(), HttpResponse.BodyHandlers.ofString())
-				.thenApply(HttpResponse::body)
-				.thenApply(GsonHelper::fromJson)
-				.thenApply(o -> {
-					if (o.has("name")) {
-						return o.get("name").getAsString();
+			return CLIENT.sendAsync(req, HttpResponse.BodyHandlers.ofString())
+				.thenApply(res -> {
+					final var obj = GsonHelper.fromJson(res.body());
+					if (obj.has(jsonKey)) {
+						return Optional.of(obj.get(jsonKey).getAsString());
 					}
+
 					if (API.getInstance().getApiOptions().detailedLogging.get()) {
-						API.getInstance().getLogger().warn("Conversion uuid -> username failed: {}", o);
+						API.getInstance().getLogger().warn("Conversion {} failed: {}", log, obj);
 					}
-					return "";
-				}).join())).map(s -> s.isEmpty() ? null : s);
+
+					return Optional.empty();
+				});
+		}, 4096, false);
 	}
 
-	public static String getUuid(String username) {
-		return getUuid0(username).orElse(username);
-	}
+	public static final CachedAPI<String, String> USERNAME_TO_UUID =
+		create("https://api.mojang.com/users/profiles/minecraft/", "id", "username -> uuid");
 
-	private static Optional<String> getUuid0(String username) {
-		return Optional.of(uuidCache.computeIfAbsent(username, s ->
-			client.sendAsync(HttpRequest.newBuilder(URI.create("https://api.mojang.com/users/profiles/minecraft/" + username)).GET().build(), HttpResponse.BodyHandlers.ofString())
-				.thenApply(HttpResponse::body)
-				.thenApply(GsonHelper::fromJson)
-				.thenApply(o -> {
-					if (o.has("id")) {
-						return o.get("id").getAsString();
-					}
-					if (API.getInstance().getApiOptions().detailedLogging.get()) {
-						API.getInstance().getLogger().warn("Conversion username -> uuid failed: {}", o);
-					}
-					return "";
-				}).join())).map(s -> s.isEmpty() ? null : s);
-	}
+	public static final CachedAPI<String, String> UUID_TO_USERNAME =
+		create("https://sessionserver.mojang.com/session/minecraft/profile/", "name", "uuid -> username");
 
-	public static String ensureUuid(String uuidOrUsername) {
-		return ensureUuidOpt(uuidOrUsername).orElse(uuidOrUsername);
-	}
-
-	public static Optional<String> ensureUuidOpt(String uuidOrUsername) {
-		Optional<String> uuid;
-		try {
-			uuid = Optional.of(API.getInstance().sanitizeUUID(fromUndashed(uuidOrUsername).toString()));
-		} catch (IllegalArgumentException e) {
-			uuid = getUuid0(uuidOrUsername.trim());
-		}
-		return uuid;
+	public static CompletableFuture<String> tryGetUsernameAsync(String uuid) {
+		return UUID_TO_USERNAME.getAsync(uuid).thenApply(s -> s.orElse(uuid));
 	}
 
 	public static UUID fromUndashed(String uuid) {
-		return UUID.fromString(uuid.trim().replaceFirst("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"));
+		return UUID.fromString(uuid.trim().replaceFirst("(\\w{8})(\\w{4})(\\w{4})(\\w{4})(\\w{12})", "$1-$2-$3-$4-$5"
+		));
+	}
+
+	public static CompletableFuture<Optional<String>> ensureUuidOpt(String nameOrUuid) {
+		try {
+			return CompletableFuture.completedFuture(Optional.of(API.getInstance().sanitizeUUID(nameOrUuid)));
+		} catch (IllegalArgumentException e) {
+			return USERNAME_TO_UUID.getAsync(nameOrUuid);
+		}
+	}
+
+	public static CompletableFuture<String> ensureUuid(String nameOrUuid) {
+		return ensureUuidOpt(nameOrUuid).thenApply(s -> s.orElse(nameOrUuid));
 	}
 
 	public static String toUndashed(UUID uuid) {

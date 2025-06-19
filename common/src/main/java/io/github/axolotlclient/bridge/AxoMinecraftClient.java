@@ -29,10 +29,11 @@ import io.github.axolotlclient.bridge.key.AxoClientKeybinds;
 import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.world.AxoWorld;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
-public interface AxoMinecraftClient {
+public interface AxoMinecraftClient extends Executor {
 	static AxoMinecraftClient getInstance() {
 		return PlatformImplInternal.getMinecraftClientInstance();
 	}

@@ -24,7 +24,6 @@ package io.github.axolotlclient.modules.hud.gui0.hud.simple;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
-import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.Platform;
 import io.github.axolotlclient.bridge.entity.AxoEntity;
 import io.github.axolotlclient.bridge.events.Events;
@@ -35,7 +34,6 @@ import io.github.axolotlclient.modules.hud.gui0.entry.SimpleTextHudEntry;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.List;
-import java.util.Objects;
 
 // https://github.com/AxolotlClient/AxolotlClient-mod/blob/4ae2678bfe9e0908be1a7a34e61e689c8005ae0a/src/main/java/io/github/axolotlclient/modules/hud/gui/hud/ReachDisplayHud.java
 // https://github.com/DarkKronicle/KronHUD/blob/703b87a7c938ba25da9105d731b70d3bc66efd1e/src/main/java/io/github/darkkronicle/kronhud/gui/hud/simple/ReachHud.java
@@ -55,19 +53,23 @@ public class ReachHud extends SimpleTextHudEntry {
 	@Override
 	public void init() {
 		Events.PLAYER_ATTACK.register((attacking, receiving) -> {
-			final var thePlayer = AxoMinecraftClient.getInstance().br$getPlayer();
-			if (Objects.equals(thePlayer, attacking)) {
-				double distance = getAttackDistance(attacking, receiving);
-				StringBuilder format = new StringBuilder("0");
-				if (decimalPlaces.get() > 0) {
-					format.append(".");
-					format.append("0".repeat(Math.max(0, decimalPlaces.get())));
-				}
-				DecimalFormat formatter = new DecimalFormat(format.toString());
-				formatter.setRoundingMode(RoundingMode.HALF_UP);
-				currentDist = formatter.format(distance) + " " + AxoI18n.translate("blocks");
-				lastTime = Platform.getMeasuringTimeMs();
+			double distance = getAttackDistance(attacking, receiving);
+			if (distance < 0) {
+				distance *= -1;
+				// This should not happen...
+				currentDist = "NaN";
+				//return;
 			}
+
+			StringBuilder format = new StringBuilder("0");
+			if (decimalPlaces.get() > 0) {
+				format.append(".");
+				format.append("0".repeat(Math.max(0, decimalPlaces.get())));
+			}
+			DecimalFormat formatter = new DecimalFormat(format.toString());
+			formatter.setRoundingMode(RoundingMode.HALF_UP);
+			currentDist = formatter.format(distance) + " " + AxoI18n.translate("blocks");
+			lastTime = Platform.getMeasuringTimeMs();
 		});
 	}
 

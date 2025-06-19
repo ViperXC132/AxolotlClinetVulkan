@@ -398,8 +398,15 @@ public class BedwarsGame {
 			while (this.seconds % 60 != target) {
 				updateClock();
 			}
+<<<<<<< HEAD:common/src/main/java/io/github/axolotlclient/modules/hypixel/bedwars/BedwarsGame.java
 			topBarText = AxoText.literal(calculateTopBarText());
 			bottomBarText = AxoText.literal(calculateBottomBarText());
+=======
+			if (me != null) {
+				topBarText = new LiteralText(calculateTopBarText());
+				bottomBarText = new LiteralText(calculateBottomBarText());
+			}
+>>>>>>> dev:1.8.9/src/main/java/io/github/axolotlclient/modules/hypixel/bedwars/BedwarsGame.java
 		}
 	}*/
 

@@ -25,6 +25,7 @@ package io.github.axolotlclient.api;
 import java.net.ConnectException;
 import java.net.URI;
 import java.net.http.*;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
@@ -63,7 +64,7 @@ public class API {
 	@Getter
 	private User self;
 	private Account account;
-	private String token;
+	private Authentication auth;
 	@Getter
 	@Setter
 	private AccountSettings settings;
@@ -113,7 +114,7 @@ public class API {
 		this.socket = channel;
 	}
 
-	private void authenticate() {
+	private CompletableFuture<?> authenticate() {
 		//if (client != null) {
 		// We have to rely on the gc to collect previous client objects as close() was only implemented in java 21.
 		// However, we are currently compiling against java 17.
@@ -123,13 +124,11 @@ public class API {
 		try {
 			if (!GlobalDataRequest.get(true).get(1, TimeUnit.MINUTES).success()) {
 				logger.warn("Not trying to start API as it couldn't be reached!");
-				scheduleRestart(false);
-				return;
+				return scheduleRestart(false);
 			}
 		} catch (InterruptedException | ExecutionException | TimeoutException e) {
 			logger.warn("Not trying to start API as it couldn't be reached within the timeout of 1 minute!");
-			scheduleRestart(false);
-			return;
+			return scheduleRestart(false);
 		}
 
 		logDetailed("Authenticating with Mojang...");
@@ -138,12 +137,12 @@ public class API {
 
 		if (result.getStatus() != MojangAuth.Status.SUCCESS) {
 			logger.error("Failed to authenticate with Mojang! Status: ", result.getStatus());
-			return;
+			return CompletableFuture.failedFuture(new UnsupportedOperationException("Failed to authenticate with mojang, status: "+result.getStatus()));
 		}
 
 		logDetailed("Requesting authentication from backend...");
 
-		get(Request.Route.AUTHENTICATE.builder()
+		return get(Request.Route.AUTHENTICATE.builder()
 			.query("username", account.getName())
 			.query("server_id", result.getServerId())
 			.build()).whenComplete((response, throwable) -> {
@@ -157,7 +156,7 @@ public class API {
 				return;
 			}
 
-			token = response.getBody("access_token");
+			auth = new Authentication(response.getBody("access_token"));
 			logDetailed("Obtained token!");
 			CompletableFuture.allOf(get(Request.Route.ACCOUNT.builder().build())
 					.thenAccept(r -> {
@@ -225,8 +224,11 @@ public class API {
 					.header("Content-Type", "application/json")
 					.header("Accept", "application/json");
 
-				if (token != null) {
-					builder.header("Authorization", token);
+				if (auth != null) {
+					if (auth.expiration().isBefore(Instant.now())) {
+						authenticate().join();
+					}
+					builder.header("Authorization", auth.token());
 				}
 
 				if (headers != null) {
@@ -308,7 +310,7 @@ public class API {
 			// We have to rely on the gc to collect previous client objects as close() was only implemented in java 21.
 			// However, we are currently compiling against java 17.
 			//client.close();
-			token = null;
+			auth = null;
 		}
 		client = null;
 	}
@@ -318,7 +320,7 @@ public class API {
 	}
 
 	public boolean isAuthenticated() {
-		return token != null;
+		return auth != null;
 	}
 
 	public int getIndicatorColor() {
@@ -368,16 +370,17 @@ public class API {
 		}
 	}
 
-	private void scheduleRestart(boolean immediate) {
+	private CompletableFuture<?> scheduleRestart(boolean immediate) {
 		if (restartingFuture != null) {
 			restartingFuture.cancel(true);
 		}
 		logger.info("Trying restart in " + (immediate ? "10 seconds" : "5 minutes."));
-		restartingFuture = CompletableFuture.runAsync(() -> {
+		restartingFuture = CompletableFuture.supplyAsync(() -> {
 			logDetailed("Restarting API session...");
-			startup(account);
+			return startup(account).join();
 		}, immediate ? CompletableFuture.delayedExecutor(10, TimeUnit.SECONDS, ThreadExecuter.service()) :
 			CompletableFuture.delayedExecutor(5, TimeUnit.MINUTES, ThreadExecuter.service()));
+		return restartingFuture;
 	}
 
 	private void createSession() {
@@ -386,7 +389,7 @@ public class API {
 				logDetailed("Connecting to websocket..");
 				URI gateway = Request.Route.GATEWAY.create().resolve();
 				String uri = (gateway.getScheme().endsWith("s") ? "wss" : "ws") + gateway.toString().substring(gateway.getScheme().length());
-				socket = client.newWebSocketBuilder().header("Authorization", token)
+				socket = client.newWebSocketBuilder().header("Authorization", auth.token())
 					.buildAsync(URI.create(uri), new ClientEndpoint()).join();
 				logDetailed("Socket connected");
 			} catch (Exception e) {
@@ -406,45 +409,48 @@ public class API {
 		}
 	}
 
-	public void startup(Account account) {
+	public CompletableFuture<?> startup(Account account) {
 		this.account = account;
 		if (!Constants.ENABLED) {
-			return;
+			return CompletableFuture.failedFuture(new UnsupportedOperationException("API is disabled at compile-time"));
 		}
 
 		if (account.isOffline()) {
-			return;
+			return CompletableFuture.failedFuture(new UnsupportedOperationException("Account is offline"));
 		}
 
-		ThreadExecuter.scheduleTask(() -> {
-			if (apiOptions.enabled.get()) {
-				switch (apiOptions.privacyAccepted.get()) {
-					case UNSET:
-						apiOptions.openPrivacyNoteScreen.accept(v -> {
-							if (v) startupAPI();
-						});
-						break;
-					case ACCEPTED:
-						startupAPI();
-						break;
-					default:
-						break;
-				}
+
+		if (apiOptions.enabled.get()) {
+			switch (apiOptions.privacyAccepted.get()) {
+				case UNSET:
+					return apiOptions.openPrivacyNoteScreen.get().thenCompose(v -> {
+						if (v) {
+							return startupAPI();
+						} else {
+							return CompletableFuture.failedStage(new UnsupportedOperationException("Terms not accepter"));
+						}
+					});
+				case ACCEPTED:
+					return startupAPI();
+				default:
+					break;
 			}
-		});
+		}
+		return CompletableFuture.failedFuture(new UnsupportedOperationException("API is disabled"));
 	}
 
-	private void startupAPI() {
+	private CompletableFuture<?> startupAPI() {
 		if (!isSocketConnected()) {
 
 			if (Constants.TESTING) {
-				return;
+				return CompletableFuture.failedFuture(new UnsupportedOperationException("API is disabled for testing!"));
 			}
 			logger.info("Starting API...");
-			ThreadExecuter.scheduleTask(this::authenticate);
+			return this.authenticate();
 		} else {
 			logger.warn("API is already running!");
 		}
+		return CompletableFuture.failedFuture(new UnsupportedOperationException("API is already running"));
 	}
 
 	private void startStatusUpdateThread() {

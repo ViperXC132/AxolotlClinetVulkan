@@ -23,13 +23,104 @@
 package io.github.axolotlclient.bridge.util;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import java.util.function.BiConsumer;
+import java.util.function.UnaryOperator;
+import lombok.AllArgsConstructor;
+import org.jetbrains.annotations.ApiStatus;
 
 public interface AxoText {
-	static AxoText literal(String value) {
+	@AllArgsConstructor
+	enum Color {
+		BLACK("BLACK", '0', 0, 0),
+		DARK_BLUE("DARK_BLUE", '1', 1, 170),
+		DARK_GREEN("DARK_GREEN", '2', 2, 43520),
+		DARK_AQUA("DARK_AQUA", '3', 3, 43690),
+		DARK_RED("DARK_RED", '4', 4, 11141120),
+		DARK_PURPLE("DARK_PURPLE", '5', 5, 11141290),
+		GOLD("GOLD", '6', 6, 16755200),
+		GRAY("GRAY", '7', 7, 11184810),
+		DARK_GRAY("DARK_GRAY", '8', 8, 5592405),
+		BLUE("BLUE", '9', 9, 5592575),
+		GREEN("GREEN", 'a', 10, 5635925),
+		AQUA("AQUA", 'b', 11, 5636095),
+		RED("RED", 'c', 12, 16733525),
+		LIGHT_PURPLE("LIGHT_PURPLE", 'd', 13, 16733695),
+		YELLOW("YELLOW", 'e', 14, 16777045),
+		WHITE("WHITE", 'f', 15, 16777215);
+
+		public final String name;
+		public final char charCode;
+		public final int id;
+		public final int rgb;
+	}
+
+	interface Style {
+		default Style br$color(Color color) {
+			throw BridgeUtil.noImpl();
+		}
+
+		default Style br$color(int color) {
+			throw BridgeUtil.noImpl();
+		}
+
+		default Style br$tooltip(AxoText text) {
+			throw BridgeUtil.noImpl();
+		}
+	}
+
+	interface Mutable extends AxoText {
+		default Mutable br$color(Color color) {
+			return br$setStyle(br$getStyle().br$color(color));
+		}
+
+		default Mutable br$color(int color) {
+			return br$setStyle(br$getStyle().br$color(color));
+		}
+
+		default Mutable br$append(AxoText child) {
+			throw BridgeUtil.noImpl();
+		}
+
+		@ApiStatus.NonExtendable
+		default Mutable br$append(Object child) {
+			return br$append(AxoText.literal(child));
+		}
+
+		default Mutable br$setStyle(Style style) {
+			throw BridgeUtil.noImpl();
+		}
+
+		@ApiStatus.NonExtendable
+		default Mutable br$withStyle(UnaryOperator<Style> op) {
+			return br$setStyle(op.apply(br$getStyle()));
+		}
+	}
+
+	static Mutable literal(String value) {
+		throw BridgeUtil.noImpl();
+	}
+
+	static Mutable literal(Object object) {
+		return AxoText.literal(String.valueOf(object));
+	}
+
+	static Mutable translatable(String key, Object... args) {
 		throw BridgeUtil.noImpl();
 	}
 
 	default String br$getRawString() {
+		throw BridgeUtil.noImpl();
+	}
+
+	default Mutable br$copy() {
+		throw BridgeUtil.noImpl();
+	}
+
+	default void br$visit(BiConsumer<String, Style> handler) {
+		throw BridgeUtil.noImpl();
+	}
+
+	default Style br$getStyle() {
 		throw BridgeUtil.noImpl();
 	}
 }

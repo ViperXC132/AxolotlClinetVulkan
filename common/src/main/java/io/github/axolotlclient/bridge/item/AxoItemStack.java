@@ -24,6 +24,8 @@ package io.github.axolotlclient.bridge.item;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
+import io.github.axolotlclient.bridge.util.AxoText;
+import io.github.axolotlclient.util.MathUtil;
 import org.jetbrains.annotations.ApiStatus;
 
 public interface AxoItemStack {
@@ -78,5 +80,15 @@ public interface AxoItemStack {
 
 	default boolean br$hasEnchantment(AxoEnchant enchant) {
 		return br$getEnchantment(enchant) != 0;
+	}
+
+	@ApiStatus.NonExtendable
+	default int br$getBarColor() {
+		float f = Math.max(0.0F, ((float)this.br$getMaxDamage() - (float)br$getDamage()) / (float)this.br$getMaxDamage());
+		return MathUtil.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
+	}
+
+	default AxoText br$getHoverName() {
+		throw BridgeUtil.noImpl();
 	}
 }

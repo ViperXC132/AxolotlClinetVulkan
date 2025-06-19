@@ -245,7 +245,10 @@ public abstract class HudManagerCommon extends AbstractCommonModule {
 	}
 
 	public final void removeEntry(AxoIdentifier identifier) {
-		hudCategory.getSubCategories().remove(entries.remove(identifier).getCategory());
+		final var removed = entries.remove(identifier);
+		if (removed != null) {
+			hudCategory.getSubCategories().remove(removed.getCategory());
+		}
 	}
 
 	public void render(AxoRenderContext context, float delta) {

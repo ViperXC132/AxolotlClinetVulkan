@@ -22,6 +22,13 @@
 
 package io.github.axolotlclient.modules.hud.gui.keystrokes;
 
+import io.github.axolotlclient.modules.hud.gui0.layout.Justification;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.BooleanSupplier;
+import java.util.function.Function;
+
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
@@ -32,10 +39,14 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.Integ
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.VanillaButtonWidget;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import lombok.Getter;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.TextRenderer;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Nullable;
+import org.lwjgl.input.Keyboard;
 
 public class ConfigureKeyBindScreen extends io.github.axolotlclient.AxolotlClientConfig.impl.ui.Screen {
 
@@ -52,8 +63,8 @@ public class ConfigureKeyBindScreen extends io.github.axolotlclient.AxolotlClien
 		this.hud = hud;
 		this.stroke = stroke;
 
-		width = new IntegerOption("", stroke.getBounds().width(), v -> stroke.getBounds().width(v), 10, 100);
-		height = new IntegerOption("", stroke.getBounds().height(), v -> stroke.getBounds().height(v), 10, 100);
+		width = new IntegerOption("", stroke.getBounds().width(), v -> stroke.getBounds().width(v), 7, 100);
+		height = new IntegerOption("", stroke.getBounds().height(), v -> stroke.getBounds().height(v), 7, 100);
 		this.isAddScreen = isAddScreen;
 	}
 
@@ -100,13 +111,13 @@ public class ConfigureKeyBindScreen extends io.github.axolotlclient.AxolotlClien
 			leftColY += 28;
 			boolean supportsSynchronization = stroke instanceof KeystrokeHud.LabelKeystroke;
 
-			var label = addDrawableChild(new TextFieldWidget(textRenderer, rightColX, rightColY, supportsSynchronization ? 73 : 150, 20, ""));
+			var label = addDrawableChild(new TextFieldWidget(textRenderer, rightColX, rightColY, supportsSynchronization ? 30 : 150, 20, ""));
 
 			label.setText(stroke.getLabel());
 			label.setChangedListener(stroke::setLabel);
 			if (supportsSynchronization) {
 				var s = (KeystrokeHud.LabelKeystroke) stroke;
-				ButtonWidget synchronizeButton = addDrawableChild(new VanillaButtonWidget(rightColX + 75 + 2, rightColY, 73, 20, I18n.translate("keystrokes.stroke.label.synchronize_with_key", s.isSynchronizeLabel() ? I18n.translate("options.on") : I18n.translate("options.off")), b -> {
+				ButtonWidget synchronizeButton = addDrawableChild(new VanillaButtonWidget(rightColX + + 30 + 4, rightColY, 58, 20, I18n.translate("keystrokes.stroke.label.synchronize_with_key", s.isSynchronizeLabel() ? I18n.translate("options.on") : I18n.translate("options.off")), b -> {
 					s.setSynchronizeLabel(!s.isSynchronizeLabel());
 					b.setMessage(I18n.translate("keystrokes.stroke.label.synchronize_with_key", s.isSynchronizeLabel() ? I18n.translate("options.on") : I18n.translate("options.off")));
 					label.setEditable(!s.isSynchronizeLabel());
@@ -116,6 +127,9 @@ public class ConfigureKeyBindScreen extends io.github.axolotlclient.AxolotlClien
 				}));
 				synchronizeButton.active = s.getKey() != null;
 				label.setEditable(!s.isSynchronizeLabel());
+				addDrawableChild(CyclingButtonWidget.<Justification>builder(j -> I18n.translate(j.toString())).values(Justification.values())
+					.initially(s.getJustification()).build(rightColX + 30 + 4 + 58 + 4, rightColY, 58, 20,
+						I18n.translate("justification"), (btn, val) -> s.setJustification(val)));
 			}
 			rightColY += 28;
 		}
@@ -159,6 +173,15 @@ public class ConfigureKeyBindScreen extends io.github.axolotlclient.AxolotlClien
 		hud.saveKeystrokes();
 	}
 
+	@Override
+	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+		if (keyCode == Keyboard.KEY_ESCAPE) {
+			closeScreen();
+			return true;
+		}
+		return super.keyPressed(keyCode, scanCode, modifiers);
+	}
+
 	private static ClickableWidget textWidget(int x, int y, int width, int height, String message, TextRenderer textRenderer) {
 		return new ClickableWidget(x, y, width, height, message) {
 			@Override
@@ -166,5 +189,185 @@ public class ConfigureKeyBindScreen extends io.github.axolotlclient.AxolotlClien
 				drawCenteredString(textRenderer, getMessage(), getX() + getWidth() / 2, getY() + getHeight() / 2 - textRenderer.fontHeight / 2, -1);
 			}
 		};
+	}
+}
+
+class CyclingButtonWidget<T> extends VanillaButtonWidget {
+	private final String optionText;
+	private int index;
+	@Getter
+	private T value;
+	private final CyclingButtonWidget.Values<T> values;
+	private final Function<T, String> valueToText;
+	private final CyclingButtonWidget.UpdateCallback<T> callback;
+
+	CyclingButtonWidget(int x, int y, int width, int height, String message, String optionText, int index, T value,
+						CyclingButtonWidget.Values<T> values, Function<T, String> valueToText,
+						CyclingButtonWidget.UpdateCallback<T> callback) {
+		super(x, y, width, height, message, btn -> {
+		});
+		this.optionText = optionText;
+		this.index = index;
+		this.value = value;
+		this.values = values;
+		this.valueToText = valueToText;
+		this.callback = callback;
+	}
+
+	@Override
+	public void onPress() {
+		if (Screen.isShiftDown()) {
+			this.cycle(-1);
+		} else {
+			this.cycle(1);
+		}
+	}
+
+	private void cycle(int amount) {
+		List<T> list = this.values.getCurrent();
+		this.index = MathHelper.floorMod(this.index + amount, list.size());
+		T object = list.get(this.index);
+		this.internalSetValue(object);
+		this.callback.onValueChange(this, object);
+	}
+
+	@Override
+	public boolean mouseScrolled(double mouseX, double mouseY, double amountX, double amount) {
+		if (amount > 0.0) {
+			this.cycle(-1);
+		} else if (amount < 0.0) {
+			this.cycle(1);
+		}
+
+		return true;
+	}
+
+	public void setValue(T value) {
+		List<T> list = this.values.getCurrent();
+		int i = list.indexOf(value);
+		if (i != -1) {
+			this.index = i;
+		}
+
+		this.internalSetValue(value);
+	}
+
+	private void internalSetValue(T value) {
+		String text = this.composeText(value);
+		this.setMessage(text);
+		this.value = value;
+	}
+
+	private String composeText(T value) {
+		return this.composeGenericOptionText(value);
+	}
+
+	private String composeGenericOptionText(T value) {
+		return this.optionText + ": " + this.valueToText.apply(value);
+	}
+
+	static <T> CyclingButtonWidget.Builder<T> builder(Function<T, String> valueToText) {
+		return new CyclingButtonWidget.Builder<>(valueToText);
+	}
+
+	static class Builder<T> {
+		private int initialIndex;
+		@Nullable
+		private T value;
+		private final Function<T, String> valueToText;
+		private CyclingButtonWidget.Values<T> values = CyclingButtonWidget.Values.of(ImmutableList.<T>of());
+
+		public Builder(Function<T, String> valueToText) {
+			this.valueToText = valueToText;
+		}
+
+		public CyclingButtonWidget.Builder<T> values(Collection<T> values) {
+			return this.values(CyclingButtonWidget.Values.of(values));
+		}
+
+		@SafeVarargs
+		public final CyclingButtonWidget.Builder<T> values(T... values) {
+			return this.values(ImmutableList.copyOf(values));
+		}
+
+		public CyclingButtonWidget.Builder<T> values(CyclingButtonWidget.Values<T> values) {
+			this.values = values;
+			return this;
+		}
+
+		public CyclingButtonWidget.Builder<T> initially(T value) {
+			this.value = value;
+			int i = this.values.getDefaults().indexOf(value);
+			if (i != -1) {
+				this.initialIndex = i;
+			}
+
+			return this;
+		}
+
+		public CyclingButtonWidget<T> build(int x, int y, int width, int height, String optionText, CyclingButtonWidget.UpdateCallback<T> callback) {
+			List<T> list = this.values.getDefaults();
+			if (list.isEmpty()) {
+				throw new IllegalStateException("No values for cycle button");
+			} else {
+				T object = this.value != null ? this.value : list.get(this.initialIndex);
+				String text = this.valueToText.apply(object);
+				String text2 = optionText + ": " + text;
+				return new CyclingButtonWidget<>(
+					x,
+					y,
+					width,
+					height,
+					text2,
+					optionText,
+					this.initialIndex,
+					object,
+					this.values,
+					this.valueToText,
+					callback
+				);
+			}
+		}
+	}
+
+	interface UpdateCallback<T> {
+		void onValueChange(CyclingButtonWidget<T> cyclingButtonWidget, T object);
+	}
+
+	interface Values<T> {
+		List<T> getCurrent();
+
+		List<T> getDefaults();
+
+		static <T> CyclingButtonWidget.Values<T> of(Collection<T> values) {
+			final List<T> list = ImmutableList.copyOf(values);
+			return new CyclingButtonWidget.Values<T>() {
+				@Override
+				public List<T> getCurrent() {
+					return list;
+				}
+
+				@Override
+				public List<T> getDefaults() {
+					return list;
+				}
+			};
+		}
+
+		static <T> CyclingButtonWidget.Values<T> of(BooleanSupplier alternativeToggle, List<T> defaults, List<T> alternatives) {
+			final List<T> list = ImmutableList.copyOf(defaults);
+			final List<T> list2 = ImmutableList.copyOf(alternatives);
+			return new CyclingButtonWidget.Values<T>() {
+				@Override
+				public List<T> getCurrent() {
+					return alternativeToggle.getAsBoolean() ? list2 : list;
+				}
+
+				@Override
+				public List<T> getDefaults() {
+					return list;
+				}
+			};
+		}
 	}
 }

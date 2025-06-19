@@ -46,7 +46,6 @@ public class KeyBindSelectionList extends ElementListWidget<KeyBindSelectionList
 	private static final int ITEM_HEIGHT = 20;
 	final KeyBindSelectionScreen keyBindsScreen;
 	private final Consumer<KeyBinding> selectionConsumer;
-	private int maxNameWidth;
 
 	public KeyBindSelectionList(KeyBindSelectionScreen keyBindsScreen, MinecraftClient minecraft, Consumer<KeyBinding> selectionConsumer) {
 		super(minecraft, keyBindsScreen.width, keyBindsScreen.height, 33, keyBindsScreen.height - 33, ITEM_HEIGHT);
@@ -64,10 +63,6 @@ public class KeyBindSelectionList extends ElementListWidget<KeyBindSelectionList
 			}
 
 			Text component = new TranslatableText(keyMapping.getTranslationKey());
-			int i = minecraft.textRenderer.getWidth(component);
-			if (i > this.maxNameWidth) {
-				this.maxNameWidth = i;
-			}
 
 			this.addEntry(new KeyEntry(keyMapping, component));
 		}

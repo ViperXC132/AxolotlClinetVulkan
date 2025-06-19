@@ -26,6 +26,12 @@ package io.github.axolotlclient;
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
 import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
+import io.github.axolotlclient.modules.hud.ClickInputTracker;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Objects;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.impl.managers.VersionedJsonConfigManager;
 import io.github.axolotlclient.api.API;
@@ -35,19 +41,18 @@ import io.github.axolotlclient.modules.Module;
 import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.OSUtil;
 import io.github.axolotlclient.util.notifications.NotificationProvider;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import net.fabricmc.loader.api.FabricLoader;
 
 public abstract class AxolotlClientCommon {
-	public static final AxoIdentifier BADGE_PATH = AxoIdentifier.of("axolotlclient", "textures/badge.png");
+	public static final String MODID = "axolotlclient";
+	public static final AxoIdentifier BADGE_PATH = AxoIdentifier.of(MODID, "textures/badge.png");
 	public static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("AxolotlClient.json");
 
 	// static utility methods
 	public static Path resolveConfigFile(String file) {
-		return FabricLoader.getInstance().getConfigDir().resolve("axolotlclient").resolve(file);
+		return FabricLoader.getInstance().getConfigDir().resolve(MODID).resolve(file);
 	}
 
 	public static final boolean NVG_SUPPORTED = OSUtil.getOS() != OSUtil.OperatingSystem.OTHER &&
@@ -106,6 +111,10 @@ public abstract class AxolotlClientCommon {
 		return instance;
 	}
 
+	private void addBuiltinCommonModules() {
+		registerModule(ClickInputTracker.getInstance());
+	}
+
 	// init logic
 
 	private void earlyModuleInit() {
@@ -145,6 +154,9 @@ public abstract class AxolotlClientCommon {
 	protected final void init(Logger logger, NotificationProvider provider) {
 		Preconditions.checkState(!initializing);
 		Preconditions.checkState(instance == null);
+
+		addBuiltinCommonModules();
+
 		initializing = true;
 		instance = this;
 
@@ -172,5 +184,19 @@ public abstract class AxolotlClientCommon {
 
 	public void saveConfig() {
 		getConfigManager().save();
+	}
+
+	public Path getMainConfigFile() {
+		var legacy = FabricLoader.getInstance().getConfigDir().resolve("AxolotlClient.json");
+		var current = resolveConfigFile("axolotlclient.json");
+		try {
+			if (Files.exists(legacy)) {
+				Files.createDirectories(current.getParent());
+				Files.move(legacy, current);
+			}
+		} catch (IOException e) {
+			logger.warn("Failed to move config file, it might get reset! ", e);
+		}
+		return current;
 	}
 }

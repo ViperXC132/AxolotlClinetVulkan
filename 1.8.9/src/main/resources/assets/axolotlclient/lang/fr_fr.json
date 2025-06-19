@@ -16,5 +16,6 @@
 	"unfocusedVolumeMultiplier": "Multiplicateur de Volume en Défocus",
 	"alignToBottom": "Aligner sur le bord inférieur de l'écran",
  	"animate_chat": "Animer le tchat",
- 	"keep_messages_on_disconnect": "Conserver les messages après déconnexion"
+ 	"keep_messages_on_disconnect": "Conserver les messages après déconnexion",
+ 	"lcu.command.parse_error": "Échec de l'analyse de la commande : %s at %s: %s"
 }

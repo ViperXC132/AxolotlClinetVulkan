@@ -67,6 +67,7 @@ public class HypixelMods extends AbstractCommonModule {
 		addSubModule(AutoBoop.getInstance());
 		addSubModule(Skyblock.getInstance());
 		addSubModule(BedwarsMod.getInstance());
+		addSubModule(StatsMod.getInstance());
 
 		subModules.forEach(AbstractHypixelMod::init);
 
