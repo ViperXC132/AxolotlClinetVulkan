@@ -1,9 +1,8 @@
-import org.gradle.jvm.tasks.Jar
 import java.nio.file.FileSystems
 import kotlin.io.path.*
 
 plugins {
-	id("io.freefair.lombok") version "8.12" apply false
+	id("io.freefair.lombok") version "8.13" apply false
 	id("com.modrinth.minotaur") version "2.+" apply false
 	id("com.gradleup.shadow") version "8.+" apply false
 	id("dev.yumi.gradle.licenser") version "2.0.+"
@@ -36,8 +35,20 @@ allprojects {
 				includeGroup("net.hypixel")
 			}
 		}
-		maven("https://api.modrinth.com/maven") {
-			content {
+		exclusiveContent {
+			forRepository {
+				maven("https://maven.skye.vg")
+			}
+			filter {
+				includeGroup("link.e4mc")
+				includeModuleByRegex("io.netty.incubator", "netty-incubator-codec-(?:classes|parent)-quic")
+			}
+		}
+		exclusiveContent {
+			forRepository {
+				maven("https://api.modrinth.com/maven")
+			}
+			filter {
 				includeGroup("maven.modrinth")
 			}
 		}
@@ -81,12 +92,12 @@ subprojects {
 				}
 				val oldName = old.fileName.toString()
 				val oldVer = oldName.substring(0, oldName.indexOf("+"))
-				val mcVer = oldName.substring(oldName.indexOf("+")+1, oldName.length-4).removeSuffix("-sources")
+				val mcVer = oldName.substring(oldName.indexOf("+") + 1, oldName.length - 4).removeSuffix("-sources")
 				if (!project.version.toString().contains(mcVer)) {
 					return@forEach
 				}
 				// check if it's the current version, if it is we don't archive it
-				if (project.version.toString().contains(oldVer.substring(oldVer.indexOf("-")+1))) {
+				if (project.version.toString().contains(oldVer.substring(oldVer.indexOf("-") + 1))) {
 					return@forEach
 				}
 				archiveDir.createDirectories()

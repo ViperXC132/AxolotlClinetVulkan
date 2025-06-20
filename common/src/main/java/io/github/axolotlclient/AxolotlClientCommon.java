@@ -30,6 +30,7 @@ import io.github.axolotlclient.modules.hud.ClickInputTracker;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Objects;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
@@ -128,17 +129,48 @@ public abstract class AxolotlClientCommon {
 	private void initConfig() {
 		configManager = new VersionedJsonConfigManager(CONFIG_PATH,
 			config.getConfig(), 2, (oldVersion, newVersion, config, json) -> {
-			if (oldVersion.getMajor() == 1) {
-				var keystrokes = json.get("hud").getAsJsonObject().get("keystrokehud")
-					.getAsJsonObject();
-				var mousemovement = new JsonObject();
-				mousemovement.addProperty("enabled", keystrokes.get("enabled").getAsBoolean() && keystrokes.get(
-                    "mousemovement").getAsBoolean());
-				mousemovement.addProperty("mouseMovementIndicator",
-                    keystrokes.get("mouseMovementIndicator").getAsString());
-				mousemovement.addProperty("mouseMovementIndicatorOuter",
-                    keystrokes.get("mouseMovementIndicatorOuter").getAsString());
-				json.get("hud").getAsJsonObject().add("mousemovementhud", mousemovement);
+			if (oldVersion.getMajor() <= 1) {
+				if (json.has("hud")) {
+					var hud = json.get("hud").getAsJsonObject();
+					if (hud.has("keystrokehud")) {
+						var keystrokes = hud.get("keystrokehud")
+							.getAsJsonObject();
+						var mousemovement = new JsonObject();
+						mousemovement.addProperty("enabled", keystrokes.get("enabled").getAsBoolean() && keystrokes.get("mousemovement").getAsBoolean());
+						mousemovement.addProperty("mouseMovementIndicator", keystrokes.get("mouseMovementIndicator").getAsString());
+						mousemovement.addProperty("mouseMovementIndicatorOuter", keystrokes.get("mouseMovementIndicatorOuter").getAsString());
+						hud.add("mousemovementhud", mousemovement);
+					}
+				}
+			}
+			if (oldVersion.getMajor() <= 2) {
+				if (json.has("hud")) {
+					var hud = json.get("hud").getAsJsonObject();
+					if (hud.has("armorhud")) {
+						var armorhud = hud.get("armorhud").getAsJsonObject();
+						if (armorhud.has("armorhud.main_hand_item_top")) {
+							var mainItemTop = armorhud.get("armorhud.main_hand_item_top").getAsBoolean();
+							if (mainItemTop) {
+								armorhud.addProperty("armorhud.main_hand_item_position", "armorhud.main_hand_item_position.top");
+							}
+						}
+					}
+				}
+			}
+			if (oldVersion.getMajor() <= 3) {
+				if (json.has("storedOptions")) {
+					var hiddenOptions = json.get("storedOptions").getAsJsonObject();
+
+					JsonObject apiOptions;
+					if (json.has("api.category")) {
+						apiOptions = json.get("api.category").getAsJsonObject();
+					} else {
+						apiOptions = new JsonObject();
+						json.add("api.category", apiOptions);
+					}
+
+					apiOptions.addProperty("api.privacy_policy_accepted", "privacy_policy_state."+hiddenOptions.get("privacyPolicyAccepted").getAsString().toLowerCase(Locale.ROOT));
+				}
 			}
 			return json;
 		});

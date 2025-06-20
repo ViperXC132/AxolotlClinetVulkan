@@ -86,6 +86,10 @@ public interface Positionable {
 		return 1f;
 	}
 
+	default void setScale(float max) {
+
+	}
+
 	/**
 	 * Gets the x value that is stored locally. This may not be correct so use {@link #getX()}
 	 *
@@ -182,7 +186,7 @@ public interface Positionable {
 	int getHeight();
 
 	/**
-	 * Sets the raw height (this is unscaled)
+	 * Setsw the raw height (this is unscaled)
 	 */
 	void setHeight(int height);
 

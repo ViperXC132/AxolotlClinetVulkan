@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.api;
 
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -40,7 +41,12 @@ import io.github.axolotlclient.util.ThreadExecuter;
 public abstract class Options implements Module {
 
 	protected Supplier<CompletableFuture<Boolean>> openPrivacyNoteScreen = () -> CompletableFuture.completedFuture(false);
-	public EnumOption<PrivacyPolicyState> privacyAccepted = new EnumOption<>("privacyPolicyAccepted", PrivacyPolicyState.class, PrivacyPolicyState.UNSET, val -> AxolotlClientCommon.getInstance().saveConfig());
+	public EnumOption<PrivacyPolicyState> privacyAccepted = new EnumOption<>("api.privacy_policy_accepted", PrivacyPolicyState.class, PrivacyPolicyState.UNSET, val -> {
+		if (!val.isAccepted() && API.getInstance().isAuthenticated()) {
+			API.getInstance().shutdown();
+		}
+		AxolotlClientCommon.getInstance().saveConfig();
+	});
 	public final BooleanOption statusUpdateNotifs = new BooleanOption("statusUpdateNotifs", true);
 	public final BooleanOption friendRequestsEnabled = new BooleanOption("friendRequestsEnabled", true);
 	public final BooleanOption channelInvitesEnabled = new BooleanOption("api.channels.invites.enabled", false);
@@ -61,6 +67,7 @@ public abstract class Options implements Module {
 	public final BooleanOption updateNotifications = new BooleanOption("api.update_notifications", false);
 	public final BooleanOption displayNotes = new BooleanOption("api.display_notes", true);
 	public final BooleanOption addShortcutButtons = new BooleanOption("api.add_shortcut_buttons", true);
+	public final BooleanOption allowFriendsServerJoin = new BooleanOption("api.allow_friends_server_join", false);
 	public final StringOption pkToken = new StringOption("api.pk_token", "", s ->
 		PkSystem.fromToken(s).thenAccept(sys -> {
 			if (sys != null) {
@@ -99,7 +106,7 @@ public abstract class Options implements Module {
 		pluralkit.add(pkToken, autoproxy, autoproxyMode, autoproxyMember);
 		account.add(showRegistered, retainUsernames, showLastOnline, showActivity, allowFriendsImageAccess);
 		category.add(pluralkit, account);
-		category.add(enabled, friendRequestsEnabled, statusUpdateNotifs, channelInvitesEnabled, detailedLogging, updateNotifications, displayNotes, addShortcutButtons);
+		category.add(enabled, privacyAccepted, friendRequestsEnabled, statusUpdateNotifs, channelInvitesEnabled, detailedLogging, updateNotifications, displayNotes, addShortcutButtons, allowFriendsServerJoin);
 	}
 
 	public enum PrivacyPolicyState {
@@ -114,6 +121,11 @@ public abstract class Options implements Module {
 
 		public boolean isAccepted() {
 			return false;
+		}
+
+		@Override
+		public String toString() {
+			return "privacy_policy_state."+ super.toString().toLowerCase(Locale.ROOT);
 		}
 	}
 }

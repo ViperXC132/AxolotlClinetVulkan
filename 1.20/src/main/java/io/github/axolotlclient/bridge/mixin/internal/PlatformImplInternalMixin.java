@@ -164,7 +164,7 @@ public class PlatformImplInternalMixin {
 	 * @reason Implement bridge platform.
 	 */
 	@Overwrite
-	public static AxoSprite getTexture(GraphicsOption option) {
+	public static AxoSprite createTexture(GraphicsOption option) {
 		return new AxoSpriteImpl.Config(option);
 	}
 }

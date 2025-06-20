@@ -39,7 +39,10 @@ import io.github.axolotlclient.mixin.OverlayTextureAccessor;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import io.github.axolotlclient.util.options.GenericOption;
 import lombok.Getter;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 
@@ -137,6 +140,10 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 		general.add(openCredits);
 		general.add(debugLogOutput);
 
+		general.add(datetimeFormat);
+		general.add(titleScreenOptionButtonMode);
+		general.add(gameMenuScreenOptionButtonMode);
+
 		ConfigUI.getInstance().runWhenLoaded(() -> {
 			general.getOptions().removeIf(o -> "configStyle".equals(o.getName()));
 			String[] themes = ConfigUI.getInstance().getStyleNames().stream().map(s -> "configStyle." + s)
@@ -178,6 +185,13 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 
 		AxolotlClient.hiddenConfig.add(creditsBGM);
 
+		var toggleFullbright = new KeyBinding("toggle_fullbright", -1, "category.axolotlclient");
+		KeyBindingHelper.registerKeyBinding(toggleFullbright);
+		ClientTickEvents.END_CLIENT_TICK.register(minecraft -> {
+			if (toggleFullbright.wasPressed()) {
+				fullBright.toggle();
+			}
+		});
 	}
 
 }

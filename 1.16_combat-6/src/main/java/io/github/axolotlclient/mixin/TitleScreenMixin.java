@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.mixin;
 
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -85,6 +86,9 @@ public abstract class TitleScreenMixin extends Screen {
 					w -> client.openScreen(new FriendsScreen(this)))));
 				buttons.add(addButton(new ButtonWidget(10, shortcutButtonY + 25, 50, 20, new TranslatableText("api.chats"),
 					w -> client.openScreen(new ChatListScreen(this)))));
+				if (FabricLoader.getInstance().isModLoaded("modmenu")) {
+					buttons.forEach(r -> r.y += 24 / 2);
+				}
 			});
 			if (API.getInstance().isSocketConnected()) {
 				addApiButtons.run();
@@ -117,6 +121,7 @@ public abstract class TitleScreenMixin extends Screen {
 
 		if (FabricLoader.getInstance().isModLoaded("modmenu")) {
 			buttons.forEach(r -> r.y += 24 / 2);
+			buttons.clear();
 		}
 	}
 
@@ -125,7 +130,7 @@ public abstract class TitleScreenMixin extends Screen {
 		target = "Lnet/minecraft/client/gui/widget/ButtonWidget;<init>(IIIILnet/minecraft/text/Text;Lnet/minecraft/client/gui/widget/ButtonWidget$PressAction;Lnet/minecraft/client/gui/widget/ButtonWidget$TooltipSupplier;)V",
 		ordinal = 1))
 	public void axolotlclient$noRealmsbutOptionsButton(Args args) {
-		if (!FabricLoader.getInstance().isModLoaded("modmenu")) {
+		if (AxolotlClientConfigCommon.instance().titleScreenOptionButtonMode.get().showButton()) {
 			args.set(4, new TranslatableText("config"));
 			args.set(5, (ButtonWidget.PressAction) buttonWidget -> MinecraftClient.getInstance()
 				.openScreen(new HudEditScreen(this)));

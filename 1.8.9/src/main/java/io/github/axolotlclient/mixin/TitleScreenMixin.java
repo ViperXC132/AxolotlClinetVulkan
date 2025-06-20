@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.mixin;
 
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandle;
@@ -57,7 +58,6 @@ import net.minecraft.resource.Identifier;
 import org.apache.commons.io.IOUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -133,21 +133,16 @@ public abstract class TitleScreenMixin extends Screen {
 		}
 	}
 
-	@Unique
-	private boolean axolotlclient$alternateLayout() {
-		return !FabricLoader.getInstance().isModLoaded("modmenu") || FabricLoader.getInstance().isModLoaded("axolotlclient-modmenu");
-	}
-
 	@Inject(method = "initWidgetsNormal", at = @At("TAIL"))
 	private void axolotlclient$addOptionsButton(int y, int spacingY, CallbackInfo ci) {
-		if (axolotlclient$alternateLayout()) {
+		if (AxolotlClientConfigCommon.instance().titleScreenOptionButtonMode.get().showButton()) {
 			buttons.add(new ButtonWidget(192, this.width / 2 - 100, y + spacingY * 3, I18n.translate("config") + "..."));
 		}
 	}
 
 	@ModifyConstant(method = "init", constant = @Constant(intValue = 72))
 	private int axolotlclient$moveButtons(int constant) {
-		if (axolotlclient$alternateLayout()) {
+		if (AxolotlClientConfigCommon.instance().titleScreenOptionButtonMode.get().showButton()) {
 			return constant + 25;
 		}
 		return constant;

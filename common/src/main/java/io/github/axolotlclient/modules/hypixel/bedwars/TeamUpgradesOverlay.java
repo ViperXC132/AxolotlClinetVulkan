@@ -36,7 +36,6 @@ import java.util.List;
 /**
  * @author DarkKronicle
  */
-
 public class TeamUpgradesOverlay extends BoxHudEntry {
 
 	public final static AxoIdentifier ID = AxoIdentifier.of("axolotlclient", "bedwars_teamupgrades");

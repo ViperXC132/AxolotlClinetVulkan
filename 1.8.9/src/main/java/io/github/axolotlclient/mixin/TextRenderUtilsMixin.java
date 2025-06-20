@@ -79,7 +79,7 @@ public class TextRenderUtilsMixin {
 
 	@Inject(method = "wrapText", at = @At("HEAD"))
 	private static void reformatText(Text pText, int i, TextRenderer textRenderer, boolean bl, boolean bl2, CallbackInfoReturnable<List<Text>> cir, @Local(argsOnly = true) LocalRef<Text> text) {
-		text.set(formatFromCodes(text.get().getFormattedString()));
+		text.set(format(text.get()));
 	}
 
 	@Unique
@@ -97,6 +97,16 @@ public class TextRenderUtilsMixin {
 
 	@Unique
 	private static final Pattern CODE_PATTERN = Pattern.compile("§");
+
+	@Unique
+	private static Text format(Text text) {
+		var reformatted = formatFromCodes(text.getContent());
+		reformatted.setStyle(text.getStyle());
+		for (Text sib : text.getSiblings()) {
+			reformatted.append(format(sib));
+		}
+		return reformatted;
+	}
 
 	@Unique
 	private static Text formatFromCodes(String formattedString) {

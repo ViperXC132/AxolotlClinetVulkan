@@ -24,22 +24,53 @@ package io.github.axolotlclient;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import lombok.Getter;
+import net.fabricmc.loader.api.FabricLoader;
 
 public abstract class AxolotlClientConfigCommon {
+	public enum MenuButtonMode {
+		DISABLED,
+		MODMENU () {
+			@Override
+			public boolean showButton() {
+				return !(FabricLoader.getInstance().isModLoaded("modmenu") && !FabricLoader.getInstance().isModLoaded("axolotlclient-modmenu"));
+			}
+		},
+		ALWAYS() {
+			@Override
+			public boolean showButton() {
+				return true;
+			}
+		}
+		;
+
+		@Override
+		public String toString() {
+			return "menu_button_mode."+super.toString().toLowerCase(Locale.ROOT);
+		}
+
+		public boolean showButton() {
+			return false;
+		}
+	}
+
 	// options
 	public final OptionCategory config = OptionCategory.create("config");
 	public final OptionCategory hidden = OptionCategory.create("storedOptions");
 	public final StringOption datetimeFormat = new StringOption("datetime_format", "yyyy/MM/dd HH:mm:ss", s -> dateTimeFormatter = DateTimeFormatter.ofPattern(s));
+	public final EnumOption<MenuButtonMode> titleScreenOptionButtonMode = new EnumOption<>("title_screen_button_mode", MenuButtonMode.class, MenuButtonMode.MODMENU);
+	public final EnumOption<MenuButtonMode> gameMenuScreenOptionButtonMode = new EnumOption<>("game_menu_screen_button_mode", MenuButtonMode.class, MenuButtonMode.MODMENU);
+
+	@Getter
+	private DateTimeFormatter dateTimeFormatter;
 
 	public static AxolotlClientConfigCommon instance() {
 		return AxolotlClientCommon.getInstance().getConfig();
 	}
-
-	@Getter
-	private DateTimeFormatter dateTimeFormatter;
 
 	public final void add(Option<?> option) {
 		config.add(option);

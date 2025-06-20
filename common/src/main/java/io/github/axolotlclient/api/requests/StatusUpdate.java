@@ -22,7 +22,7 @@
 
 package io.github.axolotlclient.api.requests;
 
-import java.time.Instant;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 import io.github.axolotlclient.api.API;
@@ -35,31 +35,23 @@ import lombok.RequiredArgsConstructor;
 
 public class StatusUpdate {
 
-	private static Request createStatusUpdate(String titleString, String descriptionString) {
+	private static Request createStatusUpdate(Status.Activity activity) {
 		Status status = API.getInstance().getSelf().getStatus();
-		String description;
-		if (descriptionString.contains("{")) {
-			try {
-				var json = GsonHelper.fromJson(descriptionString);
-				description = json.has("value") ? json.get("value").getAsString() : "";
-			} catch (Throwable t) {
-				description = descriptionString;
-			}
-		} else {
-			description = descriptionString;
-		}
 		if (status.getActivity() != null) {
 			Status.Activity prev = status.getActivity();
-			if (prev.title().equals(titleString) && prev.description().equals(description)) {
+			if (prev.equals(activity)) {
 				return null;
-			} else {
-				status.setActivity(new Status.Activity(titleString, description, descriptionString, Instant.now()));
 			}
-		} else {
-			status.setActivity(new Status.Activity(titleString, description, descriptionString, Instant.now()));
 		}
-		return Request.Route.ACCOUNT_ACTIVITY.builder().field("title", titleString).field("description", descriptionString)
-			.field("started", status.getActivity().started().toString()).build();
+		status.setActivity(activity);
+		String json = GsonHelper.GSON.toJson(activity);
+		API.getInstance().logDetailed("Updating status: {}", json);
+		return Request.Route.ACCOUNT_ACTIVITY.builder().rawBody(json.getBytes(StandardCharsets.UTF_8))
+			.build();
+	}
+
+	private static Request createStatusUpdate(String title, String description) {
+		return createStatusUpdate(new Status.Activity(title, description));
 	}
 
 	public static Request online(MenuId menuId) {
@@ -72,23 +64,35 @@ public class StatusUpdate {
 		boolean mp = !map.isEmpty();
 		String description;
 		if (gm && mp) {
-			description = tr.translate("api.status.description.in_game.game_mode_map", gameType, gameMode, map);
+			description = tr.translate("api.status.description.in_game.game_mode_map", server.name, gameType, gameMode, map);
 		} else if (gm) {
-			description = tr.translate("api.status.description.in_game.game_mode_map", gameType, gameMode, map);
+			description = tr.translate("api.status.description.in_game.game_mode_map", server.name, gameType, gameMode, map);
 		} else if (mp) {
-			description = tr.translate("api.status.description.in_game.map", gameType, map);
+			description = tr.translate("api.status.description.in_game.map", server.name, gameType, map);
 		} else {
-			description = tr.translate("api.status.description.in_game", gameType);
+			description = tr.translate("api.status.description.in_game", server.name, gameType);
 		}
-		return createStatusUpdate(tr.translate("api.status.title.in_game", server.name), description);
+		var metadata = new Status.Activity.ExternalServerMetadata(server.name, server.ip);
+		return createStatusUpdate(new Status.Activity("api.status.title.in_game", description, API.getInstance().getApiOptions().allowFriendsServerJoin.get() ? metadata : null));
 	}
 
 	public static Request inGameUnknown(String description) {
 		return createStatusUpdate("api.status.title.in_game_unknown", description);
 	}
 
-	public static Request worldHostStatusUpdate(String description) {
-		return createStatusUpdate("api.status.title.world_host", description);
+	public static Request worldHostStatusUpdate(Status.Activity.WorldHostMetadata metadata) {
+		return createStatusUpdate(new Status.Activity("api.status.title.world_host", metadata.serverInfo().levelName(), metadata));
+	}
+
+	public static Request e4mcStatusUpdate(Status.Activity.E4mcMetadata metadata) {
+		return createStatusUpdate(new Status.Activity("api.status.title.e4mc", metadata.serverInfo().levelName(), metadata));
+	}
+
+	public static Request inGameServer(String name, String ip) {
+		if (API.getInstance().getApiOptions().allowFriendsServerJoin.get()) {
+			return createStatusUpdate(new Status.Activity("api.status.title.unknown_server", name, new Status.Activity.Metadata(new Status.Activity.ExternalServerMetadata(name, ip))));
+		}
+		return createStatusUpdate("api.status.title.unknown_server", name);
 	}
 
 	@Getter
@@ -104,9 +108,10 @@ public class StatusUpdate {
 	@RequiredArgsConstructor
 	@Getter
 	public enum SupportedServer {
-		HYPIXEL("Hypixel", Pattern.compile("^(?:mc\\.)?hypixel\\.net$")),
-		MCC_ISLAND("MCC Island", Pattern.compile("^play\\.mccisland\\.net$"));
+		HYPIXEL("Hypixel", Pattern.compile("^(?:mc\\.)?hypixel\\.net$"), "mc.hypixel.net"),
+		MCC_ISLAND("MCC Island", Pattern.compile("^play\\.mccisland\\.net$"), "play.mccisland.net");
 		private final String name;
 		private final Pattern address;
+		private final String ip;
 	}
 }

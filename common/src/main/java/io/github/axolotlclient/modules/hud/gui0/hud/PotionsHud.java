@@ -28,12 +28,10 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.Platform;
-import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffect;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffectInstance;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffects;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
-import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hud.gui0.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
@@ -130,7 +128,8 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 				return 50;
 			}
 			return effects.stream().map(effect -> Component.translatable(effect.getDescriptionId()).append(" ")
-				.append(Util.toRoman(effect.getAmplifier()))).map(client.font::width).max(Integer::compare).orElse(38) +
+				.append(Util.toRoman(effect.getAmplifier()))).map(client.font::width).max(Integer::compare).orElse
+				(38) +
 				22;
 		}*/
 
@@ -145,7 +144,8 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 		}
 	}
 
-	private int renderPotion(AxoRenderContext graphics, AxoStatusEffectInstance effect, int x, int y, float tickDelta) {
+	private int renderPotion(AxoRenderContext graphics, AxoStatusEffectInstance effect, int x, int y,
+							 float tickDelta) {
 		final var sprite = effect.br$getType().br$getSprite();
 
 		graphics.br$drawTexture(x, y, 18, 18, sprite);
@@ -160,7 +160,8 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 
 				graphics.br$drawString(string.br$getRawString(), x + 19, y + 1, textColor.get().toInt(), shadow.get());
 				AxoText duration = MobEffectUtil.formatDuration(effect, 1, tickrate);
-				graphics.br$drawString(duration.br$getRawString(), x + 19, y + 1 + 10, timerTextColor.get().toInt(), shadow.get());
+				graphics.br$drawString(duration.br$getRawString(), x + 19, y + 1 + 10, timerTextColor.get().toInt(),
+				shadow.get());
 			} else {
 				graphics.br$drawString(MobEffectUtil.formatDuration(effect, 1, tickrate), x + 19, y + 5,
 					timerTextColor.get().toInt(), shadow.get()

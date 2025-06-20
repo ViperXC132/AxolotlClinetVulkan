@@ -77,7 +77,7 @@ public class UUIDHelper {
 
 	public static CompletableFuture<Optional<String>> ensureUuidOpt(String nameOrUuid) {
 		try {
-			return CompletableFuture.completedFuture(Optional.of(API.getInstance().sanitizeUUID(nameOrUuid)));
+			return CompletableFuture.completedFuture(Optional.of(API.sanitizeUUID(nameOrUuid)));
 		} catch (IllegalArgumentException e) {
 			return USERNAME_TO_UUID.getAsync(nameOrUuid);
 		}
@@ -88,6 +88,6 @@ public class UUIDHelper {
 	}
 
 	public static String toUndashed(UUID uuid) {
-		return API.getInstance().sanitizeUUID(uuid.toString());
+		return API.sanitizeUUID(uuid.toString());
 	}
 }

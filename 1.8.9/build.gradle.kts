@@ -60,21 +60,10 @@ dependencies {
 
 	compileOnly("org.lwjgl:lwjgl-glfw:${lwjglVersion}")
 
-	modCompileOnly("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}") {
-		exclude(group = "org.lwjgl", module = "lwjgl-glfw")
-		exclude(group = "org.lwjgl", module = "lwjgl-openal")
-		exclude(group = "org.lwjgl", module = "lwjgl-opengl")
-		exclude(group = "org.lwjgl", module = "lwjgl")
-		exclude(group = "net.fabricmc")
-		exclude(group = "org.javassist")
-	}
-	modLocalRuntime("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}:all-remapped") {
-		exclude(group = "org.lwjgl", module = "lwjgl-glfw")
-		exclude(group = "org.lwjgl", module = "lwjgl-openal")
-		exclude(group = "org.lwjgl", module = "lwjgl-opengl")
-		exclude(group = "org.lwjgl", module = "lwjgl")
-		exclude(group = "net.fabricmc")
-		exclude(group = "org.javassist")
+	modImplementation("io.github.moehreag:legacy-lwjgl3") {
+		version {
+			strictly("1.2.5+1.8.9")
+		}
 	}
 
 	include(implementation("org.lwjgl", "lwjgl-tinyfd", "3.3.5"))
@@ -88,6 +77,8 @@ dependencies {
 	api("net.hypixel:mod-api:1.0.1")
 	include(modImplementation("io.github.moehreag.hypixel:mod-api-fabric:1.0.1+build.4+mc1.8.9")!!)
 	include(implementation("com.mojang:brigadier:1.0.18")!!)
+
+	compileOnly("link.e4mc:e4mc_minecraft:5.3.1")
 }
 
 configurations.configureEach {

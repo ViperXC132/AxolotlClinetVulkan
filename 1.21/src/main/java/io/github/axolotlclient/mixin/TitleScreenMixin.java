@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.mixin;
 
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
@@ -157,7 +158,7 @@ public abstract class TitleScreenMixin extends Screen {
 		at = @At(value = "INVOKE",
 			target = "Lnet/minecraft/client/gui/widget/button/ButtonWidget;builder(Lnet/minecraft/text/Text;Lnet/minecraft/client/gui/widget/button/ButtonWidget$PressAction;)Lnet/minecraft/client/gui/widget/button/ButtonWidget$Builder;", ordinal = 2))
 	private void axolotlclient$noRealmsbutOptionsButton(Args args) {
-		if (!FabricLoader.getInstance().isModLoaded("modmenu")) {
+		if (AxolotlClientConfigCommon.instance().titleScreenOptionButtonMode.get().showButton()) {
 			args.set(0, Text.translatable("config"));
 			args.set(1, (ButtonWidget.PressAction) buttonWidget -> MinecraftClient.getInstance()
 				.setScreen(new HudEditScreen(this)));

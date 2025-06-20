@@ -37,7 +37,6 @@ import lombok.AllArgsConstructor;
 /**
  * @author DarkKronicle
  */
-
 public class TrapUpgrade extends TeamUpgrade {
 
 	private final static Pattern[] REGEX = {
@@ -112,7 +111,6 @@ public class TrapUpgrade extends TeamUpgrade {
 
 	@AllArgsConstructor
 	public enum TrapType {
-
 		ITS_A_TRAP((r, x, y, width, height, unused) -> {
 			//Minecraft.getInstance().getTextureManager().bind(new Identifier("textures/gui/container/inventory.png"));
 			//GuiElement.drawTexture(x, y, 5 * 18, 198 + 18, 18, 18, 16, 16, 256, 256);
@@ -128,7 +126,6 @@ public class TrapUpgrade extends TeamUpgrade {
 //			Minecraft.getInstance().getTextureManager().bind(new Identifier("textures/gui/container/inventory.png"));
 //			GuiElement.drawTexture(x, y, 3 * 18, 198, 18, 18, 16, 16, 256, 256);
 		});
-
 		private final TeamUpgradeRenderer renderer;
 
 		public static TrapType getFuzzy(String s) {

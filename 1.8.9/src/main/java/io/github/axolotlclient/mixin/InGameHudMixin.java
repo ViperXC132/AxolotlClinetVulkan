@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
@@ -29,6 +30,7 @@ import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.HudManagerCommon;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
+import io.github.axolotlclient.util.Util;
 import io.github.axolotlclient.util.events.Events;
 import io.github.axolotlclient.util.events.impl.ScoreboardRenderEvent;
 import net.minecraft.client.Minecraft;
@@ -205,6 +207,49 @@ public abstract class InGameHudMixin {
 	private void axolotlclient$removeVignette(float f, Window window, CallbackInfo ci) {
 		if (AxolotlClient.config().removeVignette.get()) {
 			ci.cancel();
+		}
+	}
+
+	@Unique
+	private float titleScale, subtitleScale;
+
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;scalef(FFF)V", ordinal = 0))
+	private void scaleTitle(float f, CallbackInfo ci, @Local(ordinal = 1) int width, @Local(ordinal = 2) int height) {
+		if (!AxolotlClient.config().scaleTitles.get()) {
+			return;
+		}
+		GlStateManager.scalef(titleScale, titleScale, 1);
+	}
+
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;scalef(FFF)V", ordinal = 1))
+	private void scaleSubtitle(float f, CallbackInfo ci, @Local(ordinal = 1) int width, @Local(ordinal = 2) int height) {
+		if (!AxolotlClient.config().scaleTitles.get()) {
+			return;
+		}
+		GlStateManager.scalef(subtitleScale, subtitleScale, 1);
+	}
+
+	@Inject(method = "setTitles", at = @At("HEAD"))
+	private void calculateScales(String string, String string2, int i, int j, int k, CallbackInfo ci) {
+		if (!AxolotlClient.config().scaleTitles.get()) {
+			return;
+		}
+		var client = Minecraft.getInstance();
+		int padding = AxolotlClient.config().titlePadding.get();
+		int windowWidth = Util.getWindow().getWidth() - padding * 8;
+		{
+			int width = client.textRenderer.getWidth(string) * 4; // default scale for titles
+			if (width > windowWidth) {
+				float scale = (float) width / windowWidth;
+				titleScale = 1 / scale;
+			}
+		}
+		{
+			int width = client.textRenderer.getWidth(string2) * 2; // default scale for subtitles
+			if (width > windowWidth) {
+				float scale = (float) width / windowWidth;
+				subtitleScale = 1 / scale;
+			}
 		}
 	}
 }

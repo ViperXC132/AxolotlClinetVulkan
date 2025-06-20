@@ -19,7 +19,6 @@
  *
  * For more information, see the LICENSE file.
  */
-
 package io.github.axolotlclient.bridge.impl;
 
 import io.github.axolotlclient.bridge.item.AxoItem;

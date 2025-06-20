@@ -19,13 +19,11 @@
  *
  * For more information, see the LICENSE file.
  */
-
 package io.github.axolotlclient.modules;
 
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 
 public abstract class AbstractCommonModule implements Module {
-
 	protected final AxoMinecraftClient client;
 
 	public AbstractCommonModule() {

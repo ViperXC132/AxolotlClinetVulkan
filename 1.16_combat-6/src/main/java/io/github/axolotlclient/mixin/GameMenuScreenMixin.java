@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.mixin;
 
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import java.util.Objects;
 
@@ -73,7 +74,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 
 	@ModifyArgs(method = "initWidgets", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ButtonWidget;<init>(IIIILnet/minecraft/text/Text;Lnet/minecraft/client/gui/widget/ButtonWidget$PressAction;)V", ordinal = 3))
 	public void addClientOptionsButton(Args args) {
-		if (axolotlclient$hasModMenu())
+		if (!AxolotlClientConfigCommon.instance().gameMenuScreenOptionButtonMode.get().showButton())
 			return;
 
 		args.set(4, new TranslatableText("title_short"));

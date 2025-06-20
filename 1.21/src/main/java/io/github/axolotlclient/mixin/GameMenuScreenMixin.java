@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.mixin;
 
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -34,7 +35,6 @@ import io.github.axolotlclient.api.ChatsSidebar;
 import io.github.axolotlclient.api.FriendsScreen;
 import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -42,7 +42,6 @@ import net.minecraft.client.gui.widget.button.ButtonWidget;
 import net.minecraft.client.gui.widget.layout.GridWidget;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
@@ -53,11 +52,6 @@ public abstract class GameMenuScreenMixin extends Screen {
 
 	protected GameMenuScreenMixin(Text title) {
 		super(title);
-	}
-
-	@Unique
-	private static boolean axolotlclient$hasModMenu() {
-		return FabricLoader.getInstance().isModLoaded("modmenu") && !FabricLoader.getInstance().isModLoaded("axolotlclient-modmenu");
 	}
 
 	@Inject(method = "initWidgets", at = @At("TAIL"))
@@ -74,7 +68,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 					button -> client.setScreen(new ChatsSidebar(this)))
 				.positionAndSize(10, buttonY, 75, 20).build());
 		}
-		if (!axolotlclient$hasModMenu()) {
+		if (AxolotlClientConfigCommon.instance().gameMenuScreenOptionButtonMode.get().showButton()) {
 			addDrawableSelectableElement(new ButtonWidget(widget.getX() + widget.getWidth(),
 				widget.getY() + 50, 20, 20,
 				Text.empty(),
