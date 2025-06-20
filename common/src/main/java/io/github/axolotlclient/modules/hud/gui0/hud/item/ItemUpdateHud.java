@@ -45,7 +45,6 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
  *
  * @license GPL-3.0
  */
-
 public class ItemUpdateHud extends TextHudEntry {
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "itemupdatehud");
 
@@ -128,7 +127,7 @@ public class ItemUpdateHud extends TextHudEntry {
 		int lastY = 1;
 		int entryCount = 0;
 
-		for (ItemUtil.ItemStorage item : this.added) {
+		for (ItemUtil.ItemStorage item : added) {
 			if (entryCount > 5) {
 				return;
 			}
@@ -145,7 +144,7 @@ public class ItemUpdateHud extends TextHudEntry {
 			entryCount++;
 		}
 
-		for (ItemUtil.ItemStorage item : this.removed) {
+		for (ItemUtil.ItemStorage item : removed) {
 			if (entryCount > 5) {
 				return;
 			}
@@ -156,7 +155,7 @@ public class ItemUpdateHud extends TextHudEntry {
 				.br$append(closingBracket)
 				.br$append(item.stack.br$getHoverName());
 
-			context.br$drawString(message, pos.x, pos.y + lastY, ClientColors.SELECTOR_GREEN.toInt(), shadow.get());
+			context.br$drawString(message, pos.x, pos.y + lastY, ClientColors.SELECTOR_RED.toInt(), shadow.get());
 
 			lastY += deltaY;
 			entryCount++;

@@ -27,6 +27,7 @@ import io.github.axolotlclient.bridge.item.AxoEnchant;
 import io.github.axolotlclient.bridge.item.AxoItem;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoItems;
+import io.github.axolotlclient.bridge.util.AxoText;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -65,6 +66,9 @@ public abstract class ItemStackMixin implements AxoItemStack{
 
 	@Shadow
 	public abstract void addEnchantment(Enchantment enchantment, int level);
+
+	@Shadow
+	public abstract String getHoverName();
 
 	@Override
 	public AxoItem br$getItem() {
@@ -154,5 +158,10 @@ public abstract class ItemStackMixin implements AxoItemStack{
 				break;
 			}
 		}
+	}
+
+	@Override
+	public AxoText br$getHoverName() {
+		return AxoText.literal(getHoverName());
 	}
 }

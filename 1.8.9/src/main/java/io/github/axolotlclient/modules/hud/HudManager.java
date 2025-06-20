@@ -56,6 +56,7 @@ public class HudManager extends HudManagerCommon {
 		add(new ScoreboardHud());
 		add(new KeystrokeHud());
 		add(new PackDisplayHud());
+		add(new ChatHud());
 
 		((ReachHud) get(ReachHud.ID)).getEnabled().setForceOff(true, "feature.broken");
 		((ComboHud) get(ComboHud.ID)).getEnabled().setForceOff(true, "feature.broken");

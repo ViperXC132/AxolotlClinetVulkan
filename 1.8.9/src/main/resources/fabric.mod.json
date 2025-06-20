@@ -77,7 +77,10 @@
 				"io/github/axolotlclient/bridge/key/AxoClientKeybinds"
 			],
 			"net/minecraft/unmapped/C_9550253": [
-				"io/github/axolotlclient/bridge/util/AxoText"
+				"io/github/axolotlclient/bridge/util/AxoText\u0024Mutable"
+			],
+			"net/minecraft/unmapped/C_6237110": [
+				"io/github/axolotlclient/bridge/util/AxoText\u0024Style"
 			],
 			"net/minecraft/unmapped/C_3543146": [
 				"io/github/axolotlclient/bridge/AxoPlayerProfile"

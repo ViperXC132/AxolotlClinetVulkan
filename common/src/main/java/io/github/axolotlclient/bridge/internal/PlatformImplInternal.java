@@ -35,8 +35,8 @@ import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.bridge.render.AxoWindow;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.bridge.util.AxoText;
 import org.jetbrains.annotations.ApiStatus;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -72,8 +72,12 @@ public class PlatformImplInternal {
 		throw BridgeUtil.noImpl();
 	}
 
-	public static AxoSprite getTexture(GraphicsOption option) {
+	public static int tickCount() {
 		throw BridgeUtil.noImpl();
+	}
+
+	public static float tickRate() {
+		return 1; // just provide a default impl
 	}
 
 	// constructors
@@ -93,15 +97,19 @@ public class PlatformImplInternal {
 		throw BridgeUtil.noImpl();
 	}
 
-	public static int tickCount() {
-		throw BridgeUtil.noImpl();
-	}
-
 	public static AxoSprite createSprite(AxoIdentifier id, int texX, int texY, int width, int height) {
 		throw BridgeUtil.noImpl();
 	}
 
-	public static float tickRate() {
-		return 1; // just provide a default impl
+	public static AxoSprite createTexture(GraphicsOption option) {
+		throw BridgeUtil.noImpl();
+	}
+
+	public static AxoText.Mutable createLiteral(String text) {
+		throw BridgeUtil.noImpl();
+	}
+
+	public static AxoText.Mutable createTranslatable(String key, Object... args) {
+		throw BridgeUtil.noImpl();
 	}
 }

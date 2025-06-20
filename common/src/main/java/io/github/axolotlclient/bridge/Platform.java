@@ -26,7 +26,6 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
 import io.github.axolotlclient.bridge.render.AxoSprite;
-import io.github.axolotlclient.bridge.util.AxoIdentifier;
 
 public interface Platform {
 	static long getMeasuringTimeMs() {
@@ -37,8 +36,8 @@ public interface Platform {
 		return PlatformImplInternal.getConfig();
 	}
 
-	static AxoSprite getTexture(GraphicsOption option) {
-		return PlatformImplInternal.getTexture(option);
+	static AxoSprite createTexture(GraphicsOption option) {
+		return PlatformImplInternal.createTexture(option);
 	}
 
 	static int tickCount() {

@@ -46,6 +46,7 @@ public class Bridge {
 		return Objects.requireNonNullElseGet(stack, () -> new ItemStack(Item.byBlock(Blocks.STONE), 0));
 	}
 
+	@Nullable
 	public static ItemStack unwrapStack(AxoItemStack stack) {
 		if (stack.br$isEmpty()) {
 			return null;

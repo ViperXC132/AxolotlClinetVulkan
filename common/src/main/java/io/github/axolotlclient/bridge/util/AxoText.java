@@ -23,6 +23,7 @@
 package io.github.axolotlclient.bridge.util;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
 import java.util.function.BiConsumer;
 import java.util.function.UnaryOperator;
 import lombok.AllArgsConstructor;
@@ -56,7 +57,7 @@ public interface AxoText {
 
 	interface Style {
 		default Style br$color(Color color) {
-			throw BridgeUtil.noImpl();
+			return br$color(color.rgb);
 		}
 
 		default Style br$color(int color) {
@@ -69,10 +70,12 @@ public interface AxoText {
 	}
 
 	interface Mutable extends AxoText {
+		@ApiStatus.NonExtendable
 		default Mutable br$color(Color color) {
 			return br$setStyle(br$getStyle().br$color(color));
 		}
 
+		@ApiStatus.NonExtendable
 		default Mutable br$color(int color) {
 			return br$setStyle(br$getStyle().br$color(color));
 		}
@@ -97,7 +100,7 @@ public interface AxoText {
 	}
 
 	static Mutable literal(String value) {
-		throw BridgeUtil.noImpl();
+		return PlatformImplInternal.createLiteral(value);
 	}
 
 	static Mutable literal(Object object) {
@@ -105,7 +108,7 @@ public interface AxoText {
 	}
 
 	static Mutable translatable(String key, Object... args) {
-		throw BridgeUtil.noImpl();
+		return PlatformImplInternal.createTranslatable(key, args);
 	}
 
 	default String br$getRawString() {

@@ -61,9 +61,11 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 	protected final BooleanOption showProtLvl = new BooleanOption("showProtectionLevel", false);
 	private final BooleanOption showDurabilityNumber = new BooleanOption("show_durability_num", false);
 	private final BooleanOption showMaxDurabilityNumber = new BooleanOption("show_max_durability_num", false);
-	private final BooleanOption customDurabilityNumColor = new BooleanOption("armorhud.custom_durability_num_color", false);
+	private final BooleanOption customDurabilityNumColor = new BooleanOption("armorhud.custom_durability_num_color",
+		false);
 	private final ColorOption durabilityNumColor = new ColorOption("armorhud.durability_num_color", Colors.WHITE);
-	private final EnumOption<MainHandItemPosition> mainHandItemPosition = new EnumOption<>("armorhud.main_hand_item_position", MainHandItemPosition.class, MainHandItemPosition.BOTTOM);
+	private final EnumOption<MainHandItemPosition> mainHandItemPosition = new EnumOption<>("armorhud" +
+		".main_hand_item_position", MainHandItemPosition.class, MainHandItemPosition.BOTTOM);
 
 	private final EnumOption<AnchorPoint> anchor = new EnumOption<>("anchorpoint", AnchorPoint.class,
 		AnchorPoint.TOP_RIGHT);
@@ -75,7 +77,7 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 	@Override
 	public void renderComponent(AxoRenderContext graphics, float delta) {
 		final var player = client.br$getPlayer();
-		if(player == null) {
+		if (player == null) {
 			return;
 		}
 		renderInternal(graphics, player.br$getInventory().br$getMainHand(), player.br$getInventory().br$getArmor());
@@ -171,9 +173,13 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		if (stack.br$isEmpty() || !(showMaxDurability || showDurability) || stack.br$getMaxDamage() == 0) {
 			return;
 		}
-		String text = showDurability && showMaxDurability ? (stack.br$getMaxDamage() - stack.br$getDamage()) + "/" + stack.br$getMaxDamage() : String.valueOf((showDurability ? stack.br$getMaxDamage() - stack.br$getDamage() : stack.br$getMaxDamage()));
+		String text = showDurability && showMaxDurability ?
+			(stack.br$getMaxDamage() - stack.br$getDamage()) + "/" + stack.br$getMaxDamage() :
+			String.valueOf((showDurability ? stack.br$getMaxDamage() - stack.br$getDamage() :
+				stack.br$getMaxDamage()));
 		int textY = y + 10 - graphics.br$getFont().br$getFontHeight() / 2;
-		graphics.br$drawString(text, x, textY, customDurabilityNumColor.get() ? durabilityNumColor.get().toInt() : stack.br$getBarColor(), true);
+		graphics.br$drawString(text, x, textY, customDurabilityNumColor.get() ? durabilityNumColor.get().toInt() :
+			stack.br$getBarColor(), true);
 	}
 
 	@Override
@@ -206,7 +212,7 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 
 		@Override
 		public String toString() {
-			return "armorhud.main_hand_item_position."+super.toString().toLowerCase(Locale.ROOT);
+			return "armorhud.main_hand_item_position." + super.toString().toLowerCase(Locale.ROOT);
 		}
 	}
 }

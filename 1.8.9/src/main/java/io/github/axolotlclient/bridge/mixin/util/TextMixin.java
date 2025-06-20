@@ -23,9 +23,60 @@
 package io.github.axolotlclient.bridge.mixin.util;
 
 import io.github.axolotlclient.bridge.util.AxoText;
+import java.util.List;
+import java.util.function.BiConsumer;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(Text.class)
-public interface TextMixin extends AxoText {
+public interface TextMixin extends AxoText.Mutable {
+	@Shadow
+	Text append(Text par1);
+
+	@Shadow
+	Text setStyle(net.minecraft.text.Style par1);
+
+	@Shadow
+	String getString();
+
+	@Shadow
+	Text copy();
+
+	@Shadow
+	String getContent();
+
+	@Shadow
+	net.minecraft.text.Style getStyle();
+
+	@Shadow
+	List<Text> getSiblings();
+
+	default Mutable br$append(AxoText child) {
+		return append((Text) child);
+	}
+
+	default Mutable br$setStyle(Style style) {
+		return setStyle((net.minecraft.text.Style) style);
+	}
+
+	default String br$getRawString() {
+		return getString();
+	}
+
+	default AxoText.Mutable br$copy() {
+		return copy();
+	}
+
+	default void br$visit(BiConsumer<String, AxoText.Style> handler) {
+		handler.accept(getContent(), getStyle());
+
+		for (Text c : getSiblings()) {
+			c.br$visit(handler);
+		}
+	}
+
+	default AxoText.Style br$getStyle() {
+		return getStyle();
+	}
 }

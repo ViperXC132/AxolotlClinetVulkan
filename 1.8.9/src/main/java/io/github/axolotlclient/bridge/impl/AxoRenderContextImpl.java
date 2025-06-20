@@ -28,10 +28,12 @@ import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoSprite;
+import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.ItemUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 
 public class AxoRenderContextImpl implements AxoRenderContext {
@@ -124,6 +126,11 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 	}
 
 	@Override
+	public int br$drawString(AxoText value, int x, int y, int color, boolean shadow) {
+		return br$drawString(((Text) value).getFormattedString(), x, y, color, shadow);
+	}
+
+	@Override
 	public void br$drawCenteredString(String value, int x, int y, int color, boolean shadow) {
 		AxoRenderContext.super.br$drawCenteredString(value, x, y, color, shadow);
 	}
@@ -135,12 +142,19 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 
 	@Override
 	public void br$renderGuiItemModel(AxoItemStack stack, int x, int y) {
-		client.getItemRenderer().renderGuiItemModel(Bridge.unwrapStack(stack), x, y);
+		final var vanilla = Bridge.unwrapStack(stack);
+
+		if(vanilla != null) {
+			client.getItemRenderer().renderGuiItemModel(vanilla, x, y);
+		}
 	}
 
 	@Override
 	public void br$renderGuiItemOverlay(AxoItemStack stack, int x, int y, String countLabel, int textColor, boolean shadow) {
-		ItemUtil.renderGuiItemOverlay(client.textRenderer, Bridge.unwrapStack(stack), x, y, countLabel, textColor,
-			shadow);
+		ItemUtil.renderGuiItemOverlay(
+			client.textRenderer,
+			Bridge.unwrapStack(stack), x, y, countLabel, textColor,
+			shadow
+		);
 	}
 }

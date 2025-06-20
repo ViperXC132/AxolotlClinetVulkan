@@ -42,6 +42,7 @@ import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.bridge.render.AxoWindow;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.util.Util;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
@@ -52,6 +53,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.locale.I18n;
 import net.minecraft.resource.Identifier;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -92,20 +95,6 @@ public class PlatformImplInternalMixin {
 	@Overwrite
 	public static BridgeVersion getBridgeApiVersion() {
 		return BridgeVersion.V1_8;
-	}
-
-
-	/**
-	 * @author Flowey
-	 * @reason Implement bridge platform.
-	 */
-	@Overwrite
-	public static AxoItemStack createItemStack(AxoItem item, int count) {
-		if (count == 0 || item == AxoItems.AIR) {
-			return new ItemStack(Item.byBlock(Blocks.STONE), 0);
-		}
-
-		return new ItemStack((Item) item, count);
 	}
 
 	/**
@@ -170,7 +159,38 @@ public class PlatformImplInternalMixin {
 	 * @reason Implement bridge platform.
 	 */
 	@Overwrite
-	public static AxoSprite getTexture(GraphicsOption option) {
+	public static AxoItemStack createItemStack(AxoItem item, int count) {
+		if (count == 0 || item == AxoItems.AIR) {
+			return new ItemStack(Item.byBlock(Blocks.STONE), 0);
+		}
+
+		return new ItemStack((Item) item, count);
+	}
+
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static AxoSprite createTexture(GraphicsOption option) {
 		return new AxoSpriteImpl.Config(option);
+	}
+
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static AxoText.Mutable createLiteral(String text) {
+		return new LiteralText(text);
+	}
+
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static AxoText.Mutable createTranslatable(String key, Object... args) {
+		return new TranslatableText(key, args);
 	}
 }
