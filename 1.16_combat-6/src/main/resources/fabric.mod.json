@@ -80,7 +80,7 @@
 				"io/github/axolotlclient/bridge/key/AxoKey"
 			],
 			"net/minecraft/class_2561": [
-				"io/github/axolotlclient/bridge/util/AxoText"
+				"io/github/axolotlclient/bridge/util/AxoText\u0024Mutable"
 			],
 			"net/minecraft/class_4587": [
 				"io/github/axolotlclient/bridge/render/AxoRenderContext"
@@ -93,6 +93,9 @@
 			],
 			"net/minecraft/class_1291": [
 				"io/github/axolotlclient/bridge/entity/effect/AxoStatusEffect"
+			],
+			"net/minecraft/class_2583": [
+				"io/github/axolotlclient/bridge/util/AxoText\u0024Style"
 			]
 		}
 	},

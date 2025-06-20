@@ -35,7 +35,7 @@ public abstract class StyleMixin implements AxoText.Style {
 
 	@Override
 	public AxoText.Style br$color(AxoText.Color color) {
-		return setColor(switch (color) {
+		return copy().setColor(switch (color) {
 			case BLACK -> Formatting.BLACK;
 			case DARK_BLUE -> Formatting.DARK_BLUE;
 			case DARK_GREEN -> Formatting.DARK_GREEN;
@@ -57,13 +57,14 @@ public abstract class StyleMixin implements AxoText.Style {
 
 	@Override
 	public AxoText.Style br$color(int color) {
-		axolotlclient$color = color;
-		return this;
+		final var copy = copy();
+		((StyleMixin) (Object) copy).axolotlclient$color = color;
+		return copy;
 	}
 
 	@Override
 	public AxoText.Style br$tooltip(AxoText text) {
-		return setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, (Text) text));
+		return copy().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, (Text) text));
 	}
 
 	@Inject(method = "asString", at = @At(value = "INVOKE", target = "Lnet/minecraft/text/Style;isBold()Z"))

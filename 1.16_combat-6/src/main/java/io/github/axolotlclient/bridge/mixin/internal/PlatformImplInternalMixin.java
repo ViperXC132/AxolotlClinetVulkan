@@ -39,6 +39,7 @@ import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.bridge.render.AxoWindow;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
@@ -49,6 +50,8 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
@@ -176,5 +179,23 @@ public class PlatformImplInternalMixin {
 	@Overwrite
 	public static AxoStatusEffectInstance createStatusEffectInstance(AxoStatusEffect effect, int duration) {
 		return new StatusEffectInstance((StatusEffect) effect, duration);
+	}
+
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static AxoText.Mutable createLiteral(String text) {
+		return new LiteralText(text);
+	}
+
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static AxoText.Mutable createTranslatable(String key, Object... args) {
+		return new TranslatableText(key, args);
 	}
 }

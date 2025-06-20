@@ -52,22 +52,27 @@ public interface TextMixin extends AxoText.Mutable {
 	@Shadow
 	List<Text> getSiblings();
 
+	@Override
 	default Mutable br$append(AxoText child) {
 		return append((Text) child);
 	}
 
+	@Override
 	default Mutable br$setStyle(Style style) {
 		return setStyle((net.minecraft.text.Style) style);
 	}
 
+	@Override
 	default String br$getRawString() {
 		return getString();
 	}
 
+	@Override
 	default AxoText.Mutable br$copy() {
 		return copy();
 	}
 
+	@Override
 	default void br$visit(BiConsumer<String, AxoText.Style> handler) {
 		handler.accept(getContent(), getStyle());
 
@@ -76,6 +81,7 @@ public interface TextMixin extends AxoText.Mutable {
 		}
 	}
 
+	@Override
 	default AxoText.Style br$getStyle() {
 		return getStyle();
 	}

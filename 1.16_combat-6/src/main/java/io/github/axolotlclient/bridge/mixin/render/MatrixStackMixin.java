@@ -30,11 +30,13 @@ import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoSprite;
+import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.ItemUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -107,6 +109,11 @@ public abstract class MatrixStackMixin implements AxoRenderContext {
 	// string rendering
 	public int br$drawString(String value, int x, int y, int color, boolean shadow) {
 		return DrawUtil.drawString(((MatrixStack) (Object) this), value, x, y, color, shadow);
+	}
+
+	@Override
+	public int br$drawString(AxoText value, int x, int y, int color, boolean shadow) {
+		return DrawUtil.drawText(((MatrixStack) (Object) this), (Text) value, x, y, color, shadow);
 	}
 
 	public void br$fillRect(int x, int y, int width, int height, int color) {
