@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.mixin.commands;
 
+import io.github.axolotlclient.bridge.impl.commands.CommandsImpl;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -29,7 +30,6 @@ import java.util.stream.Stream;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import io.github.axolotlclient.commands.ClientCommands;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.ChatScreen;
 import org.jetbrains.annotations.Nullable;
@@ -56,7 +56,7 @@ public abstract class ChatScreenMixin {
 		)
 	)
 	private void prepareClientSideSuggestions(String partialMessage, String nextWord, CallbackInfo ci) {
-		lcu$clientSuggestions = ClientCommands.getCompletionsClient(partialMessage);
+		lcu$clientSuggestions = CommandsImpl.getInstance().getCompletionsClient(partialMessage);
 	}
 
 	@WrapMethod(method = "setMessageHistory")

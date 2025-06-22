@@ -22,7 +22,7 @@
 
 package io.github.axolotlclient.mixin.commands;
 
-import io.github.axolotlclient.commands.ClientCommands;
+import io.github.axolotlclient.bridge.impl.commands.CommandsImpl;
 import net.minecraft.client.entity.living.player.LocalClientPlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -37,7 +37,7 @@ public abstract class LocalClientPlayerEntityMixin {
 		cancellable = true
 	)
 	private void handleChatEvents(String string, CallbackInfo ci) {
-		if (ClientCommands.dispatchClient(string)) {
+		if (CommandsImpl.getInstance().dispatchClient(string)) {
 			ci.cancel();
 		}
 	}

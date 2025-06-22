@@ -107,6 +107,8 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 
 		LOGGER.debug("Debug Output enabled, Logs will be quite verbose!");
 		LOGGER.info("AxolotlClient Initialized");
+
+		Bridge.postInit();
 	}
 
 	@Override

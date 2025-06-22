@@ -35,12 +35,14 @@ import io.github.axolotlclient.bridge.key.AxoKey;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import io.github.axolotlclient.bridge.render.AxoWindow;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -143,4 +145,22 @@ public class PlatformImplInternalMixin {
     public static AxoIdentifier createIdentifier(String ns, String path) {
         return ResourceLocation.fromNamespaceAndPath(ns, path);
     }
+
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static AxoText.Mutable createLiteral(String text) {
+		return Component.literal(text);
+	}
+
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static AxoText.Mutable createTranslatable(String key, Object... args) {
+		return Component.translatable(key, args);
+	}
 }

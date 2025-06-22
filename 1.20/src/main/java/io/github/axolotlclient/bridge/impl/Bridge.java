@@ -22,14 +22,22 @@
 
 package io.github.axolotlclient.bridge.impl;
 
+import com.mojang.brigadier.CommandDispatcher;
+import io.github.axolotlclient.bridge.commands.AxoClientCmdSrcStack;
+import io.github.axolotlclient.bridge.commands.Commands;
 import io.github.axolotlclient.bridge.events.Events;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 
 public class Bridge {
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public static void init() {
 		ClientLifecycleEvents.CLIENT_STARTED.register(minecraft -> Events.CLIENT_START.invoker().run());
 		ClientLifecycleEvents.CLIENT_STOPPING.register(minecraft -> Events.CLIENT_STOP.invoker().run());
 		ClientTickEvents.END_CLIENT_TICK.register(minecraft -> Events.TICK.invoker().run());
+
+		ClientCommandRegistrationCallback.EVENT.register((commandDispatcher, commandBuildContext) ->
+			Events.COMMAND_REGISTER.invoker().accept(() -> (CommandDispatcher) commandDispatcher));
 	}
 }

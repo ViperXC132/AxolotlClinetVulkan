@@ -22,7 +22,9 @@
 
 package io.github.axolotlclient.bridge.impl;
 
+import com.mojang.brigadier.CommandDispatcher;
 import io.github.axolotlclient.bridge.events.Events;
+import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 
@@ -31,5 +33,12 @@ public class Bridge {
 		ClientLifecycleEvents.CLIENT_STARTED.register(minecraft -> Events.CLIENT_START.invoker().run());
 		ClientLifecycleEvents.CLIENT_STOPPING.register(minecraft -> Events.CLIENT_STOP.invoker().run());
 		ClientTickEvents.END_CLIENT_TICK.register(minecraft -> Events.TICK.invoker().run());
+	}
+
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public static void postInit() {
+		Events.COMMAND_REGISTER.invoker().accept(
+			() -> (CommandDispatcher) ClientCommandManager.DISPATCHER
+		);
 	}
 }

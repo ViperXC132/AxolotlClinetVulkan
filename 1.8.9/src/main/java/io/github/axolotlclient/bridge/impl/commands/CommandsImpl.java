@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -20,31 +20,46 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.commands;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
+package io.github.axolotlclient.bridge.impl.commands;
 
 import com.google.common.base.Preconditions;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandExceptionType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.brigadier.tree.LiteralCommandNode;
+import io.github.axolotlclient.bridge.commands.AxoClientCmdSrcStack;
+import io.github.axolotlclient.bridge.commands.Commands;
+import io.github.axolotlclient.bridge.util.AxoText;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
+import net.minecraft.server.command.source.CommandSource;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class ClientCommands {
+public class CommandsImpl implements Commands {
+	public record SourceStack(CommandSource origin) implements AxoClientCmdSrcStack {
+		@Override
+		public void sendError(AxoText text) {
+			origin.sendMessage((Text) text);
+		}
+
+		@Override
+		public void sendFeedback(AxoText text) {
+			origin.sendMessage((Text) text);
+		}
+	}
+
 	@Getter
-	private static final CommandDispatcher<ClientCommandInfo> DISPATCHER = new CommandDispatcher<>();
-	private static final Logger LOGGER = LogManager.getLogger("ClientCommandHandler");
+	private static final CommandsImpl instance = new CommandsImpl();
+	@Getter
+	private final CommandDispatcher<AxoClientCmdSrcStack> dispatcher = new CommandDispatcher<>();
+	private final Logger logger = LogManager.getLogger("ClientCommandHandler");
 
 	private static boolean isIgnoredException(CommandExceptionType type) {
 		return type == CommandSyntaxException.BUILT_IN_EXCEPTIONS.dispatcherUnknownCommand() ||
@@ -52,71 +67,53 @@ public class ClientCommands {
 	}
 
 	private static Text getErrorMessage(CommandSyntaxException e) {
-		Text message = new LiteralText(e.getMessage());
 		String context = e.getContext();
 		return context != null ?
-			new TranslatableText("lcu.command.parse_error", message, e.getCursor(), context) : message;
+			new TranslatableText("lcu.command.parse_error", e.getMessage(), e.getCursor(), context) : new LiteralText(e.getMessage());
 	}
 
-	private static ClientCommandInfo buildClientSource(Minecraft client) {
+	private static SourceStack buildClientSource(Minecraft client) {
 		Preconditions.checkState(client.player != null);
-
-		return new ClientCommandInfo(
-			client.player,
-			client,
-			Objects.requireNonNull(client.world),
-			client.player,
-			client.player.getSourcePos(),
-			client.player.yaw,
-			client.player.pitch
-		);
+		return new SourceStack(client.player);
 	}
 
-	public static boolean dispatchClient(String command) {
+	public boolean dispatchClient(String command) {
 		if (!command.startsWith("/")) {
 			return false;
 		}
 
 		Minecraft client = Minecraft.getInstance();
-		ClientCommandInfo source = buildClientSource(client);
+		final var source = buildClientSource(client);
 		// cancel if present
 		command = command.trim().substring(1);
 
 		try {
-			DISPATCHER.execute(command, source);
+			dispatcher.execute(command, source);
 			return true;
 		} catch (CommandSyntaxException e) {
-			if (ClientCommands.isIgnoredException(e.getType())) {
+			if (isIgnoredException(e.getType())) {
 				return false;
 			}
 
-			ClientCommands.LOGGER.warn("Syntax exception for command '{}'", command, e);
-			source.getOrigin().sendMessage(ClientCommands.getErrorMessage(e));
+			logger.warn("Syntax exception for command '{}'", command, e);
+			source.origin().sendMessage(getErrorMessage(e));
 			return true;
 		} catch (Exception e) {
-			ClientCommands.LOGGER.warn("Error while executing command '{}'", command, e);
-			source.getOrigin().sendMessage(new LiteralText(e.getMessage() == null ? "" : e.getMessage()));
+			logger.warn("Error while executing command '{}'", command, e);
+			source.origin().sendMessage(new LiteralText(e.getMessage() == null ? "" : e.getMessage()));
 			return true;
 		}
 	}
 
-	public static CompletableFuture<List<String>> getCompletionsClient(String command) {
+	public CompletableFuture<List<String>> getCompletionsClient(String command) {
 		Minecraft client = Minecraft.getInstance();
 
 		String command0 = command.startsWith("/") ? command.substring(1) : command;
-		return DISPATCHER.getCompletionSuggestions(DISPATCHER.parse(command0, buildClientSource(client)))
+		return dispatcher.getCompletionSuggestions(dispatcher.parse(command0, buildClientSource(client)))
 			.thenApply(suggestions -> suggestions.getList()
 				.stream()
 				.map(x -> command0.contains(" ") ? x.getText() : "/" + x.getText())
 				.toList()
 			);
-	}
-
-	public static LiteralArgumentBuilder<ClientCommandInfo> literal(String arg) {
-		return LiteralArgumentBuilder.literal(arg);
-	}
-
-	public static <T> RequiredArgumentBuilder<ClientCommandInfo, T> argument(String arg, ArgumentType<T> type) {
-		return RequiredArgumentBuilder.argument(arg, type);
 	}
 }

@@ -23,9 +23,52 @@
 package io.github.axolotlclient.bridge.mixin.util;
 
 import io.github.axolotlclient.bridge.util.AxoText;
+import java.util.Optional;
+import java.util.function.BiConsumer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(Component.class)
-public interface TextMixin extends AxoText {
+@Mixin(MutableComponent.class)
+public abstract class TextMixin implements Component, AxoText.Mutable {
+    @Shadow
+    public abstract MutableComponent append(Component sibling);
+
+    @Shadow
+    public abstract MutableComponent setStyle(net.minecraft.network.chat.Style style);
+
+    @Override
+    public Mutable br$append(AxoText child) {
+        return append((Component) child);
+    }
+
+    @Override
+    public Mutable br$setStyle(Style style) {
+        // can't shadow setStyle because of stupid mapping bug...
+        return setStyle((net.minecraft.network.chat.Style) style);
+    }
+
+    @Override
+    public String br$getRawString() {
+        return getString();
+    }
+
+    @Override
+    public Mutable br$copy() {
+        return copy();
+    }
+
+    @Override
+    public void br$visit(BiConsumer<String, Style> handler) {
+        visit((style, asString) -> {
+            handler.accept(asString, style);
+            return Optional.empty();
+        }, net.minecraft.network.chat.Style.EMPTY);
+    }
+
+    @Override
+    public Style br$getStyle() {
+        return getStyle();
+    }
 }

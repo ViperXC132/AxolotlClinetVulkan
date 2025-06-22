@@ -251,7 +251,7 @@ public class StatsMod implements AbstractHypixelMod {
 					} else {
 						HypixelAbstractionLayer.getInstance().getPlayerDataApi().getAsync(s.get()).whenCompleteAsync((playerData, throwable) -> {
 							if (playerData.isEmpty()) {
-								c.getSource().sendError(translatable("playerstats.error.failed_data"));
+								c.getSource().sendError(translatable("playerstats.error.failed_data").br$color(RED));
 								return;
 							}
 

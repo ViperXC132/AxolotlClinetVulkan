@@ -23,11 +23,12 @@
 package io.github.axolotlclient.bridge.mixin.util;
 
 import io.github.axolotlclient.bridge.util.AxoText;
-import net.minecraft.text.HoverEvent;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.text.TextColor;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -37,31 +38,30 @@ public abstract class StyleMixin implements AxoText.Style {
 	public abstract Style withColor(TextColor par1);
 
 	@Shadow
-	public abstract Style withFormatting(Formatting par1);
-
+	public abstract Style withHoverEvent(HoverEvent par1);
 
 	@Shadow
-	public abstract Style withHoverEvent(HoverEvent par1);
+	public abstract Style withColor(@Nullable ChatFormatting formatting);
 
 	@Override
 	public AxoText.Style br$color(AxoText.Color color) {
-		return withFormatting(switch (color) {
-			case BLACK -> Formatting.BLACK;
-			case DARK_BLUE -> Formatting.DARK_BLUE;
-			case DARK_GREEN -> Formatting.DARK_GREEN;
-			case DARK_AQUA -> Formatting.DARK_AQUA;
-			case DARK_RED -> Formatting.DARK_RED;
-			case DARK_PURPLE -> Formatting.DARK_PURPLE;
-			case GOLD -> Formatting.GOLD;
-			case GRAY -> Formatting.GRAY;
-			case DARK_GRAY -> Formatting.DARK_GRAY;
-			case BLUE -> Formatting.BLUE;
-			case GREEN -> Formatting.GREEN;
-			case AQUA -> Formatting.AQUA;
-			case RED -> Formatting.RED;
-			case LIGHT_PURPLE -> Formatting.LIGHT_PURPLE;
-			case YELLOW -> Formatting.YELLOW;
-			case WHITE -> Formatting.WHITE;
+		return withColor(switch (color) {
+			case BLACK -> ChatFormatting.BLACK;
+			case DARK_BLUE -> ChatFormatting.DARK_BLUE;
+			case DARK_GREEN -> ChatFormatting.DARK_GREEN;
+			case DARK_AQUA -> ChatFormatting.DARK_AQUA;
+			case DARK_RED -> ChatFormatting.DARK_RED;
+			case DARK_PURPLE -> ChatFormatting.DARK_PURPLE;
+			case GOLD -> ChatFormatting.GOLD;
+			case GRAY -> ChatFormatting.GRAY;
+			case DARK_GRAY -> ChatFormatting.DARK_GRAY;
+			case BLUE -> ChatFormatting.BLUE;
+			case GREEN -> ChatFormatting.GREEN;
+			case AQUA -> ChatFormatting.AQUA;
+			case RED -> ChatFormatting.RED;
+			case LIGHT_PURPLE -> ChatFormatting.LIGHT_PURPLE;
+			case YELLOW -> ChatFormatting.YELLOW;
+			case WHITE -> ChatFormatting.WHITE;
 		});
 	}
 
@@ -72,6 +72,6 @@ public abstract class StyleMixin implements AxoText.Style {
 
 	@Override
 	public AxoText.Style br$tooltip(AxoText text) {
-		return withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, (Text) text));
+		return withHoverEvent(new HoverEvent.ShowText((Component) text));
 	}
 }

@@ -40,5 +40,7 @@ public interface Commands {
 
 	CommandDispatcher<AxoClientCmdSrcStack> getDispatcher();
 
-	LiteralCommandNode<AxoClientCmdSrcStack> register(LiteralArgumentBuilder<AxoClientCmdSrcStack> node);
+	default LiteralCommandNode<AxoClientCmdSrcStack> register(LiteralArgumentBuilder<AxoClientCmdSrcStack> node) {
+		return getDispatcher().register(node);
+	}
 }

@@ -25,6 +25,7 @@ package io.github.axolotlclient.bridge.impl;
 import com.google.common.base.Preconditions;
 import io.github.axolotlclient.bridge.events.EventBus;
 import io.github.axolotlclient.bridge.events.Events;
+import io.github.axolotlclient.bridge.impl.commands.CommandsImpl;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,4 +73,8 @@ public class Bridge {
 		MinecraftClientEvents.STOP.register(minecraft -> Events.CLIENT_STOP.invoker().run());
 		MinecraftClientEvents.TICK_END.register(minecraft -> Events.TICK.invoker().run());
 	}
+
+    public static void postInit() {
+		Events.COMMAND_REGISTER.invoker().accept(CommandsImpl.getInstance());
+    }
 }
