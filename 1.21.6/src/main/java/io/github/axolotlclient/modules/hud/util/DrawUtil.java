@@ -59,16 +59,15 @@ public class DrawUtil {
 	public static void drawCenteredString(GuiGraphics graphics, Font renderer, String text, int x, int y, int color, boolean shadow) {
 		if (shadow) {
 			graphics.drawCenteredString(renderer, text, x, y, color);
-		} else drawString(graphics, text, (float) (x - renderer.width(text) / 2), (float) y, color, shadow);
+		} else drawString(graphics, text, (x - renderer.width(text) / 2), y, color, shadow);
 	}
 
-
-	public static int drawString(GuiGraphics graphics, String text, float x, float y, int color, boolean shadow) {
-		graphics.drawString(Minecraft.getInstance().font, text, (int) x, (int) y, color, shadow);
-		return Minecraft.getInstance().font.width(text);
+	public static int drawString(GuiGraphics graphics, String text, int x, int y, int color, boolean shadow) {
+		graphics.drawString(Minecraft.getInstance().font, text, x, y, color, shadow);
+		return x + Minecraft.getInstance().font.width(text);
 	}
 
-	public static int drawString(GuiGraphics graphics, String text, float x, float y, Color color, boolean shadow) {
+	public static int drawString(GuiGraphics graphics, String text, int x, int y, Color color, boolean shadow) {
 		return drawString(graphics, text, x, y, color.toInt(), shadow);
 	}
 }

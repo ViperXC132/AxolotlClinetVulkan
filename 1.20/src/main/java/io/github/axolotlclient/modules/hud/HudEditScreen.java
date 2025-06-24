@@ -245,6 +245,8 @@ public class HudEditScreen extends Screen {
 		current = null;
 		snap = null;
 		mouseDown = false;
+		mode = ModificationMode.NONE;
+		setCursor(DEFAULT_CURSOR);
 		return super.mouseReleased(mouseX, mouseY, button);
 	}
 

@@ -60,7 +60,7 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 	private final IntegerOption decimalPlaces = new IntegerOption("decimalplaces", 0, 0, 15);
 	private final BooleanOption minimal = new BooleanOption("minimal", false);
 	private final BooleanOption biome = new BooleanOption("show_biome", false);
-	private final StringOption delimiter = new StringOption("coordshud.delimiter", ": ");
+	private final StringOption delimiter = new StringOption("coordshud.delimiter", " ");
 	private final StringOption separator = new StringOption("coordshud.separator", ", ");
 	private final ColorOption separatorColor = new ColorOption("coordshud.separator.color", firstColor.getDefault());
 
@@ -141,8 +141,8 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		Font textRenderer = client.font;
 		int width, height;
 		int xStart = pos.x() + 2;
+		int currPos = xStart;
 		if (minimal.get()) {
-			int currPos = xStart;
 			String separator = this.separator.get();
 			currPos = DrawUtil.drawString(graphics, "XYZ" + delimiter.get(), currPos, pos.y() + 2, firstColor.get().toInt(), shadow.get());
 			currPos = DrawUtil.drawString(graphics, df.format(x), currPos, pos.y() + 2, secondColor.get().toInt(),
@@ -158,20 +158,24 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		} else {
 			int xEnd;
 			int yEnd = pos.y() + 2;
-			graphics.drawString(textRenderer, "X", xStart, yEnd, firstColor.get().toInt(), shadow.get());
-			xEnd = DrawUtil.drawString(graphics, df.format(x), pos.x() + 11, yEnd,
+			String del = delimiter.get();
+			currPos = drawString(graphics, "X" + del, currPos, yEnd, firstColor.get().toInt(), shadow.get());
+			xEnd = DrawUtil.drawString(graphics, df.format(x), currPos, yEnd,
 				secondColor.get().toInt(), shadow.get());
-			yEnd += 10;
 
-			graphics.drawString(textRenderer, "Y", xStart, yEnd, firstColor.get().toInt(), shadow.get());
-			xEnd = Math.max(xEnd, DrawUtil.drawString(graphics, df.format(y), pos.x() + 11, yEnd,
+			yEnd += 10;
+			currPos = xStart;
+
+			currPos = drawString(graphics, "Y" + del, currPos, yEnd, firstColor.get().toInt(), shadow.get());
+			xEnd = Math.max(xEnd, DrawUtil.drawString(graphics, df.format(y), currPos, yEnd,
 				secondColor.get().toInt(), shadow.get()));
 
 			yEnd += 10;
+			currPos = xStart;
 
-			graphics.drawString(textRenderer, "Z", xStart, yEnd, firstColor.get().toInt(), shadow.get());
+			currPos = drawString(graphics, "Z" + del, currPos, yEnd, firstColor.get().toInt(), shadow.get());
 
-			xEnd = Math.max(xEnd, DrawUtil.drawString(graphics, df.format(z), pos.x() + 11, yEnd,
+			xEnd = Math.max(xEnd, DrawUtil.drawString(graphics, df.format(z), currPos, yEnd,
 				secondColor.get().toInt(), shadow.get()));
 
 			yEnd += 10;
@@ -191,8 +195,7 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		}
 		if (biome.get() && y >= client.level.getMinY() && y < client.level.getMaxY()) {
 			BlockPos b = new BlockPos(Mth.floor(x), Mth.floor(y), Mth.floor(z));
-			int bX = DrawUtil.drawString(graphics, I18n.get("coordshud.biome"), xStart, height + pos.y(), firstColor.get().toInt(), shadow.get());
-			bX += 5;
+			int bX = DrawUtil.drawString(graphics, I18n.get("coordshud.biome") + delimiter.get(), xStart, height + pos.y(), firstColor.get().toInt(), shadow.get());
 			width = Math.max(width + pos.x() - 1, DrawUtil.drawString(graphics, getBiomeName(this.client.level.getBiome(b).unwrap().left().orElse(null)), bX, height + pos.y(), secondColor.get().toInt(), shadow.get())) - pos.x() + 1;
 			height += 10;
 		}
@@ -272,8 +275,8 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		Font textRenderer = client.font;
 		int width, height;
 		int xStart = pos.x() + 2;
+		int currPos = xStart;
 		if (minimal.get()) {
-			int currPos = xStart;
 			String separator = this.separator.get();
 			currPos = DrawUtil.drawString(graphics, "XYZ" + delimiter.get(), currPos, pos.y() + 2, firstColor.get().toInt(), shadow.get());
 			currPos = DrawUtil.drawString(graphics, df.format(x), currPos, pos.y() + 2, secondColor.get().toInt(),
@@ -289,20 +292,23 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		} else {
 			int xEnd;
 			int yEnd = pos.y() + 2;
-			graphics.drawString(textRenderer, "X", xStart, yEnd, firstColor.get().toInt(), shadow.get());
-			xEnd = DrawUtil.drawString(graphics, df.format(x), pos.x() + 11, yEnd,
+			String del = delimiter.get();
+			currPos = drawString(graphics, "X" + del, currPos, yEnd, firstColor.get().toInt(), shadow.get());
+			xEnd = DrawUtil.drawString(graphics, df.format(x), currPos, yEnd,
 				secondColor.get().toInt(), shadow.get());
 			yEnd += 10;
+			currPos = xStart;
 
-			graphics.drawString(textRenderer, "Y", xStart, yEnd, firstColor.get().toInt(), shadow.get());
-			xEnd = Math.max(xEnd, DrawUtil.drawString(graphics, df.format(y), pos.x() + 11, yEnd,
+			currPos = drawString(graphics, "Y" + del, currPos, yEnd, firstColor.get().toInt(), shadow.get());
+			xEnd = Math.max(xEnd, DrawUtil.drawString(graphics, df.format(y), currPos, yEnd,
 				secondColor.get().toInt(), shadow.get()));
 
 			yEnd += 10;
+			currPos = xStart;
 
-			graphics.drawString(textRenderer, "Z", xStart, yEnd, firstColor.get().toInt(), shadow.get());
+			currPos = drawString(graphics, "Z" + del, currPos, yEnd, firstColor.get().toInt(), shadow.get());
 
-			xEnd = Math.max(xEnd, DrawUtil.drawString(graphics, df.format(z), pos.x() + 11, yEnd,
+			xEnd = Math.max(xEnd, DrawUtil.drawString(graphics, df.format(z), currPos, yEnd,
 				secondColor.get().toInt(), shadow.get()));
 
 			yEnd += 10;
@@ -321,8 +327,7 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 			height = yEnd + 1 - pos.y();
 		}
 		if (biome.get()) {
-			int bX = DrawUtil.drawString(graphics, I18n.get("coordshud.biome"), xStart, height + pos.y(), firstColor.get().toInt(), shadow.get());
-			bX += 5;
+			int bX = DrawUtil.drawString(graphics, I18n.get("coordshud.biome") + delimiter.get(), xStart, height + pos.y(), firstColor.get().toInt(), shadow.get());
 			width = Math.max(width + pos.x() - 1, DrawUtil.drawString(graphics, getBiomeName(Biomes.PLAINS), bX, height + pos.y(), secondColor.get().toInt(), shadow.get())) - pos.x() + 1;
 			height += 10;
 		}
