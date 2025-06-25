@@ -53,11 +53,11 @@ public class Tablist extends AbstractModule {
 	public final BooleanOption backgroundEnabled = new BooleanOption("enable_background", true);
 	public final BooleanOption customBackgroundColor = new BooleanOption("custom_background_color", false);
 	public final ColorOption backgroundColor = new ColorOption("bgcolor", new Color(Integer.MIN_VALUE));
-	private final OptionCategory tablist = OptionCategory.create("tablist");
+	public final OptionCategory tablist = OptionCategory.create("tablist");
 
 	@Override
 	public void init() {
-		tablist.add(numericalPing, smallPingText, showPlayerHeads, shadow, alwaysShowHeadLayer);
+		tablist.add(numericalPing, smallPingText, showPlayerHeads, shadow, showHeader, showFooter, alwaysShowHeadLayer);
 		tablist.add(pingColor0, pingColor1, pingColor2, pingColor3, pingColor4, pingColor5);
 		tablist.add(backgroundEnabled, customBackgroundColor, backgroundColor);
 
