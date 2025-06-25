@@ -167,7 +167,6 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 			currPos = xStart;
 
 			currPos = drawString("Z" + del, currPos, yEnd, firstColor.get().toInt(), shadow.get());
-
 			xEnd = Math.max(xEnd, drawString(df.format(z), currPos, yEnd,
 				secondColor.get().toInt(), shadow.get()));
 
@@ -273,7 +272,6 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 			currPos = xStart;
 
 			currPos = drawString("Z" + del, currPos, yEnd, firstColor.get().toInt(), shadow.get());
-
 			xEnd = Math.max(xEnd, drawString(df.format(z), currPos, yEnd,
 				secondColor.get().toInt(), shadow.get()));
 

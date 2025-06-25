@@ -217,7 +217,8 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		}
 		String path = biome.getValue().getPath();
 		if (!biome.getValue().getNamespace().equals("minecraft")) {
-			path += "(" + biome.getValue().getNamespace() + ")";
+			String namespace = biome.getValue().getNamespace();
+			path += " (" + Character.toTitleCase(namespace.charAt(0)) + namespace.substring(1) + ")";
 		}
 		final String str = path.replace("_", " ");
 		if (str.isEmpty()) {
@@ -290,23 +291,22 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		} else {
 			int xEnd;
 			int yEnd = pos.y() + 2;
-			graphics.drawText(textRenderer, "X", xStart, yEnd, firstColor.get().toInt(), shadow.get());
-			xEnd = graphics.drawText(textRenderer, df.format(x), pos.x() + 11, yEnd,
+			currPos = graphics.drawText(textRenderer, "X", currPos, yEnd, firstColor.get().toInt(), shadow.get());
+			xEnd = graphics.drawText(textRenderer, df.format(x), currPos, yEnd,
 				secondColor.get().toInt(), shadow.get());
 
 			yEnd += 10;
 			currPos = xStart;
 
-			graphics.drawText(textRenderer, "Y", xStart, yEnd, firstColor.get().toInt(), shadow.get());
-			xEnd = Math.max(xEnd, graphics.drawText(textRenderer, df.format(y), pos.x() + 11, yEnd,
+			currPos = graphics.drawText(textRenderer, "Y", currPos, yEnd, firstColor.get().toInt(), shadow.get());
+			xEnd = Math.max(xEnd, graphics.drawText(textRenderer, df.format(y), currPos, yEnd,
 				secondColor.get().toInt(), shadow.get()));
 
 			yEnd += 10;
 			currPos = xStart;
 
-			graphics.drawText(textRenderer, "Z", xStart, yEnd, firstColor.get().toInt(), shadow.get());
-
-			xEnd = Math.max(xEnd, graphics.drawText(textRenderer, df.format(z), pos.x() + 11, yEnd,
+			currPos = graphics.drawText(textRenderer, "Z", currPos, yEnd, firstColor.get().toInt(), shadow.get());
+			xEnd = Math.max(xEnd, graphics.drawText(textRenderer, df.format(z), currPos, yEnd,
 				secondColor.get().toInt(), shadow.get()));
 
 			yEnd += 10;
