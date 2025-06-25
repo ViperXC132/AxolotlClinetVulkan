@@ -771,5 +771,6 @@
 	"hud.entry.name": "HUD Entry: %s",
 	"hud.entry.usage": "Press Space to enter movement mode. Press Enter to open this module's options.",
 	"hud.entry.usage.move": "Press Escape or Space to exit movement mode, use arrow keys to move this HUD. Press Enter to open this module's options.",
-	"toggle_fullbright": "Toggle FullBright"
+	"toggle_fullbright": "Toggle FullBright",
+	"inventoryhud": "Inventory HUD"
 }
