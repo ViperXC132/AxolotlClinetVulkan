@@ -164,7 +164,7 @@ public class AxolotlClient implements ClientModInitializer {
 							json.add("api.category", apiOptions);
 						}
 
-						apiOptions.addProperty("api.privacy_policy_accepted", "privacy_policy_state."+hiddenOptions.get("privacyPolicyAccepted").getAsString().toLowerCase(Locale.ROOT));
+						apiOptions.addProperty("api.privacy_policy_accepted", "privacy_policy_state." + hiddenOptions.get("privacyPolicyAccepted").getAsString().toLowerCase(Locale.ROOT));
 					}
 				}
 				return json;
