@@ -705,7 +705,7 @@
     "playerstats.bedwars.summary_short": "» Ratio Victoires/Défaites : %s/%s (%s)",
     "playerstats.error.api_disabled": "L'API n'est pas activée !",
     "playerstats.error.unknown_player": "Joueur inconnu !",
-    "playerstats.error.api_unauthenticated": "L'API n'est pas authentifiée !",
+    "api.error.unauthenticated": "L'API n'est pas authentifiée !",
     "playerstats.error.failed_data": "Échec de la récupération des données du joueur !",
     "playerstats.bedwars.solo": "Solo",
     "playerstats.bedwars.duos": "Duos",
