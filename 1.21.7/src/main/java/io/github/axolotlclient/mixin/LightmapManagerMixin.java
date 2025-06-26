@@ -25,23 +25,17 @@ package io.github.axolotlclient.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.AxolotlClient;
-import net.minecraft.client.OptionInstance;
-import net.minecraft.client.Options;
 import net.minecraft.client.renderer.LightTexture;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(LightTexture.class)
 public abstract class LightmapManagerMixin {
-	private static final OptionInstance<Double> fullBright = new OptionInstance<>("options.gamma", OptionInstance.noTooltip(), (optionText, value) -> optionText,
-		OptionInstance.UnitDouble.INSTANCE, 15D, value -> {
-	}
-	);
 
-	@WrapOperation(method = "updateLightTexture", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Options;gamma()Lnet/minecraft/client/OptionInstance;"))
-	public OptionInstance<Double> axolotlclient$fullBright(Options instance, Operation<OptionInstance<Double>> original) {
+	@WrapOperation(method = "updateLightTexture", at = @At(value = "INVOKE", target = "Ljava/lang/Double;floatValue()F", ordinal = 1))
+	public float axolotlclient$fullBright(Double instance, Operation<Float> original) {
 		if (AxolotlClient.CONFIG.fullBright.get())
-			return fullBright;
+			return 15;
 		return original.call(instance);
 	}
 }

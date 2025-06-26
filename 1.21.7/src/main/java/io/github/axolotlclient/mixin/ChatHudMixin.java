@@ -46,28 +46,4 @@ public abstract class ChatHudMixin {
 		}
 		original.call(chatComponent, headerSignature, tag);
 	}
-
-	/*@ModifyVariable(
-		method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;Lnet/minecraft/client/GuiMessageTag;)V",
-		at = @At("HEAD"), index = 1, argsOnly = true)
-	private Component axolotlclient$onChatMessage(Component message, @Cancellable CallbackInfo ci) {
-		ReceiveChatMessageEvent event = new ReceiveChatMessageEvent(false, message.getString(), message);
-		Events.RECEIVE_CHAT_MESSAGE_EVENT.invoker().invoke(event);
-		if (event.isCancelled()) {
-			ci.cancel();
-			return null;
-		} else if (event.getNewMessage() != null) {
-			return event.getNewMessage();
-		}
-		return message;
-	}*/
-
-	/*@ModifyArg(
-		method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;Lnet/minecraft/client/GuiMessageTag;)V",
-		at = @At(value = "INVOKE",
-			target = "Lnet/minecraft/client/GuiMessage;<init>(ILnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;Lnet/minecraft/client/GuiMessageTag;)V"),
-		index = 1)
-	private Component axolotlclient$editChat(Component content) {
-		return NickHider.getInstance().editMessage(content);
-	}*/
 }

@@ -122,12 +122,13 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 		int prevLength = bossBars.size();
 		bossBars = ((BossBarHudAccessor) client.gui.getBossOverlay()).axolotlclient$getBossBars();
 		if (bossBars != null && bossBars.size() != prevLength) {
-			if (bossBars.size() == 0) {
+			if (bossBars.isEmpty()) {
 				// Just leave it alone, it's not rendering anyway
 				return;
 			}
 			// Update height
 			setHeight(12 + prevLength * 19);
+			onBoundsUpdate();
 		}
 	}
 

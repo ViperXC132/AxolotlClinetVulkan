@@ -36,7 +36,6 @@
 		"LivingEntityMixin",
 		"LivingEntityRendererMixin",
 		"MinecraftClientAccessor",
-		"MinecraftClientMainMixin",
 		"MinecraftClientMixin",
 		"ModStatusMixin",
 		"MouseMixin",

@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.simple.ComboHud;
 import io.github.axolotlclient.modules.hud.gui.hud.simple.ReachHud;
@@ -64,12 +65,12 @@ public abstract class PlayerEntityMixin extends Entity {
 		}
 	}
 
-	@Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/player/PlayerEntity;addCritParticles(Lnet/minecraft/entity/Entity;)V"))
-	public void axolotlclient$alwaysCrit(Entity entity, CallbackInfo ci) {
-		if (Particles.getInstance().getAlwaysOn(ParticleType.CRIT)) {
+	@Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/player/PlayerEntity;setAttackTarget(Lnet/minecraft/entity/Entity;)V"))
+	public void axolotlclient$alwaysCrit(Entity entity, CallbackInfo ci, @Local(ordinal = 0) boolean bl, @Local(ordinal = 1) float g) {
+		if (Particles.getInstance().getAlwaysOn(ParticleType.CRIT) && !bl) {
 			Minecraft.getInstance().player.addCritParticles(entity);
 		}
-		if (Particles.getInstance().getAlwaysOn(ParticleType.CRIT_MAGIC)) {
+		if (Particles.getInstance().getAlwaysOn(ParticleType.CRIT_MAGIC) && (g > 0)) {
 			Minecraft.getInstance().player.addEnchantedCritParticles(entity);
 		}
 	}
