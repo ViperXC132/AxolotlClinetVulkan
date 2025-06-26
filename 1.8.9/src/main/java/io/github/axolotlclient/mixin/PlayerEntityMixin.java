@@ -70,7 +70,7 @@ public abstract class PlayerEntityMixin extends Entity {
 		if (Particles.getInstance().getAlwaysOn(ParticleType.CRIT) && !bl) {
 			Minecraft.getInstance().player.addCritParticles(entity);
 		}
-		if (Particles.getInstance().getAlwaysOn(ParticleType.CRIT_MAGIC) && (g > 0)) {
+		if (Particles.getInstance().getAlwaysOn(ParticleType.CRIT_MAGIC) && !(g > 0)) {
 			Minecraft.getInstance().player.addEnchantedCritParticles(entity);
 		}
 	}
