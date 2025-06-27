@@ -69,7 +69,8 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 	private final ColorOption timerTextColor = new ColorOption("potionshud.timer_text_color", Color.parse("#7F7F7F"));
 
 	public PotionsHud() {
-		super(50, 200, false);
+		super(50, 200, true);
+		background = new BooleanOption("background", false);
 	}
 
 	@Override
@@ -82,7 +83,8 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 	}
 
 	private void renderEffects(GuiGraphics graphics, List<MobEffectInstance> effects, float tickDelta) {
-		int calcWidth = calculateWidth(effects);
+		float tickrate = client.level != null ? client.level.tickRateManager().tickrate() : 1;
+		int calcWidth = calculateWidth(effects, tickrate);
 		int calcHeight = calculateHeight(effects);
 		boolean changed = false;
 		if (calcWidth != width) {
@@ -105,54 +107,62 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 		for (int i = 0; i < effects.size(); i++) {
 			MobEffectInstance effect = effects.get(direction.getDirection() == -1 ? i : effects.size() - i - 1);
 			if (direction.isXAxis()) {
-				renderPotion(graphics, effect, x + lastPos + 1, y + 1, tickDelta);
-				lastPos += (iconsOnly.get() ? 20 : (showEffectName.get() ? 20 + client.font.width(
-					effect.getEffect().value().getDisplayName().copy().append(CommonComponents.SPACE)
-						.append(Util.toRoman(effect.getAmplifier() + 1))) : 50));
+				renderPotion(graphics, effect, x + lastPos + 1, y + 1, tickrate);
+				int nameWidth = 0;
+				if (!iconsOnly.get()) {
+					nameWidth += client.font.width(MobEffectUtil.formatDuration(effect, 1, tickrate)) + 1;
+					if (showEffectName.get()) {
+						nameWidth = Math.max(nameWidth, client.font.width(
+							effect.getEffect().value().getDisplayName().copy().append(CommonComponents.SPACE)
+								.append(Util.toRoman(effect.getAmplifier() + 1))));
+					}
+				}
+				lastPos += 20 + nameWidth;
 			} else {
-				renderPotion(graphics, effect, x + 1, y + 1 + lastPos, tickDelta);
+				renderPotion(graphics, effect, x + 1, y + 1 + lastPos, tickrate);
 				lastPos += 20;
 			}
 		}
 	}
 
-	private int calculateWidth(List<MobEffectInstance> effects) {
+	private int calculateWidth(List<MobEffectInstance> effects, float tickrate) {
 		if ((order.get()).isXAxis()) {
 			if (iconsOnly.get()) {
 				return 20 * effects.size() + 2;
 			}
 			if (!showEffectName.get()) {
-				return 50 * effects.size() + 2;
+				return effects.stream().map(effect -> MobEffectUtil.formatDuration(effect, 1, tickrate))
+					.mapToInt(client.font::width).map(i -> i + 20).sum() + 3;
 			}
-			return effects.stream().map(effect -> Component.translatable(effect.getDescriptionId()).append(" ")
-				.append(Util.toRoman(effect.getAmplifier()))).mapToInt(client.font::width).map(i -> i + 20).sum() + 2;
+			return effects.stream().map(effect -> effect.getEffect().value().getDisplayName().copy().append(CommonComponents.SPACE)
+				.append(Util.toRoman(effect.getAmplifier() + 1))).mapToInt(client.font::width).map(i -> i + 20).sum() + 2;
 		} else {
 			if (iconsOnly.get()) {
 				return 20;
 			}
 			if (!showEffectName.get()) {
-				return 50;
+				return effects.stream().map(effect -> MobEffectUtil.formatDuration(effect, 1, tickrate))
+					.mapToInt(client.font::width).max().orElse(0) + 22;
 			}
-			return effects.stream().map(effect -> Component.translatable(effect.getDescriptionId()).append(" ")
-				.append(Util.toRoman(effect.getAmplifier()))).map(client.font::width).max(Integer::compare).orElse(38) +
+			return effects.stream().map(effect -> effect.getEffect().value().getDisplayName().copy().append(CommonComponents.SPACE)
+				.append(Util.toRoman(effect.getAmplifier() + 1))).mapToInt(client.font::width).max().orElse(0) +
 				22;
 		}
 	}
 
 	private int calculateHeight(List<MobEffectInstance> effects) {
 		if ((order.get()).isXAxis()) {
-			return 22;
+			return 20;
 		} else {
 			return 20 * effects.size() + 2;
 		}
 	}
 
-	private void renderPotion(GuiGraphics graphics, MobEffectInstance effect, int x, int y, float tickDelta) {
+	private void renderPotion(GuiGraphics graphics, MobEffectInstance effect, int x, int y, float tickrate) {
 		Holder<MobEffect> type = effect.getEffect();
 
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, Gui.getMobEffectSprite(type), x, y, 18, 18);
 		if (!iconsOnly.get()) {
-			float tickrate = client.level != null ? client.level.tickRateManager().tickrate() : 1;
 			if (showEffectName.get()) {
 				Component string = effect.getEffect().value().getDisplayName().copy().append(CommonComponents.SPACE)
 					.append(Util.toRoman(effect.getAmplifier() + 1));
