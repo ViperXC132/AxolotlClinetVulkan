@@ -73,7 +73,7 @@ public class ToggleSprintHud extends SimpleTextHudEntry {
 	private String text = "";
 
 	public ToggleSprintHud() {
-		super(100, 20, false);
+		super(100);
 	}
 
 	@Override
@@ -126,11 +126,6 @@ public class ToggleSprintHud extends SimpleTextHudEntry {
 		options.add(randomPlaceholder);
 		options.add(placeholder);
 		return options;
-	}
-
-	@Override
-	public boolean movable() {
-		return true;
 	}
 
 	@Override

@@ -53,7 +53,7 @@ public class IPHud extends TextHudEntry implements DynamicallyPositionable {
 	private final BooleanOption showIcon = new BooleanOption("iphud.show_icon", false);
 	private NativeImageBackedTexture icon;
 	private Identifier iconId;
-	private final IntegerOption height = new IntegerOption("iphud.height", 13, 9, 64);
+	private final IntegerOption height = new IntegerOption("hud.height", 13, 9, 64);
 	private final EnumOption<AnchorPoint> anchor = new EnumOption<>("anchorpoint", AnchorPoint.class,
 		AnchorPoint.TOP_LEFT);
 

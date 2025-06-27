@@ -675,7 +675,7 @@
 	"keystrokes.stroke.add.special": "Add Special Stroke",
 	"mousemovementhud": "Mouse Movement HUD",
 	"iphud.show_icon": "Show Server Icon",
-	"iphud.height": "HUD Height",
+	"hud.height": "HUD Height",
 	"coordshud.delimiter": "Delimiter (Minimal Mode)",
 	"coordshud.separator": "Separator (Minimal Mode)",
 	"coordshud.separator.color": "Separator Color (Minimal Mode)",

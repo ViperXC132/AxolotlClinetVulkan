@@ -71,7 +71,7 @@ public class ToggleSprintHud extends SimpleTextHudEntry {
 	private String text = "";
 
 	public ToggleSprintHud() {
-		super(100, 20, false);
+		super(100);
 	}
 
 	@Override
