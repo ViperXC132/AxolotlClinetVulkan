@@ -24,6 +24,7 @@ package io.github.axolotlclient.mixin;
 
 import java.util.Objects;
 
+import io.github.axolotlclient.CommonOptions;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.APIOptions;
 import io.github.axolotlclient.api.ChatsSidebar;
@@ -73,7 +74,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 
 	@ModifyArgs(method = "initWidgets", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ButtonWidget;<init>(IIIILnet/minecraft/text/Text;Lnet/minecraft/client/gui/widget/ButtonWidget$PressAction;)V", ordinal = 3))
 	public void addClientOptionsButton(Args args) {
-		if (axolotlclient$hasModMenu())
+		if (!CommonOptions.gameMenuScreenOptionButtonMode.get().showButton())
 			return;
 
 		args.set(4, new TranslatableText("title_short"));

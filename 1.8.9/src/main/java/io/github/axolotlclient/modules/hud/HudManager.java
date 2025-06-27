@@ -129,8 +129,8 @@ public class HudManager extends AbstractModule {
 			entry.setEnabled(true);
 			entry.init();
 			entry.onBoundsUpdate();
-			entry.getAllOptions().includeInParentTree(false);
-			add(entry);
+			entries.put(entry.getId(), entry);
+			hudCategory.add(entry.getAllOptions(), false);
 			client.screen.resize(client, client.screen.width, client.screen.height);
 			saveCustomEntries();
 		}));
@@ -150,8 +150,8 @@ public class HudManager extends AbstractModule {
 							opt.fromSerializedValue((String) values.get(opt.getName()));
 						}
 					});
-					entry.getCategory().includeInParentTree(false);
-					add(entry);
+					entries.put(entry.getId(), entry);
+					hudCategory.add(entry.getAllOptions(), false);
 					entry.init();
 					entry.onBoundsUpdate();
 				});
@@ -242,8 +242,7 @@ public class HudManager extends AbstractModule {
 	public Optional<HudEntry> getEntryXY(int x, int y) {
 		for (HudEntry entry : getMoveableEntries()) {
 			Rectangle bounds = entry.getTrueBounds();
-			if (bounds.x() <= x && bounds.x() + bounds.width() >= x && bounds.y() <= y
-				&& bounds.y() + bounds.height() >= y) {
+			if (bounds.isMouseOver(x, y)) {
 				return Optional.of(entry);
 			}
 		}

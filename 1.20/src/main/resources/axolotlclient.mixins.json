@@ -59,6 +59,7 @@
 		"WorldListWidgetEntryMixin",
 		"WorldRendererAccessor",
 		"WorldRendererMixin",
+		"api.JoinMulitplayerScreenMixin",
 		"translation.TranslationStorageMixin"
 	],
 	"injectors": {

@@ -71,7 +71,8 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 	private final ColorOption timerTextColor = new ColorOption("potionshud.timer_text_color", Color.parse("#7F7F7F"));
 
 	public PotionsHud() {
-		super(50, 200, false);
+		super(50, 200, true);
+		background = new BooleanOption("background", false);
 	}
 
 	@Override
@@ -108,8 +109,16 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 			StatusEffectInstance effect = effects.get(direction.getDirection() == -1 ? i : effects.size() - i - 1);
 			if (direction.isXAxis()) {
 				renderPotion(matrices, effect, x + lastPos + 1, y + 1);
-				lastPos += (iconsOnly.get() ? 20 : (showEffectName.get() ? 20 + client.textRenderer.getWidth(new TranslatableText(effect.getTranslationKey()).append(" ")
-					.append(Util.toRoman(effect.getAmplifier() + 1))) : 50));
+				int nameWidth = 0;
+				if (!iconsOnly.get()) {
+					nameWidth += client.textRenderer.getWidth(StatusEffectUtil.durationToString(effect, 1)) + 1;
+					if (showEffectName.get()) {
+						nameWidth = Math.max(nameWidth, client.textRenderer.getWidth(
+							new TranslatableText(effect.getTranslationKey()).append(" ")
+								.append(Util.toRoman(effect.getAmplifier() + 1))));
+					}
+				}
+				lastPos += 20 + nameWidth;
 			} else {
 				renderPotion(matrices, effect, x + 1, y + 1 + lastPos);
 				lastPos += 20;
@@ -118,26 +127,27 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 	}
 
 	private int calculateWidth(List<StatusEffectInstance> effects) {
-		if (order.get().isXAxis()) {
+		if ((order.get()).isXAxis()) {
 			if (iconsOnly.get()) {
 				return 20 * effects.size() + 2;
 			}
 			if (!showEffectName.get()) {
-				return 50 * effects.size() + 2;
+				return effects.stream().map(effect -> StatusEffectUtil.durationToString(effect, 1))
+					.mapToInt(client.textRenderer::getWidth).map(i -> i + 20).sum() + 3;
 			}
-			return effects.stream()
-				.map(effect -> new TranslatableText(effect.getTranslationKey()).append(" ").append(Util.toRoman(effect.getAmplifier())))
-				.mapToInt(client.textRenderer::getWidth).map(i -> i + 20).sum() + 2;
+			return effects.stream().map(effect -> new TranslatableText(effect.getTranslationKey()).append(" ")
+				.append(Util.toRoman(effect.getAmplifier() + 1))).mapToInt(client.textRenderer::getWidth).map(i -> i + 20).sum() + 2;
 		} else {
 			if (iconsOnly.get()) {
 				return 20;
 			}
 			if (!showEffectName.get()) {
-				return 50;
+				return effects.stream().map(effect -> StatusEffectUtil.durationToString(effect, 1))
+					.mapToInt(client.textRenderer::getWidth).max().orElse(0) + 22;
 			}
-			return effects.stream()
-				.map(effect -> new TranslatableText(effect.getTranslationKey()).append(" ").append(Util.toRoman(effect.getAmplifier())))
-				.map(client.textRenderer::getWidth).max(Integer::compare).orElse(38) + 22;
+			return effects.stream().map(effect -> new TranslatableText(effect.getTranslationKey()).append(" ")
+				.append(Util.toRoman(effect.getAmplifier() + 1))).mapToInt(client.textRenderer::getWidth).max().orElse(0) +
+				22;
 		}
 	}
 

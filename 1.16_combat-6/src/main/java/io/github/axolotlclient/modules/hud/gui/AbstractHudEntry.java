@@ -63,6 +63,7 @@ public abstract class AbstractHudEntry extends DrawUtil implements HudEntry {
 	@Getter
 	protected int height;
 	@Setter
+	@Getter
 	protected boolean hovered = false;
 	private Rectangle trueBounds = null;
 	private Rectangle renderBounds = null;
@@ -113,6 +114,11 @@ public abstract class AbstractHudEntry extends DrawUtil implements HudEntry {
 	@Override
 	public float getScale() {
 		return scale.get().floatValue();
+	}
+
+	@Override
+	public void setScale(float scale) {
+		this.scale.set((double) scale);
 	}
 
 	public int getRawX() {

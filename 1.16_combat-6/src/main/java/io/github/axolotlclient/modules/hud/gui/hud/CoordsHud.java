@@ -56,7 +56,7 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 	private final IntegerOption decimalPlaces = new IntegerOption("decimalplaces", 0, 0, 15);
 	private final BooleanOption minimal = new BooleanOption("minimal", false);
 	private final BooleanOption biome = new BooleanOption("show_biome", false);
-	private final StringOption delimiter = new StringOption("coordshud.delimiter", ": ");
+	private final StringOption delimiter = new StringOption("coordshud.delimiter", " ");
 	private final StringOption separator = new StringOption("coordshud.separator", ", ");
 	private final ColorOption separatorColor = new ColorOption("coordshud.separator.color", firstColor.getDefault());
 
@@ -135,8 +135,8 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		String direction = getWordedDirection(dir);
 		int width, height;
 		int xStart = pos.x() + 2;
+		int currPos = xStart;
 		if (minimal.get()) {
-			int currPos = xStart;
 			String separator = this.separator.get();
 			currPos = drawString(matrices, "XYZ" + delimiter.get(), currPos, pos.y() + 2, firstColor.get().toInt(), shadow.get());
 			currPos = drawString(matrices, df.format(x), currPos, pos.y() + 2, secondColor.get().toInt(),
@@ -152,20 +152,23 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		} else {
 			int xEnd;
 			int yEnd = pos.y() + 2;
-			drawString(matrices, "X", xStart, yEnd, firstColor.get().toInt(), shadow.get());
-			xEnd = drawString(matrices, df.format(x), pos.x() + 11, yEnd,
+			String del = delimiter.get();
+			currPos = drawString(matrices, "X" + del, currPos, yEnd, firstColor.get().toInt(), shadow.get());
+			xEnd = drawString(matrices, df.format(x), currPos, yEnd,
 				secondColor.get().toInt(), shadow.get());
-			yEnd += 10;
 
-			drawString(matrices, "Y", xStart, yEnd, firstColor.get().toInt(), shadow.get());
-			xEnd = Math.max(xEnd, drawString(matrices, df.format(y), pos.x() + 11, yEnd,
+			yEnd += 10;
+			currPos = xStart;
+
+			currPos = drawString(matrices, "Y" + del, currPos, yEnd, firstColor.get().toInt(), shadow.get());
+			xEnd = Math.max(xEnd, drawString(matrices, df.format(y), currPos, yEnd,
 				secondColor.get().toInt(), shadow.get()));
 
 			yEnd += 10;
+			currPos = xStart;
 
-			drawString(matrices, "Z", xStart, yEnd, firstColor.get().toInt(), shadow.get());
-
-			xEnd = Math.max(xEnd, drawString(matrices, df.format(z), pos.x() + 11, yEnd,
+			currPos = drawString(matrices, "Z" + del, currPos, yEnd, firstColor.get().toInt(), shadow.get());
+			xEnd = Math.max(xEnd, drawString(matrices, df.format(z), currPos, yEnd,
 				secondColor.get().toInt(), shadow.get()));
 
 			yEnd += 10;
@@ -185,8 +188,7 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		}
 		if (biome.get() && y >= 0 && y < 256) {
 			BlockPos b = new BlockPos(x, y, z);
-			int bX = drawString(matrices, I18n.translate("coordshud.biome"), xStart, height + pos.y(), firstColor.get().toInt(), shadow.get());
-			bX += 5;
+			int bX = drawString(matrices, I18n.translate("coordshud.biome") + delimiter.get(), xStart, height + pos.y(), firstColor.get().toInt(), shadow.get());
 			width = Math.max(width + pos.x() - 1, drawString(matrices, getBiomeName(this.client.world.getRegistryManager().get(Registry.BIOME_KEY).getId(this.client.world.getBiome(b))), bX, height + pos.y(), secondColor.get().toInt(), shadow.get())) - pos.x() + 1;
 			height += 10;
 		}
@@ -210,7 +212,8 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		}
 		String path = biome.getPath();
 		if (!biome.getNamespace().equals("minecraft")) {
-			path += "(" + biome.getNamespace() + ")";
+			String namespace = biome.getNamespace();
+			path += " (" + Character.toTitleCase(namespace.charAt(0)) + namespace.substring(1) + ")";
 		}
 		final String str = path.replace("_", " ");
 		if (str.isEmpty()) {
@@ -265,8 +268,8 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		String direction = getWordedDirection(dir);
 		int width, height;
 		int xStart = pos.x() + 2;
+		int currPos = xStart;
 		if (minimal.get()) {
-			int currPos = xStart;
 			String separator = this.separator.get();
 			currPos = drawString(matrices, "XYZ" + delimiter.get(), currPos, pos.y() + 2, firstColor.get().toInt(), shadow.get());
 			currPos = drawString(matrices, df.format(x), currPos, pos.y() + 2, secondColor.get().toInt(),
@@ -282,20 +285,23 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		} else {
 			int xEnd;
 			int yEnd = pos.y() + 2;
-			drawString(matrices, "X", xStart, yEnd, firstColor.get().toInt(), shadow.get());
-			xEnd = drawString(matrices, df.format(x), pos.x() + 11, yEnd,
+			String del = delimiter.get();
+			currPos = drawString(matrices, "X" + del, currPos, yEnd, firstColor.get().toInt(), shadow.get());
+			xEnd = drawString(matrices, df.format(x), currPos, yEnd,
 				secondColor.get().toInt(), shadow.get());
-			yEnd += 10;
 
-			drawString(matrices, "Y", xStart, yEnd, firstColor.get().toInt(), shadow.get());
-			xEnd = Math.max(xEnd, drawString(matrices, df.format(y), pos.x() + 11, yEnd,
+			yEnd += 10;
+			currPos = xStart;
+
+			currPos = drawString(matrices, "Y" + del, currPos, yEnd, firstColor.get().toInt(), shadow.get());
+			xEnd = Math.max(xEnd, drawString(matrices, df.format(y), currPos, yEnd,
 				secondColor.get().toInt(), shadow.get()));
 
 			yEnd += 10;
+			currPos = xStart;
 
-			drawString(matrices, "Z", xStart, yEnd, firstColor.get().toInt(), shadow.get());
-
-			xEnd = Math.max(xEnd, drawString(matrices, df.format(z), pos.x() + 11, yEnd,
+			currPos = drawString(matrices, "Z" + del, currPos, yEnd, firstColor.get().toInt(), shadow.get());
+			xEnd = Math.max(xEnd, drawString(matrices, df.format(z), currPos, yEnd,
 				secondColor.get().toInt(), shadow.get()));
 
 			yEnd += 10;
@@ -314,8 +320,7 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 			height = yEnd + 1 - pos.y();
 		}
 		if (biome.get()) {
-			int bX = drawString(matrices, I18n.translate("coordshud.biome"), xStart, height + pos.y(), firstColor.get().toInt(), shadow.get());
-			bX += 5;
+			int bX = drawString(matrices, I18n.translate("coordshud.biome") + delimiter.get(), xStart, height + pos.y(), firstColor.get().toInt(), shadow.get());
 			width = Math.max(width + pos.x() - 1, drawString(matrices, getBiomeName(BiomeKeys.PLAINS.getValue()), bX, height + pos.y(), secondColor.get().toInt(), shadow.get())) - pos.x() + 1;
 			height += 10;
 		}

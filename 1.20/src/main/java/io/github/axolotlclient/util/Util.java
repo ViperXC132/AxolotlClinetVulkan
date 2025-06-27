@@ -141,12 +141,19 @@ public class Util {
 		String[] arr = formattedString.split("§");
 
 		List<Formatting> modifiers = new ArrayList<>();
-		for (String s : arr) {
-			Formatting formatting = Formatting.byCode(!s.isEmpty() ? s.charAt(0) : 0);
+		for (int i = 0, length = arr.length; i < length; i++) {
+			String s = arr[i];
+			if (s.isEmpty()) {
+				continue;
+			} else if (i == 0) {
+				text.append(s);
+				continue;
+			}
+			Formatting formatting = Formatting.byCode(s.charAt(0));
 			if (formatting != null && formatting.isModifier()) {
 				modifiers.add(formatting);
 			}
-			MutableText part = Text.literal(!s.isEmpty() ? s.substring(1) : "");
+			MutableText part = Text.literal(formatting != null ? s.substring(1) : s);
 			if (formatting != null) {
 				part.formatted(formatting);
 

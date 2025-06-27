@@ -221,7 +221,7 @@ public class StatsMod implements AbstractHypixelMod {
 					return -1;
 				}
 				if (!API.getInstance().isAuthenticated()) {
-					c.getSource().sendMessage(Formatting.RED + I18n.translate("playerstats.error.api_unauthenticated"));
+					c.getSource().sendMessage(Formatting.RED + I18n.translate("api.error.unauthenticated"));
 					return -1;
 				}
 

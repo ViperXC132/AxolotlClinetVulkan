@@ -23,10 +23,41 @@
 package io.github.axolotlclient;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
+import net.fabricmc.loader.api.FabricLoader;
 
 public class CommonOptions {
 	public static final StringOption datetimeFormat = new StringOption("datetime_format", "yyyy/MM/dd HH:mm:ss", s -> AxolotlClientCommon.getInstance().formatter = DateTimeFormatter.ofPattern(s));
+
+	public static final EnumOption<MenuButtonMode> titleScreenOptionButtonMode = new EnumOption<>("title_screen_button_mode", MenuButtonMode.class, MenuButtonMode.MODMENU);
+	public static final EnumOption<MenuButtonMode> gameMenuScreenOptionButtonMode = new EnumOption<>("game_menu_screen_button_mode", MenuButtonMode.class, MenuButtonMode.MODMENU);
+	public enum MenuButtonMode {
+		DISABLED,
+		MODMENU () {
+			@Override
+			public boolean showButton() {
+				return !(FabricLoader.getInstance().isModLoaded("modmenu") && !FabricLoader.getInstance().isModLoaded("axolotlclient-modmenu"));
+			}
+		},
+		ALWAYS() {
+			@Override
+			public boolean showButton() {
+				return true;
+			}
+		}
+		;
+
+		@Override
+		public String toString() {
+			return "menu_button_mode."+super.toString().toLowerCase(Locale.ROOT);
+		}
+
+		public boolean showButton() {
+			return false;
+		}
+	}
 
 }

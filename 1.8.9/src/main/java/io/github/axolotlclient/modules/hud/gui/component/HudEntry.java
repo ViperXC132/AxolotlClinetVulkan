@@ -62,4 +62,6 @@ public interface HudEntry extends Identifiable, Configurable, Positionable {
 	void renderPlaceholder(float delta);
 
 	void setHovered(boolean hovered);
+
+	boolean isHovered();
 }

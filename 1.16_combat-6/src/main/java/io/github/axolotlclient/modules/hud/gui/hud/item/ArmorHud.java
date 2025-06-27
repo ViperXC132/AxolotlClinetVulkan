@@ -25,6 +25,7 @@ package io.github.axolotlclient.modules.hud.gui.hud.item;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
@@ -80,7 +81,9 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		boolean boundsChanged = false;
 		boolean showDurability = showDurabilityNumber.get();
 		boolean showMaxDurability = showMaxDurabilityNumber.get();
-		int labelWidth = showDurability || showMaxDurability ? Stream.concat(Stream.of(client.player.inventory.getMainHandStack()), client.player.inventory.armor.stream())
+		int labelWidth = showDurability || showMaxDurability ? Stream.concat(Stream.of(mainHandItemPosition.get() == MainHandItemPosition.DISABLED ? null :
+				client.player.inventory.getMainHandStack()), client.player.inventory.armor.stream())
+			.filter(Objects::nonNull)
 			.map(stack -> showDurability && showMaxDurability ? (stack.getMaxDamage() - stack.getDamage()) + "/" + stack.getMaxDamage() : String.valueOf((showDurability ? stack.getMaxDamage() - stack.getDamage() : stack.getMaxDamage())))
 			.mapToInt(text -> client.textRenderer.getWidth(text) + 2).max().orElse(0) : 0;
 		width += labelWidth;
@@ -107,6 +110,7 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		}
 		for (int i = 0; i <= 3; i++) {
 			ItemStack stack = client.player.inventory.getArmorStack(i).copy();
+			String label = null;
 			if (showProtLvl.get() && stack.hasEnchantments()) {
 				ListTag nbtList = stack.getEnchantments();
 				if (nbtList != null) {
@@ -114,12 +118,12 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 						int enchantId = nbtList.getCompound(k).getShort("id");
 						int level = nbtList.getCompound(k).getShort("lvl");
 						if (enchantId == 0 && Enchantment.byRawId(enchantId) != null) {
-							stack.setCount(level);
+							label = String.valueOf(level);
 						}
 					}
 				}
 			}
-			renderItem(matrices, stack, pos.x() + 2, lastY + pos.y(), labelWidth);
+			renderItem(matrices, stack, pos.x() + 2, lastY + pos.y(), labelWidth, label);
 			lastY = lastY - 20;
 		}
 		if (mainHandItemTop == MainHandItemPosition.TOP) {
@@ -139,11 +143,11 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 			shadow.get());
 	}
 
-	public void renderItem(MatrixStack matrices, ItemStack stack, int x, int y, int offset) {
+	public void renderItem(MatrixStack matrices, ItemStack stack, int x, int y, int offset, String labelOverride) {
 		renderDurabilityNumber(matrices, stack, x, y);
 		x += offset;
 		ItemUtil.renderGuiItemModel(getScale(), stack, x, y);
-		ItemUtil.renderGuiItemOverlay(matrices, client.textRenderer, stack, x, y, null, textColor.get().toInt(),
+		ItemUtil.renderGuiItemOverlay(matrices, client.textRenderer, stack, x, y, labelOverride, textColor.get().toInt(),
 			shadow.get());
 	}
 
@@ -197,16 +201,16 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		}
 		int lastY = 2 + (height-20);
 		if (mainHandItemTop == MainHandItemPosition.BOTTOM) {
-			renderItem(matrices, placeholderStacks[4], pos.x() + 2, pos.y() + lastY, labelWidth);
+			renderItem(matrices, placeholderStacks[4], pos.x() + 2, pos.y() + lastY, labelWidth, null);
 			lastY = lastY - 20;
 		}
 		for (int i = 0; i <= 3; i++) {
 			ItemStack item = placeholderStacks[i];
-			renderItem(matrices, item, pos.x() + 2, lastY + pos.y(), labelWidth);
+			renderItem(matrices, item, pos.x() + 2, lastY + pos.y(), labelWidth, null);
 			lastY = lastY - 20;
 		}
 		if (mainHandItemTop == MainHandItemPosition.TOP) {
-			renderItem(matrices, placeholderStacks[4], pos.x() + 2, pos.y() + lastY, labelWidth);
+			renderItem(matrices, placeholderStacks[4], pos.x() + 2, pos.y() + lastY, labelWidth, null);
 		}
 	}
 

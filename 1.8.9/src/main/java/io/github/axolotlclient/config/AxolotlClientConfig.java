@@ -40,6 +40,9 @@ import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import io.github.axolotlclient.util.options.GenericOption;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.options.KeyBinding;
+import net.ornithemc.osl.keybinds.api.KeyBindingEvents;
+import net.ornithemc.osl.lifecycle.api.client.MinecraftClientEvents;
 import org.lwjgl.glfw.GLFW;
 
 public class AxolotlClientConfig {
@@ -84,11 +87,15 @@ public class AxolotlClientConfig {
 	public final BooleanOption creditsBGM = new BooleanOption("creditsBGM", true);
 	public final BooleanOption customWindowTitle = new BooleanOption("customWindowTitle", true);
 
+	public final BooleanOption scaleTitles = new BooleanOption("titles.scaling", false);
+	public final IntegerOption titlePadding = new IntegerOption("titles.padding", 4, 1, 10);
+
 	public final OptionCategory general = OptionCategory.create("general");
 	public final OptionCategory nametagOptions = OptionCategory.create("nametagOptions");
 	public final OptionCategory rendering = OptionCategory.create("rendering");
 	public final OptionCategory outlines = OptionCategory.create("blockOutlines");
 	public final OptionCategory timeChanger = OptionCategory.create("timeChanger");
+	public final OptionCategory titles = OptionCategory.create("titles");
 	@Getter
 	private final OptionCategory config = OptionCategory.create("config");
 
@@ -123,6 +130,8 @@ public class AxolotlClientConfig {
 		general.add(openCredits);
 		general.add(debugLogOutput);
 		general.add(CommonOptions.datetimeFormat);
+		general.add(CommonOptions.titleScreenOptionButtonMode);
+		general.add(CommonOptions.gameMenuScreenOptionButtonMode);
 		ConfigUI.getInstance().runWhenLoaded(() -> {
 			general.getOptions().removeIf(o -> "configStyle".equals(o.getName()));
 			String[] themes = ConfigUI.getInstance().getStyleNames().stream().map(s -> "configStyle." + s)
@@ -162,6 +171,8 @@ public class AxolotlClientConfig {
 		rendering.add(outlines);
 
 		rendering.add(noRain);
+		titles.add(scaleTitles, titlePadding);
+		rendering.add(titles);
 
 		AxolotlClient.config.add(creditsBGM);
 
@@ -172,6 +183,14 @@ public class AxolotlClientConfig {
 					System.setProperty("org.lwjgl.input.Mouse.disableRawInput", "true");
 				}
 				GLFWUtil.runUsingGlfwHandle(h -> GLFW.glfwSetInputMode(h, GLFW.GLFW_RAW_MOUSE_MOTION, rawMouseInput.get() ? 1 : 0));
+			}
+		});
+
+		var toggleFullbright = new KeyBinding("toggle_fullbright", 0, "category.axolotlclient");
+		KeyBindingEvents.REGISTER_KEYBINDS.register(reg -> reg.register(toggleFullbright));
+		MinecraftClientEvents.TICK_END.register(minecraft -> {
+			if (toggleFullbright.consumeClick()) {
+				fullBright.toggle();
 			}
 		});
 	}

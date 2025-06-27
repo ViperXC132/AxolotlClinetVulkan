@@ -47,7 +47,13 @@ public abstract class Accounts {
 		Path saveFile = getAccountsSaveFile();
 		if (Files.exists(legacy)) {
 			try {
-				Files.move(legacy, saveFile);
+				if (Files.exists(saveFile)) {
+					Files.move(legacy, legacy.resolveSibling("accounts.json.old"));
+					getLogger().info("Renaming legacy accounts save file since new one exists already.");
+				} else {
+					Files.createDirectories(saveFile.getParent());
+					Files.move(legacy, saveFile);
+				}
 			} catch (IOException e) {
 				getLogger().warn("Failed to move legacy accounts file to new location", e);
 			}

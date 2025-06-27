@@ -60,6 +60,7 @@
 		"WorldListWidgetEntryMixin",
 		"WorldRendererAccessor",
 		"WorldRendererMixin",
+		"api.JoinMulitplayerScreenMixin",
 		"translation.LanguageMixin"
 	],
 	"injectors": {

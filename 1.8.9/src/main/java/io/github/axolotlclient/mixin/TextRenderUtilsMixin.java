@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
@@ -78,7 +79,7 @@ public class TextRenderUtilsMixin {
 
 	@Inject(method = "wrapText", at = @At("HEAD"))
 	private static void reformatText(Text pText, int i, TextRenderer textRenderer, boolean bl, boolean bl2, CallbackInfoReturnable<List<Text>> cir, @Local(argsOnly = true) LocalRef<Text> text) {
-		text.set(formatFromCodes(text.get().getFormattedString()));
+		text.set(format(text.get()));
 	}
 
 	@Unique
@@ -95,17 +96,38 @@ public class TextRenderUtilsMixin {
 	}
 
 	@Unique
+	private static final Pattern CODE_PATTERN = Pattern.compile("§");
+
+	@Unique
+	private static Text format(Text text) {
+		var reformatted = formatFromCodes(text.getContent());
+		reformatted.setStyle(text.getStyle());
+		for (Text sib : text.getSiblings()) {
+			reformatted.append(format(sib));
+		}
+		return reformatted;
+	}
+
+	@Unique
 	private static Text formatFromCodes(String formattedString) {
 		Text text = new LiteralText("");
-		String[] arr = formattedString.split("§");
+		String[] arr = CODE_PATTERN.split(formattedString);
 
 		List<Formatting> modifiers = new ArrayList<>();
-		for (String s : arr) {
-			Formatting formatting = s.isEmpty() ? null : byCodeOfFirstChar(s);
+		for (int i = 0, length = arr.length; i < length; i++) {
+			String s = arr[i];
+			if (s.isEmpty()) {
+				continue;
+			} else if (i == 0) {
+				text.append(s);
+				continue;
+			}
+			Formatting formatting = byCodeOfFirstChar(s);
+
 			if (formatting != null && formatting.isModifier()) {
 				modifiers.add(formatting);
 			}
-			Text part = new LiteralText(!s.isEmpty() ? s.substring(1) : "");
+			Text part = new LiteralText(formatting != null ? s.substring(1) : s);
 			if (formatting != null) {
 				part.getStyle().setColor(formatting);
 
@@ -113,9 +135,10 @@ public class TextRenderUtilsMixin {
 					for (Formatting mod : modifiers) {
 						switch (mod) {
 							case OBFUSCATED -> part.getStyle().setObfuscated(true);
-							case BOLD ->  part.getStyle().setBold(true);
-							case ITALIC ->  part.getStyle().setItalic(true);
+							case BOLD -> part.getStyle().setBold(true);
+							case ITALIC -> part.getStyle().setItalic(true);
 							case UNDERLINE -> part.getStyle().setUnderlined(true);
+							case STRIKETHROUGH -> part.getStyle().setStrikethrough(true);
 							default -> AxolotlClient.LOGGER.warn("Unexpected modifier: " + mod);
 						}
 					}

@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -34,10 +35,14 @@ import java.util.stream.Stream;
 
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
+import io.github.axolotlclient.api.util.InstantTypeAdapter;
 
 public class GsonHelper {
 
-	public static final Gson GSON = new GsonBuilder().create();
+	public static final Gson GSON = new GsonBuilder()
+		.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+		.registerTypeAdapter(Instant.class, new InstantTypeAdapter())
+		.create();
 
 	public static JsonObject fromJson(String s) {
 		if (s == null || s.isEmpty()) {
@@ -59,8 +64,8 @@ public class GsonHelper {
 	}
 
 	public static Object read(JsonReader reader) throws IOException {
-		switch (reader.peek()) {
-			case BEGIN_ARRAY:
+		return switch (reader.peek()) {
+			case BEGIN_ARRAY -> {
 				List<Object> list = new ArrayList<>();
 
 				reader.beginArray();
@@ -71,8 +76,9 @@ public class GsonHelper {
 
 				reader.endArray();
 
-				return list;
-			case BEGIN_OBJECT:
+				yield list;
+			}
+			case BEGIN_OBJECT -> {
 				Map<String, Object> object = new LinkedHashMap<>();
 
 				reader.beginObject();
@@ -84,29 +90,23 @@ public class GsonHelper {
 
 				reader.endObject();
 
-				return object;
-			case STRING:
-				return reader.nextString();
-			case NUMBER:
+				yield object;
+			}
+			case STRING -> reader.nextString();
+			case NUMBER -> {
 				// Ugh.
 				String num = reader.nextString();
 				try {
-					return Long.parseLong(num);
+					yield Long.parseLong(num);
 				} catch (NumberFormatException e) {
-					return Double.parseDouble(num);
+					yield Double.parseDouble(num);
 				}
-			case BOOLEAN:
-				return reader.nextBoolean();
-			case NULL:
-				return null;
+			}
+			case BOOLEAN -> reader.nextBoolean();
+			case NULL -> null;
 			// Unused, probably a sign of malformed json
-			case NAME:
-			case END_DOCUMENT:
-			case END_ARRAY:
-			case END_OBJECT:
-			default:
-				throw new IllegalStateException();
-		}
+			default -> throw new IllegalStateException();
+		};
 	}
 
 	public static Stream<JsonElement> jsonArrayToStream(JsonArray array) {
