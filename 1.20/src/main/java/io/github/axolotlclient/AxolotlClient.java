@@ -30,6 +30,7 @@ import java.util.Locale;
 import com.google.gson.JsonObject;
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
+import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
 import io.github.axolotlclient.AxolotlClientConfig.impl.managers.VersionedJsonConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.api.API;
@@ -168,22 +169,23 @@ public class AxolotlClient implements ClientModInitializer {
 							json.add("api.category", apiOptions);
 						}
 
-						apiOptions.addProperty("api.privacy_policy_accepted", "privacy_policy_state."+hiddenOptions.get("privacyPolicyAccepted").getAsString().toLowerCase(Locale.ROOT));
+						apiOptions.addProperty("api.privacy_policy_accepted", "privacy_policy_state." + hiddenOptions.get("privacyPolicyAccepted").getAsString().toLowerCase(Locale.ROOT));
 					}
 				}
 				return json;
 			}));
-		configManager.load();
 		configManager.suppressName("x");
 		configManager.suppressName("y");
 		configManager.suppressName(config.getName());
 
-		modules.forEach(Module::lateInit);
+		ConfigUI.getInstance().runWhenLoaded(() -> {
+			modules.forEach(Module::lateInit);
 
-		ClientTickEvents.END_CLIENT_TICK.register(client -> modules.forEach(Module::tick));
-		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(SkyResourceManager.getInstance());
+			ClientTickEvents.END_CLIENT_TICK.register(client -> modules.forEach(Module::tick));
+			ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(SkyResourceManager.getInstance());
 
-		FeatureDisabler.init();
+			FeatureDisabler.init();
+		});
 
 		LOGGER.debug("Debug Output activated, Logs will be more verbose!");
 

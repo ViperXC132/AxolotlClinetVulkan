@@ -152,7 +152,7 @@ modrinth {
 	versionType = "release"
 	uploadFile = tasks.remapJar.get()
 	gameVersions.set(listOf("${project.property("minecraft_18")}"))
-	loaders.set(listOf("fabric", "quilt"))
+	loaders.set(listOf("ornithe"))
 	additionalFiles.set(listOf(tasks.remapSourcesJar))
 	dependencies {
 		required.project("osl")
