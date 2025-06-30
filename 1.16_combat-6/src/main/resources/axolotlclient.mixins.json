@@ -60,8 +60,8 @@
 		"WorldListWidgetEntryMixin",
 		"WorldRendererAccessor",
 		"WorldRendererMixin",
-		"translation.LanguageMixin",
-		"api.JoinMulitplayerScreenMixin"
+		"api.JoinMulitplayerScreenMixin",
+		"translation.LanguageMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

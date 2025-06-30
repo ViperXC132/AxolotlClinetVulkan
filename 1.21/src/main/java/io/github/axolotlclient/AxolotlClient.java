@@ -24,10 +24,10 @@ package io.github.axolotlclient;
 
 import io.github.axolotlclient.bridge.impl.Bridge;
 import io.github.axolotlclient.modules.hypixel.HypixelMods;
+import io.github.axolotlclient.util.FeatureDisabler;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
@@ -48,7 +48,6 @@ import io.github.axolotlclient.modules.scrollableTooltips.ScrollableTooltips;
 import io.github.axolotlclient.modules.tablist.Tablist;
 import io.github.axolotlclient.modules.tnttime.TntTime;
 import io.github.axolotlclient.modules.zoom.Zoom;
-import io.github.axolotlclient.util.FeatureDisabler;
 import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.LoggerImpl;
 import io.github.axolotlclient.util.notifications.Notifications;
@@ -100,10 +99,13 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 		init(LOGGER, Notifications.getInstance());
 		new API(LOGGER, I18n::translate, new StatusUpdateProviderImpl(), APIOptions.getInstance());
 
-		FeatureDisabler.init();
-
 		LOGGER.debug("Debug Output enabled, Logs will be quite verbose!");
 		LOGGER.info("AxolotlClient Initialized");
+	}
+
+	@Override
+	protected void initFeatureDisabler() {
+		FeatureDisabler.init();
 	}
 
 	@Override

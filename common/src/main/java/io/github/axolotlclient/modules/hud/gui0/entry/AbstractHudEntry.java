@@ -30,7 +30,7 @@ import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoWindow;
 import io.github.axolotlclient.modules.hud.gui0.component.HudEntry;
-import io.github.axolotlclient.modules.hud.util.DefaultOptions0;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.util.ClientColors;
@@ -49,11 +49,11 @@ import lombok.Setter;
  */
 public abstract class AbstractHudEntry implements HudEntry {
 	@Getter
-	protected final ForceableBooleanOption enabled = DefaultOptions0.getEnabled();
-	protected final DoubleOption scale = DefaultOptions0.getScale(this);
+	protected final ForceableBooleanOption enabled = DefaultOptions.getEnabled();
+	protected final DoubleOption scale = DefaultOptions.getScale(this);
 	protected final AxoMinecraftClient client = AxoMinecraftClient.getInstance();
-	private final DoubleOption x = DefaultOptions0.getX(getDefaultX(), this);
-	private final DoubleOption y = DefaultOptions0.getY(getDefaultY(), this);
+	private final DoubleOption x = DefaultOptions.getX(getDefaultX(), this);
+	private final DoubleOption y = DefaultOptions.getY(getDefaultY(), this);
 	@Setter
 	@Getter
 	protected int width;

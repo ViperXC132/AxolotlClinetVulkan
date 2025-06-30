@@ -169,6 +169,9 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 			if (chatWidget != null) {
 				chatWidget.setX(chatWidget.getX() - ANIM_STEP);
 			}
+			if (input != null) {
+				input.x -= ANIM_STEP;
+			}
 		} else {
 			if (list != null && !list.visible) {
 				list.visible = true;

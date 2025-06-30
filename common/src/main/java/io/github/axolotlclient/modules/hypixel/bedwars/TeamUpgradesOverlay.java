@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.modules.hypixel.bedwars;
 
+import java.util.List;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
@@ -31,7 +33,6 @@ import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hypixel.bedwars.upgrades.BedwarsTeamUpgrades;
 import io.github.axolotlclient.modules.hypixel.bedwars.upgrades.TeamUpgrade;
 import io.github.axolotlclient.modules.hypixel.bedwars.upgrades.TrapUpgrade;
-import java.util.List;
 
 /**
  * @author DarkKronicle

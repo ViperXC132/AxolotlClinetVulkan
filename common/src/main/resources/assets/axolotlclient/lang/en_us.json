@@ -675,7 +675,7 @@
 	"keystrokes.stroke.add.special": "Add Special Stroke",
 	"mousemovementhud": "Mouse Movement HUD",
 	"iphud.show_icon": "Show Server Icon",
-	"iphud.height": "HUD Height",
+	"hud.height": "HUD Height",
 	"coordshud.delimiter": "Delimiter (Minimal Mode)",
 	"coordshud.separator": "Separator (Minimal Mode)",
 	"coordshud.separator.color": "Separator Color (Minimal Mode)",
@@ -705,7 +705,7 @@
 	"playerstats.bedwars.summary_short": "» Win Loss Ratio: %s/%s (%s)",
 	"playerstats.error.api_disabled": "API is not enabled!",
 	"playerstats.error.unknown_player": "Unknown Player!",
-	"playerstats.error.api_unauthenticated": "API is not authenticated!",
+	"api.error.unauthenticated": "API is not authenticated!",
 	"playerstats.error.failed_data": "Failed to retrieve player data!",
 	"playerstats.bedwars.solo": "Solo",
 	"playerstats.bedwars.duos": "Duos",
@@ -771,5 +771,6 @@
 	"hud.entry.name": "HUD Entry: %s",
 	"hud.entry.usage": "Press Space to enter movement mode. Press Enter to open this module's options.",
 	"hud.entry.usage.move": "Press Escape or Space to exit movement mode, use arrow keys to move this HUD. Press Enter to open this module's options.",
-	"toggle_fullbright": "Toggle FullBright"
+	"toggle_fullbright": "Toggle FullBright",
+	"inventoryhud": "Inventory HUD"
 }

@@ -60,11 +60,8 @@ dependencies {
 
 	compileOnly("org.lwjgl:lwjgl-glfw:${lwjglVersion}")
 
-	modImplementation("io.github.moehreag:legacy-lwjgl3") {
-		version {
-			strictly("1.2.5+1.8.9")
-		}
-	}
+	modCompileOnly("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}")
+	modLocalRuntime("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}:all-remapped")
 
 	include(implementation("org.lwjgl", "lwjgl-tinyfd", "3.3.5"))
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", "3.3.5", classifier = "natives-linux"))
@@ -155,7 +152,7 @@ modrinth {
 	versionType = "release"
 	uploadFile = tasks.remapJar.get()
 	gameVersions.set(listOf("${project.property("minecraft_18")}"))
-	loaders.set(listOf("fabric", "quilt"))
+	loaders.set(listOf("ornithe"))
 	additionalFiles.set(listOf(tasks.remapSourcesJar))
 	dependencies {
 		required.project("osl")

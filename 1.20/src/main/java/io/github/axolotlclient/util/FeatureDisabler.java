@@ -23,7 +23,6 @@
 package io.github.axolotlclient.util;
 
 import io.github.axolotlclient.modules.hud.gui0.hud.simple.ToggleSprintHud;
-import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Objects;
@@ -35,6 +34,7 @@ import com.google.gson.JsonParser;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.freelook.Freelook;
 import io.github.axolotlclient.modules.hud.HudManager;
+import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.util.Identifier;

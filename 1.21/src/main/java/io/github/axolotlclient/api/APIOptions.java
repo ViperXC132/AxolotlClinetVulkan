@@ -77,6 +77,10 @@ public class APIOptions extends Options {
 		account.add(new GenericOption("api.account.usernames", "clickToOpen",
 			() -> client.setScreen(new UsernameManagementScreen(client.currentScreen))));
 		account.add(new GenericOption("api.account.export", "api.account.export_data", () -> ThreadExecuter.scheduleTask(() -> {
+			if (!API.getInstance().isAuthenticated()) {
+				API.getInstance().getNotificationProvider().addStatus("api.account.export.failure.title", "api.error.unauthenticated");
+				return;
+			}
 			try (MemoryStack stack = MemoryStack.stackPush()) {
 				var pointers = stack.mallocPointer(1);
 				pointers.put(stack.UTF8("*.json"));
@@ -91,14 +95,18 @@ public class APIOptions extends Options {
 			Screen previous = client.currentScreen;
 			client.setScreen(new ConfirmScreen(b -> {
 				if (b) {
-					AccountSettingsRequest.deleteAccount().thenAccept(r -> {
-						if (r) {
-							API.getInstance().getNotificationProvider().addStatus("api.account.deletion.success", "api.account.deletion.success.desc");
-						} else {
-							API.getInstance().getNotificationProvider().addStatus("api.account.deletion.failure", "api.account.deletion.failure.desc");
-						}
-						enabled.set(false);
-					});
+					if (!API.getInstance().isAuthenticated()) {
+						API.getInstance().getNotificationProvider().addStatus("api.account.deletion.failure", "api.error.unauthenticated");
+					} else {
+						AccountSettingsRequest.deleteAccount().thenAccept(r -> {
+							if (r) {
+								API.getInstance().getNotificationProvider().addStatus("api.account.deletion.success", "api.account.deletion.success.desc");
+							} else {
+								API.getInstance().getNotificationProvider().addStatus("api.account.deletion.failure", "api.account.deletion.failure.desc");
+							}
+							enabled.set(false);
+						});
+					}
 				}
 				client.setScreen(previous);
 			}, Text.translatable("api.account.confirm_deletion"), Text.translatable("api.account.confirm_deletion.desc")));

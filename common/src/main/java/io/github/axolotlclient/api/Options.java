@@ -91,7 +91,7 @@ public abstract class Options implements Module {
 
 	protected final OptionCategory category = OptionCategory.create("api.category");
 	protected final OptionCategory pluralkit = OptionCategory.create("api.pluralkit");
-	protected final OptionCategory account = OptionCategory.create("api.account").includeInParentTree(false);
+	protected final OptionCategory account = OptionCategory.create("api.account");
 
 	@Override
 	public void init() {
@@ -105,7 +105,8 @@ public abstract class Options implements Module {
 		pkToken.setMaxLength(65);
 		pluralkit.add(pkToken, autoproxy, autoproxyMode, autoproxyMember);
 		account.add(showRegistered, retainUsernames, showLastOnline, showActivity, allowFriendsImageAccess);
-		category.add(pluralkit, account);
+		category.add(pluralkit);
+		category.add(account, false);
 		category.add(enabled, privacyAccepted, friendRequestsEnabled, statusUpdateNotifs, channelInvitesEnabled, detailedLogging, updateNotifications, displayNotes, addShortcutButtons, allowFriendsServerJoin);
 	}
 
@@ -125,7 +126,7 @@ public abstract class Options implements Module {
 
 		@Override
 		public String toString() {
-			return "privacy_policy_state."+ super.toString().toLowerCase(Locale.ROOT);
+			return "privacy_policy_state." + super.toString().toLowerCase(Locale.ROOT);
 		}
 	}
 }

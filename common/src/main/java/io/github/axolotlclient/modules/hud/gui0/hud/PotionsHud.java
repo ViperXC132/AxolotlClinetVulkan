@@ -36,7 +36,7 @@ import io.github.axolotlclient.modules.hud.gui0.component.DynamicallyPositionabl
 import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.gui0.layout.CardinalOrder;
-import io.github.axolotlclient.modules.hud.util.DefaultOptions0;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,9 +52,9 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "potionshud");
 
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions0.getAnchorPoint();
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
 
-	private final EnumOption<CardinalOrder> order = DefaultOptions0.getCardinalOrder(CardinalOrder.TOP_DOWN);
+	private final EnumOption<CardinalOrder> order = DefaultOptions.getCardinalOrder(CardinalOrder.TOP_DOWN);
 
 	private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
 	private final BooleanOption showEffectName = new BooleanOption("showEffectNames", true);

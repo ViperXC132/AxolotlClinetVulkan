@@ -26,6 +26,7 @@ package io.github.axolotlclient;
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
 import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
+import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
 import io.github.axolotlclient.modules.hud.ClickInputTracker;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -177,7 +178,6 @@ public abstract class AxolotlClientCommon {
 
 		AxolotlClientConfig.getInstance().register(configManager);
 
-		configManager.load();
 		configManager.suppressName("x");
 		configManager.suppressName("y");
 		configManager.suppressName(config.hidden.getName());
@@ -198,10 +198,15 @@ public abstract class AxolotlClientCommon {
 
 		earlyModuleInit();
 		initConfig();
-		lateModuleInit();
+
+		ConfigUI.getInstance().runWhenLoaded(() -> {
+			lateModuleInit();
+			Events.TICK.register(() -> modules.forEach(Module::tick));
+			initFeatureDisabler();
+		});
 
 		// register events
-		Events.TICK.register(() -> modules.forEach(Module::tick));
+
 		Events.CLIENT_STOP.register(() -> API.getInstance().shutdown());
 	}
 
@@ -209,6 +214,8 @@ public abstract class AxolotlClientCommon {
 		Preconditions.checkState(!initializing);
 		modules.add(module);
 	}
+
+	protected abstract void initFeatureDisabler();
 
 	protected abstract AxolotlClientConfigCommon createConfig();
 

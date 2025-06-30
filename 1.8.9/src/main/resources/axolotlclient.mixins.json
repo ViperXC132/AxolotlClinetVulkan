@@ -63,11 +63,11 @@
 		"VertexBufferMixin",
 		"WorldRendererAccessor",
 		"WorldRendererMixin",
+		"api.JoinMulitplayerScreenMixin",
 		"commands.ChatScreenMixin",
 		"commands.LocalClientPlayerEntityMixin",
 		"translation.LanguageMixin",
-		"translation.TranslationStorageMixin",
-		"api.JoinMulitplayerScreenMixin"
+		"translation.TranslationStorageMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

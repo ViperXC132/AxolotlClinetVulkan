@@ -143,9 +143,8 @@ public abstract class HudManagerCommon extends AbstractCommonModule {
 			entry.setEnabled(true);
 			entry.init();
 			entry.onBoundsUpdate();
-			entry.getAllOptions().includeInParentTree(false);
-			add(entry);
-			// TODO: ??
+			entries.put(entry.getId(), entry);
+			hudCategory.add(entry.getAllOptions(), false);
 			// client.screen.resize(client, client.screen.width, client.screen.height);
 			saveCustomEntries();
 		}));
@@ -167,8 +166,8 @@ public abstract class HudManagerCommon extends AbstractCommonModule {
 							opt.fromSerializedValue((String) values.get(opt.getName()));
 						}
 					});
-					entry.getCategory().includeInParentTree(false);
-					add(entry);
+					entries.put(entry.getId(), entry);
+					hudCategory.add(entry.getAllOptions(), false);
 					entry.init();
 					entry.onBoundsUpdate();
 				});

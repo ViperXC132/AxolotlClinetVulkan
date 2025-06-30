@@ -53,7 +53,7 @@ public class Tablist extends AbstractModule {
 	public final BooleanOption backgroundEnabled = new BooleanOption("enable_background", true);
 	public final BooleanOption customBackgroundColor = new BooleanOption("custom_background_color", false);
 	public final ColorOption backgroundColor = new ColorOption("bgcolor", new Color(Integer.MIN_VALUE));
-	private final OptionCategory tablist = OptionCategory.create("tablist");
+	public final OptionCategory tablist = OptionCategory.create("tablist");
 
 	@Override
 	public void init() {

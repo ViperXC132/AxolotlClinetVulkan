@@ -32,7 +32,7 @@ import io.github.axolotlclient.bridge.util.AxoI18n;
 import io.github.axolotlclient.modules.hud.gui0.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.gui0.layout.Justification;
-import io.github.axolotlclient.modules.hud.util.DefaultOptions0;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import java.util.List;
 
@@ -46,10 +46,10 @@ public abstract class SimpleTextHudEntry extends TextHudEntry implements Dynamic
 
 	protected final EnumOption<Justification> justification = new EnumOption<>("justification", Justification.class,
 		Justification.CENTER);
-	protected final EnumOption<AnchorPoint> anchor = DefaultOptions0.getAnchorPoint();
+	protected final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
 	protected final BooleanOption showBrackets = new BooleanOption("show_brackets", false);
 
-	private final IntegerOption minWidth;
+	private final IntegerOption minWidth, minHeight;
 
 	public SimpleTextHudEntry() {
 		this(53, 13, true);
@@ -58,10 +58,11 @@ public abstract class SimpleTextHudEntry extends TextHudEntry implements Dynamic
 	protected SimpleTextHudEntry(int width, int height, boolean backgroundAllowed) {
 		super(width, height, backgroundAllowed);
 		minWidth = new IntegerOption("minwidth", width, 1, 300);
+		minHeight = new IntegerOption("hud.height", height, 1, 150);
 	}
 
-	protected SimpleTextHudEntry(int width, int height) {
-		this(width, height, true);
+	protected SimpleTextHudEntry(int width) {
+		this(width, 13, true);
 	}
 
 	@Override
@@ -74,15 +75,31 @@ public abstract class SimpleTextHudEntry extends TextHudEntry implements Dynamic
 
 		int valueWidth = render.br$getFont().br$getWidth(value);
 		int elementWidth = valueWidth + 4;
+		int elementHeight = client.br$getFont().br$getFontHeight() + 4;
 
-		int min = minWidth.get();
-		if (elementWidth < min) {
-			if (width != min) {
-				setWidth(min);
-				onBoundsUpdate();
+		boolean boundsChanged = false;
+		int minW = minWidth.get();
+		if (elementWidth < minW) {
+			if (width != minW) {
+				setWidth(minW);
+				boundsChanged = true;
 			}
 		} else if (elementWidth != width) {
 			setWidth(elementWidth);
+			boundsChanged = true;
+		}
+		int minH = minHeight.get();
+		if (elementHeight < minH) {
+			if (height != minH) {
+				setHeight(minH);
+				boundsChanged = true;
+			}
+		} else if (elementHeight != height) {
+			setHeight(elementHeight);
+			boundsChanged = true;
+		}
+
+		if (boundsChanged) {
 			onBoundsUpdate();
 		}
 		render.br$drawString(value,
@@ -121,6 +138,7 @@ public abstract class SimpleTextHudEntry extends TextHudEntry implements Dynamic
 		options.add(justification);
 		options.add(anchor);
 		options.add(minWidth);
+		options.add(minHeight);
 		options.add(showBrackets);
 		return options;
 	}

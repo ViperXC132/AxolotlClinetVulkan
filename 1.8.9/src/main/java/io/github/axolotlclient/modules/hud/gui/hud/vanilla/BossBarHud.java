@@ -26,7 +26,7 @@ import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui0.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
-import io.github.axolotlclient.modules.hud.util.DefaultOptions0;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import java.util.List;
 
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -58,7 +58,7 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 	private final BooleanOption text = new BooleanOption("text", true);
 	private final BooleanOption bar = new BooleanOption("bar", true);
 	// TODO custom color
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions0.getAnchorPoint(AnchorPoint.TOP_MIDDLE);
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(AnchorPoint.TOP_MIDDLE);
 
 	private final Minecraft client = (Minecraft) super.client;
 

@@ -33,7 +33,7 @@ import io.github.axolotlclient.modules.hud.gui0.component.DynamicallyPositionabl
 import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.gui0.layout.Justification;
-import io.github.axolotlclient.modules.hud.util.DefaultOptions0;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.util.ClientColors;
@@ -87,7 +87,7 @@ public class MemoryHud extends TextHudEntry implements DynamicallyPositionable {
 
 	protected final EnumOption<Justification> justification = new EnumOption<>("justification", Justification.class,
 		Justification.CENTER);
-	protected final EnumOption<AnchorPoint> anchor = DefaultOptions0.getAnchorPoint();
+	protected final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
 
 	private final Rectangle graph = new Rectangle(0, 0, 0, 0);
 	private final ColorOption graphUsedColor = new ColorOption("graphUsedColor",

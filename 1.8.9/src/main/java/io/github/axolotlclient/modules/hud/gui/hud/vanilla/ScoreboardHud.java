@@ -22,12 +22,11 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 
-import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui0.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
-import io.github.axolotlclient.modules.hud.util.DefaultOptions0;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -90,7 +89,7 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 	private final BooleanOption scores = new BooleanOption("scores", true);
 	private final ColorOption scoreColor = new ColorOption("scorecolor", new Color(0xFFFF5555));
 	private final IntegerOption textAlpha = new IntegerOption("text_alpha", 255, 0, 255);
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions0.getAnchorPoint(AnchorPoint.MIDDLE_RIGHT);
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(AnchorPoint.MIDDLE_RIGHT);
 
 	private final Minecraft client = (Minecraft) super.client;
 

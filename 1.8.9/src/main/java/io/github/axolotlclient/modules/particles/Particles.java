@@ -23,7 +23,6 @@
 package io.github.axolotlclient.modules.particles;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
@@ -62,7 +61,7 @@ public class Particles extends AbstractModule {
 
 	private void addParticleOptions() {
 		for (ParticleType type : Arrays.stream(ParticleType.values()).sorted(new AlphabeticalComparator())
-			.collect(Collectors.toList())) {
+			.toList()) {
 			OptionCategory category = OptionCategory.create(
 				StringUtils.capitalize(Util.splitAtCapitalLetters(type.getKey().replace("_", ""))));
 			HashMap<String, Option<?>> optionsByKey = new LinkedHashMap<>();

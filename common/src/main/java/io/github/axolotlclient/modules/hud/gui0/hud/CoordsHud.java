@@ -65,7 +65,7 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 	}, 0, 15);
 	private final BooleanOption minimal = new BooleanOption("minimal", false);
 	private final BooleanOption biome = new BooleanOption("show_biome", false);
-	private final StringOption delimiter = new StringOption("coordshud.delimiter", ": ");
+	private final StringOption delimiter = new StringOption("coordshud.delimiter", " ");
 	private final StringOption separator = new StringOption("coordshud.separator", ", ");
 	private final ColorOption separatorColor = new ColorOption("coordshud.separator.color", firstColor.getDefault());
 
