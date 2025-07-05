@@ -23,6 +23,7 @@
 package io.github.axolotlclient.bridge.item;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import org.jetbrains.annotations.Nullable;
 
 public class AxoItems {
 	public static final AxoItem AIR = BridgeUtil.noImplValue();
@@ -40,6 +41,14 @@ public class AxoItems {
 	public static final AxoItem DIAMOND_SWORD = BridgeUtil.noImplValue();
 	public static final AxoItem DIAMOND_CHESTPLATE = BridgeUtil.noImplValue();
 	public static final AxoItem DIAMOND_BOOTS = BridgeUtil.noImplValue();
+	@Nullable
 	public static final AxoItem TIPPED_ARROW = BridgeUtil.noImplValue();
+	@Nullable
 	public static final AxoItem SPECTRAL_ARROW = BridgeUtil.noImplValue();
+	public static final AxoItem STONE = BridgeUtil.noImplValue();
+	public static final AxoItem STONE_PICKAXE = BridgeUtil.noImplValue();
+	public static final AxoItem STONE_AXE = BridgeUtil.noImplValue();
+	public static final AxoItem STONE_SHOVEL = BridgeUtil.noImplValue();
+	public static final AxoItem STONE_HOE = BridgeUtil.noImplValue();
+	public static final AxoItem GLOWSTONE_DUST = BridgeUtil.noImplValue();
 }

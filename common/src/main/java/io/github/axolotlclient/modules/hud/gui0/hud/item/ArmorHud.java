@@ -80,15 +80,27 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		if (player == null) {
 			return;
 		}
-		renderInternal(graphics, player.br$getInventory().br$getMainHand(), player.br$getInventory().br$getArmor());
+
+		final var mainHand = player.br$getInventory().br$getMainHand();
+
+		renderInternal(
+			graphics,
+			mainHand,
+			player.br$getInventory().br$getArmor(),
+			ItemUtil.getTotal(client, mainHand.br$getItem())
+		);
 	}
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
-		renderInternal(graphics, PLACEHOLDER_MAIN_HAND, PLACEHOLDER_GEAR);
+		renderInternal(graphics, PLACEHOLDER_MAIN_HAND, PLACEHOLDER_GEAR, 1);
 	}
 
-	private void renderInternal(AxoRenderContext graphics, AxoItemStack mainHand, List<? extends AxoItemStack> armorStacks) {
+	private void renderInternal(
+		AxoRenderContext context,
+		AxoItemStack mainHand, List<? extends AxoItemStack> armor,
+		int mainHandCount
+	) {
 		int width = 20;
 		int height = 100;
 		boolean boundsChanged = false;
@@ -96,13 +108,13 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		boolean showMaxDurability = showMaxDurabilityNumber.get();
 
 		int labelWidth = (showDurability || showMaxDurability) ?
-			Stream.concat(Stream.of(mainHand), armorStacks.stream())
+			Stream.concat(Stream.of(mainHand), armor.stream())
 				.map(stack -> {
 					String text = showDurability && showMaxDurability
 						? (stack.br$getMaxDamage() - stack.br$getDamage()) + "/" + stack.br$getMaxDamage()
 						: String.valueOf(showDurability ? stack.br$getMaxDamage() - stack.br$getDamage()
 						: stack.br$getMaxDamage());
-					return graphics.br$getFont().br$getWidth(text) + 2;
+					return context.br$getFont().br$getWidth(text) + 2;
 				}).mapToInt(Integer::intValue).max().orElse(0) : 0;
 
 		width += labelWidth;
@@ -129,42 +141,35 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		int lastY = 2 + (height - 20);
 
 		if (mhPos == MainHandItemPosition.BOTTOM) {
-			renderMainItem(graphics, mainHand, pos.x() + 2, pos.y() + lastY, labelWidth);
+			renderMainItem(context, mainHand, pos.x() + 2, pos.y() + lastY, labelWidth, mainHandCount);
 			lastY -= 20;
 		}
 
-		for (AxoItemStack stack : armorStacks) {
+		for (AxoItemStack stack : armor) {
 			String label = null;
 
 			if (showProtLvl.get() && stack.br$hasEnchantment(AxoEnchants.PROTECTION)) {
 				label = String.valueOf(stack.br$getEnchantment(AxoEnchants.PROTECTION));
 			}
 
-			renderItem(graphics, stack, pos.x() + 2, pos.y() + lastY, labelWidth, label);
+			renderItem(context, stack, pos.x() + 2, pos.y() + lastY, labelWidth, label);
 			lastY -= 20;
 		}
 
 		if (mhPos == MainHandItemPosition.TOP) {
-			renderMainItem(graphics, mainHand, pos.x() + 2, pos.y() + lastY, labelWidth);
+			renderMainItem(context, mainHand, pos.x() + 2, pos.y() + lastY, labelWidth, mainHandCount);
 		}
 	}
 
-	public void renderMainItem(AxoRenderContext graphics, AxoItemStack stack, int x, int y, int offset) {
-		renderDurabilityNumber(graphics, stack, x, y);
-		x += offset;
-		String total = String.valueOf(ItemUtil.getTotal(client, stack.br$getItem()));
-		if (total.equals("1")) {
-			total = null;
-		}
-		graphics.br$renderGuiItemModel(stack, x, y);
-		graphics.br$renderGuiItemOverlay(stack, x, y, total);
+	public void renderMainItem(AxoRenderContext graphics, AxoItemStack stack, int x, int y, int offset, int mainHandCount) {
+		renderItem(graphics, stack, x, y, offset, mainHandCount == 1 ? null : String.valueOf(mainHandCount));
 	}
 
 	public void renderItem(AxoRenderContext graphics, AxoItemStack stack, int x, int y, int offset, String labelOverride) {
 		renderDurabilityNumber(graphics, stack, x, y);
 		x += offset;
 		graphics.br$renderGuiItemModel(stack, x, y);
-		graphics.br$renderGuiItemOverlay(stack, x, y, labelOverride);
+		graphics.br$renderGuiItemOverlay(stack, x, y, labelOverride, textColor.get().toInt(), shadow.get());
 	}
 
 	private void renderDurabilityNumber(AxoRenderContext graphics, AxoItemStack stack, int x, int y) {

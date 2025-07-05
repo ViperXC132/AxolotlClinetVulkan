@@ -61,6 +61,7 @@ import io.github.axolotlclient.modules.hud.gui0.hud.simple.ReachHud;
 import io.github.axolotlclient.modules.hud.gui0.hud.simple.SpeedHud;
 import io.github.axolotlclient.modules.hud.gui0.hud.simple.TPSHud;
 import io.github.axolotlclient.modules.hud.gui0.hud.simple.ToggleSprintHud;
+import io.github.axolotlclient.modules.hud.gui0.hud.vanilla.InventoryHud;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.util.GsonHelper;
@@ -100,34 +101,29 @@ public abstract class HudManagerCommon extends AbstractCommonModule {
 
 	public void init() {
 		Platform.getConfig().addCategory(hudCategory);
-
-		// hud.item
+		add(new PingHud());
+		add(new FPSHud());
+		add(new CPSHud());
 		add(new ArmorHud());
+		add(new PotionsHud());
+		add(new ToggleSprintHud());
+		add(new IPHud());
+		add(new IconHud());
+		add(new SpeedHud());
+		add(new CoordsHud());
 		add(new ArrowHud());
 		add(new ItemUpdateHud());
-
-		// hud.simple
-		add(new ComboHud());
-		add(new CPSHud());
-		add(new DayCounterHud());
-		add(new FPSHud());
 		add(new IRLTimeHud());
-		add(new PingHud());
-		add(new PlayerCountHud());
 		add(new ReachHud());
-		add(new SpeedHud());
-		add(new ToggleSprintHud());
-		add(new TPSHud());
-
-		// hud
-		add(new CompassHud());
-		add(new CoordsHud());
-		add(new IconHud());
-		add(new IPHud());
 		add(new MemoryHud());
+		add(new PlayerCountHud());
+		add(new CompassHud());
+		add(new TPSHud());
+		add(new ComboHud());
+		//add(new PlayerHud());
 		add(new MouseMovementHud());
-		add(new PlayerHud());
-		add(new PotionsHud());
+		add(new DayCounterHud());
+		add(new InventoryHud());
 
 		addExtraHud();
 

@@ -58,6 +58,7 @@ public class ToggleSprintHud extends SimpleTextHudEntry {
 	private final BooleanOption sprintToggled = new BooleanOption("sprintToggled", false);
 	@Getter
 	private final BooleanOption sneakToggled = new BooleanOption("sneakToggled", false);
+
 	private final List<String> texts = new ArrayList<>();
 	private String text = "";
 
@@ -104,6 +105,7 @@ public class ToggleSprintHud extends SimpleTextHudEntry {
 		if (client.br$getKeybinds().br$getSneakKeybind().br$isPressed()) {
 			return AxoI18n.translate("sneaking_pressed");
 		}
+
 		if (client.br$getKeybinds().br$getSprintKeybind().br$isPressed()) {
 			return AxoI18n.translate("sprinting_pressed");
 		}

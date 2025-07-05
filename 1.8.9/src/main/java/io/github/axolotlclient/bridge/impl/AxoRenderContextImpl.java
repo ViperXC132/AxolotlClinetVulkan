@@ -23,6 +23,7 @@
 package io.github.axolotlclient.bridge.impl;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.platform.Lighting;
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.render.AxoFont;
@@ -145,7 +146,7 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 		final var vanilla = Bridge.unwrapStack(stack);
 
 		if(vanilla != null) {
-			client.getItemRenderer().renderGuiItemModel(vanilla, x, y);
+			ItemUtil.renderGuiItemModel(vanilla, x, y);
 		}
 	}
 

@@ -22,38 +22,10 @@
 
 package io.github.axolotlclient.bridge.impl;
 
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.bridge.render.AxoSprite;
-import io.github.axolotlclient.util.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Identifier;
 
 public interface AxoSpriteImpl extends AxoSprite {
 	void draw(Minecraft client, GuiGraphics stack, int sX, int sY, int sW, int sH);
-
-	record Simple(ResourceLocation id, int x, int y, int width, int height) implements AxoSpriteImpl {
-		@Override
-		public void draw(Minecraft client, GuiGraphics stack, int sX, int sY, int sW, int sH) {
-			stack.blit(RenderPipelines.GUI_TEXTURED, id, sX, sY, x, y, sW, sH, width, height);
-		}
-	}
-
-	record Vanilla(Sprite sprite) implements AxoSpriteImpl {
-		@Override
-		public void draw(Minecraft client, GuiGraphics stack, int sX, int sY, int sW, int sH) {
-			stack.drawSprite(sX, sY, 0, sW, sH, sprite);
-		}
-	}
-
-	record Config(GraphicsOption option) implements AxoSpriteImpl {
-		@Override
-		public void draw(Minecraft client, GuiGraphics stack, int sX, int sY, int sW, int sH) {
-			stack.drawTexture(Util.getTexture(option), sX, sY, 0, 0, sW, sH, option.get().getWidth(), option.get().getHeight());
-		}
-	}
 }

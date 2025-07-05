@@ -22,25 +22,34 @@
 
 package io.github.axolotlclient.modules.hud.gui0.hud.vanilla;
 
+import io.github.axolotlclient.AxolotlClientCommon;
+import io.github.axolotlclient.bridge.item.AxoItemStack;
+import io.github.axolotlclient.bridge.item.AxoItems;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.modules.hud.gui0.component.DynamicallyPositionable;
+import io.github.axolotlclient.modules.hud.gui0.entry.BoxHudEntry;
+import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
 import java.util.List;
-
-import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
-import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
-import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.Blocks;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable {
-	public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(AxolotlClient.MODID, "inventoryhud");
-	private static final ItemStack[] PLACEHOLDER = new ItemStack[]{
-		new ItemStack(Blocks.STONE), new ItemStack(Blocks.STONE), new ItemStack(Blocks.STONE), new ItemStack(Blocks.STONE), new ItemStack(Blocks.STONE), new ItemStack(Blocks.STONE), new ItemStack(Blocks.STONE), new ItemStack(Blocks.STONE), new ItemStack(Blocks.STONE),
-		null, null, null, null, null, null, null, null, null,
-		new ItemStack(Items.STONE_SWORD), new ItemStack(Items.STONE_PICKAXE), new ItemStack(Items.STONE_AXE), new ItemStack(Items.STONE_SHOVEL), new ItemStack(Items.STONE_HOE), null, null, null, new ItemStack(Items.GLOWSTONE_DUST, 63)
-	};
+	public static final AxoIdentifier ID = AxoIdentifier.of(AxolotlClientCommon.MODID, "inventoryhud");
+	private static final List<AxoItemStack> PLACEHOLDER = Stream.of(
+		IntStream.range(0, 9).mapToObj(x -> AxoItemStack.of(AxoItems.STONE)),
+		IntStream.range(0, 9).mapToObj(x -> (AxoItemStack) null),
+		Stream.of(
+			AxoItemStack.of(AxoItems.STONE_SWORD),
+			AxoItemStack.of(AxoItems.STONE_PICKAXE),
+			AxoItemStack.of(AxoItems.STONE_AXE),
+			AxoItemStack.of(AxoItems.STONE_SHOVEL),
+			AxoItemStack.of(AxoItems.STONE_HOE),
+			null, null, null,
+			AxoItemStack.of(AxoItems.GLOWSTONE_DUST, 63)
+		)
+	).flatMap(x -> x).toList();
+
 	private static final int ITEM_SIZE = 18;
 	private static final int ITEM_TILE_SIZE = 16;
 
@@ -59,45 +68,40 @@ public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable
 	}
 
 	@Override
-	public void renderComponent(GuiGraphics graphics, float delta) {
-		List<ItemStack> inventorySlots = client.player.getInventory().getNonEquipmentItems();
-		var pos = getPos();
-		int x = pos.x() + 2;
-		int y = pos.y() + 2;
-		for (int i = 9, inventorySlotsLength = inventorySlots.size(); i < inventorySlotsLength; i++) {
-			ItemStack itemStack = inventorySlots.get(i);
-			int w = i - 9;
-			if (!itemStack.isEmpty()) {
-				renderStack(graphics, x + (w % 9) * ITEM_SIZE, y + (w / 9) * ITEM_SIZE, itemStack);
-			}
-		}
-	}
-
-
-	private void renderStack(GuiGraphics graphics, int x, int y, ItemStack itemStack) {
-		if (background.get() && backgroundColor.get().getAlpha() > 0) {
-			fillRect(graphics, x, y, ITEM_TILE_SIZE, ITEM_TILE_SIZE, backgroundColor.get().toInt());
-		}
-		graphics.renderItem(itemStack, x, y);
-		graphics.renderItemDecorations(client.font, itemStack, x, y);
+	public void renderComponent(AxoRenderContext graphics, float delta) {
+		render(graphics, client.br$getPlayer().br$getInventory().br$getNonEquipmentItems());
 	}
 
 	@Override
-	public void renderPlaceholderComponent(GuiGraphics graphics, float delta) {
-		ItemStack[] inventorySlots = PLACEHOLDER;
+	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
+		render(graphics, PLACEHOLDER);
+	}
+
+	private void render(AxoRenderContext graphics, List<? extends AxoItemStack> inventorySlots) {
 		var pos = getPos();
 		int x = pos.x() + 2;
 		int y = pos.y() + 2;
-		for (int i = 0, inventorySlotsLength = inventorySlots.length; i < inventorySlotsLength; i++) {
-			ItemStack stack = inventorySlots[i];
-			if (stack != null) {
+
+		for (int i = 0, inventorySlotsLength = inventorySlots.size(); i < inventorySlotsLength; i++) {
+			AxoItemStack stack = inventorySlots.get(i);
+			if (stack != null && !stack.br$isEmpty()) {
 				renderStack(graphics, x + (i % 9) * ITEM_SIZE, y + (i / 9) * ITEM_SIZE, stack);
 			}
 		}
 	}
 
+
+	private void renderStack(AxoRenderContext graphics, int x, int y, AxoItemStack itemStack) {
+		if (background.get() && backgroundColor.get().getAlpha() > 0) {
+			graphics.br$fillRect(x, y, ITEM_TILE_SIZE, ITEM_TILE_SIZE, backgroundColor.get().toInt());
+		}
+
+		graphics.br$renderGuiItemModel(itemStack, x, y);
+		graphics.br$renderGuiItemOverlay(itemStack, x, y, null);
+	}
+
 	@Override
-	public ResourceLocation getId() {
+	public AxoIdentifier getId() {
 		return ID;
 	}
 

@@ -22,7 +22,6 @@
 
 package io.github.axolotlclient.modules.hud.gui0.hud;
 
-import io.github.axolotlclient.bridge.BridgeVersion;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoSprites;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
@@ -41,16 +40,15 @@ public class IconHud extends BoxHudEntry {
 	}
 
 	@Override
-	public void renderComponent(AxoRenderContext context, float delta) {
-		context.br$drawTexture(getX(), getY(), width, height, AxoSprites.BADGE);
+	public void renderComponent(AxoRenderContext ctx, float delta) {
+		ctx.br$glColor4(1, 1, 1, 1);
+		ctx.br$glEnableBlend();
+		ctx.br$drawTexture(getX(), getY(), width, height, AxoSprites.BADGE);
+		ctx.br$glDisableBlend();
 	}
 
 	@Override
-	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
-		if(BridgeVersion.V1_8.isCurrent()) {
-			context.br$glColor4(1, 1, 1, 1); // TODO: figure out why 1.8.9 needs this
-		}
-
-		renderComponent(context, delta);
+	public void renderPlaceholderComponent(AxoRenderContext ctx, float delta) {
+		renderComponent(ctx, delta);
 	}
 }

@@ -38,7 +38,12 @@ public interface AxoPlayerInventory {
 		throw BridgeUtil.noImpl();
 	}
 
+	default List<? extends AxoItemStack> br$getNonEquipmentItems() {
+		throw BridgeUtil.noImpl();
+	}
+
 	default List<? extends AxoItemStack> br$getArmor() {
 		throw BridgeUtil.noImpl();
 	}
 }
+

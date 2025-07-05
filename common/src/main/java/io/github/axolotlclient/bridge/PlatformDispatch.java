@@ -42,8 +42,4 @@ public class PlatformDispatch {
 	public static AxoSprite.Dynamic ipHud$getServerIcon() {
 		throw BridgeUtil.noImpl();
 	}
-
-	public static void playerHud$renderPlayer(AxoRenderContext graphics, float i) {
-		throw BridgeUtil.noImpl();
-	}
 }

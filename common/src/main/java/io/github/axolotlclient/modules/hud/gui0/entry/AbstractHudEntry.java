@@ -88,7 +88,11 @@ public abstract class AbstractHudEntry implements HudEntry {
 	}
 
 	public void renderPlaceholderBackground(AxoRenderContext context) {
-		context.br$fillRect(getTrueBounds(), hovered ? ClientColors.SELECTOR_BLUE.withAlpha(100) : ClientColors.WHITE.withAlpha(50));
+		if (hovered) {
+			context.br$fillRect(getTrueBounds(), ClientColors.SELECTOR_BLUE.withAlpha(100));
+		} else {
+			context.br$fillRect(getTrueBounds(), ClientColors.WHITE.withAlpha(50));
+		}
 		context.br$outlineRect(getTrueBounds(), Colors.BLACK);
 	}
 

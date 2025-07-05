@@ -39,20 +39,19 @@ import lombok.Getter;
  * @license GPL-3.0
  */
 
-public class PlayerHud extends BoxHudEntry {
-
+public abstract class PlayerHud extends BoxHudEntry {
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "playerhud");
 	@Getter
 	private static boolean currentlyRendering;
-	private final DoubleOption rotation = new DoubleOption("rotation", 0d, 0d, 360d);
-	private final BooleanOption dynamicRotation = new BooleanOption("dynamicrotation", true);
-	private final BooleanOption autoHide = new BooleanOption("autoHide", false);
-	private float lastYawOffset = 0;
-	private float yawOffset = 0;
-	private float lastYOffset = 0;
-	private float lastYaw = 0;
-	private float yOffset = 0;
-	private long hide;
+	protected final DoubleOption rotation = new DoubleOption("rotation", 0d, 0d, 360d);
+	protected final BooleanOption dynamicRotation = new BooleanOption("dynamicrotation", true);
+	protected final BooleanOption autoHide = new BooleanOption("autoHide", false);
+	protected float lastYawOffset = 0;
+	protected float yawOffset = 0;
+	protected float lastYOffset = 0;
+	protected float lastYaw = 0;
+	protected float yOffset = 0;
+	protected long hide;
 
 	public PlayerHud() {
 		super(62, 94, true);
@@ -67,7 +66,7 @@ public class PlayerHud extends BoxHudEntry {
 	public void tick() {
 		final var player = client.br$getPlayer();
 
-		if(player == null){
+		if (player == null) {
 			return;
 		}
 
@@ -119,12 +118,15 @@ public class PlayerHud extends BoxHudEntry {
 	}
 
 	@Override
-	public void renderComponent(AxoRenderContext  graphics, float delta) {
-		PlatformDispatch.playerHud$renderPlayer(graphics, delta);
+	public void renderComponent(AxoRenderContext graphics, float delta) {
+		renderPlayer(graphics, false, getTruePos().x() + 31 * getScale(), getTruePos().y() + 86 * getScale(), delta);
 	}
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
-		PlatformDispatch.playerHud$renderPlayer(graphics, 0);
+		// If delta was delta, it would start jittering
+		renderPlayer(graphics, true, getTruePos().x() + 31 * getScale(), getTruePos().y() + 86 * getScale(), 0);
 	}
+
+	protected abstract void renderPlayer(AxoRenderContext graphics, boolean placeholder, double x, double y, float delta);
 }

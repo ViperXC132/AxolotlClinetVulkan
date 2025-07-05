@@ -138,6 +138,7 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 		general.add(customWindowTitle);
 		general.add(openCredits);
 		general.add(debugLogOutput);
+
 		general.add(datetimeFormat);
 		general.add(titleScreenOptionButtonMode);
 		general.add(gameMenuScreenOptionButtonMode);

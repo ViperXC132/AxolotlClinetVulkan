@@ -93,7 +93,7 @@ public class PlatformImplInternalMixin {
      */
     @Overwrite
     public static BridgeVersion getBridgeApiVersion() {
-        return BridgeVersion.V1_8;
+        return BridgeVersion.V1_16_COMBAT;
     }
 
 

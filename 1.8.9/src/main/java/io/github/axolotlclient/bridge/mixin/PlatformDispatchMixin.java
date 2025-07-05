@@ -23,10 +23,7 @@
 package io.github.axolotlclient.bridge.mixin;
 
 import io.github.axolotlclient.bridge.PlatformDispatch;
-import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
-import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hud.HudManagerCommon;
 import io.github.axolotlclient.util.ThreadExecuter;
 import java.net.InetAddress;
 import net.minecraft.client.Minecraft;

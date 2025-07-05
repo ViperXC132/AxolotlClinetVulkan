@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.hud.gui0.hud.item;
 
+import io.github.axolotlclient.bridge.BridgeVersion;
 import io.github.axolotlclient.bridge.item.AxoItem;
 import io.github.axolotlclient.bridge.item.AxoItemClass;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
@@ -62,7 +63,7 @@ public class ArrowHud extends TextHudEntry {
 	private AxoItemStack currentArrow = AxoItemStack.of(AxoItems.ARROW);
 
 	public ArrowHud() {
-		super(20, 30, true);
+		super(20, 22, true);
 	}
 
 	@Override
@@ -71,12 +72,19 @@ public class ArrowHud extends TextHudEntry {
 
 		if (dynamic.get() && player != null) {
 			final var mainHand = player.br$getInventory().br$getMainHand().br$getItem();
-			final var offHand = player.br$getInventory().br$getOffHand().br$getItem();
 
-			if (!(mainHand.br$is(AxoItemClass.RANGED_WEAPON) || offHand.br$is(AxoItemClass.RANGED_WEAPON))) {
+			if(!mainHand.br$is(AxoItemClass.RANGED_WEAPON)) {
 				return;
 			}
+
+			if(BridgeVersion.version() != BridgeVersion.V1_8) {
+				final var offHand = player.br$getInventory().br$getOffHand().br$getItem();
+				if (offHand.br$is(AxoItemClass.RANGED_WEAPON)) {
+					return;
+				}
+			}
 		}
+
 		super.render(graphics, delta);
 	}
 
@@ -99,18 +107,22 @@ public class ArrowHud extends TextHudEntry {
 		return true;
 	}
 
+	private boolean isAllArrowTypes() {
+		return BridgeVersion.version() != BridgeVersion.V1_8 && allArrowTypes.get();
+	}
+
 	@Override
 	public void tick() {
 		if (client.br$getPlayer() != null) {
 			final var projectileItem = client.br$getPlayer().br$getProjectileItem();
-			if (!allArrowTypes.get() && projectileItem != null) {
+			if (!isAllArrowTypes() && projectileItem != null) {
 				currentArrow = AxoItemStack.of(projectileItem);
 			} else {
 				currentArrow = AxoItemStack.of(AxoItems.ARROW);
 			}
 		}
 
-		if (allArrowTypes.get()) {
+		if (isAllArrowTypes()) {
 			arrows = ARROW_TYPES.stream().mapToInt(x -> ItemUtil.getTotal(client, x)).sum();
 		} else {
 			arrows = ItemUtil.getTotal(client, currentArrow.br$getItem());
@@ -121,7 +133,11 @@ public class ArrowHud extends TextHudEntry {
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
 		options.add(dynamic);
-		options.add(allArrowTypes);
+
+		if(BridgeVersion.version() != BridgeVersion.V1_8) {
+			options.add(allArrowTypes);
+		}
+
 		return options;
 	}
 

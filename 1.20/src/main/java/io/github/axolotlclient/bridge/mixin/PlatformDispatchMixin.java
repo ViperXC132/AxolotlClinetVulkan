@@ -114,13 +114,4 @@ public class PlatformDispatchMixin {
 	public static AxoSprite.Dynamic ipHud$getServerIcon() {
 		throw BridgeUtil.noImpl();
 	}
-
-	/**
-	 * @author Flowey
-	 * @reason Implement bridge.
-	 */
-	@Overwrite
-	public static void playerHud$renderPlayer(AxoRenderContext graphics, float i) {
-		throw BridgeUtil.noImpl();
-	}
 }

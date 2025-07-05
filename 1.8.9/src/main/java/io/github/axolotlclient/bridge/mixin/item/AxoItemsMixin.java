@@ -23,9 +23,10 @@
 package io.github.axolotlclient.bridge.mixin.item;
 
 import io.github.axolotlclient.bridge.impl.AirItemImpl;
-import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.item.AxoItem;
 import io.github.axolotlclient.bridge.item.AxoItems;
+import net.minecraft.block.Blocks;
+import net.minecraft.item.Item;
 import net.minecraft.item.Items;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -112,6 +113,46 @@ public class AxoItemsMixin {
 	@Final
 	public static AxoItem DIAMOND_BOOTS;
 
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoItem TIPPED_ARROW;
+
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoItem SPECTRAL_ARROW;
+
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoItem STONE;
+
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoItem STONE_PICKAXE;
+
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoItem STONE_AXE;
+
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoItem STONE_SHOVEL;
+
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoItem STONE_HOE;
+
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoItem GLOWSTONE_DUST;
+
 	@Inject(method = "<clinit>", at = @At("HEAD"), cancellable = true)
 	private static void setStaticValues(CallbackInfo info) {
 		AIR = AirItemImpl.getInstance();
@@ -129,7 +170,14 @@ public class AxoItemsMixin {
 		DIAMOND_SWORD = Items.DIAMOND_SWORD;
 		DIAMOND_CHESTPLATE = Items.DIAMOND_CHESTPLATE;
 		DIAMOND_BOOTS = Items.DIAMOND_BOOTS;
-
+		TIPPED_ARROW = null;
+		SPECTRAL_ARROW = null;
+		STONE = Item.byBlock(Blocks.STONE);
+		STONE_PICKAXE = Items.STONE_PICKAXE;
+		STONE_AXE = Items.STONE_AXE;
+		STONE_SHOVEL = Items.STONE_SHOVEL;
+		STONE_HOE = Items.STONE_HOE;
+		GLOWSTONE_DUST = Items.GLOWSTONE_DUST;
 		info.cancel();
 	}
 }

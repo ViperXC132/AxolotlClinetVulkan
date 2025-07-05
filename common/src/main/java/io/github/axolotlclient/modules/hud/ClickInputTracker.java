@@ -46,7 +46,9 @@ public class ClickInputTracker extends AbstractCommonModule {
 				leftBind.click();
 			} else if (key.equals(client.br$getKeybinds().br$getUseKey().br$getBoundKey())) {
 				rightBind.click();
-			} else if (key.equals(AxoKeys.MOUSE_LEFT)) {
+			}
+
+			if (key.equals(AxoKeys.MOUSE_LEFT)) {
 				leftMouse.click();
 			} else if (key.equals(AxoKeys.MOUSE_RIGHT)) {
 				rightMouse.click();
