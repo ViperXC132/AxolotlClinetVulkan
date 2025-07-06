@@ -27,7 +27,9 @@ import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
 import io.github.axolotlclient.bridge.key.AxoClientKeybinds;
 import io.github.axolotlclient.bridge.render.AxoFont;
+import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.bridge.world.AxoWorld;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import org.jetbrains.annotations.Contract;
@@ -73,6 +75,28 @@ public interface AxoMinecraftClient extends Executor {
 	}
 
 	default boolean br$isLocalServer() {
+		throw BridgeUtil.noImpl();
+	}
+
+	default List<AxoPlayerInfo> br$getOnlinePlayers() {
+		throw BridgeUtil.noImpl();
+	}
+
+	/**
+	 * Sends a message <i>as</i> the client to the server.
+	 *
+	 * @param msg
+	 */
+	default void br$sendToServer(String msg) {
+		throw BridgeUtil.noImpl();
+	}
+
+	/**
+	 * Sends a message <i>as</i> the client to the server.
+	 *
+	 * @param msg
+	 */
+	default void br$sendToClient(AxoText msg) {
 		throw BridgeUtil.noImpl();
 	}
 }

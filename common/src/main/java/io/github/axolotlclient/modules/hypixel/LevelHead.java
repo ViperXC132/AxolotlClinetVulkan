@@ -20,15 +20,16 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.hypixel.levelhead;
+package io.github.axolotlclient.modules.hypixel;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.api.API;
-import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
+import io.github.axolotlclient.util.CachedAPI;
 import io.github.axolotlclient.util.ClientColors;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 public class LevelHead implements AbstractHypixelMod {
@@ -37,12 +38,12 @@ public class LevelHead implements AbstractHypixelMod {
 	public final BooleanOption enabled = new BooleanOption("enabled", "levelhead.enabled.tooltip", false);
 	public final BooleanOption background = new BooleanOption("background", false);
 	public final ColorOption textColor = new ColorOption("textcolor", ClientColors.GOLD);
-	public final EnumOption<LevelHeadMode> mode = new EnumOption<>("levelHeadMode", LevelHeadMode.class, LevelHeadMode.NETWORK);
+	public final EnumOption<Mode> mode = new EnumOption<>("levelHeadMode", Mode.class, Mode.NETWORK);
 	private final OptionCategory category = OptionCategory.create("levelhead");
 
-	public static String getDisplayString(LevelHeadMode mode, String uuid) {
+	public static String getDisplayString(Mode mode, String uuid) {
 		return "Level: " + mode.getApi().getAsyncNow(uuid).map(() -> "...", () -> "???", val -> {
-			if (mode == LevelHeadMode.BEDWARS) {
+			if (mode == Mode.BEDWARS) {
 				return val + "☆";
 			} else {
 				return String.valueOf(val);
@@ -68,4 +69,14 @@ public class LevelHead implements AbstractHypixelMod {
 	public OptionCategory getCategory() {
 		return category;
 	}
+
+    @Getter
+    @AllArgsConstructor
+    public enum Mode {
+        NETWORK(HypixelAbstractionLayer.getInstance().getNetworkLevelApi()),
+        BEDWARS(HypixelAbstractionLayer.getInstance().getBedwarsLevelApi()),
+        SKYWARS(HypixelAbstractionLayer.getInstance().getSkywarsExpApi());
+
+        private final CachedAPI<String, Integer> api;
+    }
 }

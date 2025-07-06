@@ -23,7 +23,6 @@
 package io.github.axolotlclient.mixin;
 
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
-import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -37,9 +36,8 @@ import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsGame;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsPlayer;
-import io.github.axolotlclient.modules.hypixel.levelhead.LevelHead;
-import io.github.axolotlclient.modules.hypixel.levelhead.LevelHeadMode;
-import io.github.axolotlclient.modules.hypixel.nickhider.NickHider;
+import io.github.axolotlclient.modules.hypixel.LevelHead;
+import io.github.axolotlclient.modules.hypixel.NickHider;
 import io.github.axolotlclient.modules.tablist.Tablist;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
@@ -182,7 +180,7 @@ public abstract class PlayerListHudMixin extends GuiElement {
 			}
 
 			String uuid = UUIDHelper.toUndashed(playerListEntry2.getProfile().getId());
-			render = LevelHead.getDisplayString(LevelHeadMode.BEDWARS, uuid);
+			render = LevelHead.getDisplayString(LevelHead.Mode.BEDWARS, uuid);
 		} catch (Exception e) {
 			return;
 		}

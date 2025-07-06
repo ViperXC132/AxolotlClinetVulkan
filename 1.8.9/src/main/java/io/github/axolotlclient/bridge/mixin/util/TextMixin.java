@@ -54,7 +54,7 @@ public interface TextMixin extends AxoText.Mutable {
 
 	@Override
 	default Mutable br$append(AxoText child) {
-		return append((Text) child);
+		return append(((Text) child).copy());
 	}
 
 	@Override

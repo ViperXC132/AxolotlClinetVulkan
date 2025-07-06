@@ -23,7 +23,7 @@
 package io.github.axolotlclient.mixin;
 
 import io.github.axolotlclient.modules.freelook.Freelook;
-import io.github.axolotlclient.modules.hypixel.skyblock.Skyblock;
+import io.github.axolotlclient.modules.hypixel.Skyblock;
 import io.github.axolotlclient.util.events.Events;
 import io.github.axolotlclient.util.events.impl.PlayerDirectionChangeEvent;
 import net.minecraft.entity.Entity;

@@ -24,8 +24,10 @@ package io.github.axolotlclient.modules.hypixel.bedwars.upgrades;
 
 
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
+import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffects;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoItems;
+import io.github.axolotlclient.bridge.render.AxoSprites;
 import io.github.axolotlclient.util.ClientColors;
 import java.util.regex.Pattern;
 
@@ -48,17 +50,14 @@ public class BedwarsTeamUpgrades {
 	});
 
 	public final TeamUpgrade healPool = new BinaryUpgrade(
-		"healpool", Pattern.compile("^\\b[A-Za-z0-9_§]{3,16}\\b purchased Heal Pool\\s*$"),
-		3, 1, (context, x, y, width, height, upgradeLevel) -> {
+		"healpool", Pattern.compile("^\\b[A-Za-z0-9_§]{3,16}\\b purchased Heal Pool\\s*$"), 3, 1,
+		(context, x, y, width, height, upgradeLevel) -> {
 		if (upgradeLevel == 0) {
 			Color color = ClientColors.DARK_GRAY;
 			context.br$glColor4(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
 		}
-		// TODO: implement the spriteAAPI
-		//Minecraft.getInstance().getTextureManager().bind(new Identifier("textures/gui/container/inventory.png"));
-		//GuiElement.drawTexture(x, y, 7 * 18, 198, 18, 18, 16, 16, 256, 256);
-	}
-	);
+		context.br$drawTexture(x, y, 16, 16, AxoStatusEffects.REGEN.br$getSprite());
+	});
 
 	public final TeamUpgrade protection = new TieredUpgrade(
 		"prot", Pattern.compile("^\\b[A-Za-z0-9_§]{3,16}\\b purchased Reinforced Armor .{1,3}\\s*$"),
@@ -102,17 +101,14 @@ public class BedwarsTeamUpgrades {
 			Color color = ClientColors.DARK_GRAY;
 			context.br$glColor4(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
 		}
-		// Minecraft.getInstance().getTextureManager().bind(new Identifier("textures/gui/container/inventory.png"));
-		// GuiElement.drawTexture(x, y, 2 * 18, 198, 18, 18, 16, 16, 256, 256);
-	}
-	);
+		context.br$drawTexture(x, y, 16, 16, AxoStatusEffects.HASTE.br$getSprite());
+	});
 
 	public final TeamUpgrade forge = new TieredUpgrade(
 		"forge", Pattern.compile("^\\b[A-Za-z0-9_§]{3,16}\\b purchased (?:Iron|Golden|Emerald|Molten) Forge\\s*$"),
 		new int[]{2, 4}, new int[]{4, 6}, (context, x, y, width, height, upgradeLevel) -> {
 		if (upgradeLevel == 0) {
-			// Minecraft.getInstance().getTextureManager().bind(new Identifier("textures/blocks/furnace_front_off.png"));
-			// GuiElement.drawTexture(x, y, 0, 0, width, height, width, height);
+			context.br$drawTexture(x, y, width, height, AxoSprites.FURNACE_OFF);
 		} else {
 			if (upgradeLevel == 2) {
 				context.br$glColor4(1, 1, 0, 1);
@@ -121,13 +117,11 @@ public class BedwarsTeamUpgrades {
 			} else if (upgradeLevel == 4) {
 				context.br$glColor4(1, 0, 0, 1);
 			}
-			/*
-			Minecraft.getInstance().getTextureManager().bind(new Identifier("textures/blocks/furnace_front_on.png"));
-			GuiElement.drawTexture(x, y, 0, 0, width, height, width, height);*/
-			// Minecraft.getInstance().textRenderer.drawWithShadow(String.valueOf(upgradeLevel), x + width - 4, y + height - 6, -1);
+
+			context.br$drawTexture(x, y, width, height, AxoSprites.FURNACE_ON);
+			context.br$drawString(String.valueOf(upgradeLevel), x + width - 4, y + height - 6, -1, true);
 		}
-	}
-	);
+	});
 
 	public final TeamUpgrade featherFalling = new TieredUpgrade("feather_falling", Pattern.compile("^\\b[A-Za-z0-9_§]{3,16}\\b purchased Cushioned Boots .{1,2}\\s*$"),
 		new int[]{2, 4}, new int[]{1, 2}, (context, x, y, width, height, upgradeLevel) -> {

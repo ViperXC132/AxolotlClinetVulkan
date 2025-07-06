@@ -25,6 +25,7 @@ package io.github.axolotlclient.bridge.mixin.item;
 import io.github.axolotlclient.bridge.impl.Bridge;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoPlayerInventory;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 import net.minecraft.entity.player.PlayerInventory;
@@ -48,6 +49,9 @@ public abstract class PlayerInventoryMixin implements AxoPlayerInventory{
 	@Shadow
 	public abstract ItemStack getArmor(int par1);
 
+	@Shadow
+	public ItemStack[] inventorySlots;
+
 	@Override
 	public AxoItemStack br$getMainHand() {
 		return Bridge.wrapStack(getMainHandStack());
@@ -64,6 +68,14 @@ public abstract class PlayerInventoryMixin implements AxoPlayerInventory{
 	public List<AxoItemStack> br$getArmor() {
 		return IntStream.range(0, 4)
 			.mapToObj(x -> Bridge.wrapStack(getArmor(x)))
+			.toList();
+	}
+
+	@Override
+	public List<? extends AxoItemStack> br$getNonEquipmentItems() {
+		return Arrays.stream(inventorySlots)
+			.skip(9)
+			.map(Bridge::wrapStack)
 			.toList();
 	}
 }

@@ -20,7 +20,7 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.hypixel.nickhider;
+package io.github.axolotlclient.modules.hypixel;
 
 import io.github.axolotlclient.api.util.BiContainer;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
@@ -31,7 +31,6 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
 import io.github.axolotlclient.bridge.util.AxoText;
-import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
 import lombok.Getter;
 
 public class NickHider implements AbstractHypixelMod {
@@ -69,7 +68,7 @@ public class NickHider implements AbstractHypixelMod {
 			List<BiContainer<String, String>> replacements = new ArrayList<>();
 			if (minecraft.br$getPlayer() != null) {
 				// TODO: is .br$getGameProfile().br$getName() good?
-				String playerName = minecraft.br$getPlayer().br$getGameProfile().br$getName();
+				String playerName = minecraft.br$getPlayer().br$getName();
 				if (hideOwnName.get() && msg.contains(playerName)) {
 					replacements.add(BiContainer.of(playerName, hiddenNameSelf.get()));
 				}
@@ -82,8 +81,8 @@ public class NickHider implements AbstractHypixelMod {
 					}
 
 					// TODO: is .br$getGameProfile().br$getName() good?
-					if (msg.contains(player.br$getGameProfile().br$getName())) {
-						replacements.add(BiContainer.of(player.br$getGameProfile().br$getName(), hiddenNameOthers.get()));
+					if (msg.contains(player.br$getName())) {
+						replacements.add(BiContainer.of(player.br$getName(), hiddenNameOthers.get()));
 					}
 				}
 			}

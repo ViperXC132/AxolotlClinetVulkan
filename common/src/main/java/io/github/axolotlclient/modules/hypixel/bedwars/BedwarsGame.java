@@ -25,15 +25,19 @@ package io.github.axolotlclient.modules.hypixel.bedwars;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
-import io.github.axolotlclient.bridge.AxoPlayerProfile;
+import io.github.axolotlclient.bridge.AxoPlayerInfo;
+import io.github.axolotlclient.bridge.Platform;
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
+import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.bridge.scores.AxoScoreboard;
+import io.github.axolotlclient.bridge.scores.AxoScoreboardScore;
+import io.github.axolotlclient.bridge.scores.AxoTeam;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hypixel.bedwars.upgrades.BedwarsTeamUpgrades;
 import io.github.axolotlclient.util.ClientColors;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -71,20 +75,18 @@ public class BedwarsGame {
 	private BedwarsPlayer lastKill;
 	private BedwarsPlayer lastKiller;
 
-
 	public BedwarsGame(BedwarsMod mod) {
 		mc = AxoMinecraftClient.getInstance();
 		this.mod = mod;
 	}
 
 	public void onStart() {
-		/*TODO
 		mod.upgradesOverlay.onStart(upgrades);
 		players.clear();
 		playersById.clear();
-		Map<BedwarsTeam, List<PlayerInfo>> teamPlayers = new HashMap<>();
-		for (PlayerInfo player : mc.player.networkHandler.getOnlinePlayers()) {
-			String name = mc.gui.getPlayerTabOverlay().getDisplayName(player).replaceAll("§.", "");
+		Map<BedwarsTeam, List<AxoPlayerInfo>> teamPlayers = new HashMap<>();
+		for (AxoPlayerInfo player : mc.br$getOnlinePlayers()) {
+			String name = Platform.getTabNameFor(player).replaceAll("§.", "");
 			if (name.charAt(1) != ' ') {
 				continue;
 			}
@@ -94,7 +96,7 @@ public class BedwarsGame {
 			}
 			teamPlayers.compute(team, (t, entries) -> {
 				if (entries == null) {
-					List<PlayerInfo> players = new ArrayList<>();
+					List<AxoPlayerInfo> players = new ArrayList<>();
 					players.add(player);
 					return players;
 				}
@@ -102,23 +104,23 @@ public class BedwarsGame {
 				return entries;
 			});
 		}
-		for (Map.Entry<BedwarsTeam, List<PlayerInfo>> teamPlayerList : teamPlayers.entrySet()) {
-			teamPlayerList.getValue().sort(Comparator.comparing(p -> p.getProfile().getName()));
-			List<PlayerInfo> value = teamPlayerList.getValue();
+		for (Map.Entry<BedwarsTeam, List<AxoPlayerInfo>> teamPlayerList : teamPlayers.entrySet()) {
+			teamPlayerList.getValue().sort(Comparator.comparing(AxoPlayerInfo::br$getName));
+			List<AxoPlayerInfo> value = teamPlayerList.getValue();
 			for (int i = 0; i < value.size(); i++) {
-				PlayerInfo e = value.get(i);
+				AxoPlayerInfo e = value.get(i);
 				BedwarsPlayer p = new BedwarsPlayer(teamPlayerList.getKey(), e, i + 1);
-				if (mc.player.getGameProfile().getName().equals(e.getProfile().getName())) {
+				if (mc.br$getSession().username().equals(e.br$getName())) {
 					me = p;
 				}
-				players.put(e.getProfile().getName(), p);
-				playersById.put(e.getProfile().getId(), p);
+				players.put(e.br$getName(), p);
+				playersById.put(e.br$getId(), p);
 			}
 		}
-		this.started = true;*/
+		this.started = true;
 	}
 
-	private String calculateTopBarText() {
+	private AxoText calculateTopBarText() {
 		String topBar = getFormattedTime();
 		if (me.getStats() != null) {
 			topBar += "\n" +
@@ -126,19 +128,15 @@ public class BedwarsGame {
 				" D: " + me.getStats().getGameDeaths() +
 				" B: " + me.getStats().getGameBedsBroken();
 		}
-		return topBar;
+		return AxoText.literal(topBar);
 	}
 
-	private String calculateBottomBarText() {
-		/*return Formatting.DARK_AQUA + "Last Kill: " + Formatting.RESET + (lastKill == null ? "N/A" : lastKill.getColoredName()) +
-			Formatting.DARK_AQUA + " Last Killed By: " + Formatting.RESET + (lastKiller == null ? "N/A" : lastKiller.getColoredName());*/
-		// left in here because it'll be useful later on
-		/*Comparator<BedwarsPlayer> comparator = Comparator.comparingInt(o -> o.getStats().getGameKills());
-		return "Top 3 Killers: \n" + players.values().stream().filter(Objects::nonNull)
-			.sorted(comparator.reversed()).limit(3)
-			.map(p -> p.getColoredName() + ": " + p.getStats().getGameKills())
-			.collect(Collectors.joining("\n"));*/
-		return "";
+	private AxoText calculateBottomBarText() {
+		return AxoText.literal("")
+			.br$append("Last Kill: ", AxoText.Color.AQUA)
+			.br$append(lastKill == null ? "N/A" : lastKill.getColoredName())
+			.br$append(" Last Killed By: ", AxoText.Color.AQUA)
+			.br$append(lastKiller == null ? "N/A" : lastKiller.getColoredName());
 	}
 
 	public String getFormattedTime() {
@@ -165,7 +163,8 @@ public class BedwarsGame {
 		//mc.gui.getChat().addMessage(AxoText.literal("§b§lINFO:§8 " + message));
 	}
 
-	private void died(ReceiveChatMessageEvent event, BedwarsPlayer player, @Nullable BedwarsPlayer killer, BedwarsDeathType type, boolean finalDeath) {
+	private void died(ReceiveChatMessageEvent event, BedwarsPlayer player, @Nullable BedwarsPlayer killer,
+                      BedwarsDeathType type, boolean finalDeath) {
 		player.died();
 		if (killer != null) {
 			killer.killed(finalDeath);
@@ -221,10 +220,12 @@ public class BedwarsGame {
 	private String formatBed(BedwarsTeam team, BedwarsPlayer breaker) {
 		String playerFormatted = getPlayerFormatted(breaker);
 		return "§6§l§oBED BROKEN §8§l> " + team.getColorSection() + team.getName() + " Bed §7/broken/ " + playerFormatted +
-			(breaker.getStats() == null || breaker.getTeam() != me.getTeam() ? "" : " §6" + breaker.getStats().getBedsBroken());
+			(breaker.getStats() == null || breaker.getTeam() != me.getTeam() ? "" :
+                " §6" + breaker.getStats().getBedsBroken());
 	}
 
-	private String formatDeath(BedwarsPlayer player, @Nullable BedwarsPlayer killer, BedwarsDeathType type, boolean finalDeath) {
+	private String formatDeath(BedwarsPlayer player, @Nullable BedwarsPlayer killer, BedwarsDeathType type,
+                               boolean finalDeath) {
 		String inner = type.getInner().get();
 		if (finalDeath) {
 			inner = "§6§l/" + inner.toUpperCase(Locale.ROOT) + "/";
@@ -243,7 +244,7 @@ public class BedwarsGame {
 	}
 
 	private String getPlayerFormatted(BedwarsPlayer player) {
-		return ""; //return player.getColoredTeamNumber() + " " + player.getProfile().getProfile().getName();
+		return player.getColoredTeamNumber() + " " + player.getProfile().br$getName();
 	}
 
 	public boolean isTeamEliminated(BedwarsTeam team) {
@@ -252,7 +253,8 @@ public class BedwarsGame {
 
 	public void onChatMessage(String rawMessage, ReceiveChatMessageEvent event) {
 		try {
-			if (mod.removeAnnoyingMessages.get() && BedwarsMessages.matched(BedwarsMessages.ANNOYING_MESSAGES, rawMessage).isPresent()) {
+			if (mod.removeAnnoyingMessages.get() && BedwarsMessages.matched(BedwarsMessages.ANNOYING_MESSAGES,
+                rawMessage).isPresent()) {
 				event.setCancelled(true);
 				return;
 			}
@@ -262,7 +264,8 @@ public class BedwarsGame {
 				return;
 			}
 			if (BedwarsMessages.matched(BedwarsMessages.BED_DESTROY, rawMessage, m -> {
-				Optional<BedwarsPlayer> player = BedwarsMessages.matched(BedwarsMessages.BED_BREAK, rawMessage).flatMap(m1 -> getPlayer(m1.group(1)));
+				Optional<BedwarsPlayer> player =
+                    BedwarsMessages.matched(BedwarsMessages.BED_BREAK, rawMessage).flatMap(m1 -> getPlayer(m1.group(1)));
 				if (player.isEmpty()) {
 					AxolotlClientCommon.getInstance().getLogger().warn("Unknown bed break message: " + rawMessage);
 					//Notifications.getInstance().addStatus("bedwars.unknown_bed_break", "bedwars.unknown_message");
@@ -273,20 +276,24 @@ public class BedwarsGame {
 			})) {
 				return;
 			}
-			if (BedwarsMessages.matched(BedwarsMessages.DISCONNECT, rawMessage, m -> getPlayer(m.group(1)).ifPresent(p -> disconnected(event, p)))) {
+			if (BedwarsMessages.matched(BedwarsMessages.DISCONNECT, rawMessage,
+                m -> getPlayer(m.group(1)).ifPresent(p -> disconnected(event, p)))) {
 				return;
 			}
-			if (BedwarsMessages.matched(BedwarsMessages.RECONNECT, rawMessage, m -> getPlayer(m.group(1)).ifPresent(p -> reconnected(event, p)))) {
+			if (BedwarsMessages.matched(BedwarsMessages.RECONNECT, rawMessage,
+                m -> getPlayer(m.group(1)).ifPresent(p -> reconnected(event, p)))) {
 				return;
 			}
 			if (BedwarsMessages.matched(BedwarsMessages.GAME_END, rawMessage, m -> {
-				BedwarsTeam win = players.values().stream().filter(p -> !p.isFinalKilled()).findFirst().map(BedwarsPlayer::getTeam).orElse(null);
+				BedwarsTeam win =
+                    players.values().stream().filter(p -> !p.isFinalKilled()).findFirst().map(BedwarsPlayer::getTeam).orElse(null);
 				this.won = win;
-			//	this.wonTick = mc.gui.getTicks() + 10;
+				this.wonTick = Platform.tickCount() + 10;
 			})) {
 				return;
 			}
-			if (BedwarsMessages.matched(BedwarsMessages.TEAM_ELIMINATED, rawMessage, m -> BedwarsTeam.fromName(m.group(1)).ifPresent(t -> teamEliminated(event, t)))) {
+			if (BedwarsMessages.matched(BedwarsMessages.TEAM_ELIMINATED, rawMessage,
+                m -> BedwarsTeam.fromName(m.group(1)).ifPresent(t -> teamEliminated(event, t)))) {
 				return;
 			}
 			upgrades.onMessage(rawMessage);
@@ -314,18 +321,17 @@ public class BedwarsGame {
 			return;
 		}
 
-	/*	mc.gui.getChat().addMessage(
-			AxoText.literal("§8§m----------[§7Winstreaks§8]----------")
-		);*/
+		AxoMinecraftClient.getInstance().br$sendToClient(AxoText.literal(
+			"§8§m----------[§7Winstreaks§8]----------"
+		));
 		for (BedwarsPlayer p : players.values()) {
 			if (p.getStats() != null && p.getStats().getWinstreak() > 0) {
 				boolean winner = p.getTeam().equals(win);
 				int before = p.getStats().getWinstreak();
 				int after = winner ? before + 1 : 0;
-				/*mc.gui.getChat().addMessage(
-					AxoText.literal(
-						getPlayerFormatted(p) + "§8: §7" + before + " §8 -> §" + (winner ? "a" : "c") + after
-					));*/
+				AxoMinecraftClient.getInstance().br$sendToClient(AxoText.literal(
+					getPlayerFormatted(p) + "§8: §7" + before + " §8 -> §" + (winner ? "a" : "c") + after
+				));
 			}
 		}
 
@@ -368,20 +374,19 @@ public class BedwarsGame {
 		}
 	}
 
-	/*
 	public void onScoreboardRender(ScoreboardRenderEvent event) {
-		Scoreboard scoreboard = event.getObjective().getScoreboard();
-		Collection<ScoreboardScore> scores = scoreboard.getScores(event.getObjective());
-		List<ScoreboardScore> filteredScores = scores.stream()
-			.filter(score -> score.getOwner() != null && !score.getOwner().startsWith("#"))
+		AxoScoreboard scoreboard = event.getObjective().br$getScoreboard();
+		final var scores = scoreboard.br$getScores(event.getObjective());
+		List<AxoScoreboardScore> filteredScores = scores.stream()
+			.filter(score -> score.br$getOwner() != null && !score.br$getOwner().startsWith("#"))
 			.collect(Collectors.toList());
 		Collections.reverse(filteredScores);
 		if (filteredScores.size() < 3) {
 			return;
 		}
-		ScoreboardScore score = filteredScores.get(2);
-		Team team = scoreboard.getTeamOfMember(score.getOwner());
-		String timer = Team.getMemberDisplayName(team, score.getOwner());
+		AxoScoreboardScore score = filteredScores.get(2);
+		AxoTeam team = scoreboard.br$getTeamOfMember(score.br$getOwner());
+		String timer = team.br$getMemberDisplayName(score.br$getOwner());
 		if (!timer.contains(":")) {
 			return;
 		}
@@ -389,7 +394,7 @@ public class BedwarsGame {
 		try {
 			seconds = Integer.parseInt(timer.split(":")[1].substring(0, 2));
 		} catch (Exception e) {
-			AxolotlClient.LOGGER.warn("couldn't parse timer: ", e);
+			AxolotlClientCommon.getInstance().getLogger().warn("couldn't parse timer: ", e);
 			return;
 		}
 		int target = (60 - seconds) % 60;
@@ -398,39 +403,33 @@ public class BedwarsGame {
 			while (this.seconds % 60 != target) {
 				updateClock();
 			}
-<<<<<<< HEAD:common/src/main/java/io/github/axolotlclient/modules/hypixel/bedwars/BedwarsGame.java
-			topBarText = AxoText.literal(calculateTopBarText());
-			bottomBarText = AxoText.literal(calculateBottomBarText());
-=======
 			if (me != null) {
-				topBarText = new LiteralText(calculateTopBarText());
-				bottomBarText = new LiteralText(calculateBottomBarText());
+				topBarText = calculateTopBarText();
+				bottomBarText = calculateBottomBarText();
 			}
->>>>>>> dev:1.8.9/src/main/java/io/github/axolotlclient/modules/hypixel/bedwars/BedwarsGame.java
 		}
-	}*/
+	}
 
 	private void updateClock() {
 		this.seconds++;
 	}
 
 	public void tick() {
-		/*
-		int currentTick = mc.gui.getTicks();
+		int currentTick = Platform.tickCount();
 		if (won != null && currentTick >= wonTick) {
 			gameEnd(won);
 		}
-		players.values().forEach(p -> p.tick(currentTick));*/
+		players.values().forEach(p -> p.tick(currentTick));
 	}
 
-	public void updateEntries(List<AxoPlayerProfile> entries) {
+	public void updateEntries(List<AxoPlayerInfo> entries) {
 		// Update latencies and other information for entries
-		/*entries.forEach(entry ->
-			getPlayer(entry.getProfile().getName()).ifPresent(player -> player.updateListEntry(entry))
-		);*/
+		entries.forEach(entry ->
+			getPlayer(entry.br$getName()).ifPresent(player -> player.updateListEntry(entry))
+		);
 	}
 
-	public List<AxoPlayerProfile> getTabPlayerList(List<AxoPlayerProfile> original) {
+	public List<AxoPlayerInfo> getTabPlayerList(List<AxoPlayerInfo> original) {
 		updateEntries(original);
 		return players.values().stream().filter(b -> !b.isFinalKilled()).sorted((b1, b2) -> {
 			if (b1.getTeam() == b2.getTeam()) {
@@ -458,7 +457,8 @@ public class BedwarsGame {
 		return mode.apply(stats);
 	}
 
-	public void renderCustomScoreboardObjective(AxoRenderContext context, String playerName, int objectiveValue, int y, int endX) {
+	public void renderCustomScoreboardObjective(AxoRenderContext context, String playerName, int objectiveValue, int y
+        , int endX) {
 		BedwarsPlayer bedwarsPlayer = getPlayer(playerName).orElse(null);
 		if (bedwarsPlayer == null) {
 			return;
@@ -470,17 +470,17 @@ public class BedwarsGame {
 			if (bedwarsPlayer.isDisconnected()) {
 				return;
 			}
-			int tickTillLive = Math.max(0, bedwarsPlayer.getTickAlive() - /*mc.gui.getTicks()*/ 0);
+			int tickTillLive = Math.max(0, bedwarsPlayer.getTickAlive() - Platform.tickCount());
 			float secondsTillLive = tickTillLive / 20f;
 			render = String.format("%.1f", secondsTillLive) + "s";
 			color = new Color(200, 200, 200).toInt();
 		} else {
-			int health = objectiveValue;
-			color = ClientColors.blend(new Color(255, 255, 255), new Color(215, 0, 64), (int) (1 - (health / 20f))).toInt();
-			render = String.valueOf(health);
+			color = ClientColors.blend(new Color(255, 255, 255), new Color(215, 0, 64),
+                (int) (1 - (objectiveValue / 20f))).toInt();
+			render = String.valueOf(objectiveValue);
 		}
-		// Health
 
+		// Health
 		context.br$drawString(
 			render,
 			(endX - context.br$getFont().br$getWidth(render)),

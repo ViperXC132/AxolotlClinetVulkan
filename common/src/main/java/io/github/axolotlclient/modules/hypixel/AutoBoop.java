@@ -20,7 +20,7 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.hypixel.autoboop;
+package io.github.axolotlclient.modules.hypixel;
 
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import java.util.ArrayList;
@@ -39,7 +39,6 @@ import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringArrayOption;
-import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
 import io.github.axolotlclient.util.ThreadExecuter;
 import io.github.axolotlclient.util.options.GenericOption;
 import lombok.Getter;
@@ -62,7 +61,7 @@ public class AutoBoop implements AbstractHypixelMod {
 					.getFunc().apply(player, filters)) {
 					CompletableFuture.runAsync(() -> {
 						// TODO: this is not thread safe!
-						AxoMinecraftClient.getInstance().br$getPlayer().br$sendToServer("/boop " + player);
+						AxoMinecraftClient.getInstance().br$sendToServer("/boop " + player);
 						AxolotlClientCommon.getInstance().getLogger().info("Booped " + player);
 					}, CompletableFuture.delayedExecutor(1, TimeUnit.SECONDS, ThreadExecuter.service()));
 				}

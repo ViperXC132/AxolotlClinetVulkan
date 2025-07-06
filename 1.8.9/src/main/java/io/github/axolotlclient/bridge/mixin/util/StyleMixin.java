@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.bridge.mixin.util;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.bridge.util.AxoText;
 import net.minecraft.text.Formatting;
@@ -84,6 +85,18 @@ public abstract class StyleMixin implements AxoText.Style {
 		return copy;
 	}
 
+	@ModifyReturnValue(method = "copy", at = @At("RETURN"))
+	public Style copyColor(Style original) {
+		((StyleMixin) (Object) original).axolotlclient$color = axolotlclient$color;
+		return original;
+	}
+
+	@ModifyReturnValue(method = "deepCopy", at = @At("RETURN"))
+	public Style deepCopyColor(Style original) {
+		((StyleMixin) (Object) original).axolotlclient$color = axolotlclient$color;
+		return original;
+	}
+
 	@Override
 	public AxoText.Style br$tooltip(AxoText text) {
 		return copy().setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, (Text) text));
@@ -100,7 +113,7 @@ public abstract class StyleMixin implements AxoText.Style {
 		}
 
 		if (color != null) {
-			sb.append("§#").append(StringUtils.leftPad(color.toString(), 6, "0"));
+			sb.append("§#").append(StringUtils.leftPad(Integer.toUnsignedString(color & 0xffffff, 16), 6, "0"));
 		}
 	}
 }

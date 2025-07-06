@@ -136,6 +136,7 @@ public class ItemUpdateHud extends TextHudEntry {
 				.br$append(openBracket)
 				.br$append(item.times)
 				.br$append(closingBracket)
+				.br$append(" ")
 				.br$append(item.stack.br$getHoverName());
 
 			context.br$drawString(message, pos.x, pos.y + lastY, ClientColors.SELECTOR_GREEN.toInt(), shadow.get());
@@ -153,6 +154,7 @@ public class ItemUpdateHud extends TextHudEntry {
 				.br$append(openBracket)
 				.br$append(item.times)
 				.br$append(closingBracket)
+				.br$append(" ")
 				.br$append(item.stack.br$getHoverName());
 
 			context.br$drawString(message, pos.x, pos.y + lastY, ClientColors.SELECTOR_RED.toInt(), shadow.get());

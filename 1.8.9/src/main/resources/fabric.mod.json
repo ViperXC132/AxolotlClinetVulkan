@@ -84,7 +84,7 @@
 				"io/github/axolotlclient/bridge/util/AxoText\u0024Style"
 			],
 			"net/minecraft/unmapped/C_3543146": [
-				"io/github/axolotlclient/bridge/AxoPlayerProfile"
+				"io/github/axolotlclient/bridge/AxoPlayerInfo"
 			],
 			"net/minecraft/unmapped/C_0658987": [
 				"io/github/axolotlclient/bridge/entity/effect/AxoStatusEffectInstance"

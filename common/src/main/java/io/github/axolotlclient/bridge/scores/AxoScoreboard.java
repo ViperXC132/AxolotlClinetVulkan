@@ -20,13 +20,12 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.bridge.entity.effect;
+package io.github.axolotlclient.bridge.scores;
 
-import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import java.util.Collection;
 
-public class AxoStatusEffects {
-	public static final AxoStatusEffect REGEN = BridgeUtil.noImplValue();
-	public static final AxoStatusEffect HASTE = BridgeUtil.noImplValue();
-	public static final AxoStatusEffect SPEED = BridgeUtil.noImplValue();
-	public static final AxoStatusEffect JUMP_BOOST = BridgeUtil.noImplValue();
+public interface AxoScoreboard {
+	Collection<? extends AxoScoreboardScore> br$getScores(AxoObjective objective);
+
+	AxoTeam br$getTeamOfMember(String s);
 }

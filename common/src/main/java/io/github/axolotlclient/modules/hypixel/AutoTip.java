@@ -20,13 +20,12 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.hypixel.autotip;
+package io.github.axolotlclient.modules.hypixel;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
-import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
 import java.util.regex.Pattern;
 import lombok.Getter;
 

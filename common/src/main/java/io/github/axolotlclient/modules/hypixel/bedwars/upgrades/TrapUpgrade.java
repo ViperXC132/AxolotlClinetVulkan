@@ -23,6 +23,10 @@
 package io.github.axolotlclient.modules.hypixel.bedwars.upgrades;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
+import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffects;
+import io.github.axolotlclient.bridge.item.AxoItem;
+import io.github.axolotlclient.bridge.item.AxoItemStack;
+import io.github.axolotlclient.bridge.item.AxoItems;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoSprites;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMode;
@@ -112,17 +116,21 @@ public class TrapUpgrade extends TeamUpgrade {
 	@AllArgsConstructor
 	public enum TrapType {
 		ITS_A_TRAP((r, x, y, width, height, unused) -> {
+			r.br$drawTexture(x, y, 16, 16, AxoStatusEffects.HASTE.br$getSprite());
 			//Minecraft.getInstance().getTextureManager().bind(new Identifier("textures/gui/container/inventory.png"));
 			//GuiElement.drawTexture(x, y, 5 * 18, 198 + 18, 18, 18, 16, 16, 256, 256);
 		}),
 		COUNTER_OFFENSIVE((r, x, y, width, height, unused) -> {
+			r.br$drawTexture(x, y, 16, 16, AxoStatusEffects.HASTE.br$getSprite());
 //			Minecraft.getInstance().getTextureManager().bind(new Identifier("textures/gui/container/inventory.png"));
 //			GuiElement.drawTexture(x, y, 0, 198, 18, 18, 16, 16, 256, 256);
 		}),
 		ALARM((r, x, y, width, height, unused) -> {
+			r.br$renderGuiItemModel(AxoItemStack.of(AxoItems.ENDER_EYE), x, y);
 //			ItemUtil.renderGuiItemModel(new ItemStack(Items.ENDER_EYE), x, y)
 		}),
 		MINER_FATIGUE((r, x, y, width, height, unused) -> {
+			r.br$drawTexture(x, y, 16, 16, AxoStatusEffects.HASTE.br$getSprite());
 //			Minecraft.getInstance().getTextureManager().bind(new Identifier("textures/gui/container/inventory.png"));
 //			GuiElement.drawTexture(x, y, 3 * 18, 198, 18, 18, 16, 16, 256, 256);
 		});

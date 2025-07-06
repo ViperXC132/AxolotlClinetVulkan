@@ -20,13 +20,17 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.bridge.entity.effect;
+package io.github.axolotlclient.bridge;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import java.util.UUID;
 
-public class AxoStatusEffects {
-	public static final AxoStatusEffect REGEN = BridgeUtil.noImplValue();
-	public static final AxoStatusEffect HASTE = BridgeUtil.noImplValue();
-	public static final AxoStatusEffect SPEED = BridgeUtil.noImplValue();
-	public static final AxoStatusEffect JUMP_BOOST = BridgeUtil.noImplValue();
+public interface AxoPlayerInfo {
+	default String br$getName() {
+		throw BridgeUtil.noImpl();
+	}
+
+	default UUID br$getId() {
+		throw BridgeUtil.noImpl();
+	}
 }

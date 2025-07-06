@@ -51,4 +51,5 @@ public class AxoItems {
 	public static final AxoItem STONE_SHOVEL = BridgeUtil.noImplValue();
 	public static final AxoItem STONE_HOE = BridgeUtil.noImplValue();
 	public static final AxoItem GLOWSTONE_DUST = BridgeUtil.noImplValue();
+	public static final AxoItem ENDER_EYE = BridgeUtil.noImplValue();
 }

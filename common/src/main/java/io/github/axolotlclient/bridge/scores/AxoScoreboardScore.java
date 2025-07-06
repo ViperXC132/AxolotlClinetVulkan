@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -20,19 +20,10 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.hypixel.levelhead;
+package io.github.axolotlclient.bridge.scores;
 
-import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
-import io.github.axolotlclient.util.CachedAPI;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import org.jetbrains.annotations.Nullable;
 
-@Getter
-@AllArgsConstructor
-public enum LevelHeadMode {
-	NETWORK(HypixelAbstractionLayer.getInstance().getNetworkLevelApi()),
-	BEDWARS(HypixelAbstractionLayer.getInstance().getBedwarsLevelApi()),
-	SKYWARS(HypixelAbstractionLayer.getInstance().getSkywarsExpApi());
-
-	private final CachedAPI<String, Integer> api;
+public interface AxoScoreboardScore {
+	@Nullable String br$getOwner();
 }

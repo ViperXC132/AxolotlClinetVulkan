@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.bridge.mixin.entity;
 
+import com.mojang.authlib.GameProfile;
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.item.AxoItem;
 import io.github.axolotlclient.bridge.item.AxoItems;
@@ -33,9 +34,12 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(PlayerEntity.class)
-public class PlayerEntityMixin implements AxoPlayer {
+public abstract class PlayerEntityMixin implements AxoPlayer {
 	@Shadow
 	public PlayerInventory inventory;
+
+	@Shadow
+	public abstract GameProfile getGameProfile();
 
 	@Override
 	public AxoPlayerInventory br$getInventory() {
@@ -45,5 +49,10 @@ public class PlayerEntityMixin implements AxoPlayer {
 	@Override
 	public @Nullable AxoItem br$getProjectileItem() {
 		return AxoItems.ARROW;
+	}
+
+	@Override
+	public String br$getName() {
+		return getGameProfile().getName();
 	}
 }

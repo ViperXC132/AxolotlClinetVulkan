@@ -20,7 +20,7 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.hypixel.autogg;
+package io.github.axolotlclient.modules.hypixel;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
@@ -28,7 +28,6 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
-import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -40,7 +39,6 @@ import lombok.Getter;
  *
  * @license MPL-2.0
  */
-
 public class AutoGG implements AbstractHypixelMod {
 
 	@Getter
@@ -181,7 +179,7 @@ public class AutoGG implements AbstractHypixelMod {
 		if (System.currentTimeMillis() - this.lastTime > 3000 && options != null) {
 			for (String s : options) {
 				if (messageReceived.contains(s)) {
-					AxoMinecraftClient.getInstance().br$getPlayer().br$sendToServer(messageToSend);
+					AxoMinecraftClient.getInstance().br$sendToServer(messageToSend);
 					this.lastTime = System.currentTimeMillis();
 					return;
 				}

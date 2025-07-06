@@ -29,13 +29,7 @@ import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.Request;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.modules.AbstractCommonModule;
-import io.github.axolotlclient.modules.hypixel.autoboop.AutoBoop;
-import io.github.axolotlclient.modules.hypixel.autogg.AutoGG;
-import io.github.axolotlclient.modules.hypixel.autotip.AutoTip;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
-import io.github.axolotlclient.modules.hypixel.levelhead.LevelHead;
-import io.github.axolotlclient.modules.hypixel.nickhider.NickHider;
-import io.github.axolotlclient.modules.hypixel.skyblock.Skyblock;
 import java.util.ArrayList;
 import java.util.List;
 

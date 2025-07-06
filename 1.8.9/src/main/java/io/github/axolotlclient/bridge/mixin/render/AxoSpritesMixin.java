@@ -47,11 +47,16 @@ public class AxoSpritesMixin {
 	@Final
 	public static AxoSprite BARRIER_ITEM_ICON;
 
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoSprite REGEN_ICON;
+
 	@Inject(method = "<clinit>", at = @At("HEAD"), cancellable = true)
 	private static void setStaticValues(CallbackInfo info) {
 		BADGE = new AxoSpriteImpl.Simple((Identifier) AxolotlClientCommon.BADGE_PATH, 0, 0, 15, 15);
 		BARRIER_ITEM_ICON = new AxoSpriteImpl.Simple(new Identifier("textures/item/barrier.png"), 0, 0, 16, 16);
-
+		REGEN_ICON = new AxoSpriteImpl.Simple(new Identifier("textures/gui/container/inventory.png"), 7 * 18, 198, 16, 16);
 		info.cancel();
 	}
 }

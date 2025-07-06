@@ -27,4 +27,6 @@ import io.github.axolotlclient.bridge.internal.BridgeUtil;
 public class AxoSprites {
 	public static final AxoSprite BADGE = BridgeUtil.noImplValue();
 	public static final AxoSprite BARRIER_ITEM_ICON = BridgeUtil.noImplValue();
+	public static final AxoSprite FURNACE_OFF = BridgeUtil.noImplValue();
+	public static final AxoSprite FURNACE_ON = BridgeUtil.noImplValue();
 }

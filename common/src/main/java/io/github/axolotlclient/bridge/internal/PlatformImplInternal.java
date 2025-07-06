@@ -24,6 +24,7 @@ package io.github.axolotlclient.bridge.internal;
 
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
+import io.github.axolotlclient.bridge.AxoPlayerInfo;
 import io.github.axolotlclient.bridge.BridgeVersion;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffect;
@@ -110,6 +111,18 @@ public class PlatformImplInternal {
 	}
 
 	public static AxoText.Mutable createTranslatable(String key, Object... args) {
+		throw BridgeUtil.noImpl();
+	}
+
+	public static String stripText(String text) {
+		throw BridgeUtil.noImpl();
+	}
+
+	public static String getTabNameFor(AxoPlayerInfo player) {
+		throw BridgeUtil.noImpl();
+	}
+
+	public static void setTabListHeader(AxoText text) {
 		throw BridgeUtil.noImpl();
 	}
 }

@@ -26,6 +26,8 @@ import io.github.axolotlclient.bridge.commands.Commands;
 import io.github.axolotlclient.bridge.entity.AxoEntity;
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
+import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
+import io.github.axolotlclient.bridge.events.types.WorldLoadEvent;
 import io.github.axolotlclient.bridge.key.AxoKey;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -37,17 +39,20 @@ import org.jetbrains.annotations.Nullable;
 public class Events {
 	public static final EventBus<BiConsumer<AxoPlayer, AxoEntity>> PLAYER_ATTACK = EventBus.broadcast2();
 	public static final EventBus<BiConsumer<AxoPlayer, @Nullable AxoEntity>> PLAYER_HURT = EventBus.broadcast2();
+
 	public static final EventBus<Consumer<Long>> UPDATE_TIME = EventBus.broadcast1();
 	public static final EventBus<Consumer<AxoKey>> KEY_INPUT = EventBus.broadcast1();
+
 	public static final EventBus<Runnable> CLIENT_START = EventBus.broadcast0();
 	public static final EventBus<Runnable> CLIENT_STOP = EventBus.broadcast0();
 	public static final EventBus<Runnable> TICK = EventBus.broadcast0();
-	public static final EventBus<Consumer<ReceiveChatMessageEvent>> RECEIVE_CHAT_MESSAGE = EventBus.broadcast1();
 	public static final EventBus<Runnable> END_RESOURCE_RELOAD = EventBus.broadcast0();
 	public static final EventBus<Runnable> CONNECTION_PLAY_READY = EventBus.broadcast0();
-
 	public static final EventBus<Runnable> DISCONNECT = EventBus.broadcast0();
 	public static final EventBus<Runnable> CONNECT = EventBus.broadcast0();
 
+	public static final EventBus<Consumer<ReceiveChatMessageEvent>> RECEIVE_CHAT_MESSAGE = EventBus.broadcast1();
 	public static final EventBus<Consumer<Commands>> COMMAND_REGISTER = EventBus.broadcast1();
+	public static final EventBus<Consumer<ScoreboardRenderEvent>> SCOREBOARD_RENDER_EVENT = EventBus.broadcast1();
+	public static final EventBus<Consumer<WorldLoadEvent>> WORLD_LOAD_EVENT = EventBus.broadcast1();
 }

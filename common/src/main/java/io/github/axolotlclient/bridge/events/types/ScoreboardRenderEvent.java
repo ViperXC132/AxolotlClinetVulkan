@@ -20,29 +20,15 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.hypixel.skyblock;
+package io.github.axolotlclient.bridge.events.types;
 
-import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.bridge.key.AxoKeybinding;
-import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
-import lombok.Getter;
+import io.github.axolotlclient.bridge.scores.AxoObjective;
+import io.github.axolotlclient.util.events.types.CancellableEvent;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-public class Skyblock implements AbstractHypixelMod {
-
-	@Getter
-	private final static Skyblock Instance = new Skyblock();
-	public final BooleanOption rotationLocked = new BooleanOption("rotationLocked", false);
-	private final OptionCategory category = OptionCategory.create("skyblock");
-
-	@Override
-	public void init() {
-		AxoKeybinding.create(null, "lockRotation", "category.axolotlclient")
-			.br$registerOnClicked(rotationLocked::toggle);
-	}
-
-	@Override
-	public OptionCategory getCategory() {
-		return category;
-	}
+@EqualsAndHashCode(callSuper = true)
+@Data
+public class ScoreboardRenderEvent extends CancellableEvent {
+	private final AxoObjective objective;
 }

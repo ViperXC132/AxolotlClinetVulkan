@@ -26,13 +26,13 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
+import io.github.axolotlclient.bridge.Platform;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
+import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
 import io.github.axolotlclient.bridge.events.types.WorldLoadEvent;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
-import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import lombok.Getter;
@@ -88,8 +88,8 @@ public class BedwarsMod implements AbstractHypixelMod {
 		instance = this;
 
 		Events.RECEIVE_CHAT_MESSAGE.register(this::onMessage);
-		//Events.SCOREBOARD_RENDER_EVENT.register(this::onScoreboardRender);
-		//Events.WORLD_LOAD_EVENT.register(this::onWorldLoad);
+		Events.SCOREBOARD_RENDER_EVENT.register(this::onScoreboardRender);
+		Events.WORLD_LOAD_EVENT.register(this::onWorldLoad);
 	}
 
 	public boolean isEnabled() {
@@ -110,24 +110,26 @@ public class BedwarsMod implements AbstractHypixelMod {
 	}
 
 	public void onMessage(ReceiveChatMessageEvent event) {
-		// Remove formatting
-		/*TODO: port this
-		String rawMessage = event.getFormattedMessage().getString();
+		String rawMessage = event.getFormattedMessage().br$getRawString();
 		if (currentGame != null) {
 			currentGame.onChatMessage(rawMessage, event);
-			String time = "§7" + currentGame.getFormattedTime() + Formatting.RESET + " ";
+
+			final var time = AxoText.literal(currentGame.getFormattedTime())
+				.br$color(AxoText.Color.GRAY)
+				.br$append(" ");
+
 			if (!event.isCancelled() && showChatTime.get()) {
 				// Add time to every message received in game
 				if (event.getNewMessage() != null) {
-					event.setNewMessage(AxoText.literal(time).append(event.getNewMessage()));
+					event.setNewMessage(time.br$append(event.getNewMessage()));
 				} else {
-					event.setNewMessage(AxoText.literal(time).append(event.getFormattedMessage()));
+					event.setNewMessage(time.br$append(event.getFormattedMessage()));
 				}
 			}
 		} else if (enabled.get() && targetTick < 0 && BedwarsMessages.matched(GAME_START, rawMessage).isPresent()) {
 			// Give time for Hypixel to sync
-			targetTick = Minecraft.getInstance().gui.getTicks() + 10;
-		}*/
+			targetTick = Platform.tickCount() + 10;
+		}
 	}
 
 	public Optional<BedwarsGame> getGame() {
@@ -146,30 +148,27 @@ public class BedwarsMod implements AbstractHypixelMod {
 			if (currentGame.isStarted()) {
 				// Trigger setting the header
 				currentGame.tick();
-				// TODO: uncomment
-				// AxoMinecraftClient.getInstance().gui.getPlayerTabOverlay().setHeader(null);
+				Platform.setTabListHeader(null);
 			} else {
 				if (checkReady()) {
 					currentGame.onStart();
 				}
 			}
 		} else {
-			/* TODO: don't understand the logic here
-			if (targetTick > 0 && AxoMinecraftClient.getInstance().gui.getTicks() > targetTick) {
+			if (targetTick > 0 && Platform.tickCount() > targetTick) {
 				currentGame = new BedwarsGame(this);
 				targetTick = -1;
-			}*/
+			}
 		}
 	}
 
 	private boolean checkReady() {
-		/*TODO
-		for (PlayerInfo player : AxoMinecraftClient.getInstance().br$getPlayer().networkHandler.getOnlinePlayers()) {
-			String name = AxoMinecraftClient.getInstance().gui.getPlayerTabOverlay().getDisplayName(player).replaceAll("§.", "");
+		for (final var player : AxoMinecraftClient.getInstance().br$getOnlinePlayers()) {
+			String name = Platform.getTabNameFor(player).replaceAll("§.", "");
 			if (name.charAt(1) == ' ') {
 				return true;
 			}
-		}*/
+		}
 		return false;
 	}
 
@@ -177,27 +176,27 @@ public class BedwarsMod implements AbstractHypixelMod {
 		return currentGame != null && currentGame.isStarted();
 	}
 
-	/*TODO
 	public void onScoreboardRender(ScoreboardRenderEvent event) {
 		if (inGame()) {
 			waiting = false;
 			currentGame.onScoreboardRender(event);
 			return;
 		}
-		if (!Formatting.strip(event.getObjective().getDisplayName()).contains("BED WARS")) {
+		if (!AxoText.strip(event.getObjective().br$getDisplayName()).contains("BED WARS")) {
 			return;
 		}
-		Scoreboard scoreboard = event.getObjective().getScoreboard();
-		Collection<ScoreboardScore> scores = scoreboard.getScores(event.getObjective());
-		List<ScoreboardScore> filteredScores = scores.stream()
-			.filter(score -> score.getOwner() != null && !score.getOwner().startsWith("#"))
+		final var scoreboard = event.getObjective().br$getScoreboard();
+		final var scores = scoreboard.br$getScores(event.getObjective());
+		final var filteredScores = scores.stream()
+			.filter(score -> score.br$getOwner() != null && !score.br$getOwner().startsWith("#"))
 			.toList();
+
 		waiting = filteredScores.stream().anyMatch(score -> {
-			Team team = scoreboard.getTeam(score.getOwner());
-			String format = Formatting.strip(Team.getMemberDisplayName(team, score.getOwner())).replaceAll("[^A-z0-9 .:]", "");
+			final var team = scoreboard.br$getTeamOfMember(score.br$getOwner());
+			String format = AxoText.strip(team.br$getMemberDisplayName(score.br$getOwner())).replaceAll("[^A-z0-9 .:]", "");
 			return format.contains("Waiting...") || format.contains("Starting in");
 		});
-	}*/
+	}
 
 	public void gameEnd() {
 		upgradesOverlay.onEnd();

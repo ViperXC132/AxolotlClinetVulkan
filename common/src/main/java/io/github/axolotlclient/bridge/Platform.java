@@ -26,6 +26,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
 import io.github.axolotlclient.bridge.render.AxoSprite;
+import io.github.axolotlclient.bridge.util.AxoText;
 
 public interface Platform {
 	static long getMeasuringTimeMs() {
@@ -46,5 +47,13 @@ public interface Platform {
 
 	static float tickRate() {
 		return PlatformImplInternal.tickRate();
+	}
+
+	static String getTabNameFor(AxoPlayerInfo player) {
+		return PlatformImplInternal.getTabNameFor(player);
+	}
+
+	static void setTabListHeader(AxoText text) {
+		PlatformImplInternal.setTabListHeader(text);
 	}
 }

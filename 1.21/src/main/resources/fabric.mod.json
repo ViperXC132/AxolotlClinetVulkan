@@ -90,7 +90,7 @@
 				"io/github/axolotlclient/bridge/render/AxoRenderContext"
 			],
 			"net/minecraft/class_640": [
-				"io/github/axolotlclient/bridge/AxoPlayerProfile"
+				"io/github/axolotlclient/bridge/AxoPlayerInfo"
 			],
 			"net/minecraft/class_1293": [
 				"io/github/axolotlclient/bridge/entity/effect/AxoStatusEffectInstance"

@@ -29,6 +29,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
+import io.github.axolotlclient.bridge.AxoPlayerInfo;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
@@ -91,21 +92,8 @@ public class PlayerArgument implements ArgumentType<PlayerArgument.PlayerInfo> {
 
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
-		// TODO: this might be worse than using the network handler
-		final var world = AxoMinecraftClient.getInstance().br$getWorld();
-
-		if (world == null) {
-			return builder.buildFuture();
-		}
-
-		final var players = world.br$getPlayers();
-
-		if (players == null) {
-			return builder.buildFuture();
-		}
-
-		players.stream()
-			.map(playerInfo -> playerInfo.br$getGameProfile().br$getName())
+		AxoMinecraftClient.getInstance().br$getOnlinePlayers().stream()
+			.map(AxoPlayerInfo::br$getName)
 			.filter(name -> NAME_REGEX.matcher(name).matches())
 			.filter(name -> name.toLowerCase(Locale.ROOT).startsWith(builder.getRemaining().toLowerCase(Locale.ROOT)))
 			.forEach(builder::suggest);

@@ -85,8 +85,18 @@ public interface AxoText {
 		}
 
 		@ApiStatus.NonExtendable
+		default Mutable br$append(AxoText child, Color color) {
+			return br$append(child.br$copy().br$color(color));
+		}
+
+		@ApiStatus.NonExtendable
 		default Mutable br$append(Object child) {
 			return br$append(AxoText.literal(child));
+		}
+
+		@ApiStatus.NonExtendable
+		default Mutable br$append(Object child, Color color) {
+			return br$append(AxoText.literal(child).br$color(color));
 		}
 
 		default Mutable br$setStyle(Style style) {
@@ -109,6 +119,10 @@ public interface AxoText {
 
 	static Mutable translatable(String key, Object... args) {
 		return PlatformImplInternal.createTranslatable(key, args);
+	}
+
+	static String strip(String text) {
+		return PlatformImplInternal.stripText(text);
 	}
 
 	default String br$getRawString() {
