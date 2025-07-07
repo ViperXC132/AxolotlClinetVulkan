@@ -27,6 +27,7 @@ import java.util.Optional;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.util.ConfigStyles;
@@ -210,7 +211,7 @@ public class HudEditScreen extends Screen {
 	@Override
 	public void mouseReleased(int mouseX, int mouseY, int button) {
 		if (current != null) {
-			AxolotlClient.configManager.save();
+			AxolotlClientConfig.getInstance().getConfigManager(current.getCategory()).save();
 		}
 		current = null;
 		snap = null;

@@ -198,8 +198,12 @@ public class HudManager extends AbstractModule {
 	}
 
 	public HudManager add(AbstractHudEntry entry) {
+		return add(entry, true);
+	}
+
+	public HudManager add(AbstractHudEntry entry, boolean save) {
 		entries.put(entry.getId(), entry);
-		hudCategory.add(entry.getAllOptions());
+		hudCategory.add(entry.getAllOptions(), save);
 		return this;
 	}
 
