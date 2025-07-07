@@ -38,7 +38,7 @@ import net.fabricmc.loader.api.FabricLoader;
 
 public class AxolotlClientCommon {
 
-	public static final boolean NVG_SUPPORTED = OSUtil.getOS() != OSUtil.OperatingSystem.OTHER && !Objects.requireNonNullElse(System.getenv("TMPDIR"), "").contains("/Android/data/net.kdt.pojavlaunch/");
+	public static final boolean NVG_SUPPORTED = OSUtil.getOS() != OSUtil.OperatingSystem.OTHER && !Objects.requireNonNullElse(System.getenv("TMPDIR"), "").contains("/Android/data/");
 
 	@Getter
 	private static AxolotlClientCommon instance;

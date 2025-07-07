@@ -76,16 +76,23 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 	@Override
 	public void renderComponent(GuiGraphics graphics, float delta) {
 		List<MobEffectInstance> effects = new ArrayList<>(client.player.getActiveEffects());
-		if (effects.isEmpty()) {
+		/*if (effects.isEmpty()) {
 			return;
-		}
+		}*/
 		renderEffects(graphics, effects, delta);
 	}
 
 	private void renderEffects(GuiGraphics graphics, List<MobEffectInstance> effects, float tickDelta) {
 		float tickrate = client.level != null ? client.level.tickRateManager().tickrate() : 1;
-		int calcWidth = calculateWidth(effects, tickrate);
-		int calcHeight = calculateHeight(effects);
+		int calcWidth;
+		int calcHeight;
+		if (effects.isEmpty()) {
+			calcWidth = 0;
+			calcHeight = 0;
+		} else {
+			calcWidth = calculateWidth(effects, tickrate);
+			calcHeight = calculateHeight(effects);
+		}
 		boolean changed = false;
 		if (calcWidth != width) {
 			setWidth(calcWidth);

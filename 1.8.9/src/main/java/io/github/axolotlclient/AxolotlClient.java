@@ -175,16 +175,21 @@ public class AxolotlClient implements ClientModInitializer {
 		configManager.suppressName("y");
 		configManager.suppressName(config.getName());
 
-		ConfigUI.getInstance().runWhenLoaded(() -> {
-			modules.forEach(Module::lateInit);
-
-			MinecraftClientEvents.TICK_END.register(client -> modules.forEach(Module::tick));
-
-			FeatureDisabler.init();
-		});
+		ConfigUI.getInstance().runWhenLoaded(this::postConfigLoad);
 
 		LOGGER.debug("Debug Output enabled, Logs will be quite verbose!");
 
 		LOGGER.info("AxolotlClient Initialized");
+	}
+
+	private boolean configLoaded;
+	private void postConfigLoad() {
+		if (configLoaded) return;
+		configLoaded = true;
+		modules.forEach(Module::lateInit);
+
+		MinecraftClientEvents.TICK_END.register(client -> modules.forEach(Module::tick));
+
+		FeatureDisabler.init();
 	}
 }
