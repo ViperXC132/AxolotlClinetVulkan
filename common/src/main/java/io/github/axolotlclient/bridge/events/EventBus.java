@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.bridge.events;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -71,7 +72,7 @@ public final class EventBus<T> {
 	public T invoker() {
 		if (cachedInvoker == null) {
 			// copy to arraylist for iteration performance
-			cachedInvoker = combiner.apply(events);
+			cachedInvoker = combiner.apply(new ArrayList<>(events));
 		}
 
 		return cachedInvoker;

@@ -128,7 +128,7 @@ public abstract class AxolotlClientCommon {
 	}
 
 	private void initConfig() {
-		configManager = new VersionedJsonConfigManager(CONFIG_PATH,
+		configManager = new VersionedJsonConfigManager(AxolotlClientCommon.getInstance().getMainConfigFile(),
 			config.getConfig(), 2, (oldVersion, newVersion, config, json) -> {
 			if (oldVersion.getMajor() <= 1) {
 				if (json.has("hud")) {
