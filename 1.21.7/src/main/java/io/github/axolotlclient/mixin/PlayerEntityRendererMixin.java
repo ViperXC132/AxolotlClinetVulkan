@@ -45,9 +45,9 @@ public abstract class PlayerEntityRendererMixin {
 	@WrapOperation(method = "renderNameTag(Lnet/minecraft/client/renderer/entity/state/PlayerRenderState;Lnet/minecraft/network/chat/Component;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/LivingEntityRenderer;renderNameTag(Lnet/minecraft/client/renderer/entity/state/EntityRenderState;Lnet/minecraft/network/chat/Component;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V"))
 	private void axolotlclient$modifiyName(PlayerRenderer instance, EntityRenderState entityRenderState, Component component, PoseStack poseStack, MultiBufferSource source, int i, Operation<Void> original, @Local(argsOnly = true) PlayerRenderState state) {
-		if (AxolotlClient.CONFIG != null) {
-			Level level = Minecraft.getInstance().level;
-			Entity player = level.getEntity(state.id);
+		Level level = Minecraft.getInstance().level;
+		Entity player = level.getEntity(state.id);
+		if (AxolotlClient.CONFIG != null && player != null) {
 			boolean self = player.getUUID() == Minecraft.getInstance().player.getUUID();
 			if (self && NickHider.getInstance().hideOwnName.get()) {
 				component = NickHider.getInstance().editComponent(component, player.getName().getString(), NickHider.getInstance().hiddenNameSelf.get());
