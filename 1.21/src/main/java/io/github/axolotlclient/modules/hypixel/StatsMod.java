@@ -110,6 +110,8 @@ public class StatsMod implements AbstractHypixelMod {
 		text.append(" | ");
 		text.append(buildBedwarsGameMode("playerstats.bedwars.duos", data.doubles()));
 		text.append(" | ");
+		text.append(buildBedwarsGameMode("playerstats.bedwars.trios", data.trios()));
+		text.append(" | ");
 		text.append(buildBedwarsGameMode("playerstats.bedwars.fours", data.fours()));
 		text.append(" | ");
 		text.append(buildBedwarsGameMode("playerstats.bedwars.core", data.core()));
@@ -236,7 +238,7 @@ public class StatsMod implements AbstractHypixelMod {
 						} else {
 							HypixelAbstractionLayer.getInstance().getPlayerDataApi().getAsync(s.get()).whenCompleteAsync((playerData, throwable) -> {
 								if (playerData.isEmpty()) {
-									c.getSource().sendFeedback(Text.translatable("playerstats.error.query_failed"));
+									c.getSource().sendFeedback(Text.translatable("playerstats.error.failed_data"));
 									return;
 								}
 

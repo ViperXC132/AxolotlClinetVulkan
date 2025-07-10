@@ -709,6 +709,7 @@
 	"playerstats.error.failed_data": "Failed to retrieve player data!",
 	"playerstats.bedwars.solo": "Solo",
 	"playerstats.bedwars.duos": "Duos",
+	"playerstats.bedwars.trios": "Trios",
 	"playerstats.bedwars.fours": "Fours",
 	"playerstats.bedwars.core": "Core",
 	"playerstats.bedwars.dreams": "Dreams",
