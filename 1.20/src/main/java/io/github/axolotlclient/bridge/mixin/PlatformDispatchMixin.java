@@ -121,6 +121,7 @@ public class PlatformDispatchMixin {
 	 * @author Flowey
 	 * @reason Implement bridge.
 	 */
+	@SuppressWarnings("deprecation")
 	@RequiresImpl
 	@Overwrite
 	public static AxoSprite.Dynamic ipHud$getServerIcon() throws IOException {
