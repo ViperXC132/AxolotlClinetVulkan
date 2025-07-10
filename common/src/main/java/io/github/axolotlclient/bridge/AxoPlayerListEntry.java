@@ -23,13 +23,16 @@
 package io.github.axolotlclient.bridge;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import java.util.UUID;
 
-public interface AxoPlayerInfo {
+public interface AxoPlayerListEntry {
+	@RequiresImpl
 	default String br$getName() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default UUID br$getId() {
 		throw BridgeUtil.noImpl();
 	}

@@ -24,6 +24,7 @@ package io.github.axolotlclient.bridge.util;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import java.util.function.BiConsumer;
 import java.util.function.UnaryOperator;
 import lombok.AllArgsConstructor;
@@ -56,14 +57,17 @@ public interface AxoText {
 	}
 
 	interface Style {
+		@RequiresImpl
 		default Style br$color(Color color) {
 			return br$color(color.rgb);
 		}
 
+		@RequiresImpl
 		default Style br$color(int color) {
 			throw BridgeUtil.noImpl();
 		}
 
+		@RequiresImpl
 		default Style br$tooltip(AxoText text) {
 			throw BridgeUtil.noImpl();
 		}
@@ -80,6 +84,7 @@ public interface AxoText {
 			return br$setStyle(br$getStyle().br$color(color));
 		}
 
+		@RequiresImpl
 		default Mutable br$append(AxoText child) {
 			throw BridgeUtil.noImpl();
 		}
@@ -99,6 +104,7 @@ public interface AxoText {
 			return br$append(AxoText.literal(child).br$color(color));
 		}
 
+		@RequiresImpl
 		default Mutable br$setStyle(Style style) {
 			throw BridgeUtil.noImpl();
 		}
@@ -125,18 +131,22 @@ public interface AxoText {
 		return PlatformImplInternal.stripText(text);
 	}
 
+	@RequiresImpl
 	default String br$getRawString() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default Mutable br$copy() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default void br$visit(BiConsumer<String, Style> handler) {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default Style br$getStyle() {
 		throw BridgeUtil.noImpl();
 	}

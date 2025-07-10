@@ -8,6 +8,8 @@ base.archivesName.set(project.property("archives_base_name").toString() + "-comm
 
 dependencies {
 	compileOnly("net.fabricmc:fabric-loader:${project.property("fabric_loader")}")
+	testCompileOnly("net.fabricmc:fabric-loader:${project.property("fabric_loader")}")
+	compileOnly("net.fabricmc:sponge-mixin:0.16.1+mixin.0.8.7")
 	compileOnly("org.jetbrains:annotations:24.0.0")
 
 	// take the oldest version just to build against

@@ -22,26 +22,33 @@
 
 package io.github.axolotlclient.bridge.item;
 
+import io.github.axolotlclient.bridge.BridgeVersion;
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import java.util.List;
 
 public interface AxoPlayerInventory {
+	@RequiresImpl
 	default AxoItemStack br$getMainHand() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl(min = BridgeVersion.V1_16_COMBAT)
 	default AxoItemStack br$getOffHand() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default List<? extends AxoItemStack> br$getItems() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default List<? extends AxoItemStack> br$getNonEquipmentItems() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default List<? extends AxoItemStack> br$getArmor() {
 		throw BridgeUtil.noImpl();
 	}

@@ -50,13 +50,19 @@ public class AxoSpritesMixin {
 	@Mutable
 	@Shadow
 	@Final
-	public static AxoSprite REGEN_ICON;
+	public static AxoSprite FURNACE_OFF;
+
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoSprite FURNACE_ON;
 
 	@Inject(method = "<clinit>", at = @At("HEAD"), cancellable = true)
 	private static void setStaticValues(CallbackInfo info) {
 		BADGE = new AxoSpriteImpl.Simple((Identifier) AxolotlClientCommon.BADGE_PATH, 0, 0, 15, 15);
 		BARRIER_ITEM_ICON = new AxoSpriteImpl.Simple(new Identifier("textures/item/barrier.png"), 0, 0, 16, 16);
-		REGEN_ICON = new AxoSpriteImpl.Simple(new Identifier("textures/gui/container/inventory.png"), 7 * 18, 198, 16, 16);
+		FURNACE_OFF = new AxoSpriteImpl.Simple(new Identifier("textures/blocks/furnace_front_off.png"), 0, 0, 16, 16);
+		FURNACE_ON = new AxoSpriteImpl.Simple(new Identifier("textures/blocks/furnace_front_on.png"), 0, 0, 16, 16);
 		info.cancel();
 	}
 }

@@ -22,11 +22,18 @@
 
 package io.github.axolotlclient.bridge.mixin;
 
+import com.google.common.hash.Hashing;
+import io.github.axolotlclient.AxolotlClientConfig.impl.util.GraphicsImpl;
 import io.github.axolotlclient.bridge.PlatformDispatch;
+import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
+import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
 import io.github.axolotlclient.util.ThreadExecuter;
+import io.github.axolotlclient.util.Util;
 import java.net.InetAddress;
+import java.util.Base64;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.handler.ClientQueryPacketHandler;
 import net.minecraft.network.Connection;
@@ -96,5 +103,37 @@ public class PlatformDispatchMixin {
 		} else if (Minecraft.getInstance().isIntegratedServerRunning()) {
 			currentServerPing.setValue(1);
 		}
+	}
+
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge.
+	 */
+	@SuppressWarnings("UnstableApiUsage")
+	@Overwrite
+	public static AxoSprite.Dynamic ipHud$getServerIcon() {
+		final var minecraft = Minecraft.getInstance();
+
+		var graphics = new GraphicsImpl(0, 0);
+		graphics.setPixelData(Base64.getDecoder().decode(minecraft.getCurrentServerEntry().getIcon()));
+		final var icon = Util.getTexture(
+			graphics,
+			"servers/" + Hashing.sha1().hashUnencodedChars(minecraft.getCurrentServerEntry().address) + "/icon"
+		);
+
+		class Impl implements AxoSprite.Dynamic, AxoSpriteImpl {
+			@Override
+			public void draw(Minecraft client, int sX, int sY, int sW, int sH) {
+				client.getTextureManager().bind(icon);
+				GuiElement.drawTexture(sX, sY, 0, 0, sW, sH, 16, 16);
+			}
+
+			@Override
+			public void close() {
+				minecraft.getTextureManager().close(icon);
+			}
+		}
+
+		return new Impl();
 	}
 }

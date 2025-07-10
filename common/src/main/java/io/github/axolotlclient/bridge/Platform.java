@@ -49,7 +49,7 @@ public interface Platform {
 		return PlatformImplInternal.tickRate();
 	}
 
-	static String getTabNameFor(AxoPlayerInfo player) {
+	static String getTabNameFor(AxoPlayerListEntry player) {
 		return PlatformImplInternal.getTabNameFor(player);
 	}
 

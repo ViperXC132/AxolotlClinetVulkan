@@ -20,26 +20,31 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.bridge.mixin.entity;
+package io.github.axolotlclient.bridge.mixin.util;
 
-import io.github.axolotlclient.bridge.entity.AxoLivingEntity;
-import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffectInstance;
-import java.util.List;
-import java.util.Map;
-import net.minecraft.entity.living.LivingEntity;
-import net.minecraft.entity.living.effect.StatusEffectInstance;
-import org.spongepowered.asm.mixin.Final;
+import io.github.axolotlclient.bridge.util.AxoText;
+import java.util.Optional;
+import java.util.function.BiConsumer;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(LivingEntity.class)
-public class LivingEntityMixin implements AxoLivingEntity {
+@Mixin(MutableText.class)
+public interface MutableTextMixin extends AxoText.Mutable {
 	@Shadow
-	@Final
-	private Map<Integer, StatusEffectInstance> statusEffects;
+	MutableText append(Text text);
+
+	@Shadow
+	MutableText setStyle(net.minecraft.text.Style style);
 
 	@Override
-	public List<AxoStatusEffectInstance> br$getStatusEffects() {
-		return List.copyOf(this.statusEffects.values());
+	default Mutable br$append(AxoText child) {
+		return append((Text) child);
+	}
+
+	@Override
+	default Mutable br$setStyle(Style style) {
+		return setStyle((net.minecraft.text.Style) style);
 	}
 }

@@ -37,6 +37,7 @@
 	],
 	"custom": {
 		"modmenu:clientsideOnly": true,
+		"axolotlclient:bridge_impl_version": "V1_8",
 		"loom:injected_interfaces": {
 			"net/minecraft/unmapped/C_0561170": [
 				"io/github/axolotlclient/bridge/util/AxoIdentifier"
@@ -84,7 +85,7 @@
 				"io/github/axolotlclient/bridge/util/AxoText\u0024Style"
 			],
 			"net/minecraft/unmapped/C_3543146": [
-				"io/github/axolotlclient/bridge/AxoPlayerInfo"
+				"io/github/axolotlclient/bridge/AxoPlayerListEntry"
 			],
 			"net/minecraft/unmapped/C_0658987": [
 				"io/github/axolotlclient/bridge/entity/effect/AxoStatusEffectInstance"

@@ -24,6 +24,7 @@ package io.github.axolotlclient.bridge.mixin.item;
 
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoPlayerInventory;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 import net.minecraft.entity.player.PlayerInventory;
@@ -51,6 +52,14 @@ public abstract class PlayerInventoryMixin implements AxoPlayerInventory {
 	@Final
 	public DefaultedList<ItemStack> armor;
 
+	@Shadow
+	@Final
+	public DefaultedList<ItemStack> main;
+
+	@Shadow
+	@Final
+	public DefaultedList<ItemStack> offHand;
+
 	@Override
 	public AxoItemStack br$getMainHand() {
 		return getMainHandStack();
@@ -65,8 +74,16 @@ public abstract class PlayerInventoryMixin implements AxoPlayerInventory {
 
 	@Override
 	public List<? extends AxoItemStack> br$getArmor() {
-		return IntStream.range(0, armor.size())
-			.mapToObj(this::getArmorStack)
-			.toList();
+		return Collections.unmodifiableList(armor);
+	}
+
+	@Override
+	public List<? extends AxoItemStack> br$getNonEquipmentItems() {
+		return main.subList(9, 36);
+	}
+
+	@Override
+	public AxoItemStack br$getOffHand() {
+		return offHand.get(0);
 	}
 }

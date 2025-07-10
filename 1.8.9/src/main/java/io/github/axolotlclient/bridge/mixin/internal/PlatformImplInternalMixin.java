@@ -24,15 +24,14 @@ package io.github.axolotlclient.bridge.mixin.internal;
 
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
-import io.github.axolotlclient.bridge.AxoMinecraftClient;
-import io.github.axolotlclient.bridge.BridgeVersion;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
+import io.github.axolotlclient.bridge.AxoMinecraftClient;
+import io.github.axolotlclient.bridge.AxoPlayerListEntry;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffect;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffectInstance;
 import io.github.axolotlclient.bridge.impl.AxoKeyImpl;
 import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
 import io.github.axolotlclient.bridge.impl.Bridge;
-import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
 import io.github.axolotlclient.bridge.item.AxoItem;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
@@ -46,6 +45,7 @@ import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.util.Util;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.network.PlayerInfo;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.entity.living.effect.StatusEffect;
 import net.minecraft.entity.living.effect.StatusEffectInstance;
@@ -53,7 +53,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.locale.I18n;
 import net.minecraft.resource.Identifier;
+import net.minecraft.text.Formatting;
 import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -86,15 +88,6 @@ public class PlatformImplInternalMixin {
 	@Overwrite
 	public static String getTranslatedString(String nameKey, Object[] args) {
 		return I18n.translate(nameKey, args);
-	}
-
-	/**
-	 * @author Flowey
-	 * @reason Implement bridge platform.
-	 */
-	@Overwrite
-	public static BridgeVersion getBridgeApiVersion() {
-		return BridgeVersion.V1_8;
 	}
 
 	/**
@@ -192,5 +185,41 @@ public class PlatformImplInternalMixin {
 	@Overwrite
 	public static AxoText.Mutable createTranslatable(String key, Object... args) {
 		return new TranslatableText(key, args);
+	}
+
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static int tickCount() {
+		return Minecraft.getInstance().gui.getTicks();
+	}
+
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static String stripText(String text) {
+		return Formatting.strip(text);
+	}
+
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static String getTabNameFor(AxoPlayerListEntry player) {
+		return Minecraft.getInstance().gui.getPlayerTabOverlay().getDisplayName((PlayerInfo) player);
+	}
+
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static void setTabListHeader(AxoText text) {
+		Minecraft.getInstance().gui.getPlayerTabOverlay().setHeader((Text) text);
 	}
 }

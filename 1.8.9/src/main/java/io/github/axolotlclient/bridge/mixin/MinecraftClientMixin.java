@@ -23,19 +23,26 @@
 package io.github.axolotlclient.bridge.mixin;
 
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
+import io.github.axolotlclient.bridge.AxoPlayerListEntry;
 import io.github.axolotlclient.bridge.AxoSession;
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.key.AxoClientKeybinds;
 import io.github.axolotlclient.bridge.render.AxoFont;
+import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.bridge.world.AxoWorld;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Session;
 import net.minecraft.client.entity.living.player.LocalClientPlayerEntity;
+import net.minecraft.client.gui.GameGui;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.ServerListEntry;
 import net.minecraft.client.render.TextRenderer;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -64,6 +71,12 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 
 	@Shadow
 	public abstract ServerListEntry getCurrentServerEntry();
+
+	@Shadow
+	public abstract void run();
+
+	@Shadow
+	public GameGui gui;
 
 	@Override
 	public @Nullable AxoPlayer br$getPlayer() {
@@ -99,5 +112,21 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	@Override
 	public String br$getServerAddress() {
 		return Optional.ofNullable(getCurrentServerEntry()).map(x -> x.address).orElse(null);
+	}
+
+	@Override
+	public Collection<? extends AxoPlayerListEntry> br$getOnlinePlayers() {
+		return player == null ? List.of()
+			: Collections.unmodifiableCollection(player.networkHandler.getOnlinePlayers());
+	}
+
+	@Override
+	public void br$sendToClient(AxoText msg) {
+		gui.getChat().addMessage((Text) msg);
+	}
+
+	@Override
+	public void br$sendToServer(String msg) {
+		player.sendChat(msg);
 	}
 }

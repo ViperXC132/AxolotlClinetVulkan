@@ -24,12 +24,14 @@ package io.github.axolotlclient.bridge.entity.effect;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 
 public interface AxoStatusEffectInstance {
 	static AxoStatusEffectInstance create(AxoStatusEffect effect, int duration) {
 		return PlatformImplInternal.createStatusEffectInstance(effect, duration);
 	}
 
+	@RequiresImpl
 	default AxoStatusEffect br$getType() {
 		throw BridgeUtil.noImpl();
 	}

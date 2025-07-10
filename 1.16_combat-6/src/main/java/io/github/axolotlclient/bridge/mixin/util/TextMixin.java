@@ -26,27 +26,24 @@ import io.github.axolotlclient.bridge.util.AxoText;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import net.minecraft.text.MutableText;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(MutableText.class)
-public interface TextMixin extends Text, AxoText.Mutable {
+@Mixin(Text.class)
+public interface TextMixin extends AxoText {
 	@Shadow
-	MutableText append(Text text);
+	String getString();
 
 	@Shadow
-	MutableText setStyle(net.minecraft.text.Style style);
+	MutableText copy();
 
-	@Override
-	default Mutable br$append(AxoText child) {
-		return append((Text) child);
-	}
+	@Shadow
+	<T> Optional<T> visit(StringVisitable.StyledVisitor<T> par1, net.minecraft.text.Style par2);
 
-	@Override
-	default Mutable br$setStyle(Style style) {
-		return setStyle((net.minecraft.text.Style) style);
-	}
+	@Shadow
+	net.minecraft.text.Style getStyle();
 
 	@Override
 	default String br$getRawString() {

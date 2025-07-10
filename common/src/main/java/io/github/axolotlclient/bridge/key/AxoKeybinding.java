@@ -24,6 +24,7 @@ package io.github.axolotlclient.bridge.key;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -34,18 +35,22 @@ public interface AxoKeybinding {
 		return PlatformImplInternal.createKeyBinding(defaultKey, name, category);
 	}
 
+	@RequiresImpl
 	default void br$registerOnClicked(Runnable runnable) {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default void br$registerOnReleased(Runnable runnable) {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default AxoKey br$getBoundKey() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default boolean br$isPressed() {
 		throw BridgeUtil.noImpl();
 	}

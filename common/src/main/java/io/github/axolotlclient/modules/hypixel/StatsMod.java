@@ -204,7 +204,7 @@ public class StatsMod implements AbstractHypixelMod {
 				statText("playerstats.bedwars.summary", allStats.wins(), allStats.losses(), allStats.wlr(),
 					allStats.winstreak()),
 				buildBedwarsGameModesLine(data.bedwars())
-			).forEach(c::sendFeedback);
+			).forEach(c::br$sendFeedback);
 		}),
 		new Entry("skywars", (c, uuid, username, data) -> {
 			final var allStats = data.skywars().all();
@@ -213,13 +213,13 @@ public class StatsMod implements AbstractHypixelMod {
 				statText("playerstats.skywars.kdr", allStats.kills(), allStats.deaths(), allStats.kdr()),
 				statText("playerstats.skywars.summary", allStats.wins(), allStats.losses(), allStats.wlr()),
 				buildSkywarsGameModesLine(data.skywars())
-			).forEach(c::sendFeedback);
+			).forEach(c::br$sendFeedback);
 		}),
 		new Entry("duels", (c, uuid, username, data) -> {
 			List.of(
 				translatable("playerstats.duels.title", data.formattedName()),
 				buildDuelsGameModesLine(data.duels())
-			).forEach(c::sendFeedback);
+			).forEach(c::br$sendFeedback);
 		})
 	);
 
@@ -234,12 +234,12 @@ public class StatsMod implements AbstractHypixelMod {
 		for (Entry handler : HANDLERS) {
 			command.then(Commands.literal(handler.name()).then(argument("player", PlayerArgument.player()).executes(c -> {
 				if (!API.getInstance().getApiOptions().enabled.get()) {
-					c.getSource().sendError(translatable("playerstats.error.api_disabled").br$color(RED));
+					c.getSource().br$sendError(translatable("playerstats.error.api_disabled").br$color(RED));
 					return -1;
 				}
 
 				if (!API.getInstance().isAuthenticated()) {
-					c.getSource().sendError(translatable("playerstats.error.api_unauthenticated").br$color(RED));
+					c.getSource().br$sendError(translatable("playerstats.error.api_unauthenticated").br$color(RED));
 					return -1;
 				}
 
@@ -247,11 +247,11 @@ public class StatsMod implements AbstractHypixelMod {
 
 				res.uuid().whenCompleteAsync((s, ex) -> {
 					if (s.isEmpty()) {
-						c.getSource().sendError(translatable("playerstats.error.unknown_player").br$color(RED));
+						c.getSource().br$sendError(translatable("playerstats.error.unknown_player").br$color(RED));
 					} else {
 						HypixelAbstractionLayer.getInstance().getPlayerDataApi().getAsync(s.get()).whenCompleteAsync((playerData, throwable) -> {
 							if (playerData.isEmpty()) {
-								c.getSource().sendError(translatable("playerstats.error.failed_data").br$color(RED));
+								c.getSource().br$sendError(translatable("playerstats.error.failed_data").br$color(RED));
 								return;
 							}
 

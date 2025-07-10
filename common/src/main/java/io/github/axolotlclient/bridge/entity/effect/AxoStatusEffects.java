@@ -23,10 +23,18 @@
 package io.github.axolotlclient.bridge.entity.effect;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 
 public class AxoStatusEffects {
+	@RequiresImpl
 	public static final AxoStatusEffect REGEN = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoStatusEffect HASTE = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoStatusEffect SPEED = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoStatusEffect JUMP_BOOST = BridgeUtil.noImplValue();
 }

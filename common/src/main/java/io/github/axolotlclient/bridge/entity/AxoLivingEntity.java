@@ -20,26 +20,19 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.bridge.mixin.entity;
+package io.github.axolotlclient.bridge.entity;
 
-import io.github.axolotlclient.bridge.entity.AxoLivingEntity;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffectInstance;
+import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
+import io.github.axolotlclient.bridge.math.Vec3;
 import java.util.List;
-import java.util.Map;
-import net.minecraft.entity.living.LivingEntity;
-import net.minecraft.entity.living.effect.StatusEffectInstance;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import java.util.UUID;
+import org.jetbrains.annotations.Nullable;
 
-@Mixin(LivingEntity.class)
-public class LivingEntityMixin implements AxoLivingEntity {
-	@Shadow
-	@Final
-	private Map<Integer, StatusEffectInstance> statusEffects;
-
-	@Override
-	public List<AxoStatusEffectInstance> br$getStatusEffects() {
-		return List.copyOf(this.statusEffects.values());
+public interface AxoLivingEntity extends AxoEntity {
+	@RequiresImpl
+	default List<AxoStatusEffectInstance> br$getStatusEffects() {
+		throw BridgeUtil.noImpl();
 	}
 }

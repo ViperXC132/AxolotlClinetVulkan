@@ -45,12 +45,12 @@ import org.apache.logging.log4j.Logger;
 public class CommandsImpl implements Commands {
 	public record SourceStack(CommandSource origin) implements AxoClientCmdSrcStack {
 		@Override
-		public void sendError(AxoText text) {
+		public void br$sendError(AxoText text) {
 			origin.sendMessage((Text) text);
 		}
 
 		@Override
-		public void sendFeedback(AxoText text) {
+		public void br$sendFeedback(AxoText text) {
 			origin.sendMessage((Text) text);
 		}
 	}

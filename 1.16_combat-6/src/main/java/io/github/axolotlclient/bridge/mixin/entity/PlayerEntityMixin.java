@@ -23,7 +23,6 @@
 package io.github.axolotlclient.bridge.mixin.entity;
 
 import com.mojang.authlib.GameProfile;
-import io.github.axolotlclient.bridge.AxoPlayerInfo;
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.item.AxoItem;
 import io.github.axolotlclient.bridge.item.AxoPlayerInventory;

@@ -23,7 +23,9 @@
 package io.github.axolotlclient.bridge.item;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 
 public class AxoEnchants {
+	@RequiresImpl
 	public static final AxoEnchant PROTECTION = BridgeUtil.noImplValue();
 }

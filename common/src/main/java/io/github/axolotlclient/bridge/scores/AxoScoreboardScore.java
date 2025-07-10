@@ -22,8 +22,13 @@
 
 package io.github.axolotlclient.bridge.scores;
 
+import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import org.jetbrains.annotations.Nullable;
 
 public interface AxoScoreboardScore {
-	@Nullable String br$getOwner();
+	@RequiresImpl
+	default @Nullable String br$getOwner() {
+		throw BridgeUtil.noImpl();
+	}
 }

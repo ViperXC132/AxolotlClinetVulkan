@@ -25,7 +25,7 @@ package io.github.axolotlclient.modules.hypixel.bedwars;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
-import io.github.axolotlclient.bridge.AxoPlayerInfo;
+import io.github.axolotlclient.bridge.AxoPlayerListEntry;
 import io.github.axolotlclient.bridge.Platform;
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
@@ -84,8 +84,8 @@ public class BedwarsGame {
 		mod.upgradesOverlay.onStart(upgrades);
 		players.clear();
 		playersById.clear();
-		Map<BedwarsTeam, List<AxoPlayerInfo>> teamPlayers = new HashMap<>();
-		for (AxoPlayerInfo player : mc.br$getOnlinePlayers()) {
+		Map<BedwarsTeam, List<AxoPlayerListEntry>> teamPlayers = new HashMap<>();
+		for (AxoPlayerListEntry player : mc.br$getOnlinePlayers()) {
 			String name = Platform.getTabNameFor(player).replaceAll("§.", "");
 			if (name.charAt(1) != ' ') {
 				continue;
@@ -96,7 +96,7 @@ public class BedwarsGame {
 			}
 			teamPlayers.compute(team, (t, entries) -> {
 				if (entries == null) {
-					List<AxoPlayerInfo> players = new ArrayList<>();
+					List<AxoPlayerListEntry> players = new ArrayList<>();
 					players.add(player);
 					return players;
 				}
@@ -104,11 +104,11 @@ public class BedwarsGame {
 				return entries;
 			});
 		}
-		for (Map.Entry<BedwarsTeam, List<AxoPlayerInfo>> teamPlayerList : teamPlayers.entrySet()) {
-			teamPlayerList.getValue().sort(Comparator.comparing(AxoPlayerInfo::br$getName));
-			List<AxoPlayerInfo> value = teamPlayerList.getValue();
+		for (Map.Entry<BedwarsTeam, List<AxoPlayerListEntry>> teamPlayerList : teamPlayers.entrySet()) {
+			teamPlayerList.getValue().sort(Comparator.comparing(AxoPlayerListEntry::br$getName));
+			List<AxoPlayerListEntry> value = teamPlayerList.getValue();
 			for (int i = 0; i < value.size(); i++) {
-				AxoPlayerInfo e = value.get(i);
+				AxoPlayerListEntry e = value.get(i);
 				BedwarsPlayer p = new BedwarsPlayer(teamPlayerList.getKey(), e, i + 1);
 				if (mc.br$getSession().username().equals(e.br$getName())) {
 					me = p;
@@ -422,14 +422,14 @@ public class BedwarsGame {
 		players.values().forEach(p -> p.tick(currentTick));
 	}
 
-	public void updateEntries(List<AxoPlayerInfo> entries) {
+	public void updateEntries(List<AxoPlayerListEntry> entries) {
 		// Update latencies and other information for entries
 		entries.forEach(entry ->
 			getPlayer(entry.br$getName()).ifPresent(player -> player.updateListEntry(entry))
 		);
 	}
 
-	public List<AxoPlayerInfo> getTabPlayerList(List<AxoPlayerInfo> original) {
+	public List<AxoPlayerListEntry> getTabPlayerList(List<AxoPlayerListEntry> original) {
 		updateEntries(original);
 		return players.values().stream().filter(b -> !b.isFinalKilled()).sorted((b1, b2) -> {
 			if (b1.getTeam() == b2.getTeam()) {

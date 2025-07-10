@@ -24,8 +24,7 @@ package io.github.axolotlclient.bridge.internal;
 
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
-import io.github.axolotlclient.bridge.AxoPlayerInfo;
-import io.github.axolotlclient.bridge.BridgeVersion;
+import io.github.axolotlclient.bridge.AxoPlayerListEntry;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffect;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffectInstance;
@@ -45,34 +44,37 @@ import org.jetbrains.annotations.Nullable;
  */
 @ApiStatus.Internal
 public class PlatformImplInternal {
+	@RequiresImpl
 	public static @Nullable AxoWindow getWindow() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	public static AxoMinecraftClient getMinecraftClientInstance() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	public static String getTranslatedString(String nameKey, Object[] args) {
 		throw BridgeUtil.noImpl();
 	}
 
-	public static BridgeVersion getBridgeApiVersion() {
-		throw BridgeUtil.noImpl();
-	}
-
+	@RequiresImpl
 	public static long getMeasuringTimeMs() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	public static AxolotlClientConfigCommon getConfig() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	public static int getCurrentFps() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	public static int tickCount() {
 		throw BridgeUtil.noImpl();
 	}
@@ -82,46 +84,52 @@ public class PlatformImplInternal {
 	}
 
 	// constructors
+	@RequiresImpl
 	public static AxoItemStack createItemStack(AxoItem item, int count) {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	public static AxoIdentifier createIdentifier(String ns, String path) {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	public static AxoKeybinding createKeyBinding(@Nullable AxoKey defaultKey, String name, String category) {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	public static AxoStatusEffectInstance createStatusEffectInstance(AxoStatusEffect effect, int duration) {
 		throw BridgeUtil.noImpl();
 	}
 
-	public static AxoSprite createSprite(AxoIdentifier id, int texX, int texY, int width, int height) {
-		throw BridgeUtil.noImpl();
-	}
-
+	@RequiresImpl
 	public static AxoSprite createTexture(GraphicsOption option) {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	public static AxoText.Mutable createLiteral(String text) {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	public static AxoText.Mutable createTranslatable(String key, Object... args) {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	public static String stripText(String text) {
 		throw BridgeUtil.noImpl();
 	}
 
-	public static String getTabNameFor(AxoPlayerInfo player) {
+	@RequiresImpl
+	public static String getTabNameFor(AxoPlayerListEntry player) {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	public static void setTabListHeader(AxoText text) {
 		throw BridgeUtil.noImpl();
 	}

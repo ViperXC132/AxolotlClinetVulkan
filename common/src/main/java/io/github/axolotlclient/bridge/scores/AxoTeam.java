@@ -22,6 +22,12 @@
 
 package io.github.axolotlclient.bridge.scores;
 
+import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
+
 public interface AxoTeam {
-	String br$getMemberDisplayName(String s);
+	@RequiresImpl
+	default String br$getMemberDisplayName(String s) {
+		throw BridgeUtil.noImpl();
+	}
 }

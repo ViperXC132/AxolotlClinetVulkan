@@ -22,10 +22,18 @@
 
 package io.github.axolotlclient.bridge.scores;
 
+import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import java.util.Collection;
 
 public interface AxoScoreboard {
-	Collection<? extends AxoScoreboardScore> br$getScores(AxoObjective objective);
+	@RequiresImpl
+	default Collection<? extends AxoScoreboardScore> br$getScores(AxoObjective objective) {
+		throw BridgeUtil.noImpl();
+	}
 
-	AxoTeam br$getTeamOfMember(String s);
+	@RequiresImpl
+	default AxoTeam br$getTeamOfMember(String s) {
+		throw BridgeUtil.noImpl();
+	}
 }

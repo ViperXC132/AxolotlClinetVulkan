@@ -22,8 +22,17 @@
 
 package io.github.axolotlclient.bridge.scores;
 
-public interface AxoObjective {
-	AxoScoreboard br$getScoreboard();
+import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 
-	String br$getDisplayName();
+public interface AxoObjective {
+	@RequiresImpl
+	default AxoScoreboard br$getScoreboard() {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default String br$getDisplayName() {
+		throw BridgeUtil.noImpl();
+	}
 }

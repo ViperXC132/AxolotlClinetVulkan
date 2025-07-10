@@ -24,6 +24,7 @@ package io.github.axolotlclient.bridge.util;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 
 public interface AxoIdentifier {
 	static AxoIdentifier of(String ns, String path) {
@@ -34,6 +35,7 @@ public interface AxoIdentifier {
 		return of("minecraft", path);
 	}
 
+	@RequiresImpl
 	default String br$getPath() {
 		throw BridgeUtil.noImpl();
 	}

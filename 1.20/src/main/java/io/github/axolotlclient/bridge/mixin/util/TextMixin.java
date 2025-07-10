@@ -26,39 +26,37 @@ import io.github.axolotlclient.bridge.util.AxoText;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import net.minecraft.text.MutableText;
-import net.minecraft.text.Style;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(MutableText.class)
-public abstract class TextMixin implements Text, AxoText.Mutable {
+@Mixin(Text.class)
+public interface TextMixin extends AxoText {
 	@Shadow
-	public abstract MutableText append(Text text);
+	String getString();
+
+	@Shadow
+	MutableText copy();
+
+	@Shadow
+	net.minecraft.text.Style getStyle();
+
+	@Shadow
+	<T> Optional<T> visit(StringVisitable.StyledVisitor<T> par1, net.minecraft.text.Style par2);
 
 	@Override
-	public Mutable br$append(AxoText child) {
-		return append((Text) child);
-	}
-
-	@Override
-	public Mutable br$setStyle(Style style) {
-		// can't shadow setStyle because of stupid mapping bug...
-		return ((MutableText) (Object) (this)).setStyle((net.minecraft.text.Style) style);
-	}
-
-	@Override
-	public String br$getRawString() {
+	default String br$getRawString() {
 		return getString();
 	}
 
 	@Override
-	public Mutable br$copy() {
+	default Mutable br$copy() {
 		return copy();
 	}
 
 	@Override
-	public void br$visit(BiConsumer<String, Style> handler) {
+	default void br$visit(BiConsumer<String, Style> handler) {
 		visit((style, asString) -> {
 			handler.accept(asString, style);
 			return Optional.empty();
@@ -66,7 +64,7 @@ public abstract class TextMixin implements Text, AxoText.Mutable {
 	}
 
 	@Override
-	public Style br$getStyle() {
+	default Style br$getStyle() {
 		return getStyle();
 	}
 }

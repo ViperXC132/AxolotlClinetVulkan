@@ -23,20 +23,24 @@
 package io.github.axolotlclient.bridge.mixin;
 
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
+import io.github.axolotlclient.bridge.AxoPlayerListEntry;
 import io.github.axolotlclient.bridge.AxoSession;
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.key.AxoClientKeybinds;
 import io.github.axolotlclient.bridge.render.AxoFont;
+import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.bridge.world.AxoWorld;
+import java.util.Collection;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -70,6 +74,10 @@ public abstract class MinecraftClientMixin extends ReentrantThreadExecutor<Runna
 	@Nullable
 	public abstract ServerInfo getCurrentServerEntry();
 
+	@Shadow
+	@Final
+	public InGameHud inGameHud;
+
 	public MinecraftClientMixin(String string) {
 		super(string);
 	}
@@ -97,11 +105,6 @@ public abstract class MinecraftClientMixin extends ReentrantThreadExecutor<Runna
 	}
 
 	@Override
-	public CompletableFuture<Void> br$runTask(Runnable runnable) {
-		return submit(runnable);
-	}
-
-	@Override
 	public AxoSession br$getSession() {
 		return new AxoSession(session.getUsername(), session.getUuid(), session.getAccessToken());
 	}
@@ -114,5 +117,20 @@ public abstract class MinecraftClientMixin extends ReentrantThreadExecutor<Runna
 	@Override
 	public String br$getServerAddress() {
 		return Optional.ofNullable(getCurrentServerEntry()).map(x -> x.address).orElse(null);
+	}
+
+	@Override
+	public Collection<? extends AxoPlayerListEntry> br$getOnlinePlayers() {
+		return player.networkHandler.getPlayerList();
+	}
+
+	@Override
+	public void br$sendToClient(AxoText msg) {
+		inGameHud.getChatHud().addMessage((Text) msg);
+	}
+
+	@Override
+	public void br$sendToServer(String msg) {
+		player.sendChatMessage(msg);
 	}
 }

@@ -22,12 +22,19 @@
 
 package io.github.axolotlclient.bridge.world;
 
-import io.github.axolotlclient.bridge.entity.AxoEntity;
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
+import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import java.util.List;
 
 public interface AxoWorld {
-	long br$getTimeOfDay();
+	@RequiresImpl
+	default long br$getTimeOfDay() {
+		throw BridgeUtil.noImpl();
+	}
 
-	List<? extends AxoPlayer> br$getPlayers();
+	@RequiresImpl
+	default List<? extends AxoPlayer> br$getPlayers() {
+		throw BridgeUtil.noImpl();
+	}
 }

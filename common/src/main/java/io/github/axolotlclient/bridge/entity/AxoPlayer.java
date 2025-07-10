@@ -23,20 +23,23 @@
 package io.github.axolotlclient.bridge.entity;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import io.github.axolotlclient.bridge.item.AxoItem;
 import io.github.axolotlclient.bridge.item.AxoPlayerInventory;
 import org.jetbrains.annotations.Nullable;
 
-public interface AxoPlayer extends AxoEntity {
+public interface AxoPlayer extends AxoLivingEntity {
+	@RequiresImpl
 	default AxoPlayerInventory br$getInventory() {
 		throw BridgeUtil.noImpl();
 	}
 
-	@Nullable
-	default AxoItem br$getProjectileItem() {
+	@RequiresImpl
+	default @Nullable AxoItem br$getProjectileItem() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default String br$getName() {
 		throw BridgeUtil.noImpl();
 	}

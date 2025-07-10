@@ -22,34 +22,81 @@
 
 package io.github.axolotlclient.bridge.item;
 
+import io.github.axolotlclient.bridge.BridgeVersion;
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import org.jetbrains.annotations.Nullable;
 
 public class AxoItems {
+	@RequiresImpl
 	public static final AxoItem AIR = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoItem IRON_LEGGINGS = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoItem IRON_CHESTPLATE = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoItem IRON_HELMET = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoItem IRON_SWORD = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoItem IRON_BOOTS = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoItem ARROW = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoItem IRON_INGOT = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoItem GOLD_INGOT = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoItem DIAMOND = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoItem EMERALD = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoItem STONE_SWORD = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoItem DIAMOND_SWORD = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoItem DIAMOND_CHESTPLATE = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoItem DIAMOND_BOOTS = BridgeUtil.noImplValue();
-	@Nullable
-	public static final AxoItem TIPPED_ARROW = BridgeUtil.noImplValue();
-	@Nullable
-	public static final AxoItem SPECTRAL_ARROW = BridgeUtil.noImplValue();
+
+	@RequiresImpl(min = BridgeVersion.V1_16_COMBAT)
+	public static final @Nullable AxoItem TIPPED_ARROW = BridgeUtil.noImplValue();
+
+	@RequiresImpl(min = BridgeVersion.V1_16_COMBAT)
+	public static final @Nullable AxoItem SPECTRAL_ARROW = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoItem STONE = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoItem STONE_PICKAXE = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoItem STONE_AXE = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoItem STONE_SHOVEL = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoItem STONE_HOE = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoItem GLOWSTONE_DUST = BridgeUtil.noImplValue();
+
+	@RequiresImpl
 	public static final AxoItem ENDER_EYE = BridgeUtil.noImplValue();
 }

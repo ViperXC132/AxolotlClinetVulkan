@@ -153,6 +153,11 @@ public class AxoItemsMixin {
 	@Final
 	public static AxoItem GLOWSTONE_DUST;
 
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoItem ENDER_EYE;
+
 	@Inject(method = "<clinit>", at = @At("HEAD"), cancellable = true)
 	private static void setStaticValues(CallbackInfo info) {
 		AIR = AirItemImpl.getInstance();
@@ -178,6 +183,7 @@ public class AxoItemsMixin {
 		STONE_SHOVEL = Items.STONE_SHOVEL;
 		STONE_HOE = Items.STONE_HOE;
 		GLOWSTONE_DUST = Items.GLOWSTONE_DUST;
+		ENDER_EYE = Items.ENDER_EYE;
 		info.cancel();
 	}
 }

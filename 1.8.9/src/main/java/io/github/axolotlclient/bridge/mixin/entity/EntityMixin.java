@@ -72,6 +72,9 @@ public abstract class EntityMixin implements AxoEntity {
 	@Shadow
 	public float pitch;
 
+	@Shadow
+	private int networkId;
+
 	@Override
 	public @Nullable AxoEntity br$getVehicle() {
 		return vehicle;
@@ -114,7 +117,7 @@ public abstract class EntityMixin implements AxoEntity {
 	}
 
 	@Override
-	public List<AxoStatusEffectInstance> br$getStatusEffects() {
-		return List.of(); // we don't have a concept of LivingEntity vs Entity in the bridge...
+	public int br$getNetId() {
+		return networkId;
 	}
 }

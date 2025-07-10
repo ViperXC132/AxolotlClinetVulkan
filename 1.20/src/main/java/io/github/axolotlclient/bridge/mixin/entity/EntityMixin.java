@@ -58,6 +58,9 @@ public abstract class EntityMixin implements AxoEntity {
 	@Shadow
 	private float pitch;
 
+	@Shadow
+	private int id;
+
 	@Override
 	public @Nullable AxoEntity br$getVehicle() {
 		return vehicle;
@@ -97,5 +100,10 @@ public abstract class EntityMixin implements AxoEntity {
 	@Override
 	public UUID br$getUuid() {
 		return getUuid();
+	}
+
+	@Override
+	public int br$getNetId() {
+		return id;
 	}
 }

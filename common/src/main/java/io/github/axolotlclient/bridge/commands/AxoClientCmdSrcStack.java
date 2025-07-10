@@ -22,10 +22,18 @@
 
 package io.github.axolotlclient.bridge.commands;
 
+import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import io.github.axolotlclient.bridge.util.AxoText;
 
 public interface AxoClientCmdSrcStack {
-	void sendError(AxoText text);
+	@RequiresImpl
+	default void br$sendError(AxoText text) {
+		throw BridgeUtil.noImpl();
+	}
 
-	void sendFeedback(AxoText text);
+	@RequiresImpl
+	default void br$sendFeedback(AxoText text) {
+		throw BridgeUtil.noImpl();
+	}
 }

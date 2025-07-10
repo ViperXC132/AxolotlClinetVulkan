@@ -23,8 +23,10 @@
 package io.github.axolotlclient.bridge.item;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 
 public interface AxoItem {
+	@RequiresImpl
 	default boolean br$is(AxoItemClass itemClass) {
 		throw BridgeUtil.noImpl();
 	}

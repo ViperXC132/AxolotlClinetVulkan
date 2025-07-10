@@ -22,14 +22,23 @@
 
 package io.github.axolotlclient.bridge.mixin;
 
+import com.google.common.base.Preconditions;
+import com.google.common.hash.Hashing;
+import io.github.axolotlclient.AxolotlClientConfig.impl.util.GraphicsImpl;
 import io.github.axolotlclient.bridge.PlatformDispatch;
-import io.github.axolotlclient.bridge.internal.BridgeUtil;
-import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
 import io.github.axolotlclient.bridge.render.AxoSprite;
+import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.util.ThreadExecuter;
+import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Base64;
+import java.util.Objects;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.texture.NativeImage;
+import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.NetworkState;
 import net.minecraft.network.ServerAddress;
@@ -40,6 +49,7 @@ import net.minecraft.network.packet.c2s.query.QueryRequestC2SPacket;
 import net.minecraft.network.packet.s2c.query.QueryPongS2CPacket;
 import net.minecraft.network.packet.s2c.query.QueryResponseS2CPacket;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -53,7 +63,8 @@ public class PlatformDispatchMixin {
 			try {
 				ServerAddress address = ServerAddress.parse(server.address);
 
-				final ClientConnection manager = ClientConnection.connect(InetAddress.getByName(address.getAddress()), address.getPort(), false);
+				final ClientConnection manager = ClientConnection.connect(InetAddress.getByName(address.getAddress()),
+					address.getPort(), false);
 				manager.setPacketListener(new ClientQueryPacketListener() {
 					private long currentSystemTime = 0L;
 
@@ -106,8 +117,37 @@ public class PlatformDispatchMixin {
 	 * @author Flowey
 	 * @reason Implement bridge.
 	 */
+	@SuppressWarnings("UnstableApiUsage")
 	@Overwrite
-	public static AxoSprite.Dynamic ipHud$getServerIcon() {
-		throw BridgeUtil.noImpl();
+	public static AxoSprite.Dynamic ipHud$getServerIcon() throws IOException {
+		final var minecraft = MinecraftClient.getInstance();
+		final var graphics = new GraphicsImpl(0, 0);
+		final var serverEntry = minecraft.getCurrentServerEntry();
+		Preconditions.checkState(serverEntry != null, "no server");
+
+		graphics.setPixelData(Base64.getDecoder().decode(serverEntry.getIcon()));
+		final var img = NativeImage.read(Objects.requireNonNull(serverEntry.getIcon()));
+		final var icon = new NativeImageBackedTexture(img);
+		final var iconId = new Identifier(
+			"servers/" + Hashing.sha1().hashUnencodedChars(minecraft.getCurrentServerEntry().address) + "/icon"
+		);
+		icon.upload();
+		minecraft.getTextureManager().registerTexture(iconId, icon);
+
+		class Impl implements AxoSprite.Dynamic, AxoSpriteImpl {
+			@Override
+			public void draw(MinecraftClient client, MatrixStack stack, int sX, int sY, int sW, int sH) {
+				client.getTextureManager().bindTexture(iconId);
+				DrawUtil.drawTexture(stack, sX, sY, 0, 0, sW, sH, 16, 16);
+			}
+
+			@Override
+			public void close() {
+				minecraft.getTextureManager().destroyTexture(iconId);
+				icon.close();
+			}
+		}
+
+		return new Impl();
 	}
 }

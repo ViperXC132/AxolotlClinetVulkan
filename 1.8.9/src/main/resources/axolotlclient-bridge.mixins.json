@@ -1,38 +1,40 @@
 {
-	"required": true,
-	"minVersion": "0.8",
-	"package": "io.github.axolotlclient.bridge.mixin",
-	"compatibilityLevel": "JAVA_17",
-	"client": [
-		"MinecraftClientMixin",
-		"PlatformDispatchMixin",
-		"entity.EntityMixin",
-		"entity.LivingEntityMixin",
-		"entity.PlayerEntityMixin",
-		"entity.effect.AxoStatusEffectsMixin",
-		"entity.effect.StatusEffectInstanceMixin",
-		"entity.effect.StatusEffectMixin",
-		"internal.PlatformImplInternalMixin",
-		"item.AxoEnchantsMixin",
-		"item.AxoItemsMixin",
-		"item.EnchantmentMixin",
-		"item.ItemMixin",
-		"item.ItemStackMixin",
-		"item.PlayerInventoryMixin",
-		"key.AxoKeysMixin",
-		"key.GameOptionsMixin",
-		"key.KeyBindingMixin",
-		"render.AxoSpritesMixin",
-		"render.TextRendererMixin",
-		"render.WindowMixin",
-		"util.IdentifierMixin",
-		"util.TextMixin",
-		"world.WorldMixin"
-	],
-	"injectors": {
-		"defaultRequire": 1
-	},
-	"mixins": [
-		"util.StyleMixin"
+    "required": true,
+    "minVersion": "0.8",
+    "package": "io.github.axolotlclient.bridge.mixin",
+    "plugin": "io.github.axolotlclient.bridge.internal.BridgeValidationPostprocessor",
+    "compatibilityLevel": "JAVA_17",
+    "client": [
+        "MinecraftClientMixin",
+        "PlatformDispatchMixin",
+        "PlayerInfoMixin",
+        "entity.EntityMixin",
+        "entity.LivingEntityMixin",
+        "entity.PlayerEntityMixin",
+        "entity.effect.AxoStatusEffectsMixin",
+        "entity.effect.StatusEffectInstanceMixin",
+        "entity.effect.StatusEffectMixin",
+        "internal.PlatformImplInternalMixin",
+        "item.AxoEnchantsMixin",
+        "item.AxoItemsMixin",
+        "item.EnchantmentMixin",
+        "item.ItemMixin",
+        "item.ItemStackMixin",
+        "item.PlayerInventoryMixin",
+        "key.AxoKeysMixin",
+        "key.GameOptionsMixin",
+        "key.KeyBindingMixin",
+        "render.AxoSpritesMixin",
+        "render.TextRendererMixin",
+        "render.WindowMixin",
+        "util.IdentifierMixin",
+        "util.TextMixin",
+        "world.WorldMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    },
+    "mixins": [
+        "util.StyleMixin"
 	]
 }

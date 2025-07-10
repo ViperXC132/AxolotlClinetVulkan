@@ -22,52 +22,55 @@
 
 package io.github.axolotlclient.bridge.entity;
 
-import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffectInstance;
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import io.github.axolotlclient.bridge.math.Vec3;
-import java.util.List;
 import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 
 public interface AxoEntity {
-	@Nullable
-	default AxoEntity br$getVehicle() {
+	@RequiresImpl
+	default @Nullable AxoEntity br$getVehicle() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default Vec3 br$getPos() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default Vec3 br$getVelocity() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default boolean br$isOnGround() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default float br$getYaw() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default float br$getPitch() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default int br$getNetId() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default Vec3 br$getRotation(float deltaTick) {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default UUID br$getUuid() {
-		throw BridgeUtil.noImpl();
-	}
-
-	default List<AxoStatusEffectInstance> br$getStatusEffects() {
 		throw BridgeUtil.noImpl();
 	}
 }

@@ -20,26 +20,27 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.bridge.mixin.entity;
+package io.github.axolotlclient.bridge.mixin.util;
 
-import io.github.axolotlclient.bridge.entity.AxoLivingEntity;
-import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffectInstance;
-import java.util.List;
-import java.util.Map;
-import net.minecraft.entity.living.LivingEntity;
-import net.minecraft.entity.living.effect.StatusEffectInstance;
-import org.spongepowered.asm.mixin.Final;
+import io.github.axolotlclient.bridge.util.AxoText;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(LivingEntity.class)
-public class LivingEntityMixin implements AxoLivingEntity {
+@Mixin(MutableText.class)
+public abstract class MutableTextMixin implements Text, AxoText.Mutable {
 	@Shadow
-	@Final
-	private Map<Integer, StatusEffectInstance> statusEffects;
+	public abstract MutableText append(Text text);
 
 	@Override
-	public List<AxoStatusEffectInstance> br$getStatusEffects() {
-		return List.copyOf(this.statusEffects.values());
+	public Mutable br$append(AxoText child) {
+		return append((Text) child);
+	}
+
+	@Override
+	public Mutable br$setStyle(Style style) {
+		// can't shadow setStyle because of stupid mapping bug...
+		return ((MutableText) (Object) (this)).setStyle((net.minecraft.text.Style) style);
 	}
 }

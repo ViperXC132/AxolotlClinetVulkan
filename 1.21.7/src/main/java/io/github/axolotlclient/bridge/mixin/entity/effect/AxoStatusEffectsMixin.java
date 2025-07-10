@@ -50,8 +50,14 @@ public class AxoStatusEffectsMixin {
 	@Final
 	public static AxoStatusEffect HASTE;
 
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoStatusEffect REGEN;
+
 	@Inject(method = "<clinit>", at = @At("HEAD"), cancellable = true)
 	private static void setStaticValues(CallbackInfo info) {
+		REGEN = MobEffects.REGENERATION.value();
 		JUMP_BOOST = MobEffects.JUMP_BOOST.value();
 		SPEED = MobEffects.SPEED.value();
 		HASTE = MobEffects.HASTE.value();

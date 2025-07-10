@@ -24,6 +24,7 @@ package io.github.axolotlclient.bridge.item;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.util.MathUtil;
 import org.jetbrains.annotations.ApiStatus;
@@ -37,26 +38,32 @@ public interface AxoItemStack {
 		return PlatformImplInternal.createItemStack(item, 1);
 	}
 
+	@RequiresImpl
 	default AxoItem br$getItem() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default AxoItemStack br$copy() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default void br$setCount(int count) {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default int br$getCount() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default int br$getDamage() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default int br$getMaxDamage() {
 		throw BridgeUtil.noImpl();
 	}
@@ -66,18 +73,22 @@ public interface AxoItemStack {
 		return br$getCount() == 0 || br$getItem() == AxoItems.AIR;
 	}
 
+	@RequiresImpl
 	default int br$getEnchantment(AxoEnchant enchant) {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default void br$setEnchantment(AxoEnchant enchant, int level) {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default void br$removeEnchantment(AxoEnchant enchant) {
 		throw BridgeUtil.noImpl();
 	}
 
+	@ApiStatus.NonExtendable
 	default boolean br$hasEnchantment(AxoEnchant enchant) {
 		return br$getEnchantment(enchant) != 0;
 	}
@@ -88,6 +99,7 @@ public interface AxoItemStack {
 		return MathUtil.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
 	}
 
+	@RequiresImpl
 	default AxoText br$getHoverName() {
 		throw BridgeUtil.noImpl();
 	}

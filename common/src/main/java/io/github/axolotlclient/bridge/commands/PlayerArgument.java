@@ -29,7 +29,7 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
-import io.github.axolotlclient.bridge.AxoPlayerInfo;
+import io.github.axolotlclient.bridge.AxoPlayerListEntry;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
@@ -93,7 +93,7 @@ public class PlayerArgument implements ArgumentType<PlayerArgument.PlayerInfo> {
 	@Override
 	public <S> CompletableFuture<Suggestions> listSuggestions(CommandContext<S> context, SuggestionsBuilder builder) {
 		AxoMinecraftClient.getInstance().br$getOnlinePlayers().stream()
-			.map(AxoPlayerInfo::br$getName)
+			.map(AxoPlayerListEntry::br$getName)
 			.filter(name -> NAME_REGEX.matcher(name).matches())
 			.filter(name -> name.toLowerCase(Locale.ROOT).startsWith(builder.getRemaining().toLowerCase(Locale.ROOT)))
 			.forEach(builder::suggest);

@@ -24,6 +24,7 @@ package io.github.axolotlclient.bridge.render;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import org.jetbrains.annotations.Nullable;
 
 public interface AxoWindow {
@@ -31,10 +32,12 @@ public interface AxoWindow {
 		return PlatformImplInternal.getWindow();
 	}
 
+	@RequiresImpl
 	default double br$getScaledWidth() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default double br$getScaledHeight() {
 		throw BridgeUtil.noImpl();
 	}

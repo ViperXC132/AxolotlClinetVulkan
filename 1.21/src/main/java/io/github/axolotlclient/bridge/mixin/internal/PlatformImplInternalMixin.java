@@ -91,16 +91,6 @@ public class PlatformImplInternalMixin {
      * @reason Implement bridge platform.
      */
     @Overwrite
-    public static BridgeVersion getBridgeApiVersion() {
-        return BridgeVersion.V1_21;
-    }
-
-
-    /**
-     * @author Flowey
-     * @reason Implement bridge platform.
-     */
-    @Overwrite
     public static AxoItemStack createItemStack(AxoItem item, int count) {
         return new ItemStack((Item) item, count);
     }

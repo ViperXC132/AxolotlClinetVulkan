@@ -22,19 +22,23 @@
 
 package io.github.axolotlclient.bridge.render;
 
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 
 public interface AxoFont {
+	@RequiresImpl
 	default int br$getWidth(AxoText text) {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default int br$getWidth(String text) {
 		throw BridgeUtil.noImpl();
 	}
 
-    default int br$getFontHeight() {
+	@RequiresImpl
+	default int br$getFontHeight() {
 		throw BridgeUtil.noImpl();
 	}
 }

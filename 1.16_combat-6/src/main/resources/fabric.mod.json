@@ -36,6 +36,7 @@
 	],
 	"custom": {
 		"modmenu:clientsideOnly": true,
+		"axolotlclient:bridge_impl_version": "V1_16_COMBAT",
 		"loom:injected_interfaces": {
 			"net/minecraft/class_2960": [
 				"io/github/axolotlclient/bridge/util/AxoIdentifier"
@@ -80,13 +81,16 @@
 				"io/github/axolotlclient/bridge/key/AxoKey"
 			],
 			"net/minecraft/class_2561": [
+				"io/github/axolotlclient/bridge/util/AxoText"
+			],
+			"net/minecraft/class_5250": [
 				"io/github/axolotlclient/bridge/util/AxoText\u0024Mutable"
 			],
 			"net/minecraft/class_4587": [
 				"io/github/axolotlclient/bridge/render/AxoRenderContext"
 			],
 			"net/minecraft/class_640": [
-				"io/github/axolotlclient/bridge/AxoPlayerInfo"
+				"io/github/axolotlclient/bridge/AxoPlayerListEntry"
 			],
 			"net/minecraft/class_1293": [
 				"io/github/axolotlclient/bridge/entity/effect/AxoStatusEffectInstance"

@@ -25,12 +25,12 @@ package io.github.axolotlclient.bridge;
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import io.github.axolotlclient.bridge.key.AxoClientKeybinds;
 import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.bridge.world.AxoWorld;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.Collection;
 import java.util.concurrent.Executor;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
@@ -44,41 +44,45 @@ public interface AxoMinecraftClient extends Executor {
 		return PlatformImplInternal.getCurrentFps();
 	}
 
+	@RequiresImpl
 	@Contract(pure = true)
 	@Nullable
 	default AxoPlayer br$getPlayer() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default AxoWorld br$getWorld() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default AxoFont br$getFont() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default AxoClientKeybinds br$getKeybinds() {
 		throw BridgeUtil.noImpl();
 	}
 
-	default CompletableFuture<Void> br$runTask(Runnable runnable) {
-		throw BridgeUtil.noImpl();
-	}
-
+	@RequiresImpl
 	default AxoSession br$getSession() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default String br$getServerAddress() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default boolean br$isLocalServer() {
 		throw BridgeUtil.noImpl();
 	}
 
-	default List<AxoPlayerInfo> br$getOnlinePlayers() {
+	@RequiresImpl
+	default Collection<? extends AxoPlayerListEntry> br$getOnlinePlayers() {
 		throw BridgeUtil.noImpl();
 	}
 
@@ -87,6 +91,7 @@ public interface AxoMinecraftClient extends Executor {
 	 *
 	 * @param msg
 	 */
+	@RequiresImpl
 	default void br$sendToServer(String msg) {
 		throw BridgeUtil.noImpl();
 	}
@@ -96,6 +101,7 @@ public interface AxoMinecraftClient extends Executor {
 	 *
 	 * @param msg
 	 */
+	@RequiresImpl
 	default void br$sendToClient(AxoText msg) {
 		throw BridgeUtil.noImpl();
 	}

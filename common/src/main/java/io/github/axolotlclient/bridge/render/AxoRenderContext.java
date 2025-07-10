@@ -24,6 +24,7 @@ package io.github.axolotlclient.bridge.render;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.bridge.util.AxoText;
@@ -32,57 +33,70 @@ import org.jetbrains.annotations.ApiStatus;
 
 public interface AxoRenderContext {
 	// Matrix management
+	@RequiresImpl
 	default void br$popMatrix() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default void br$pushMatrix() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default void br$scaleMatrix(float sx, float sy, float sz) {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default void br$translateMatrix(float x, float y, float z) {
 		throw BridgeUtil.noImpl();
 	}
 
 	// scissor
+	@RequiresImpl
 	default void br$pushScissor(int x, int y, int w, int h) {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default void br$popScissor() {
 		throw BridgeUtil.noImpl();
 	}
 
 	// GL state management
+	@RequiresImpl
 	default void br$glEnableBlend() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default void br$glEnableAlpha() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default void br$glDisableBlend() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default void br$glDisableAlpha() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default void br$glColor4(float r, float g, float b, float a) {
 		throw BridgeUtil.noImpl();
 	}
 
 	// string rendering
+	@RequiresImpl
 	default int br$drawString(String value, int x, int y, int color, boolean shadow) {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default int br$drawString(AxoText value, int x, int y, int color, boolean shadow) {
 		throw BridgeUtil.noImpl();
 	}
@@ -133,6 +147,7 @@ public interface AxoRenderContext {
 		br$fillRect(x, y, width, height, color.toInt());
 	}
 
+	@RequiresImpl
 	default void br$fillRect(int x, int y, int width, int height, int color) {
 		throw BridgeUtil.noImpl();
 	}
@@ -148,6 +163,7 @@ public interface AxoRenderContext {
 		br$outlineRect(x, y, width, height, color.toInt());
 	}
 
+	@RequiresImpl
 	default void br$outlineRect(int x, int y, int width, int height, int color) {
 		throw BridgeUtil.noImpl();
 	}
@@ -159,16 +175,19 @@ public interface AxoRenderContext {
 		br$drawTexture(coords.x, coords.y, coords.width, coords.height, texture);
 	}
 
+	@RequiresImpl
 	default void br$drawTexture(int x, int y, int width, int height, AxoSprite sprite) {
 		throw BridgeUtil.noImpl();
 	}
 
 	// item model rendering
 
+	@RequiresImpl
 	default void br$renderGuiItemModel(AxoItemStack stack, int x, int y) {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default void br$renderGuiItemOverlay(AxoItemStack stack, int x, int y, String countLabel, int textColor, boolean shadow) {
 		throw BridgeUtil.noImpl();
 	}
@@ -179,6 +198,7 @@ public interface AxoRenderContext {
 	}
 
 	// misc methods
+	@RequiresImpl
 	default AxoFont br$getFont() {
 		throw BridgeUtil.noImpl();
 	}

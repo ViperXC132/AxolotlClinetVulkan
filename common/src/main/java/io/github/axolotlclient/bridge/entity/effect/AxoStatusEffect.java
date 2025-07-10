@@ -23,9 +23,11 @@
 package io.github.axolotlclient.bridge.entity.effect;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import io.github.axolotlclient.bridge.render.AxoSprite;
 
 public interface AxoStatusEffect {
+	@RequiresImpl
 	default AxoSprite br$getSprite() {
 		throw BridgeUtil.noImpl();
 	}

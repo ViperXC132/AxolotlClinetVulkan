@@ -22,7 +22,7 @@
 
 package io.github.axolotlclient.modules.hypixel.bedwars;
 
-import io.github.axolotlclient.bridge.AxoPlayerInfo;
+import io.github.axolotlclient.bridge.AxoPlayerListEntry;
 import io.github.axolotlclient.bridge.Platform;
 import io.github.axolotlclient.api.util.UUIDHelper;
 import lombok.Data;
@@ -36,7 +36,7 @@ public class BedwarsPlayer {
 
 	private final BedwarsTeam team;
 	private final int number;
-	private AxoPlayerInfo profile;
+	private AxoPlayerListEntry profile;
 	private boolean alive = true;
 	private boolean disconnected = false;
 	private boolean bed = true;
@@ -44,7 +44,7 @@ public class BedwarsPlayer {
 	private boolean triedStats = false;
 	private int tickAlive = -1;
 
-	public BedwarsPlayer(BedwarsTeam team, AxoPlayerInfo profile, int number) {
+	public BedwarsPlayer(BedwarsTeam team, AxoPlayerListEntry profile, int number) {
 		this.team = team;
 		this.profile = profile;
 		this.number = number;
@@ -79,7 +79,7 @@ public class BedwarsPlayer {
 		return team.getColorSection() + "§l§m" + team.getPrefix() + number + "§7 §m" + getName();
 	}
 
-	public void updateListEntry(AxoPlayerInfo entry) {
+	public void updateListEntry(AxoPlayerListEntry entry) {
 		this.profile = entry;
 	}
 

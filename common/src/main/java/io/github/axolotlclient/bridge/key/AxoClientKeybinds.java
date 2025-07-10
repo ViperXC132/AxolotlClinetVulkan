@@ -23,20 +23,25 @@
 package io.github.axolotlclient.bridge.key;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 
 public interface AxoClientKeybinds {
+	@RequiresImpl
 	default AxoKeybinding br$getSprintKeybind() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default AxoKeybinding br$getSneakKeybind() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default AxoKeybinding br$getAttackKey() {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
 	default AxoKeybinding br$getUseKey() {
 		throw BridgeUtil.noImpl();
 	}
