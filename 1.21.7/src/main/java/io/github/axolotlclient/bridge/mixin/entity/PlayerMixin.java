@@ -20,51 +20,46 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.bridge.mixin.util;
+package io.github.axolotlclient.bridge.mixin.entity;
 
-import io.github.axolotlclient.bridge.util.AxoText;
-import java.util.Optional;
-import java.util.function.BiConsumer;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.StringVisitable;
-import net.minecraft.text.Text;
+import com.mojang.authlib.GameProfile;
+import io.github.axolotlclient.bridge.entity.AxoPlayer;
+import io.github.axolotlclient.bridge.item.AxoItem;
+import io.github.axolotlclient.bridge.item.AxoPlayerInventory;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(Text.class)
-public interface TextMixin extends AxoText {
+@Mixin(Player.class)
+public abstract class PlayerMixin implements AxoPlayer {
 	@Shadow
-	String getString();
+	@Final
+	private GameProfile gameProfile;
 
 	@Shadow
-	MutableText copy();
+	@Final
+	Inventory inventory;
 
 	@Shadow
-	net.minecraft.text.Style getStyle();
-
-	@Shadow
-	<T> Optional<T> visit(StringVisitable.StyledVisitor<T> par1, net.minecraft.text.Style par2);
+	public abstract ItemStack getProjectile(ItemStack weaponStack);
 
 	@Override
-	default String br$getRawString() {
-		return getString();
+	public AxoPlayerInventory br$getInventory() {
+		return this.inventory;
 	}
 
 	@Override
-	default Mutable br$copy() {
-		return copy();
+	public @Nullable AxoItem br$getProjectileItem() {
+		return getProjectile(Items.BOW.getDefaultInstance()).getItem();
 	}
 
 	@Override
-	default void br$visit(BiConsumer<String, Style> handler) {
-		visit((style, asString) -> {
-			handler.accept(asString, style);
-			return Optional.empty();
-		}, net.minecraft.text.Style.EMPTY);
-	}
-
-	@Override
-	default Style br$getStyle() {
-		return getStyle();
+	public String br$getName() {
+		return gameProfile.getName();
 	}
 }

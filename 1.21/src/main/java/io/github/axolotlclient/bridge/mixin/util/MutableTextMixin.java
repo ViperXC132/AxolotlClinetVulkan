@@ -20,24 +20,29 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.bridge.mixin.entity;
+package io.github.axolotlclient.bridge.mixin.util;
 
-import io.github.axolotlclient.bridge.entity.AxoPlayer;
-import io.github.axolotlclient.bridge.item.AxoPlayerInventory;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import org.spongepowered.asm.mixin.Final;
+import io.github.axolotlclient.bridge.util.AxoText;
+import java.util.Optional;
+import java.util.function.BiConsumer;
+import net.minecraft.text.MutableText;
+import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(Player.class)
-public class PlayerEntityMixin implements AxoPlayer {
+@Mixin(MutableText.class)
+public abstract class MutableTextMixin implements Text, AxoText.Mutable {
 	@Shadow
-	@Final
-	Inventory inventory;
+	public abstract MutableText append(Text text);
 
 	@Override
-	public AxoPlayerInventory br$getInventory() {
-		return this.inventory;
+	public  Mutable br$append(AxoText child) {
+		return append((Text) child);
+	}
+
+	@Override
+	public Mutable br$setStyle(Style style) {
+		// can't shadow setStyle because of stupid mapping bug...
+		return ((MutableText) (Object) this).setStyle((net.minecraft.text.Style) style);
 	}
 }

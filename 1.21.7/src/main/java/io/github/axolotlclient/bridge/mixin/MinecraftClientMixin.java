@@ -23,15 +23,24 @@
 package io.github.axolotlclient.bridge.mixin;
 
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
+import io.github.axolotlclient.bridge.AxoPlayerListEntry;
+import io.github.axolotlclient.bridge.AxoSession;
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.key.AxoClientKeybinds;
 import io.github.axolotlclient.bridge.render.AxoFont;
+import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.bridge.world.AxoWorld;
+import java.util.Collection;
+import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
+import net.minecraft.client.User;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -53,6 +62,20 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	@Final
 	public Options options;
 
+	@Shadow
+	public abstract boolean isSingleplayer();
+
+	@Shadow
+	public abstract ServerData getCurrentServer();
+
+	@Shadow
+	@Final
+	public Gui gui;
+
+	@Shadow
+	@Final
+	private User user;
+
 	@Override
 	public @Nullable AxoPlayer br$getPlayer() {
 		return player;
@@ -73,5 +96,40 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 
 	public AxoClientKeybinds br$getKeybinds() {
 		return options;
+	}
+
+	@Override
+	public boolean br$isLocalServer() {
+		return isSingleplayer();
+	}
+
+	@Override
+	public String br$getServerAddress() {
+		return Optional.ofNullable(getCurrentServer()).map(x -> x.ip).orElse(null);
+	}
+
+	@Override
+	public Collection<? extends AxoPlayerListEntry> br$getOnlinePlayers() {
+		return player.connection.getOnlinePlayers();
+	}
+
+	@Override
+	public void br$sendToClient(AxoText msg) {
+		gui.getChat().addMessage((Component) msg);
+	}
+
+	@Override
+	public void br$sendToServer(String msg) {
+		if (msg.startsWith("/")) {
+			player.connection.sendCommand(msg);
+		} else {
+			player.connection.sendChat(msg);
+		}
+	}
+
+	@Override
+	public AxoSession br$getSession() {
+		// TODO... -?
+		return new AxoSession(user.getName(), user.getProfileId().toString(), user.getAccessToken());
 	}
 }

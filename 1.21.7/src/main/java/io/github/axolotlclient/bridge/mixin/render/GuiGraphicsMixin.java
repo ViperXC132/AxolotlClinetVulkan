@@ -27,11 +27,13 @@ import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoSprite;
+import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
@@ -57,18 +59,6 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	public abstract void disableScissor();
 
 	@Shadow
-	public abstract void drawString(Font par1, String par2, int par3, int par4, int par5);
-
-	@Shadow
-	public abstract void drawString(Font par1, Component par2, int par3, int par4, int par5);
-
-	@Shadow
-	public abstract void drawString(Font par1, String par2, int par3, int par4, int par5, boolean par6);
-
-	@Shadow
-	public abstract void drawString(Font par1, FormattedCharSequence par2, int par3, int par4, int par5);
-
-	@Shadow
 	public abstract void fill(int x1, int y1, int x2, int y2, int color);
 
 	@Shadow
@@ -76,6 +66,12 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 
 	@Shadow
 	public abstract void renderItemDecorations(Font par1, ItemStack par2, int par3, int par4, String par5);
+
+	@Shadow
+	public abstract void drawString(Font par1, String par2, int par3, int par4, int par5, boolean par6);
+
+	@Shadow
+	public abstract void drawString(Font par1, Component par2, int par3, int par4, int par5, boolean par6);
 
 	@Override
 	public void br$popMatrix() {
@@ -135,6 +131,12 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	public int br$drawString(String value, int x, int y, int color, boolean shadow) {
 		drawString(minecraft.font, value, x, y, color, shadow);
 		return minecraft.font.width(value);
+	}
+
+	@Override
+	public int br$drawString(AxoText value, int x, int y, int color, boolean shadow) {
+		drawString(minecraft.font, (Component) value, x, y, color, shadow);
+		return minecraft.font.width((FormattedText) value);
 	}
 
 	@Override

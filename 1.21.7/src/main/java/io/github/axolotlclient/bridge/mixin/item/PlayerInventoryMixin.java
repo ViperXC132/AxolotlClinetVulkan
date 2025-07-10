@@ -51,6 +51,10 @@ public abstract class PlayerInventoryMixin implements AxoPlayerInventory {
 	@Final
 	private EntityEquipment equipment;
 
+	@Shadow
+	@Final
+	private NonNullList<ItemStack> items;
+
 	@Override
 	public AxoItemStack br$getMainHand() {
 		return getSelectedItem();
@@ -68,5 +72,15 @@ public abstract class PlayerInventoryMixin implements AxoPlayerInventory {
 		return Stream.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
 			.map(slot -> equipment.get(slot))
 			.toList();
+	}
+
+	@Override
+	public List<? extends AxoItemStack> br$getNonEquipmentItems() {
+		return items;
+	}
+
+	@Override
+	public AxoItemStack br$getOffHand() {
+		return equipment.get(EquipmentSlot.OFFHAND);
 	}
 }

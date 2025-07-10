@@ -6,8 +6,9 @@
 	"compatibilityLevel": "JAVA_17",
 	"client": [
 		"MinecraftClientMixin",
+		"PlayerListEntryMixin",
 		"entity.EntityMixin",
-		"entity.PlayerEntityMixin",
+		"entity.PlayerMixin",
 		"internal.PlatformImplInternalMixin",
 		"item.AxoEnchantsMixin",
 		"item.AxoItemsMixin",
@@ -22,17 +23,20 @@
 		"render.GuiGraphicsMixin",
 		"render.WindowMixin",
 		"util.IdentifierMixin",
-		"util.TextMixin",
+		"util.MutableComponentMixin",
 		"world.WorldMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
 	},
 	"mixins": [
+		"PlatformDispatchMixin",
 		"entity.LivingEntityMixin",
 		"entity.effect.AxoStatusEffectsMixin",
 		"entity.effect.StatusEffectInstanceMixin",
 		"entity.effect.StatusEffectMixin",
+		"item.ItemMixin",
+		"util.ComponentMixin",
 		"util.StyleMixin"
 	]
 }

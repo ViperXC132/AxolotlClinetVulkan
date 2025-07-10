@@ -95,6 +95,8 @@ public class BridgeValidationPostprocessor implements IMixinConfigPlugin {
 	}
 
 	public static void validate() {
+		Preconditions.checkState(IS_DEV, "BridgeValidationPostprocessor.validate() called in prod?");
+
 		Stream.of("minecraft", "axolotlclient-common")
 			.map(x -> FabricLoader.getInstance().getModContainer(x).orElseThrow())
 			.flatMap(x -> x.getRootPaths().stream())
@@ -121,6 +123,10 @@ public class BridgeValidationPostprocessor implements IMixinConfigPlugin {
 
 	@Override
 	public void onLoad(String mixinPackage) {
+		if (!IS_DEV) {
+			return;
+		}
+
 		final var injectedInterfaces = FabricLoader.getInstance().getModContainer("axolotlclient")
 			.orElseThrow()
 			.getMetadata()
@@ -158,6 +164,10 @@ public class BridgeValidationPostprocessor implements IMixinConfigPlugin {
 
 	@Override
 	public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
+		if (!IS_DEV) {
+			return;
+		}
+
 		mixinInfo.getClassNode(0).interfaces.forEach(s -> {
 			final var ifs = remainingInjections.get(targetClassName);
 			if(ifs != null) {

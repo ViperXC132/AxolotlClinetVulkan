@@ -27,6 +27,8 @@ import io.github.axolotlclient.bridge.impl.AxoEnchantImpl;
 import io.github.axolotlclient.bridge.item.AxoEnchant;
 import io.github.axolotlclient.bridge.item.AxoItem;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
+import io.github.axolotlclient.bridge.util.AxoText;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -52,6 +54,9 @@ public abstract class ItemStackMixin implements AxoItemStack {
 
 	@Shadow
 	public abstract int getDamageValue();
+
+	@Shadow
+	public abstract Component getStyledHoverName();
 
 	@Override
 	public AxoItem br$getItem() {
@@ -115,5 +120,10 @@ public abstract class ItemStackMixin implements AxoItemStack {
 		((AxoEnchantImpl) enchant).lookup().ifPresent(
 			holder -> EnchantmentHelper.updateEnchantments(self, builder -> builder.removeIf(holder::equals))
 		);
+	}
+
+	@Override
+	public AxoText br$getHoverName() {
+		return getStyledHoverName();
 	}
 }

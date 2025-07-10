@@ -180,7 +180,6 @@ public class PlatformImplInternalMixin {
 		return Text.translatable(key, args);
 	}
 
-
 	/**
 	 * @author Flowey
 	 * @reason Implement bridge platform.

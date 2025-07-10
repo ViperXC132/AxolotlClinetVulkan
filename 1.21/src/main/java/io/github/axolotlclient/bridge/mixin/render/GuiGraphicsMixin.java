@@ -28,6 +28,7 @@ import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoSprite;
+import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -123,6 +124,11 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	@Override
 	public int br$drawString(String value, int x, int y, int color, boolean shadow) {
 		return drawText(MinecraftClient.getInstance().textRenderer, Text.of(value), x, y, color, shadow);
+	}
+
+	@Override
+	public int br$drawString(AxoText value, int x, int y, int color, boolean shadow) {
+		return drawText(MinecraftClient.getInstance().textRenderer, (Text) value, x, y, color, shadow);
 	}
 
 	@Override

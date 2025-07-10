@@ -51,6 +51,14 @@ public abstract class PlayerInventoryMixin implements AxoPlayerInventory {
 	@Final
 	public DefaultedList<ItemStack> armor;
 
+	@Shadow
+	@Final
+	public DefaultedList<ItemStack> main;
+
+	@Shadow
+	@Final
+	public DefaultedList<ItemStack> offHand;
+
 	@Override
 	public AxoItemStack br$getMainHand() {
 		return getMainHandStack();
@@ -65,8 +73,16 @@ public abstract class PlayerInventoryMixin implements AxoPlayerInventory {
 
 	@Override
 	public List<? extends AxoItemStack> br$getArmor() {
-		return IntStream.range(0, armor.size())
-			.mapToObj(this::getArmorStack)
-			.toList();
+		return armor;
+	}
+
+	@Override
+	public List<? extends AxoItemStack> br$getNonEquipmentItems() {
+		return main.subList(9, 36);
+	}
+
+	@Override
+	public AxoItemStack br$getOffHand() {
+		return offHand.getFirst();
 	}
 }

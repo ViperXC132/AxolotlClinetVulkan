@@ -25,25 +25,25 @@ package io.github.axolotlclient.bridge.mixin.util;
 import io.github.axolotlclient.bridge.util.AxoText;
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import net.minecraft.text.MutableText;
-import net.minecraft.text.StringVisitable;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.MutableComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(Text.class)
-public interface TextMixin extends AxoText {
+@Mixin(Component.class)
+public interface ComponentMixin extends AxoText {
+	@Shadow
+	MutableComponent copy();
+
 	@Shadow
 	String getString();
 
 	@Shadow
-	MutableText copy();
+	net.minecraft.network.chat.Style getStyle();
 
 	@Shadow
-	net.minecraft.text.Style getStyle();
-
-	@Shadow
-	<T> Optional<T> visit(StringVisitable.StyledVisitor<T> par1, net.minecraft.text.Style par2);
+	<T> Optional<T> visit(FormattedText.StyledContentConsumer<T> par1, net.minecraft.network.chat.Style par2);
 
 	@Override
 	default String br$getRawString() {
@@ -60,7 +60,7 @@ public interface TextMixin extends AxoText {
 		visit((style, asString) -> {
 			handler.accept(asString, style);
 			return Optional.empty();
-		}, net.minecraft.text.Style.EMPTY);
+		}, net.minecraft.network.chat.Style.EMPTY);
 	}
 
 	@Override

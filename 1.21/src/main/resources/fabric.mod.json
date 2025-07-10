@@ -85,6 +85,9 @@
 				"io/github/axolotlclient/bridge/key/AxoKey"
 			],
 			"net/minecraft/class_2561": [
+				"io/github/axolotlclient/bridge/util/AxoText"
+			],
+			"net/minecraft/class_5250": [
 				"io/github/axolotlclient/bridge/util/AxoText\u0024Mutable"
 			],
 			"net/minecraft/class_332": [
