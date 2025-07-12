@@ -28,7 +28,6 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-import lombok.Getter;
 import net.fabricmc.loader.api.FabricLoader;
 
 public abstract class AxolotlClientConfigCommon {
@@ -65,8 +64,15 @@ public abstract class AxolotlClientConfigCommon {
 	public final EnumOption<MenuButtonMode> titleScreenOptionButtonMode = new EnumOption<>("title_screen_button_mode", MenuButtonMode.class, MenuButtonMode.MODMENU);
 	public final EnumOption<MenuButtonMode> gameMenuScreenOptionButtonMode = new EnumOption<>("game_menu_screen_button_mode", MenuButtonMode.class, MenuButtonMode.MODMENU);
 
-	@Getter
 	private DateTimeFormatter dateTimeFormatter;
+
+	public DateTimeFormatter getDateTimeFormatter() {
+		if(dateTimeFormatter == null) {
+			dateTimeFormatter = DateTimeFormatter.ofPattern(datetimeFormat.get());
+		}
+
+		return dateTimeFormatter;
+	}
 
 	public static AxolotlClientConfigCommon instance() {
 		return AxolotlClientCommon.getInstance().getConfig();
