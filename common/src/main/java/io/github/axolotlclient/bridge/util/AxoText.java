@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.bridge.util;
 
+import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
 import io.github.axolotlclient.bridge.internal.RequiresImpl;
@@ -82,6 +83,11 @@ public interface AxoText {
 		@ApiStatus.NonExtendable
 		default Mutable br$color(int color) {
 			return br$setStyle(br$getStyle().br$color(color));
+		}
+
+		@ApiStatus.NonExtendable
+		default Mutable br$color(io.github.axolotlclient.AxolotlClientConfig.api.util.Color color) {
+			return br$color(color.toInt());
 		}
 
 		@RequiresImpl

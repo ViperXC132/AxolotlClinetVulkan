@@ -26,6 +26,7 @@ import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.util.AxoText;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.FormattedCharSequence;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -34,18 +35,18 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(Font.class)
 public abstract class FontMixin implements AxoFont {
 	@Shadow
-	public abstract int width(FormattedCharSequence text);
-
-	@Shadow
 	public abstract int width(String text);
 
 	@Shadow
 	@Final
 	public int lineHeight;
 
+	@Shadow
+	public abstract int width(FormattedText text);
+
 	@Override
 	public int br$getWidth(AxoText text) {
-		return this.br$getWidth(((Component) text).getString());
+		return width((Component) text);
 	}
 
 	@Override
