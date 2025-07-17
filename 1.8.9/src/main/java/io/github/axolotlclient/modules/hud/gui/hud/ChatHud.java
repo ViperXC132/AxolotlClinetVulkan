@@ -22,8 +22,6 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud;
 
-import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import java.util.List;
 
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -32,7 +30,9 @@ import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.mixin.ChatHudAccessor;
+import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.chat.ChatMessage;

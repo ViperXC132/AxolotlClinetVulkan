@@ -22,6 +22,9 @@
 
 package io.github.axolotlclient.modules.hud.gui0.entry;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
@@ -36,8 +39,6 @@ import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.MathUtil;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
 

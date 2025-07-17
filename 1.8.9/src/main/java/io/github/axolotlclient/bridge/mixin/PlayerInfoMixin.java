@@ -22,9 +22,10 @@
 
 package io.github.axolotlclient.bridge.mixin;
 
+import java.util.UUID;
+
 import com.mojang.authlib.GameProfile;
 import io.github.axolotlclient.bridge.AxoPlayerListEntry;
-import java.util.UUID;
 import net.minecraft.client.network.PlayerInfo;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

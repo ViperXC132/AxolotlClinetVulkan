@@ -22,14 +22,14 @@
 
 package io.github.axolotlclient.bridge.impl;
 
-import com.google.common.base.Preconditions;
-import io.github.axolotlclient.bridge.events.EventBus;
-import io.github.axolotlclient.bridge.events.Events;
-import io.github.axolotlclient.bridge.impl.commands.CommandsImpl;
-import io.github.axolotlclient.bridge.item.AxoItemStack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import com.google.common.base.Preconditions;
+import io.github.axolotlclient.bridge.events.Events;
+import io.github.axolotlclient.bridge.impl.commands.CommandsImpl;
+import io.github.axolotlclient.bridge.item.AxoItemStack;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.item.Item;

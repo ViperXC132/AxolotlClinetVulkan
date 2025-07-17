@@ -28,8 +28,6 @@ import io.github.axolotlclient.bridge.item.AxoEnchant;
 import io.github.axolotlclient.bridge.item.AxoItem;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.util.AxoText;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

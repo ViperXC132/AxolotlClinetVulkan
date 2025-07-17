@@ -22,9 +22,10 @@
 
 package io.github.axolotlclient.bridge.mixin.util;
 
-import io.github.axolotlclient.bridge.util.AxoText;
 import java.util.Optional;
 import java.util.function.BiConsumer;
+
+import io.github.axolotlclient.bridge.util.AxoText;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.network.chat.MutableComponent;

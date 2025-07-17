@@ -22,6 +22,10 @@
 
 package io.github.axolotlclient.bridge.mixin;
 
+import java.io.IOException;
+import java.util.Base64;
+import java.util.Objects;
+
 import com.google.common.base.Preconditions;
 import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.texture.NativeImage;
@@ -31,9 +35,6 @@ import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
 import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.util.ThreadExecuter;
-import java.io.IOException;
-import java.util.Base64;
-import java.util.Objects;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.network.Address;

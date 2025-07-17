@@ -22,7 +22,6 @@
 
 package io.github.axolotlclient.api;
 
-import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -30,6 +29,7 @@ import io.github.axolotlclient.api.e4mc.E4mcStatusProvider;
 import io.github.axolotlclient.api.requests.StatusUpdate;
 import io.github.axolotlclient.api.util.StatusUpdateProvider;
 import io.github.axolotlclient.api.worldhost.WorldHostStatusProvider;
+import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import io.github.axolotlclient.modules.mcci.MccIslandMods;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;

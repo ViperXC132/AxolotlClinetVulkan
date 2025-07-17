@@ -22,13 +22,13 @@
 
 package io.github.axolotlclient.mixin;
 
-import io.github.axolotlclient.AxolotlClientConfigCommon;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.APIOptions;
 import io.github.axolotlclient.api.FriendsScreen;

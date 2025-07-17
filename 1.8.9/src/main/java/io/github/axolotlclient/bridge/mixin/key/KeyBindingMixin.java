@@ -22,12 +22,13 @@
 
 package io.github.axolotlclient.bridge.mixin.key;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.bridge.impl.AxoKeyImpl;
 import io.github.axolotlclient.bridge.key.AxoKey;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.client.options.KeyBinding;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

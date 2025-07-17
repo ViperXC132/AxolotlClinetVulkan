@@ -22,15 +22,13 @@
 
 package io.github.axolotlclient.bridge.mixin.world;
 
-import io.github.axolotlclient.bridge.entity.AxoEntity;
-import io.github.axolotlclient.bridge.entity.AxoPlayer;
-import io.github.axolotlclient.bridge.world.AxoWorld;
 import java.util.Collections;
 import java.util.List;
-import net.minecraft.entity.player.PlayerEntity;
+
+import io.github.axolotlclient.bridge.entity.AxoPlayer;
+import io.github.axolotlclient.bridge.world.AxoWorld;
 import net.minecraft.world.EntityView;
 import net.minecraft.world.World;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 

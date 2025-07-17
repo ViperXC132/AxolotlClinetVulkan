@@ -22,9 +22,10 @@
 
 package io.github.axolotlclient.bridge;
 
+import java.util.UUID;
+
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.RequiresImpl;
-import java.util.UUID;
 
 public interface AxoPlayerListEntry {
 	@RequiresImpl

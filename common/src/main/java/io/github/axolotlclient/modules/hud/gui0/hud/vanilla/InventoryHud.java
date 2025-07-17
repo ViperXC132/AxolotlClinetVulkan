@@ -22,6 +22,10 @@
 
 package io.github.axolotlclient.modules.hud.gui0.hud.vanilla;
 
+import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoItems;
@@ -30,9 +34,6 @@ import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui0.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui0.entry.BoxHudEntry;
 import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
-import java.util.List;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable {
 	public static final AxoIdentifier ID = AxoIdentifier.of(AxolotlClientCommon.MODID, "inventoryhud");

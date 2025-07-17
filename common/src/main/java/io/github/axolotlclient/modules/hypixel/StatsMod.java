@@ -22,6 +22,11 @@
 
 package io.github.axolotlclient.modules.hypixel;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
@@ -31,26 +36,10 @@ import io.github.axolotlclient.bridge.commands.PlayerArgument;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.bridge.util.AxoText.Color;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.IntStream;
 import lombok.Getter;
 
 import static io.github.axolotlclient.bridge.commands.Commands.argument;
-import static io.github.axolotlclient.bridge.util.AxoText.Color.AQUA;
-import static io.github.axolotlclient.bridge.util.AxoText.Color.BLUE;
-import static io.github.axolotlclient.bridge.util.AxoText.Color.DARK_AQUA;
-import static io.github.axolotlclient.bridge.util.AxoText.Color.DARK_GREEN;
-import static io.github.axolotlclient.bridge.util.AxoText.Color.DARK_PURPLE;
-import static io.github.axolotlclient.bridge.util.AxoText.Color.DARK_RED;
-import static io.github.axolotlclient.bridge.util.AxoText.Color.GOLD;
-import static io.github.axolotlclient.bridge.util.AxoText.Color.GRAY;
-import static io.github.axolotlclient.bridge.util.AxoText.Color.GREEN;
-import static io.github.axolotlclient.bridge.util.AxoText.Color.LIGHT_PURPLE;
-import static io.github.axolotlclient.bridge.util.AxoText.Color.RED;
-import static io.github.axolotlclient.bridge.util.AxoText.Color.WHITE;
-import static io.github.axolotlclient.bridge.util.AxoText.Color.YELLOW;
+import static io.github.axolotlclient.bridge.util.AxoText.Color.*;
 import static io.github.axolotlclient.bridge.util.AxoText.literal;
 import static io.github.axolotlclient.bridge.util.AxoText.translatable;
 

@@ -22,6 +22,10 @@
 
 package io.github.axolotlclient.modules.hud.gui0.hud.simple;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
@@ -31,9 +35,6 @@ import io.github.axolotlclient.bridge.util.AxoI18n;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui0.entry.SimpleTextHudEntry;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import lombok.Getter;
 
 /**

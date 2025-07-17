@@ -22,9 +22,10 @@
 
 package io.github.axolotlclient.bridge.mixin.entity;
 
+import java.util.UUID;
+
 import io.github.axolotlclient.bridge.entity.AxoEntity;
 import io.github.axolotlclient.bridge.math.Vec3;
-import java.util.UUID;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;

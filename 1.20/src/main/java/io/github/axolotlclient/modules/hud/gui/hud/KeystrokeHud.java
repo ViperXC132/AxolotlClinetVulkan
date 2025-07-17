@@ -22,10 +22,6 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud;
 
-import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.modules.hud.ClickInputTracker;
-import io.github.axolotlclient.modules.hud.gui0.layout.Justification;
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -40,11 +36,15 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.mixin.KeyBindAccessor;
-import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.ClickInputTracker;
 import io.github.axolotlclient.modules.hud.gui.keystrokes.KeystrokePositioningScreen;
 import io.github.axolotlclient.modules.hud.gui.keystrokes.KeystrokesScreen;
+import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.gui0.layout.Justification;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
+import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.GsonHelper;

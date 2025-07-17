@@ -22,12 +22,12 @@
 
 package io.github.axolotlclient.mixin;
 
-import io.github.axolotlclient.bridge.events.Events;
 import java.util.UUID;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import io.github.axolotlclient.bridge.events.Events;
 import net.minecraft.client.network.PlayerInfo;
 import net.minecraft.client.network.handler.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;

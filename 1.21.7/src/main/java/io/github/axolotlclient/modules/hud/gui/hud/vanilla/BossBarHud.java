@@ -22,11 +22,6 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 
-import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.modules.hud.gui0.component.DynamicallyPositionable;
-import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
-import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
-import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,7 +30,12 @@ import java.util.UUID;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.mixin.BossBarHudAccessor;
+import io.github.axolotlclient.modules.hud.gui0.component.DynamicallyPositionable;
+import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import net.minecraft.Util;
 import net.minecraft.client.Minecraft;

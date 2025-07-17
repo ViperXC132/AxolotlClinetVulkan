@@ -22,12 +22,13 @@
 
 package io.github.axolotlclient;
 
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import net.fabricmc.loader.api.FabricLoader;
 
 public abstract class AxolotlClientConfigCommon {

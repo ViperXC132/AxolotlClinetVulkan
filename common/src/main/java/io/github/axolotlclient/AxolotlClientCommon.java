@@ -23,28 +23,28 @@
 
 package io.github.axolotlclient;
 
-import com.google.common.base.Preconditions;
-import com.google.gson.JsonObject;
-import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
-import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
-import io.github.axolotlclient.modules.hud.ClickInputTracker;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
+import com.google.common.base.Preconditions;
+import com.google.gson.JsonObject;
+import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
+import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
 import io.github.axolotlclient.AxolotlClientConfig.impl.managers.VersionedJsonConfigManager;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.Module;
+import io.github.axolotlclient.modules.hud.ClickInputTracker;
 import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.OSUtil;
 import io.github.axolotlclient.util.notifications.NotificationProvider;
-import java.util.ArrayList;
-import java.util.List;
 import net.fabricmc.loader.api.FabricLoader;
 
 public abstract class AxolotlClientCommon {

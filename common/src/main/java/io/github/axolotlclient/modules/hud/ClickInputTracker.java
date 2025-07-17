@@ -22,12 +22,13 @@
 
 package io.github.axolotlclient.modules.hud;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.github.axolotlclient.bridge.Platform;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.modules.AbstractCommonModule;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Getter;
 
 public class ClickInputTracker extends AbstractCommonModule {

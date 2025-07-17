@@ -22,7 +22,6 @@
 
 package io.github.axolotlclient.mixin;
 
-import io.github.axolotlclient.AxolotlClientConfigCommon;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandle;
@@ -34,6 +33,7 @@ import java.util.List;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.APIOptions;
 import io.github.axolotlclient.api.FriendsScreen;

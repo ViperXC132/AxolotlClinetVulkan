@@ -22,8 +22,6 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud;
 
-import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
-import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -32,6 +30,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import lombok.Getter;

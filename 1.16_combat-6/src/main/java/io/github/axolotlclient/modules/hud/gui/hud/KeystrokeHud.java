@@ -22,12 +22,6 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud;
 
-import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.modules.hud.ClickInputTracker;
-import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hud.gui0.component.HudEntry;
-import io.github.axolotlclient.modules.hud.gui0.hud.simple.CPSHud;
-import io.github.axolotlclient.modules.hud.gui0.layout.Justification;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -41,10 +35,13 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.mixin.KeyBindAccessor;
-import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.ClickInputTracker;
 import io.github.axolotlclient.modules.hud.gui.keystrokes.KeystrokePositioningScreen;
 import io.github.axolotlclient.modules.hud.gui.keystrokes.KeystrokesScreen;
+import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.gui0.layout.Justification;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.util.ClientColors;
@@ -65,10 +62,7 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 
-import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawCenteredString;
-import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawString;
-import static io.github.axolotlclient.modules.hud.util.DrawUtil.fillRect;
-import static io.github.axolotlclient.modules.hud.util.DrawUtil.outlineRect;
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.*;
 
 /**
  * This implementation of Hud modules is based on KronHUD.

@@ -22,16 +22,13 @@
 
 package io.github.axolotlclient.modules.hud.gui0.hud.simple;
 
+import java.util.List;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.bridge.Platform;
-import io.github.axolotlclient.bridge.events.Events;
-import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.ClickInputTracker;
 import io.github.axolotlclient.modules.hud.gui0.entry.SimpleTextHudEntry;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This implementation of Hud modules is based on KronHUD.

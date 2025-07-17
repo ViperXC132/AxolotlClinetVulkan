@@ -22,12 +22,12 @@
 
 package io.github.axolotlclient.bridge.util;
 
-import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
+import java.util.function.BiConsumer;
+import java.util.function.UnaryOperator;
+
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
 import io.github.axolotlclient.bridge.internal.RequiresImpl;
-import java.util.function.BiConsumer;
-import java.util.function.UnaryOperator;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.ApiStatus;
 

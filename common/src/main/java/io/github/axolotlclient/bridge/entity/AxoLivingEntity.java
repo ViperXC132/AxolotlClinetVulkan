@@ -22,13 +22,11 @@
 
 package io.github.axolotlclient.bridge.entity;
 
+import java.util.List;
+
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffectInstance;
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.RequiresImpl;
-import io.github.axolotlclient.bridge.math.Vec3;
-import java.util.List;
-import java.util.UUID;
-import org.jetbrains.annotations.Nullable;
 
 public interface AxoLivingEntity extends AxoEntity {
 	@RequiresImpl

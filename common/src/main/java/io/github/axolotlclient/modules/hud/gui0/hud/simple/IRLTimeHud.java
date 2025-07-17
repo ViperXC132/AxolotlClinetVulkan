@@ -22,14 +22,15 @@
 
 package io.github.axolotlclient.modules.hud.gui0.hud.simple;
 
-import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
-import io.github.axolotlclient.bridge.util.AxoIdentifier;
-import io.github.axolotlclient.modules.hud.gui0.entry.SimpleTextHudEntry;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
+import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.modules.hud.gui0.entry.SimpleTextHudEntry;
 
 /**
  * This implementation of Hud modules is based on KronHUD.

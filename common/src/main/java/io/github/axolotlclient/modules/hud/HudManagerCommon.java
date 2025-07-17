@@ -22,13 +22,18 @@
 
 package io.github.axolotlclient.modules.hud;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import com.google.common.base.Preconditions;
 import com.google.gson.stream.JsonWriter;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.bridge.Platform;
-import io.github.axolotlclient.bridge.PlatformDispatch;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import io.github.axolotlclient.bridge.key.AxoKeys;
@@ -38,43 +43,16 @@ import io.github.axolotlclient.modules.AbstractCommonModule;
 import io.github.axolotlclient.modules.hud.gui0.component.HudEntry;
 import io.github.axolotlclient.modules.hud.gui0.component.Positionable;
 import io.github.axolotlclient.modules.hud.gui0.entry.AbstractHudEntry;
-import io.github.axolotlclient.modules.hud.gui0.hud.CompassHud;
-import io.github.axolotlclient.modules.hud.gui0.hud.CoordsHud;
-import io.github.axolotlclient.modules.hud.gui0.hud.IPHud;
-import io.github.axolotlclient.modules.hud.gui0.hud.IconHud;
-import io.github.axolotlclient.modules.hud.gui0.hud.MemoryHud;
-import io.github.axolotlclient.modules.hud.gui0.hud.MouseMovementHud;
-import io.github.axolotlclient.modules.hud.gui0.hud.PlayerHud;
-import io.github.axolotlclient.modules.hud.gui0.hud.PotionsHud;
+import io.github.axolotlclient.modules.hud.gui0.hud.*;
 import io.github.axolotlclient.modules.hud.gui0.hud.item.ArmorHud;
 import io.github.axolotlclient.modules.hud.gui0.hud.item.ArrowHud;
 import io.github.axolotlclient.modules.hud.gui0.hud.item.ItemUpdateHud;
-import io.github.axolotlclient.modules.hud.gui0.hud.simple.CPSHud;
-import io.github.axolotlclient.modules.hud.gui0.hud.simple.ComboHud;
-import io.github.axolotlclient.modules.hud.gui0.hud.simple.CustomHudEntry;
-import io.github.axolotlclient.modules.hud.gui0.hud.simple.DayCounterHud;
-import io.github.axolotlclient.modules.hud.gui0.hud.simple.FPSHud;
-import io.github.axolotlclient.modules.hud.gui0.hud.simple.IRLTimeHud;
-import io.github.axolotlclient.modules.hud.gui0.hud.simple.PingHud;
-import io.github.axolotlclient.modules.hud.gui0.hud.simple.PlayerCountHud;
-import io.github.axolotlclient.modules.hud.gui0.hud.simple.ReachHud;
-import io.github.axolotlclient.modules.hud.gui0.hud.simple.SpeedHud;
-import io.github.axolotlclient.modules.hud.gui0.hud.simple.TPSHud;
-import io.github.axolotlclient.modules.hud.gui0.hud.simple.ToggleSprintHud;
+import io.github.axolotlclient.modules.hud.gui0.hud.simple.*;
 import io.github.axolotlclient.modules.hud.gui0.hud.vanilla.InventoryHud;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.util.GsonHelper;
 import io.github.axolotlclient.util.options.GenericOption;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.Getter;
 
 /**

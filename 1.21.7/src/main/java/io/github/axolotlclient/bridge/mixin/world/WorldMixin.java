@@ -22,10 +22,11 @@
 
 package io.github.axolotlclient.bridge.mixin.world;
 
-import io.github.axolotlclient.bridge.entity.AxoPlayer;
-import io.github.axolotlclient.bridge.world.AxoWorld;
 import java.util.Collections;
 import java.util.List;
+
+import io.github.axolotlclient.bridge.entity.AxoPlayer;
+import io.github.axolotlclient.bridge.world.AxoWorld;
 import net.minecraft.world.level.EntityGetter;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;

@@ -22,10 +22,11 @@
 
 package io.github.axolotlclient.modules.hypixel.bedwars.upgrades;
 
-import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMode;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMode;
 
 /**
  * @author DarkKronicle

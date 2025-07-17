@@ -23,11 +23,12 @@
 package io.github.axolotlclient.modules.hud.gui0.entry;
 
 
+import java.util.List;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.util.ClientColors;
-import java.util.List;
 
 /**
  * This implementation of Hud modules is based on KronHUD.

@@ -22,6 +22,9 @@
 
 package io.github.axolotlclient.bridge.mixin;
 
+import java.util.Collection;
+import java.util.Optional;
+
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.AxoPlayerListEntry;
 import io.github.axolotlclient.bridge.AxoSession;
@@ -30,8 +33,6 @@ import io.github.axolotlclient.bridge.key.AxoClientKeybinds;
 import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.bridge.world.AxoWorld;
-import java.util.Collection;
-import java.util.Optional;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Options;
 import net.minecraft.client.User;

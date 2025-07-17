@@ -22,11 +22,10 @@
 
 package io.github.axolotlclient.bridge.mixin.entity;
 
-import io.github.axolotlclient.bridge.entity.AxoEntity;
-import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffectInstance;
-import io.github.axolotlclient.bridge.math.Vec3;
-import java.util.List;
 import java.util.UUID;
+
+import io.github.axolotlclient.bridge.entity.AxoEntity;
+import io.github.axolotlclient.bridge.math.Vec3;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;

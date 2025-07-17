@@ -22,6 +22,9 @@
 
 package io.github.axolotlclient.modules.hypixel.bedwars;
 
+import java.util.Optional;
+import java.util.regex.Pattern;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
@@ -33,8 +36,6 @@ import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
 import io.github.axolotlclient.bridge.events.types.WorldLoadEvent;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
-import java.util.Optional;
-import java.util.regex.Pattern;
 import lombok.Getter;
 
 /**

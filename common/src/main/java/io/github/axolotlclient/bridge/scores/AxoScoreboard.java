@@ -22,9 +22,10 @@
 
 package io.github.axolotlclient.bridge.scores;
 
+import java.util.Collection;
+
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.RequiresImpl;
-import java.util.Collection;
 
 public interface AxoScoreboard {
 	@RequiresImpl

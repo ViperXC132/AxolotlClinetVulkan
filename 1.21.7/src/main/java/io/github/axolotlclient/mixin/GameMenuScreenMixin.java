@@ -22,19 +22,19 @@
 
 package io.github.axolotlclient.mixin;
 
-import io.github.axolotlclient.AxolotlClientConfigCommon;
-import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import java.util.Objects;
 import java.util.function.Supplier;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.APIOptions;
 import io.github.axolotlclient.api.ChatsSidebar;
 import io.github.axolotlclient.api.FriendsScreen;
 import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
+import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.GridLayout;

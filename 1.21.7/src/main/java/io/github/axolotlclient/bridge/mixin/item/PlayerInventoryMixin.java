@@ -22,11 +22,12 @@
 
 package io.github.axolotlclient.bridge.mixin.item;
 
-import io.github.axolotlclient.bridge.item.AxoItemStack;
-import io.github.axolotlclient.bridge.item.AxoPlayerInventory;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import io.github.axolotlclient.bridge.item.AxoItemStack;
+import io.github.axolotlclient.bridge.item.AxoPlayerInventory;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.entity.EntityEquipment;
 import net.minecraft.world.entity.EquipmentSlot;

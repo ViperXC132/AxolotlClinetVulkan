@@ -22,6 +22,12 @@
 
 package io.github.axolotlclient.bridge.commands;
 
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.regex.Pattern;
+
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.context.CommandContext;
@@ -30,11 +36,6 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.AxoPlayerListEntry;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.regex.Pattern;
 import org.jetbrains.annotations.Nullable;
 
 public class PlayerArgument implements ArgumentType<PlayerArgument.PlayerInfo> {

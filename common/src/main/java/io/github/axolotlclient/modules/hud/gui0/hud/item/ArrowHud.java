@@ -22,6 +22,12 @@
 
 package io.github.axolotlclient.modules.hud.gui0.hud.item;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
+
+import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.bridge.BridgeVersion;
 import io.github.axolotlclient.bridge.item.AxoItem;
 import io.github.axolotlclient.bridge.item.AxoItemClass;
@@ -30,14 +36,8 @@ import io.github.axolotlclient.bridge.item.AxoItems;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
-import io.github.axolotlclient.util.ItemUtil;
-import java.util.List;
-
-import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
-import java.util.Objects;
-import java.util.stream.Stream;
+import io.github.axolotlclient.util.ItemUtil;
 
 /**
  * This implementation of Hud modules is based on KronHUD.

@@ -23,15 +23,9 @@
 package io.github.axolotlclient.modules.hud;
 
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
-
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import io.github.axolotlclient.modules.hud.gui.hud.PackDisplayHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ActionBarHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.BossBarHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.CrosshairHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.DebugCountersHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.HotbarHUD;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ScoreboardHud;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 

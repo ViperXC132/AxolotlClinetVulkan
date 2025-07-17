@@ -22,6 +22,10 @@
 
 package io.github.axolotlclient.modules.hud.gui0.hud.simple;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.util.List;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.bridge.Platform;
@@ -31,9 +35,6 @@ import io.github.axolotlclient.bridge.math.Vec3;
 import io.github.axolotlclient.bridge.util.AxoI18n;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui0.entry.SimpleTextHudEntry;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.util.List;
 
 // https://github.com/AxolotlClient/AxolotlClient-mod/blob/4ae2678bfe9e0908be1a7a34e61e689c8005ae0a/src/main/java/io/github/axolotlclient/modules/hud/gui/hud/ReachDisplayHud.java
 // https://github.com/DarkKronicle/KronHUD/blob/703b87a7c938ba25da9105d731b70d3bc66efd1e/src/main/java/io/github/darkkronicle/kronhud/gui/hud/simple/ReachHud.java

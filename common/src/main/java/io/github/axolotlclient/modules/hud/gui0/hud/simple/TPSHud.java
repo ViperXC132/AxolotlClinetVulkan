@@ -22,11 +22,12 @@
 
 package io.github.axolotlclient.modules.hud.gui0.hud.simple;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui0.entry.SimpleTextHudEntry;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 
 /**
  * This implementation of Hud modules is based on KronHUD.

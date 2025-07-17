@@ -22,7 +22,6 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud;
 
-import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -33,6 +32,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.texture.NativeImage;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import lombok.Getter;
@@ -44,9 +44,7 @@ import net.minecraft.resource.pack.ResourcePack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawString;
-import static io.github.axolotlclient.modules.hud.util.DrawUtil.fillRect;
-import static io.github.axolotlclient.modules.hud.util.DrawUtil.outlineRect;
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.*;
 
 public class PackDisplayHud extends TextHudEntry {
 

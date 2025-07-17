@@ -22,7 +22,6 @@
 
 package io.github.axolotlclient.modules.hypixel;
 
-import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -39,6 +38,7 @@ import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringArrayOption;
+import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.util.ThreadExecuter;
 import io.github.axolotlclient.util.options.GenericOption;
 import lombok.Getter;

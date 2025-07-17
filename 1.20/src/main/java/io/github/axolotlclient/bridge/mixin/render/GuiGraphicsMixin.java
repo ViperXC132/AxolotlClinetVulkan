@@ -24,7 +24,6 @@ package io.github.axolotlclient.bridge.mixin.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
-import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;

@@ -22,16 +22,15 @@
 
 package io.github.axolotlclient.bridge.mixin.item;
 
-import io.github.axolotlclient.bridge.impl.Bridge;
-import io.github.axolotlclient.bridge.item.AxoItemStack;
-import io.github.axolotlclient.bridge.item.AxoPlayerInventory;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
+
+import io.github.axolotlclient.bridge.impl.Bridge;
+import io.github.axolotlclient.bridge.item.AxoItemStack;
+import io.github.axolotlclient.bridge.item.AxoPlayerInventory;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import org.spongepowered.asm.mixin.Implements;
-import org.spongepowered.asm.mixin.Interface;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 

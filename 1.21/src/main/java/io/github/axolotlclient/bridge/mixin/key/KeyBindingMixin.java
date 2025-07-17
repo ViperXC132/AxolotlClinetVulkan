@@ -22,11 +22,12 @@
 
 package io.github.axolotlclient.bridge.mixin.key;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mojang.blaze3d.platform.InputUtil;
 import io.github.axolotlclient.bridge.key.AxoKey;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.client.option.KeyBind;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

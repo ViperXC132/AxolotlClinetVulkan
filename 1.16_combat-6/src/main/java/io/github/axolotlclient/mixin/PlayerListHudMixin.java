@@ -22,9 +22,6 @@
 
 package io.github.axolotlclient.mixin;
 
-import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsGame;
-import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsPlayer;
-import io.github.axolotlclient.modules.hypixel.NickHider;
 import java.util.Collections;
 import java.util.List;
 
@@ -36,8 +33,11 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.api.requests.UserRequest;
 import io.github.axolotlclient.api.util.UUIDHelper;
-import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.modules.hypixel.LevelHead;
+import io.github.axolotlclient.modules.hypixel.NickHider;
+import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsGame;
+import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
+import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsPlayer;
 import io.github.axolotlclient.modules.tablist.Tablist;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;

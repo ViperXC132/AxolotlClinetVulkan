@@ -22,13 +22,14 @@
 
 package io.github.axolotlclient.bridge.mixin;
 
+import java.io.IOException;
+import java.util.Objects;
+
 import com.mojang.blaze3d.platform.NativeImage;
 import io.github.axolotlclient.bridge.PlatformDispatch;
 import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
 import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.util.ThreadExecuter;
-import java.io.IOException;
-import java.util.Objects;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.FaviconTexture;

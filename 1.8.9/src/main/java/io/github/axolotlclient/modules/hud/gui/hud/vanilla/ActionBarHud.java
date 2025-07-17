@@ -22,13 +22,13 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 
-import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import java.util.List;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;

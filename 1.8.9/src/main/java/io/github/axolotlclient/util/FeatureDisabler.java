@@ -22,7 +22,6 @@
 
 package io.github.axolotlclient.util;
 
-import io.github.axolotlclient.modules.hud.gui0.hud.simple.ToggleSprintHud;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -31,6 +30,7 @@ import java.util.function.Supplier;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.freelook.Freelook;
 import io.github.axolotlclient.modules.hud.HudManager;
+import io.github.axolotlclient.modules.hud.gui0.hud.simple.ToggleSprintHud;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.resource.Identifier;

@@ -24,8 +24,6 @@ package io.github.axolotlclient.mixin;
 
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.events.Events;
-import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hud.gui0.hud.simple.ReachHud;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.modules.particles.Particles;
 import net.minecraft.client.MinecraftClient;

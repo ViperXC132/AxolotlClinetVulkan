@@ -22,10 +22,11 @@
 
 package io.github.axolotlclient.bridge.world;
 
+import java.util.List;
+
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.RequiresImpl;
-import java.util.List;
 
 public interface AxoWorld {
 	@RequiresImpl

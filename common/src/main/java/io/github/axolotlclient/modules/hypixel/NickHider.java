@@ -22,14 +22,14 @@
 
 package io.github.axolotlclient.modules.hypixel;
 
-import io.github.axolotlclient.api.util.BiContainer;
-import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
+import io.github.axolotlclient.api.util.BiContainer;
+import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.util.AxoText;
 import lombok.Getter;
 

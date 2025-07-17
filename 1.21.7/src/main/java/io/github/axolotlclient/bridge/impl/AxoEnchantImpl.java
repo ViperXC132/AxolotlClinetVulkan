@@ -22,8 +22,9 @@
 
 package io.github.axolotlclient.bridge.impl;
 
-import io.github.axolotlclient.bridge.item.AxoEnchant;
 import java.util.Optional;
+
+import io.github.axolotlclient.bridge.item.AxoEnchant;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;

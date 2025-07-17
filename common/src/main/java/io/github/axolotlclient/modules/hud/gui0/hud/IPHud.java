@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.modules.hud.gui0.hud;
 
+import java.util.List;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
@@ -35,7 +37,6 @@ import io.github.axolotlclient.modules.hud.gui0.component.DynamicallyPositionabl
 import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
-import java.util.List;
 
 /**
  * This implementation of Hud modules is based on KronHUD.

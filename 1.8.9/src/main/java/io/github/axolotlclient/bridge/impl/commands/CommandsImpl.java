@@ -22,17 +22,16 @@
 
 package io.github.axolotlclient.bridge.impl.commands;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
 import com.google.common.base.Preconditions;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandExceptionType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.github.axolotlclient.bridge.commands.AxoClientCmdSrcStack;
 import io.github.axolotlclient.bridge.commands.Commands;
 import io.github.axolotlclient.bridge.util.AxoText;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.command.source.CommandSource;

@@ -22,12 +22,12 @@
 
 package io.github.axolotlclient.modules.tnttime;
 
-import io.github.axolotlclient.modules.AbstractModule;
 import java.text.DecimalFormat;
 
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
+import io.github.axolotlclient.modules.AbstractModule;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;

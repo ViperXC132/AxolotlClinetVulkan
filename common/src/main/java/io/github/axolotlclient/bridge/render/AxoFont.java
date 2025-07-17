@@ -22,9 +22,9 @@
 
 package io.github.axolotlclient.bridge.render;
 
+import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import io.github.axolotlclient.bridge.util.AxoText;
-import io.github.axolotlclient.bridge.internal.BridgeUtil;
 
 public interface AxoFont {
 	@RequiresImpl

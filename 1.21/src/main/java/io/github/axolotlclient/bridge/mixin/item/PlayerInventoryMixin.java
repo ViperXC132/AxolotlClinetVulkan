@@ -22,10 +22,11 @@
 
 package io.github.axolotlclient.bridge.mixin.item;
 
-import io.github.axolotlclient.bridge.item.AxoItemStack;
-import io.github.axolotlclient.bridge.item.AxoPlayerInventory;
 import java.util.List;
 import java.util.stream.IntStream;
+
+import io.github.axolotlclient.bridge.item.AxoItemStack;
+import io.github.axolotlclient.bridge.item.AxoPlayerInventory;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;

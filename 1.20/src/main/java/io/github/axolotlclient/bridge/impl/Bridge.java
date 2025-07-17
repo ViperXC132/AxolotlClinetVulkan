@@ -23,8 +23,6 @@
 package io.github.axolotlclient.bridge.impl;
 
 import com.mojang.brigadier.CommandDispatcher;
-import io.github.axolotlclient.bridge.commands.AxoClientCmdSrcStack;
-import io.github.axolotlclient.bridge.commands.Commands;
 import io.github.axolotlclient.bridge.events.Events;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;

@@ -22,7 +22,6 @@
 
 package io.github.axolotlclient.modules.freelook;
 
-import io.github.axolotlclient.util.FeatureDisabler;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -33,6 +32,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringArrayOption;
 import io.github.axolotlclient.modules.AbstractCommonModule;
+import io.github.axolotlclient.util.FeatureDisabler;
 import io.github.axolotlclient.util.keybinds.KeyBinds;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import net.minecraft.client.MinecraftClient;

@@ -22,18 +22,18 @@
 
 package io.github.axolotlclient.modules.hud.gui0.hud.simple;
 
-import io.github.axolotlclient.bridge.entity.AxoPlayer;
-import io.github.axolotlclient.bridge.entity.AxoEntity;
-import io.github.axolotlclient.bridge.math.Vec3;
-import io.github.axolotlclient.bridge.util.AxoIdentifier;
-import io.github.axolotlclient.modules.hud.gui0.entry.SimpleTextHudEntry;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.List;
+import java.util.Objects;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import java.util.Objects;
+import io.github.axolotlclient.bridge.entity.AxoEntity;
+import io.github.axolotlclient.bridge.entity.AxoPlayer;
+import io.github.axolotlclient.bridge.math.Vec3;
+import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.modules.hud.gui0.entry.SimpleTextHudEntry;
 
 /**
  * This implementation of Hud modules is based on KronHUD.

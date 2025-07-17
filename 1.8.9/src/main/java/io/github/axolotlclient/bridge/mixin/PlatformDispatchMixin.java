@@ -22,6 +22,9 @@
 
 package io.github.axolotlclient.bridge.mixin;
 
+import java.net.InetAddress;
+import java.util.Base64;
+
 import com.google.common.hash.Hashing;
 import io.github.axolotlclient.AxolotlClientConfig.impl.util.GraphicsImpl;
 import io.github.axolotlclient.bridge.PlatformDispatch;
@@ -30,8 +33,6 @@ import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
 import io.github.axolotlclient.util.ThreadExecuter;
 import io.github.axolotlclient.util.Util;
-import java.net.InetAddress;
-import java.util.Base64;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.network.ServerAddress;

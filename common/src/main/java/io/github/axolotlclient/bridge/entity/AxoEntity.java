@@ -22,10 +22,11 @@
 
 package io.github.axolotlclient.bridge.entity;
 
+import java.util.UUID;
+
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import io.github.axolotlclient.bridge.math.Vec3;
-import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 
 public interface AxoEntity {

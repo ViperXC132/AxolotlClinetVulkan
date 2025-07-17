@@ -22,6 +22,9 @@
 
 package io.github.axolotlclient.bridge.events;
 
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
 import io.github.axolotlclient.bridge.commands.Commands;
 import io.github.axolotlclient.bridge.entity.AxoEntity;
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
@@ -29,8 +32,6 @@ import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
 import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
 import io.github.axolotlclient.bridge.events.types.WorldLoadEvent;
 import io.github.axolotlclient.bridge.key.AxoKey;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import org.jetbrains.annotations.Nullable;
 
 /**

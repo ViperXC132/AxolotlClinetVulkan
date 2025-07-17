@@ -22,13 +22,6 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 
-import io.github.axolotlclient.bridge.AxoMinecraftClient;
-import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.bridge.util.AxoIdentifier;
-import io.github.axolotlclient.modules.hud.gui0.component.DynamicallyPositionable;
-import io.github.axolotlclient.modules.hud.gui0.entry.AbstractHudEntry;
-import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import java.util.List;
 
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -38,6 +31,12 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.modules.hud.gui0.component.DynamicallyPositionable;
+import io.github.axolotlclient.modules.hud.gui0.entry.AbstractHudEntry;
+import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.RenderUtil;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.Util;

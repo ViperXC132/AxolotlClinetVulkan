@@ -22,14 +22,14 @@
 
 package io.github.axolotlclient.modules.hud.gui0.hud;
 
+import java.util.List;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.DoubleOption;
-import io.github.axolotlclient.bridge.PlatformDispatch;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui0.entry.BoxHudEntry;
-import java.util.List;
 import lombok.Getter;
 
 /**

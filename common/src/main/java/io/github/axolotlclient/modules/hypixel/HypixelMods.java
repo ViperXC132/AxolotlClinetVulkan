@@ -22,6 +22,9 @@
 
 package io.github.axolotlclient.modules.hypixel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
@@ -30,8 +33,6 @@ import io.github.axolotlclient.api.Request;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.modules.AbstractCommonModule;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
-import java.util.ArrayList;
-import java.util.List;
 
 public class HypixelMods extends AbstractCommonModule {
 

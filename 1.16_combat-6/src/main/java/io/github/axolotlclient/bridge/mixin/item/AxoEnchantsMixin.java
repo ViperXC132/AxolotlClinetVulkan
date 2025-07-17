@@ -24,7 +24,6 @@ package io.github.axolotlclient.bridge.mixin.item;
 
 import io.github.axolotlclient.bridge.item.AxoEnchant;
 import io.github.axolotlclient.bridge.item.AxoEnchants;
-import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.Enchantments;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

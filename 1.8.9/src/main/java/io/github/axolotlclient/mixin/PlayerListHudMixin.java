@@ -22,7 +22,6 @@
 
 package io.github.axolotlclient.mixin;
 
-import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -33,11 +32,12 @@ import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.api.requests.UserRequest;
 import io.github.axolotlclient.api.util.UUIDHelper;
+import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
+import io.github.axolotlclient.modules.hypixel.LevelHead;
+import io.github.axolotlclient.modules.hypixel.NickHider;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsGame;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsPlayer;
-import io.github.axolotlclient.modules.hypixel.LevelHead;
-import io.github.axolotlclient.modules.hypixel.NickHider;
 import io.github.axolotlclient.modules.tablist.Tablist;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;

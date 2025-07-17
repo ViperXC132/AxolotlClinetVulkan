@@ -22,6 +22,10 @@
 
 package io.github.axolotlclient.modules.hud.gui0.hud.item;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Stream;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
@@ -37,9 +41,6 @@ import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.util.ItemUtil;
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Stream;
 
 /**
  * This implementation of Hud modules is based on KronHUD.

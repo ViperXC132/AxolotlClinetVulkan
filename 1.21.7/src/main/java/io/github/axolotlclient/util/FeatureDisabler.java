@@ -22,8 +22,6 @@
 
 package io.github.axolotlclient.util;
 
-import io.github.axolotlclient.modules.hud.gui0.hud.simple.ReachHud;
-import io.github.axolotlclient.modules.hud.gui0.hud.simple.ToggleSprintHud;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -34,6 +32,8 @@ import com.mojang.serialization.Codec;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.freelook.Freelook;
 import io.github.axolotlclient.modules.hud.HudManager;
+import io.github.axolotlclient.modules.hud.gui0.hud.simple.ReachHud;
+import io.github.axolotlclient.modules.hud.gui0.hud.simple.ToggleSprintHud;
 import io.github.axolotlclient.modules.tnttime.TntTime;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import io.netty.buffer.ByteBuf;

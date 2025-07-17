@@ -23,13 +23,14 @@
 package io.github.axolotlclient.modules.hypixel.bedwars.upgrades;
 
 
+import java.util.regex.Pattern;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffects;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoItems;
 import io.github.axolotlclient.bridge.render.AxoSprites;
 import io.github.axolotlclient.util.ClientColors;
-import java.util.regex.Pattern;
 
 /**
  * @author DarkKronicle

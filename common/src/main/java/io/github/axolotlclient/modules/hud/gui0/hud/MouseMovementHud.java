@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.modules.hud.gui0.hud;
 
+import java.util.List;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.bridge.Platform;
@@ -29,7 +31,6 @@ import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui0.entry.BoxHudEntry;
 import io.github.axolotlclient.util.MathUtil;
-import java.util.List;
 
 public class MouseMovementHud extends BoxHudEntry {
 

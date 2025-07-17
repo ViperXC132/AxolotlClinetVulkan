@@ -22,7 +22,6 @@
 package io.github.axolotlclient.modules.hud.gui0.layout;
 
 import lombok.AllArgsConstructor;
-
 import lombok.Getter;
 
 /**

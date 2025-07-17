@@ -23,9 +23,9 @@
 package io.github.axolotlclient.bridge.internal;
 
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.AxoPlayerListEntry;
-import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffect;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffectInstance;
 import io.github.axolotlclient.bridge.item.AxoItem;

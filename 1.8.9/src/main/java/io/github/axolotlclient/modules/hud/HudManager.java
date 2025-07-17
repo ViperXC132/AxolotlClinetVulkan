@@ -23,8 +23,9 @@
 package io.github.axolotlclient.modules.hud;
 
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
-
-import io.github.axolotlclient.modules.hud.gui.hud.*;
+import io.github.axolotlclient.modules.hud.gui.hud.ChatHud;
+import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
+import io.github.axolotlclient.modules.hud.gui.hud.PackDisplayHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
 import io.github.axolotlclient.modules.hud.gui0.hud.simple.ComboHud;
 import io.github.axolotlclient.modules.hud.gui0.hud.simple.ReachHud;

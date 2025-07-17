@@ -22,6 +22,10 @@
 
 package io.github.axolotlclient.modules.hypixel.bedwars;
 
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.stream.Collectors;
+
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
@@ -37,17 +41,6 @@ import io.github.axolotlclient.bridge.scores.AxoTeam;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hypixel.bedwars.upgrades.BedwarsTeamUpgrades;
 import io.github.axolotlclient.util.ClientColors;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 

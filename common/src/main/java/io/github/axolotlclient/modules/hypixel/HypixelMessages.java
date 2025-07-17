@@ -22,14 +22,15 @@
 
 package io.github.axolotlclient.modules.hypixel;
 
-import io.github.axolotlclient.AxolotlClientCommon;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import io.github.axolotlclient.AxolotlClientCommon;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
 import lombok.Getter;
 
 public class HypixelMessages implements Runnable {

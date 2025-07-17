@@ -22,6 +22,10 @@
 
 package io.github.axolotlclient.modules.hypixel.bedwars;
 
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.bridge.item.AxoItem;
@@ -31,9 +35,6 @@ import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui0.entry.BoxHudEntry;
 import io.github.axolotlclient.util.ItemUtil;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
 public class ResourceOverlay extends BoxHudEntry {
 	public final static AxoIdentifier ID = AxoIdentifier.of("axolotlclient", "bedwars_resources");

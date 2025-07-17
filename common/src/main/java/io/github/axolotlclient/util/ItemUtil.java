@@ -22,18 +22,17 @@
 
 package io.github.axolotlclient.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import com.google.common.base.Preconditions;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.Platform;
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
-import io.github.axolotlclient.bridge.item.AxoPlayerInventory;
 import io.github.axolotlclient.bridge.item.AxoItem;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import jdk.jshell.execution.Util;
+import io.github.axolotlclient.bridge.item.AxoPlayerInventory;
 
 public class ItemUtil {
 	public static int getTotal(AxoPlayerInventory inventory, AxoItem item) {

@@ -22,6 +22,16 @@
 
 package io.github.axolotlclient.bridge.internal;
 
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
 import com.google.common.base.Preconditions;
 import io.github.axolotlclient.bridge.BridgeVersion;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffects;
@@ -29,20 +39,6 @@ import io.github.axolotlclient.bridge.item.AxoEnchants;
 import io.github.axolotlclient.bridge.item.AxoItems;
 import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.bridge.render.AxoSprites;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 import lombok.SneakyThrows;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.CustomValue;

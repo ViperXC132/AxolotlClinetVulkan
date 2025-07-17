@@ -22,7 +22,6 @@
 
 package io.github.axolotlclient.modules.screenshotUtils;
 
-import io.github.axolotlclient.modules.AbstractModule;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,6 +37,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringArrayOption;
 import io.github.axolotlclient.api.API;
+import io.github.axolotlclient.modules.AbstractModule;
 import io.github.axolotlclient.util.options.GenericOption;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -23,8 +23,8 @@
 package io.github.axolotlclient.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
+import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.modules.particles.Particles;
 import net.minecraft.block.Blocks;

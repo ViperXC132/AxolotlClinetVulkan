@@ -22,12 +22,13 @@
 
 package io.github.axolotlclient.modules.hypixel;
 
+import java.util.regex.Pattern;
+
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
-import java.util.regex.Pattern;
 import lombok.Getter;
 
 public class AutoTip implements AbstractHypixelMod {

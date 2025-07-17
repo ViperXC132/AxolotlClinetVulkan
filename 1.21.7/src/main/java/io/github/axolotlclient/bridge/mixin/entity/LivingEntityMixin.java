@@ -22,11 +22,11 @@
 
 package io.github.axolotlclient.bridge.mixin.entity;
 
-import io.github.axolotlclient.bridge.entity.AxoEntity;
-import io.github.axolotlclient.bridge.entity.AxoLivingEntity;
-import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffectInstance;
 import java.util.List;
 import java.util.Map;
+
+import io.github.axolotlclient.bridge.entity.AxoLivingEntity;
+import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffectInstance;
 import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
