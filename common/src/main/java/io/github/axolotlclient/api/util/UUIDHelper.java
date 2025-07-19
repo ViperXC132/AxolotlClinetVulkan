@@ -36,7 +36,7 @@ import io.github.axolotlclient.util.GsonHelper;
 import io.github.axolotlclient.util.NetworkUtil;
 
 public class UUIDHelper {
-	private static final HttpClient CLIENT = NetworkUtil.createHttpClient("UUIDHelper");
+	private static final HttpClient CLIENT = NetworkUtil.createHttpClient();
 
 	private static CachedAPI<String, String> create(String endpoint, String jsonKey, String log) {
 		return new CachedAPI<>(val -> {

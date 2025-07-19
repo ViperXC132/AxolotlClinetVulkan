@@ -246,7 +246,7 @@ public class API {
 					builder.method(method, HttpRequest.BodyPublishers.noBody());
 				}
 				if (client == null) {
-					client = NetworkUtil.createHttpClient("API");
+					client = NetworkUtil.createHttpClient();
 				}
 
 				HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
@@ -389,7 +389,9 @@ public class API {
 				logDetailed("Connecting to websocket..");
 				URI gateway = Request.Route.GATEWAY.create().resolve();
 				String uri = (gateway.getScheme().endsWith("s") ? "wss" : "ws") + gateway.toString().substring(gateway.getScheme().length());
-				socket = client.newWebSocketBuilder().header("Authorization", auth.token())
+				socket = client.newWebSocketBuilder()
+					.header("Authorization", auth.token())
+					.header("User-Agent", NetworkUtil.getUserAgent())
 					.buildAsync(URI.create(uri), new ClientEndpoint()).join();
 				logDetailed("Socket connected");
 			} catch (Exception e) {

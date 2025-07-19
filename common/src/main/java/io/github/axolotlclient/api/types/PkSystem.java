@@ -262,7 +262,7 @@ public class PkSystem {
 		private PluralKitApi() {
 		}
 
-		private final HttpClient client = NetworkUtil.createHttpClient("PluralKit Integration");
+		private final HttpClient client = NetworkUtil.createHttpClient(true);
 		private int remaining = 1;
 		private long resetsInMillis = 0;
 		private int limit = 2;
