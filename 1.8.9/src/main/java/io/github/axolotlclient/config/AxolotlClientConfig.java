@@ -139,6 +139,8 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 				}));
 				AxolotlClient.getInstance().getConfigManager().load();
 				ConfigUI.getInstance().setStyle(configStyle.get().split("\\.")[1]);
+			} else {
+				AxolotlClient.getInstance().getConfigManager().load();
 			}
 		});
 
