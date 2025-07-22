@@ -45,10 +45,6 @@ public interface Platform {
 		return PlatformImplInternal.tickCount();
 	}
 
-	static float tickRate() {
-		return PlatformImplInternal.tickRate();
-	}
-
 	static String getTabNameFor(AxoPlayerListEntry player) {
 		return PlatformImplInternal.getTabNameFor(player);
 	}

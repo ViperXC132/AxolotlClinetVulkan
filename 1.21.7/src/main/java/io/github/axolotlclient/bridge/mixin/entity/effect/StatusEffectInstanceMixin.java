@@ -24,9 +24,12 @@ package io.github.axolotlclient.bridge.mixin.entity.effect;
 
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffect;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffectInstance;
+import io.github.axolotlclient.bridge.util.AxoText;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffectUtil;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -37,8 +40,23 @@ public abstract class StatusEffectInstanceMixin implements AxoStatusEffectInstan
 	@Final
 	private Holder<MobEffect> effect;
 
+	@Shadow
+	private int amplifier;
+
 	@Override
 	public AxoStatusEffect br$getType() {
 		return effect.value();
+	}
+
+	@Override
+	public int br$getAmplifier() {
+		return amplifier;
+	}
+
+	@Override
+	public AxoText br$formatDuration() {
+		final var client = Minecraft.getInstance();
+		final var tickRate = client.level != null ? client.level.tickRateManager().tickrate() : 1;
+		return MobEffectUtil.formatDuration((MobEffectInstance) (Object) this, 1, tickRate);
 	}
 }

@@ -22,7 +22,6 @@
 
 package io.github.axolotlclient.modules.hud.gui0.hud;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
@@ -30,17 +29,18 @@ import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
-import io.github.axolotlclient.bridge.Platform;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffectInstance;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffects;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hud.gui0.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.gui0.layout.CardinalOrder;
 import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
+import io.github.axolotlclient.util.CommonUtil;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
@@ -48,38 +48,43 @@ import io.github.axolotlclient.modules.hud.util.Rectangle;
  *
  * @license GPL-3.0
  */
-
 public class PotionsHud extends TextHudEntry implements DynamicallyPositionable {
-
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "potionshud");
 
 	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
-
 	private final EnumOption<CardinalOrder> order = DefaultOptions.getCardinalOrder(CardinalOrder.TOP_DOWN);
 
 	private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
 	private final BooleanOption showEffectName = new BooleanOption("showEffectNames", true);
 	private final ColorOption timerTextColor = new ColorOption("potionshud.timer_text_color", Color.parse("#7F7F7F"));
 
+	private static AxoText formatNameAndAmplifier(AxoStatusEffectInstance effect) {
+		return effect.br$getType().br$getDisplayName().br$copy()
+			.br$append(" ")
+			.br$append(CommonUtil.toRoman(effect.br$getAmplifier() + 1));
+	}
+
 	public PotionsHud() {
-		super(50, 200, false);
+		super(50, 200, true);
+		background = new BooleanOption("background", false);
 	}
 
 	@Override
 	public void renderComponent(AxoRenderContext graphics, float delta) {
-		if (client.br$getPlayer() == null) {
+		final var player = client.br$getPlayer();
+		if(player == null) {
 			return;
 		}
 
-		final var effects = new ArrayList<>(client.br$getPlayer().br$getStatusEffects());
+		final var effects = player.br$getStatusEffects();
 		if (effects.isEmpty()) {
 			return;
 		}
 
-		renderEffects(graphics, effects, delta);
+		renderEffects(graphics, effects);
 	}
 
-	private void renderEffects(AxoRenderContext graphics, List<AxoStatusEffectInstance> effects, float tickDelta) {
+	private void renderEffects(AxoRenderContext graphics, List<AxoStatusEffectInstance> effects) {
 		int calcWidth = calculateWidth(effects);
 		int calcHeight = calculateHeight(effects);
 		boolean changed = false;
@@ -103,82 +108,83 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 		for (int i = 0; i < effects.size(); i++) {
 			final var effect = effects.get(direction.getDirection() == -1 ? i : effects.size() - i - 1);
 			if (direction.isXAxis()) {
-				lastPos += renderPotion(graphics, effect, x + lastPos + 1, y + 1, tickDelta);
+				renderPotion(graphics, effect, x + lastPos + 1, y + 1);
+				int nameWidth = 0;
+				if (!iconsOnly.get()) {
+					nameWidth += graphics.br$getFont().br$getWidth(effect.br$formatDuration()) + 1;
+					if (showEffectName.get()) {
+						nameWidth = Math.max(nameWidth, client.br$getFont().br$getWidth(formatNameAndAmplifier(effect)));
+					}
+				}
+				lastPos += 20 + nameWidth;
 			} else {
-				renderPotion(graphics, effect, x + 1, y + 1 + lastPos, tickDelta);
+				renderPotion(graphics, effect, x + 1, y + 1 + lastPos);
 				lastPos += 20;
 			}
 		}
 	}
 
 	private int calculateWidth(List<AxoStatusEffectInstance> effects) {
-	/*	if ((order.get()).isXAxis()) {
+		final var widthStreamFullName = effects.stream()
+			.map(PotionsHud::formatNameAndAmplifier)
+			.mapToInt(client.br$getFont()::br$getWidth);
+		final var widthStreamDuration = effects.stream()
+			.map(AxoStatusEffectInstance::br$formatDuration)
+			.mapToInt(client.br$getFont()::br$getWidth);
+
+		if (order.get().isXAxis()) {
 			if (iconsOnly.get()) {
 				return 20 * effects.size() + 2;
 			}
+
 			if (!showEffectName.get()) {
-				return 50 * effects.size() + 2;
+				return widthStreamDuration.map(i -> i + 20).sum() + 3;
 			}
-			return effects.stream().map(effect -> Component.translatable(effect.getDescriptionId()).append(" ")
-				.append(Util.toRoman(effect.getAmplifier()))).mapToInt(client.font::width).map(i -> i + 20).sum() + 2;
+
+			return widthStreamFullName.map(i -> i + 20).sum() + 2;
 		} else {
 			if (iconsOnly.get()) {
 				return 20;
 			}
-			if (!showEffectName.get()) {
-				return 50;
-			}
-			return effects.stream().map(effect -> Component.translatable(effect.getDescriptionId()).append(" ")
-				.append(Util.toRoman(effect.getAmplifier()))).map(client.font::width).max(Integer::compare).orElse
-				(38) +
-				22;
-		}*/
 
-		return 0;
+			if (!showEffectName.get()) {
+				return widthStreamDuration.max().orElse(0) + 22;
+			}
+			return widthStreamFullName.max().orElse(0) + 22;
+		}
 	}
 
 	private int calculateHeight(List<AxoStatusEffectInstance> effects) {
 		if ((order.get()).isXAxis()) {
-			return 22;
+			return 20;
 		} else {
 			return 20 * effects.size() + 2;
 		}
 	}
 
-	private int renderPotion(AxoRenderContext graphics, AxoStatusEffectInstance effect, int x, int y,
-							 float tickDelta) {
-		final var sprite = effect.br$getType().br$getSprite();
+	private void renderPotion(AxoRenderContext graphics, AxoStatusEffectInstance effect, int x, int y) {
+		final var type = effect.br$getType();
 
-		graphics.br$drawTexture(x, y, 18, 18, sprite);
+		graphics.br$drawTexture(x, y, 18, 18, type.br$getSprite());
+
 		if (!iconsOnly.get()) {
-			float tickrate = Platform.tickRate();
-
-			return 0;
-
-			/* TODO
 			if (showEffectName.get()) {
-				AxoText string = ;
-
-				graphics.br$drawString(string.br$getRawString(), x + 19, y + 1, textColor.get().toInt(), shadow.get());
-				AxoText duration = MobEffectUtil.formatDuration(effect, 1, tickrate);
-				graphics.br$drawString(duration.br$getRawString(), x + 19, y + 1 + 10, timerTextColor.get().toInt(),
-				shadow.get());
+				graphics.br$drawString(formatNameAndAmplifier(effect), x + 19, y + 1, textColor.get().toInt(), shadow.get());
+				graphics.br$drawString(effect.br$formatDuration(), x + 19, y + 1 + 10,
+					timerTextColor.get().toInt(), shadow.get());
 			} else {
-				graphics.br$drawString(MobEffectUtil.formatDuration(effect, 1, tickrate), x + 19, y + 5,
-					timerTextColor.get().toInt(), shadow.get()
-				);
-			}*/
+				graphics.br$drawString(effect.br$formatDuration(), x + 19, y + 5,
+					timerTextColor.get().toInt(), shadow.get());
+			}
 		}
-
-		return 0;
 	}
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
-		final var effect = AxoStatusEffectInstance.create(AxoStatusEffects.SPEED, 9999);
-		final var jump = AxoStatusEffectInstance.create(AxoStatusEffects.JUMP_BOOST, 99999);
-		final var haste = AxoStatusEffectInstance.create(AxoStatusEffects.HASTE, -1);
-		renderEffects(graphics, List.of(effect, jump, haste), 0);
+		AxoStatusEffectInstance effect = AxoStatusEffectInstance.create(AxoStatusEffects.SPEED, 9999);
+		AxoStatusEffectInstance jump = AxoStatusEffectInstance.create(AxoStatusEffects.JUMP_BOOST, 99999);
+		AxoStatusEffectInstance haste = AxoStatusEffectInstance.create(AxoStatusEffects.HASTE, -1);
+		renderEffects(graphics, List.of(effect, jump, haste));
 	}
 
 	@Override

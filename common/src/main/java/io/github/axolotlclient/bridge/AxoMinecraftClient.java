@@ -98,7 +98,7 @@ public interface AxoMinecraftClient extends Executor {
 	}
 
 	/**
-	 * Sends a message <i>as</i> the client to the server.
+	 * Sends a message to the client.
 	 *
 	 * @param msg
 	 */

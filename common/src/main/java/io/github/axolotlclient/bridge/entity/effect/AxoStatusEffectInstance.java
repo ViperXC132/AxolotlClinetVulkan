@@ -25,6 +25,7 @@ package io.github.axolotlclient.bridge.entity.effect;
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
 import io.github.axolotlclient.bridge.internal.RequiresImpl;
+import io.github.axolotlclient.bridge.util.AxoText;
 
 public interface AxoStatusEffectInstance {
 	static AxoStatusEffectInstance create(AxoStatusEffect effect, int duration) {
@@ -33,6 +34,16 @@ public interface AxoStatusEffectInstance {
 
 	@RequiresImpl
 	default AxoStatusEffect br$getType() {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default AxoText br$formatDuration() {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default int br$getAmplifier() {
 		throw BridgeUtil.noImpl();
 	}
 }

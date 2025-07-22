@@ -79,10 +79,6 @@ public class PlatformImplInternal {
 		throw BridgeUtil.noImpl();
 	}
 
-	public static float tickRate() {
-		return 1; // just provide a default impl
-	}
-
 	// constructors
 	@RequiresImpl
 	public static AxoItemStack createItemStack(AxoItem item, int count) {

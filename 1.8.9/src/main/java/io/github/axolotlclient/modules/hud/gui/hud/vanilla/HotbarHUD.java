@@ -66,12 +66,11 @@ public class HotbarHUD extends TextHudEntry {
 		GlStateManager.enableBlend();
 		this.client.getTextureManager().bind(WIDGETS_TEXTURE);
 
-		/* TODO: ??
-		float f = this.drawOffset;
-		this.drawOffset = -90.0F;
-		this.drawTexture(pos.x, pos.y, 0, 0, 182, 22);
-		this.drawTexture(pos.x - 1 + playerEntity.inventory.selectedSlot * 20, pos.y - 1, 0, 22, 24, 22);
-		this.drawOffset = f;*/
+		context.br$pushMatrix();
+		context.br$translateMatrix(0, 0, -90);
+		new DrawUtil().drawTexture(pos.x, pos.y, 0, 0, 182, 22);
+		new DrawUtil().drawTexture(pos.x - 1 + playerEntity.inventory.selectedSlot * 20, pos.y - 1, 0, 22, 24, 22);
+		context.br$pushMatrix();
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.blendFuncSeparate(770, 771, 1, 0);
 		Lighting.turnOnGui();

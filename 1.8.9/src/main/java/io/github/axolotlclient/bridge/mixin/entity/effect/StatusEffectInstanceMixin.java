@@ -24,6 +24,7 @@ package io.github.axolotlclient.bridge.mixin.entity.effect;
 
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffect;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffectInstance;
+import io.github.axolotlclient.bridge.util.AxoText;
 import net.minecraft.entity.living.effect.StatusEffect;
 import net.minecraft.entity.living.effect.StatusEffectInstance;
 import org.spongepowered.asm.mixin.Mixin;
@@ -34,8 +35,21 @@ public abstract class StatusEffectInstanceMixin implements AxoStatusEffectInstan
 	@Shadow
 	public abstract int getId();
 
+	@Shadow
+	private int amplifier;
+
 	@Override
 	public AxoStatusEffect br$getType() {
 		return StatusEffect.BY_ID[getId()];
+	}
+
+	@Override
+	public int br$getAmplifier() {
+		return amplifier;
+	}
+
+	@Override
+	public AxoText br$formatDuration() {
+		return AxoText.literal(StatusEffect.getDurationString((StatusEffectInstance) (Object) this));
 	}
 }

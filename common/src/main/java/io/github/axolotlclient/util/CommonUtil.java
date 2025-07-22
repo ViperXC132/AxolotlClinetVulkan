@@ -20,21 +20,16 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.bridge.entity.effect;
+package io.github.axolotlclient.util;
 
-import io.github.axolotlclient.bridge.internal.BridgeUtil;
-import io.github.axolotlclient.bridge.internal.RequiresImpl;
-import io.github.axolotlclient.bridge.render.AxoSprite;
-import io.github.axolotlclient.bridge.util.AxoText;
-
-public interface AxoStatusEffect {
-	@RequiresImpl
-	default AxoSprite br$getSprite() {
-		throw BridgeUtil.noImpl();
-	}
-
-	@RequiresImpl
-	default AxoText br$getDisplayName() {
-		throw BridgeUtil.noImpl();
+public class CommonUtil {
+	public static String toRoman(int number) {
+		if (number > 0) {
+			return "I".repeat(number).replace("IIIII", "V").replace("IIII", "IV")
+				.replace("VV", "X").replace("VIV", "IX").replace("XXXXX", "L").replace("XXXX", "XL")
+				.replace("LL", "C").replace("LXL", "XC").replace("CCCCC", "D").replace("CCCC", "CD")
+				.replace("DD", "M").replace("DCD", "CM");
+		}
+		return "";
 	}
 }

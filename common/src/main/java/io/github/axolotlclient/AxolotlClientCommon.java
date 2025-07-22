@@ -50,7 +50,6 @@ import net.fabricmc.loader.api.FabricLoader;
 public abstract class AxolotlClientCommon {
 	public static final String MODID = "axolotlclient";
 	public static final AxoIdentifier BADGE_PATH = AxoIdentifier.of(MODID, "textures/badge.png");
-	public static final Path CONFIG_PATH = FabricLoader.getInstance().getConfigDir().resolve("AxolotlClient.json");
 
 	// static utility methods
 	public static Path resolveConfigFile(String file) {
