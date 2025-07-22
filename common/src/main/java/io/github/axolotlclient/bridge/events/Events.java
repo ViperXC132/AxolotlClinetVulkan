@@ -45,6 +45,7 @@ public class Events {
 	public static final EventBus<Consumer<AxoKey>> KEY_INPUT = EventBus.broadcast1();
 
 	public static final EventBus<Runnable> CLIENT_START = EventBus.broadcast0();
+	public static final EventBus<Runnable> CLIENT_READY = EventBus.broadcast0();
 	public static final EventBus<Runnable> CLIENT_STOP = EventBus.broadcast0();
 	public static final EventBus<Runnable> TICK = EventBus.broadcast0();
 	public static final EventBus<Runnable> END_RESOURCE_RELOAD = EventBus.broadcast0();

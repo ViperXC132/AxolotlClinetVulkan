@@ -95,7 +95,7 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	// scissor
 	@Override
 	public void br$pushScissor(int x, int y, int w, int h) {
-		enableScissor(x, y, w, h);
+		enableScissor(x, y, x+w, y+h);
 	}
 
 	@Override
@@ -140,7 +140,7 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 
 	@Override
 	public void br$fillRect(int x, int y, int width, int height, int color) {
-		fill(x, y, width, height, color);
+		fill(x, y, x+width, y+height, color);
 	}
 
 	@Override

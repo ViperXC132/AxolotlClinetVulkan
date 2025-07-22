@@ -38,6 +38,7 @@ import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.bridge.render.AxoWindow;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.AbstractCommonModule;
 import io.github.axolotlclient.modules.hud.gui0.component.HudEntry;
@@ -98,7 +99,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule {
 		add(new CompassHud());
 		add(new TPSHud());
 		add(new ComboHud());
-		//add(new PlayerHud());
+		//add(new PlayerHud()); // TODO
 		add(new MouseMovementHud());
 		add(new DayCounterHud());
 		add(new InventoryHud());
@@ -110,8 +111,6 @@ public abstract class HudManagerCommon extends AbstractCommonModule {
 
 		entries.values().forEach(HudEntry::init);
 
-		refreshAllBounds();
-
 		hudCategory.add(new GenericOption("hud.custom_entry", "hud.custom_entry.add", () -> {
 			CustomHudEntry entry = new CustomHudEntry();
 			entry.setEnabled(true);
@@ -119,12 +118,21 @@ public abstract class HudManagerCommon extends AbstractCommonModule {
 			entry.onBoundsUpdate();
 			entries.put(entry.getId(), entry);
 			hudCategory.add(entry.getAllOptions(), false);
-			// client.screen.resize(client, client.screen.width, client.screen.height);
+			client.br$reinitScreen();
 			saveCustomEntries();
 		}));
 
 		Events.CLIENT_START.register(this::loadCustomEntries);
 		Events.CLIENT_STOP.register(this::saveCustomEntries);
+	}
+
+	@Override
+	public void lateInit() {
+		if (AxoWindow.getWindow() == null) {
+			Events.CLIENT_READY.register(this::refreshAllBounds);
+		} else {
+			refreshAllBounds();
+		}
 	}
 
 	@SuppressWarnings("unchecked")

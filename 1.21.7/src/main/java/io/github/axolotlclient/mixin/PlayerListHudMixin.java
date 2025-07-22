@@ -33,7 +33,6 @@ import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.api.requests.UserRequest;
 import io.github.axolotlclient.api.util.UUIDHelper;
-import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hypixel.LevelHead;
 import io.github.axolotlclient.modules.hypixel.NickHider;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsGame;
@@ -78,10 +77,10 @@ public abstract class PlayerListHudMixin {
 			return orig;
 		}
 		if (playerInfo.getProfile().equals(minecraft.player.getGameProfile()) && NickHider.getInstance().hideOwnName.get()) {
-			return (Component) NickHider.getInstance().editComponent((AxoText) orig, playerInfo.getProfile().getName(), NickHider.getInstance().hiddenNameSelf.get());
+			return (Component) NickHider.getInstance().editComponent(orig, playerInfo.getProfile().getName(), NickHider.getInstance().hiddenNameSelf.get());
 		} else if (!playerInfo.getProfile().equals(minecraft.player.getGameProfile()) &&
 			NickHider.getInstance().hideOtherNames.get()) {
-			return (Component) NickHider.getInstance().editComponent((AxoText) orig, playerInfo.getProfile().getName(), NickHider.getInstance().hiddenNameOthers.get());
+			return (Component) NickHider.getInstance().editComponent(orig, playerInfo.getProfile().getName(), NickHider.getInstance().hiddenNameOthers.get());
 		}
 		return orig;
 	}
@@ -237,7 +236,7 @@ public abstract class PlayerListHudMixin {
 		if (!BedwarsMod.getInstance().inGame()) {
 			return original;
 		}
-		List<?> players = BedwarsMod.getInstance().getGame().get().getTabPlayerList(Collections.unmodifiableList(original));
+		List<?> players = BedwarsMod.getInstance().getGame().orElseThrow().getTabPlayerList(Collections.unmodifiableList(original));
 		if (players == null) {
 			return original;
 		}
@@ -249,7 +248,7 @@ public abstract class PlayerListHudMixin {
 		if (!BedwarsMod.getInstance().inGame()) {
 			return;
 		}
-		this.header = (Component) BedwarsMod.getInstance().getGame().get().getTopBarText();
+		this.header = (Component) BedwarsMod.getInstance().getGame().orElseThrow().getTopBarText();
 		ci.cancel();
 	}
 
@@ -258,7 +257,7 @@ public abstract class PlayerListHudMixin {
 		if (!BedwarsMod.getInstance().inGame()) {
 			return;
 		}
-		this.footer = (Component) BedwarsMod.getInstance().getGame().get().getBottomBarText();
+		this.footer = (Component) BedwarsMod.getInstance().getGame().orElseThrow().getBottomBarText();
 		ci.cancel();
 	}
 

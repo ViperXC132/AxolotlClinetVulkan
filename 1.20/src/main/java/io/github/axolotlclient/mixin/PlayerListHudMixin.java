@@ -107,7 +107,7 @@ public abstract class PlayerListHudMixin {
 		if (axolotlclient$profile != null && AxolotlClient.config().showBadges.get() && UserRequest.getOnline(axolotlclient$profile.getId().toString())) {
 			RenderSystem.setShaderColor(1, 1, 1, 1);
 
-			instance.drawTexture(AxolotlClient.badgeIcon, (int) x, (int) y, 8, 8, 0, 0, 8, 8, 8, 8);
+			instance.drawTexture(AxolotlClient.badgeIcon, x, y, 8, 8, 0, 0, 8, 8, 8, 8);
 
 			x += 9;
 		}
@@ -255,7 +255,7 @@ public abstract class PlayerListHudMixin {
 		if (!BedwarsMod.getInstance().inGame()) {
 			return original;
 		}
-		List<?> players = BedwarsMod.getInstance().getGame().get().getTabPlayerList(Collections.unmodifiableList(original));
+		List<?> players = BedwarsMod.getInstance().getGame().orElseThrow().getTabPlayerList(Collections.unmodifiableList(original));
 		if (players == null) {
 			return original;
 		}
@@ -267,7 +267,7 @@ public abstract class PlayerListHudMixin {
 		if (!BedwarsMod.getInstance().inGame()) {
 			return;
 		}
-		this.header = (Text) BedwarsMod.getInstance().getGame().get().getTopBarText();
+		this.header = (Text) BedwarsMod.getInstance().getGame().orElseThrow().getTopBarText();
 		ci.cancel();
 	}
 
@@ -276,7 +276,7 @@ public abstract class PlayerListHudMixin {
 		if (!BedwarsMod.getInstance().inGame()) {
 			return;
 		}
-		this.footer = (Text) BedwarsMod.getInstance().getGame().get().getBottomBarText();
+		this.footer = (Text) BedwarsMod.getInstance().getGame().orElseThrow().getBottomBarText();
 		ci.cancel();
 	}
 

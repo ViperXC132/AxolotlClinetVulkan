@@ -31,7 +31,7 @@ public class IconHud extends BoxHudEntry {
 	private static final AxoIdentifier ID = AxoIdentifier.of("axolotlclient", "iconhud");
 
 	public IconHud() {
-		super(15, 15, false);
+		super(16, 16, false);
 	}
 
 	@Override

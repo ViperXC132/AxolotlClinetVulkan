@@ -32,7 +32,6 @@ import com.mojang.blaze3d.texture.NativeImage;
 import io.github.axolotlclient.AxolotlClientConfig.impl.util.GraphicsImpl;
 import io.github.axolotlclient.bridge.PlatformDispatch;
 import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
-import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.util.ThreadExecuter;
 import net.minecraft.client.MinecraftClient;
@@ -123,7 +122,6 @@ public class PlatformDispatchMixin {
 	 * @reason Implement bridge.
 	 */
 	@SuppressWarnings("deprecation")
-	@RequiresImpl
 	@Overwrite
 	public static AxoSprite.Dynamic ipHud$getServerIcon() throws IOException {
 		final var minecraft = MinecraftClient.getInstance();

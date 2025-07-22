@@ -25,22 +25,32 @@ package io.github.axolotlclient.bridge.mixin.entity.effect;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffect;
 import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
 import io.github.axolotlclient.bridge.render.AxoSprite;
+import io.github.axolotlclient.bridge.util.AxoText;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.effect.MobEffect;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(MobEffect.class)
 public abstract class StatusEffectMixin implements AxoStatusEffect {
+	@Shadow
+	public abstract String getDescriptionId();
+
 	@Override
 	public AxoSprite br$getSprite() {
-		return (AxoSpriteImpl) (minecraft, guiGraphics, x, y, w, h) -> {
+		var holder = BuiltInRegistries.MOB_EFFECT.wrapAsHolder((MobEffect) (Object) this);
+		return (AxoSpriteImpl) (minecraft, guiGraphics, x, y, w, h) ->
 			guiGraphics.blitSprite(
 				RenderPipelines.GUI_TEXTURED,
-				Gui.getMobEffectSprite(new Holder.Direct<>((MobEffect) (Object) this)),
+				Gui.getMobEffectSprite(holder),
 				x, y, w, h
 			);
-		};
+	}
+
+	@Override
+	public AxoText br$getDisplayName() {
+		return AxoText.translatable(getDescriptionId());
 	}
 }

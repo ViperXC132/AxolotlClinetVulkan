@@ -92,4 +92,9 @@ public abstract class MinecraftClientMixin {
 	private void onGameLoad(CallbackInfo ci) {
 		Events.GAME_LOAD_EVENT.invoker().invoke((MinecraftClient) (Object) this);
 	}
+
+	@Inject(method = "<init>", at = @At("TAIL"))
+	private void ready(RunArgs args, CallbackInfo ci) {
+		io.github.axolotlclient.bridge.events.Events.CLIENT_READY.invoker().run();
+	}
 }

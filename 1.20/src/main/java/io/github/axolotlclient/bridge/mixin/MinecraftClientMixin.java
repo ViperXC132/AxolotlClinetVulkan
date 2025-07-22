@@ -36,6 +36,7 @@ import io.github.axolotlclient.bridge.world.AxoWorld;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.GameOptions;
@@ -77,6 +78,10 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	@Shadow
 	@Final
 	public InGameHud inGameHud;
+
+	@Shadow
+	@Nullable
+	public Screen currentScreen;
 
 	@Override
 	public@Nullable AxoPlayer br$getPlayer() {
@@ -130,6 +135,13 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 			player.networkHandler.sendCommand(msg);
 		} else {
 			player.networkHandler.sendChatCommand(msg);
+		}
+	}
+
+	@Override
+	public void br$reinitScreen() {
+		if (currentScreen != null) {
+			currentScreen.init((MinecraftClient) (Object)this, currentScreen.width, currentScreen.height);
 		}
 	}
 }

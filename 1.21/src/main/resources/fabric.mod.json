@@ -39,7 +39,6 @@
 		"axolotlclient.e4mc.mixins.json"
 	],
 	"custom": {
-		"modmenu:clientsideOnly": true,
 		"axolotlclient:bridge_impl_version": "V1_21",
 		"loom:injected_interfaces": {
 			"net/minecraft/class_2960": [

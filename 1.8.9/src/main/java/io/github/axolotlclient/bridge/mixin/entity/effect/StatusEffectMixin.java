@@ -25,19 +25,31 @@ package io.github.axolotlclient.bridge.mixin.entity.effect;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffect;
 import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
 import io.github.axolotlclient.bridge.render.AxoSprite;
-import net.minecraft.client.gui.screen.Screen;
+import io.github.axolotlclient.bridge.util.AxoText;
 import net.minecraft.entity.living.effect.StatusEffect;
+import net.minecraft.resource.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(StatusEffect.class)
 public abstract class StatusEffectMixin implements AxoStatusEffect {
+	@Unique
+	private static final Identifier INVENTORY_TEXTURE = new Identifier("textures/gui/container/inventory.png");
 	@Shadow
 	public abstract int getIconIndex();
+
+	@Shadow
+	public abstract String getTranslationKey();
 
 	@Override
 	public AxoSprite br$getSprite() {
 		int iconIdx = getIconIndex();
-		return new AxoSpriteImpl.Simple(Screen.BACKGROUND_LOCATION, iconIdx % 8 * 18, 198 + iconIdx / 8 * 18, 18, 18);
+		return new AxoSpriteImpl.Simple(INVENTORY_TEXTURE, iconIdx % 8 * 18, 198 + iconIdx / 8 * 18, 256, 256);
+	}
+
+	@Override
+	public AxoText br$getDisplayName() {
+		return AxoText.translatable(getTranslationKey());
 	}
 }

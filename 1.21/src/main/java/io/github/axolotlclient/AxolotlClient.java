@@ -66,12 +66,10 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 	public static final Logger LOGGER = new LoggerImpl();
 
 	private void addBuiltinModules() {
-		// registerModule(SkyResourceManager.getInstance());
 		registerModule(Zoom.getInstance());
 		registerModule(HudManager.getInstance());
 		registerModule(HypixelMods.getInstance());
 		registerModule(MotionBlur.getInstance());
-		// registerModule(MenuBlur.getInstance());
 		registerModule(ScrollableTooltips.getInstance());
 		registerModule(DiscordRPC.getInstance());
 		registerModule(Freelook.getInstance());
@@ -79,7 +77,6 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 		registerModule(Particles.getInstance());
 		registerModule(ScreenshotUtils.getInstance());
 		registerModule(BeaconBeam.getInstance());
-		// registerModule(UnfocusedFpsLimiter.getInstance());
 		registerModule(Tablist.getInstance());
 		registerModule(Auth.getInstance());
 		registerModule(APIOptions.getInstance());

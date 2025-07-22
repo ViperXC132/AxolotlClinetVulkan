@@ -29,6 +29,7 @@ import io.github.axolotlclient.util.events.impl.WorldLoadEvent;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.RunArgs;
 import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
 import net.minecraft.client.world.ClientWorld;
 import org.spongepowered.asm.mixin.Mixin;
@@ -71,5 +72,10 @@ public abstract class MinecraftClientMixin {
 	@Inject(method = "onGameLoaded", at = @At(value = "INVOKE", target = "Ljava/lang/Runnable;run()V", remap = false))
 	private void onGameLoad(MinecraftClient.LoadingContext context, CallbackInfo ci) {
 		Events.GAME_LOAD_EVENT.invoker().invoke((MinecraftClient) (Object) this);
+	}
+
+	@Inject(method = "<init>", at = @At("TAIL"))
+	private void ready(RunArgs args, CallbackInfo ci) {
+		io.github.axolotlclient.bridge.events.Events.CLIENT_READY.invoker().run();
 	}
 }

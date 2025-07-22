@@ -70,6 +70,7 @@ public class Bridge {
 		});
 
 		MinecraftClientEvents.START.register(minecraft -> Events.CLIENT_START.invoker().run());
+		MinecraftClientEvents.READY.register(minecraft -> Events.CLIENT_READY.invoker().run());
 		MinecraftClientEvents.STOP.register(minecraft -> Events.CLIENT_STOP.invoker().run());
 		MinecraftClientEvents.TICK_END.register(minecraft -> Events.TICK.invoker().run());
 	}

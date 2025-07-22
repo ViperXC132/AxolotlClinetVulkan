@@ -57,7 +57,7 @@ public abstract class AxolotlClientCommon {
 	}
 
 	public static final boolean NVG_SUPPORTED = OSUtil.getOS() != OSUtil.OperatingSystem.OTHER &&
-		!Objects.requireNonNullElse(System.getenv("TMPDIR"), "").contains("/Android/data/net.kdt.pojavlaunch/");
+		!Objects.requireNonNullElse(System.getenv("TMPDIR"), "").contains("Android");
 
 	public static final String VERSION = FabricLoader.getInstance()
 		.getModContainer("axolotlclient-common")

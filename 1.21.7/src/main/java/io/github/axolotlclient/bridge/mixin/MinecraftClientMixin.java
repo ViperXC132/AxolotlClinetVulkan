@@ -38,6 +38,7 @@ import net.minecraft.client.Options;
 import net.minecraft.client.User;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.player.LocalPlayer;
@@ -76,6 +77,9 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	@Shadow
 	@Final
 	private User user;
+
+	@Shadow
+	public Screen screen;
 
 	@Override
 	public @Nullable AxoPlayer br$getPlayer() {
@@ -132,5 +136,12 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	public AxoSession br$getSession() {
 		// TODO... -?
 		return new AxoSession(user.getName(), user.getProfileId().toString(), user.getAccessToken());
+	}
+
+	@Override
+	public void br$reinitScreen() {
+		if (screen != null) {
+			screen.init((Minecraft) (Object)this, screen.width, screen.height);
+		}
 	}
 }

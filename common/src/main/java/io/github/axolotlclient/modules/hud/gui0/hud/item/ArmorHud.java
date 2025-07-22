@@ -40,6 +40,7 @@ import io.github.axolotlclient.modules.hud.gui0.component.DynamicallyPositionabl
 import io.github.axolotlclient.modules.hud.gui0.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
+import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.ItemUtil;
 
 /**
@@ -185,7 +186,7 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 				stack.br$getMaxDamage()));
 		int textY = y + 10 - graphics.br$getFont().br$getFontHeight() / 2;
 		graphics.br$drawString(text, x, textY, customDurabilityNumColor.get() ? durabilityNumColor.get().toInt() :
-			stack.br$getBarColor(), true);
+			ClientColors.ARGB.opaque(stack.br$getBarColor()), true);
 	}
 
 	@Override

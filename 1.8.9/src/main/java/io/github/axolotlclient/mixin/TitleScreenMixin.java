@@ -67,6 +67,9 @@ public abstract class TitleScreenMixin extends Screen {
 	@Shadow
 	public abstract void render(int par1, int par2, float par3);
 
+	@Shadow
+	private boolean f_2867010;
+
 	@Inject(method = "initWidgetsNormal", at = @At("TAIL"))
 	private void axolotlclient$replaceRealmsButton(int i, int j, CallbackInfo ci) {
 		List<ButtonWidget> buttons = new ArrayList<>();
@@ -186,5 +189,10 @@ public abstract class TitleScreenMixin extends Screen {
 			.getResource(new Identifier("axolotlclient", "texts/splashes.txt")).asStream()) {
 			list.addAll(IOUtils.readLines(input));
 		}
+	}
+
+	@Inject(method = "<init>", at = @At("TAIL"))
+	private void disableRealms(CallbackInfo ci) {
+		this.f_2867010 = true;
 	}
 }

@@ -106,4 +106,12 @@ public interface AxoMinecraftClient extends Executor {
 	default void br$sendToClient(AxoText msg) {
 		throw BridgeUtil.noImpl();
 	}
+
+	/**
+	 * Re-initializes the current screen
+	 */
+	@RequiresImpl
+	default void br$reinitScreen() {
+		throw BridgeUtil.noImpl();
+	}
 }

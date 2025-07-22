@@ -37,4 +37,10 @@ public class AxoStatusEffects {
 
 	@RequiresImpl
 	public static final AxoStatusEffect JUMP_BOOST = BridgeUtil.noImplValue();
+
+	@RequiresImpl
+	public static final AxoStatusEffect BLINDNESS = BridgeUtil.noImplValue();
+
+	@RequiresImpl
+	public static final AxoStatusEffect MINING_FATIGUE = BridgeUtil.noImplValue();
 }

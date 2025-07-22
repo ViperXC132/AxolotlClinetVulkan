@@ -39,6 +39,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Session;
 import net.minecraft.client.entity.living.player.LocalClientPlayerEntity;
 import net.minecraft.client.gui.GameGui;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.ServerListEntry;
 import net.minecraft.client.render.TextRenderer;
@@ -74,10 +75,10 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	public abstract ServerListEntry getCurrentServerEntry();
 
 	@Shadow
-	public abstract void run();
+	public GameGui gui;
 
 	@Shadow
-	public GameGui gui;
+	public Screen screen;
 
 	@Override
 	public @Nullable AxoPlayer br$getPlayer() {
@@ -129,5 +130,12 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	@Override
 	public void br$sendToServer(String msg) {
 		player.sendChat(msg);
+	}
+
+	@Override
+	public void br$reinitScreen() {
+		if (screen != null) {
+			screen.init((Minecraft) (Object)this, screen.width, screen.height);
+		}
 	}
 }
