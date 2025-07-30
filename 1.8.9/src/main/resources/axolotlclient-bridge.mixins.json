@@ -27,6 +27,8 @@
 		"render.AxoSpritesMixin",
 		"render.TextRendererMixin",
 		"render.WindowMixin",
+		"resource.ResourceManagerMixin",
+		"resource.ResourceMixin",
 		"util.IdentifierMixin",
 		"util.StyleMixin",
 		"util.TextMixin",

@@ -20,28 +20,24 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.bridge.world;
+package io.github.axolotlclient.bridge.mixin.resource;
 
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.IOException;
 
-import io.github.axolotlclient.bridge.entity.AxoPlayer;
-import io.github.axolotlclient.bridge.internal.BridgeUtil;
-import io.github.axolotlclient.bridge.internal.RequiresImpl;
-import io.github.axolotlclient.bridge.math.Vec3;
+import io.github.axolotlclient.bridge.resource.AxoResource;
+import net.minecraft.resource.Resource;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
-public interface AxoWorld {
-	@RequiresImpl
-	default long br$getTimeOfDay() {
-		throw BridgeUtil.noImpl();
-	}
+@Mixin(Resource.class)
+public abstract class ResourceMixin implements AxoResource {
 
-	@RequiresImpl
-	default List<? extends AxoPlayer> br$getPlayers() {
-		throw BridgeUtil.noImpl();
-	}
+	@Shadow
+	public abstract BufferedReader openBufferedReader() throws IOException;
 
-	@RequiresImpl
-	default String br$getBiomeName(Vec3 pos) {
-		throw BridgeUtil.noImpl();
+	@Override
+	public BufferedReader br$asReader() throws IOException {
+		return openBufferedReader();
 	}
 }

@@ -31,6 +31,7 @@ import io.github.axolotlclient.bridge.AxoSession;
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.key.AxoClientKeybinds;
 import io.github.axolotlclient.bridge.render.AxoFont;
+import io.github.axolotlclient.bridge.resource.AxoResourceManager;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.bridge.world.AxoWorld;
 import net.minecraft.client.MinecraftClient;
@@ -42,6 +43,7 @@ import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -82,6 +84,9 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient{
 	@Shadow
 	@Nullable
 	public Screen currentScreen;
+
+	@Shadow
+	public abstract ResourceManager getResourceManager();
 
 	@Override
 	public@Nullable AxoPlayer br$getPlayer() {
@@ -142,5 +147,10 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient{
 		if (currentScreen != null) {
 			currentScreen.init((MinecraftClient) (Object)this, currentScreen.width, currentScreen.height);
 		}
+	}
+
+	@Override
+	public AxoResourceManager br$getResourceManager() {
+		return getResourceManager();
 	}
 }

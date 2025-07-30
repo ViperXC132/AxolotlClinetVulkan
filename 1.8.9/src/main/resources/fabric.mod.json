@@ -91,6 +91,12 @@
 			],
 			"net/minecraft/unmapped/C_3488550": [
 				"io/github/axolotlclient/bridge/entity/effect/AxoStatusEffect"
+			],
+			"net/minecraft/unmapped/C_1676943": [
+				"io/github/axolotlclient/bridge/resource/AxoResource"
+			],
+			"net/minecraft/unmapped/C_6577431": [
+				"io/github/axolotlclient/bridge/resource/AxoResourceManager"
 			]
 		},
 		"depends": {

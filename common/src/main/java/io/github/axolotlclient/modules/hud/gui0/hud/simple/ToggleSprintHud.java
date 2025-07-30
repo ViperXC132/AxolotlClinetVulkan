@@ -25,10 +25,12 @@ package io.github.axolotlclient.modules.hud.gui0.hud.simple;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
+import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.bridge.util.AxoI18n;
@@ -52,7 +54,7 @@ public class ToggleSprintHud extends SimpleTextHudEntry {
 	private final BooleanOption randomPlaceholder = new BooleanOption("randomPlaceholder", false);
 	private final StringOption placeholder = new StringOption("placeholder", "No keys pressed");
 
-	private final AxoKeybinding sprintToggle = AxoKeybinding.create(AxoKeys.KEY_K,"key.toggleSprint", "category.axolotlclient");
+	private final AxoKeybinding sprintToggle = AxoKeybinding.create(AxoKeys.KEY_K, "key.toggleSprint", "category.axolotlclient");
 	private final AxoKeybinding sneakToggle = AxoKeybinding.create(AxoKeys.KEY_I, "key.toggleSneak", "category.axolotlclient");
 
 	@Getter
@@ -129,22 +131,18 @@ public class ToggleSprintHud extends SimpleTextHudEntry {
 	}
 
 	private void loadRandomPlaceholder() {
-		try {
-			/* TODO
-			BufferedReader bufferedReader = new BufferedReader(
-				new InputStreamReader(
-					Minecraft.getInstance().getResourceManager()
-						.getResource(new Identifier("texts/splashes.txt")).asStream(),
-					StandardCharsets.UTF_8));
+		try (var reader = AxoMinecraftClient.getInstance().br$getResourceManager()
+			.br$getResource(AxoIdentifier.of("texts/splashes.txt")).br$asReader()) {
+
 			String string;
-			while ((string = bufferedReader.readLine()) != null) {
+			while ((string = reader.readLine()) != null) {
 				string = string.trim();
 				if (!string.isEmpty()) {
 					texts.add(string);
 				}
 			}
 
-			text = texts.get(new Random().nextInt(texts.size()));*/
+			text = texts.get(new Random().nextInt(texts.size()));
 		} catch (Exception e) {
 			text = "";
 		}

@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.hypixel;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +31,9 @@ import java.util.regex.Pattern;
 
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
+import io.github.axolotlclient.util.GsonHelper;
 import lombok.Getter;
 
 public class HypixelMessages implements Runnable {
@@ -42,29 +45,32 @@ public class HypixelMessages implements Runnable {
 	private final Map<String, Map<String, Pattern>> languageMessageMap = new HashMap<>();
 	private final Map<String, Map<String, Pattern>> messageLanguageMap = new HashMap<>();
 
+	@SuppressWarnings("unchecked")
 	public void load() {
 		languageMessageMap.clear();
 		messageLanguageMap.clear();
 
 		AxolotlClientCommon.getInstance().getLogger().debug("Loading Hypixel Messages");
-		/*
-		TODO: load messages here
-		ResourceManager manager = Minecraft.getInstance().getResourceManager();
-		manager.findResources("", "lang",
-			identifier -> identifier.getPath().endsWith(".hypixel.json")).values().forEach(resource -> {
-			int i = resource.getLocation().getPath().lastIndexOf("/") + 1;
-			String lang = resource.getLocation().getPath().substring(i, i + 5);
-			JsonObject lines = GsonHelper.GSON.fromJson(new InputStreamReader(resource.asStream()), JsonObject.class);
-			AxolotlClient.LOGGER.debug("Found message file: " + resource.getLocation());
-			languageMessageMap.computeIfAbsent(lang, s -> new HashMap<>());
-			Map<String, Pattern> map = languageMessageMap.get(lang);
-			lines.entrySet().forEach(entry -> {
-				Pattern pattern = Pattern.compile(entry.getValue().getAsString());
-				map.putIfAbsent(entry.getKey(), pattern);
-				messageLanguageMap.computeIfAbsent(entry.getKey(), s -> new HashMap<>())
-					.put(lang, pattern);
+		AxoMinecraftClient.getInstance().br$getResourceManager().br$listResources("", "lang", id -> id.br$getPath().endsWith(".hypixel.json"))
+			.forEach((id, resource) -> {
+				int i = id.br$getPath().lastIndexOf("/") + 1;
+				String lang = id.br$getPath().substring(i, i + 5);
+				AxolotlClientCommon.getInstance().getLogger().debug("Found message file: " + id);
+				Map<String, String> lines;
+				try {
+					lines = (Map<String, String>) GsonHelper.read(resource.br$asStream());
+				} catch (IOException e) {
+					return;
+				}
+				languageMessageMap.computeIfAbsent(lang, s -> new HashMap<>());
+				Map<String, Pattern> map = languageMessageMap.get(lang);
+				lines.forEach((key, value) -> {
+					Pattern pattern = Pattern.compile(value);
+					map.putIfAbsent(key, pattern);
+					messageLanguageMap.computeIfAbsent(key, s -> new HashMap<>())
+						.put(lang, pattern);
+				});
 			});
-		});*/
 	}
 
 	public void process(BooleanOption option, String messageKey, ReceiveChatMessageEvent event) {

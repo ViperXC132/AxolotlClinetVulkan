@@ -29,6 +29,8 @@
 		"render.MatrixStackMixin",
 		"render.TextRendererMixin",
 		"render.WindowMixin",
+		"resource.ResourceManagerMixin",
+		"resource.ResourceMixin",
 		"util.IdentifierMixin",
 		"util.MutableTextMixin",
 		"util.StyleMixin",

@@ -217,7 +217,7 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 			return;
 		}
 
-		doRender(context, client.br$getPlayer().br$getYaw() + 180, client.br$getPlayer().br$getPos(), "TODO" /* TODO: add bridge API for this */);
+		doRender(context, client.br$getPlayer().br$getYaw() + 180, client.br$getPlayer().br$getPos(), client.br$getWorld().br$getBiomeName(client.br$getPlayer().br$getPos()));
 	}
 
 	public String getWordedDirection(int dir) {
@@ -237,7 +237,7 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
-		doRender(context, 180, new Vec3(109.2325, 180.8981, -5098.32698), "plains");
+		doRender(context, 180, new Vec3(109.2325, 180.8981, -5098.32698), "Plains");
 	}
 
 	@Override

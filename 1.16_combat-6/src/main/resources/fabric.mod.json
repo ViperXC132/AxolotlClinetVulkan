@@ -99,6 +99,12 @@
 			],
 			"net/minecraft/class_2583": [
 				"io/github/axolotlclient/bridge/util/AxoText\u0024Style"
+			],
+			"net/minecraft/class_3298": [
+				"io/github/axolotlclient/bridge/resource/AxoResource"
+			],
+			"net/minecraft/class_3300": [
+				"io/github/axolotlclient/bridge/resource/AxoResourceManager"
 			]
 		}
 	},

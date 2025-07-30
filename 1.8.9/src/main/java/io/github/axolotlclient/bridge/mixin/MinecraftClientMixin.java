@@ -33,6 +33,7 @@ import io.github.axolotlclient.bridge.AxoSession;
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.key.AxoClientKeybinds;
 import io.github.axolotlclient.bridge.render.AxoFont;
+import io.github.axolotlclient.bridge.resource.AxoResourceManager;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.bridge.world.AxoWorld;
 import net.minecraft.client.Minecraft;
@@ -43,6 +44,8 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.ServerListEntry;
 import net.minecraft.client.render.TextRenderer;
+import net.minecraft.client.resource.manager.ReloadableResourceManager;
+import net.minecraft.client.resource.manager.ResourceManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
@@ -79,6 +82,12 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 
 	@Shadow
 	public Screen screen;
+
+	@Shadow
+	private ReloadableResourceManager resourceManager;
+
+	@Shadow
+	public abstract ResourceManager getResourceManager();
 
 	@Override
 	public @Nullable AxoPlayer br$getPlayer() {
@@ -135,7 +144,12 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	@Override
 	public void br$reinitScreen() {
 		if (screen != null) {
-			screen.init((Minecraft) (Object)this, screen.width, screen.height);
+			screen.init((Minecraft) (Object) this, screen.width, screen.height);
 		}
+	}
+
+	@Override
+	public AxoResourceManager br$getResourceManager() {
+		return getResourceManager();
 	}
 }

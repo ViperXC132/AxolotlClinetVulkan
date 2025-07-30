@@ -75,7 +75,7 @@ public abstract class LivingEntityMixin extends Entity {
 			ComboHud comboHud = (ComboHud) HudManager.getInstance().get(ComboHud.ID);
 			comboHud.onEntityDamage(this);
 		}
-=======
+
 		// 2 ticks or so? Definitely not perfect tho
 		if (source.getAttacker() instanceof PlayerEntity) {
 			ComboHud comboHud = (ComboHud) HudManager.getInstance().get(ComboHud.ID);
@@ -83,6 +83,6 @@ public abstract class LivingEntityMixin extends Entity {
 				comboHud.onEntityDamage(this);
 			}
 		}
->>>>>>> dev*/
+		*/
 	}
 }

@@ -31,6 +31,7 @@ import io.github.axolotlclient.bridge.internal.PlatformImplInternal;
 import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import io.github.axolotlclient.bridge.key.AxoClientKeybinds;
 import io.github.axolotlclient.bridge.render.AxoFont;
+import io.github.axolotlclient.bridge.resource.AxoResourceManager;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.bridge.world.AxoWorld;
 import org.jetbrains.annotations.Contract;
@@ -112,6 +113,11 @@ public interface AxoMinecraftClient extends Executor {
 	 */
 	@RequiresImpl
 	default void br$reinitScreen() {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default AxoResourceManager br$getResourceManager() {
 		throw BridgeUtil.noImpl();
 	}
 }

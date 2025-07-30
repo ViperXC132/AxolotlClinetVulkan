@@ -26,14 +26,18 @@ import java.util.Collections;
 import java.util.List;
 
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
+import io.github.axolotlclient.bridge.math.Vec3;
 import io.github.axolotlclient.bridge.world.AxoWorld;
-import net.minecraft.world.level.EntityGetter;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(Level.class)
-public abstract class WorldMixin implements AxoWorld, EntityGetter {
+public abstract class WorldMixin implements AxoWorld, LevelAccessor {
 	@Shadow
 	public abstract long getDayTime();
 
@@ -45,5 +49,35 @@ public abstract class WorldMixin implements AxoWorld, EntityGetter {
 	@Override
 	public List<? extends AxoPlayer> br$getPlayers() {
 		return Collections.unmodifiableList(players());
+	}
+
+	@Override
+	public String br$getBiomeName(Vec3 pos) {
+		var biome = getBiome(new BlockPos(Mth.floor(pos.x()), Mth.floor(pos.y()), Mth.floor(pos.z()))).unwrap().left().orElse(null);
+		if (biome == null) {
+			return I18n.get("coordshud.unknown_biome");
+		}
+		String path = biome.location().getPath();
+		if (!biome.location().getNamespace().equals("minecraft")) {
+			String namespace = biome.location().getNamespace();
+			path += " (" + Character.toTitleCase(namespace.charAt(0)) + namespace.substring(1) + ")";
+		}
+		final String str = path.replace("_", " ");
+		if (str.isEmpty()) {
+			return str;
+		}
+
+		final int[] codepoints = str.codePoints().toArray();
+		boolean capitalizeNext = true;
+		for (int i = 0; i < codepoints.length; i++) {
+			final int ch = codepoints[i];
+			if (Character.isWhitespace(ch)) {
+				capitalizeNext = true;
+			} else if (capitalizeNext) {
+				codepoints[i] = Character.toTitleCase(ch);
+				capitalizeNext = false;
+			}
+		}
+		return new String(codepoints, 0, codepoints.length);
 	}
 }

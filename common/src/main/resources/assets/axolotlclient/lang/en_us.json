@@ -773,5 +773,6 @@
 	"hud.entry.usage.move": "Press Escape or Space to exit movement mode, use arrow keys to move this HUD. Press Enter to open this module's options.",
 	"toggle_fullbright": "Toggle FullBright",
 	"inventoryhud": "Inventory HUD",
-	"key.toggle_hud": "Toggle HUD modules"
+	"key.toggle_hud": "Toggle HUD modules",
+	"coordshud.unknown_biome": "Unknown"
 }

@@ -20,28 +20,24 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.bridge.world;
+package io.github.axolotlclient.bridge.resource;
 
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
 
-import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.RequiresImpl;
-import io.github.axolotlclient.bridge.math.Vec3;
 
-public interface AxoWorld {
+public interface AxoResource {
+
 	@RequiresImpl
-	default long br$getTimeOfDay() {
+	default InputStream br$asStream() throws IOException {
 		throw BridgeUtil.noImpl();
 	}
 
 	@RequiresImpl
-	default List<? extends AxoPlayer> br$getPlayers() {
-		throw BridgeUtil.noImpl();
-	}
-
-	@RequiresImpl
-	default String br$getBiomeName(Vec3 pos) {
+	default BufferedReader br$asReader() throws IOException {
 		throw BridgeUtil.noImpl();
 	}
 }

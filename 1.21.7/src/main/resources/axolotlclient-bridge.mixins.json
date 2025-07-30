@@ -28,6 +28,8 @@
 		"render.FontMixin",
 		"render.GuiGraphicsMixin",
 		"render.WindowMixin",
+		"resource.ResourceManagerMixin",
+		"resource.ResourceMixin",
 		"util.ComponentMixin",
 		"util.IdentifierMixin",
 		"util.MutableComponentMixin",
