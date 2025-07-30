@@ -44,7 +44,6 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.ServerListEntry;
 import net.minecraft.client.render.TextRenderer;
-import net.minecraft.client.resource.manager.ReloadableResourceManager;
 import net.minecraft.client.resource.manager.ResourceManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.text.Text;
@@ -82,9 +81,6 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 
 	@Shadow
 	public Screen screen;
-
-	@Shadow
-	private ReloadableResourceManager resourceManager;
 
 	@Shadow
 	public abstract ResourceManager getResourceManager();

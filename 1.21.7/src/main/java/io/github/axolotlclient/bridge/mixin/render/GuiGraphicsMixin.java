@@ -129,13 +129,13 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	@Override
 	public int br$drawString(String value, int x, int y, int color, boolean shadow) {
 		drawString(minecraft.font, value, x, y, color, shadow);
-		return minecraft.font.width(value);
+		return x+minecraft.font.width(value);
 	}
 
 	@Override
 	public int br$drawString(AxoText value, int x, int y, int color, boolean shadow) {
 		drawString(minecraft.font, (Component) value, x, y, color, shadow);
-		return minecraft.font.width((FormattedText) value);
+		return x+minecraft.font.width((FormattedText) value);
 	}
 
 	@Override

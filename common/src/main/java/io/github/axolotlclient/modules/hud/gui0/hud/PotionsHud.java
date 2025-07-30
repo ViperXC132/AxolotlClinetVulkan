@@ -77,9 +77,6 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 		}
 
 		final var effects = player.br$getStatusEffects();
-		if (effects.isEmpty()) {
-			return;
-		}
 
 		renderEffects(graphics, effects);
 	}

@@ -43,7 +43,6 @@ import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.resource.ReloadableResourceManager;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
@@ -86,10 +85,6 @@ public abstract class MinecraftClientMixin extends ReentrantThreadExecutor<Runna
 	@Shadow
 	@Nullable
 	public Screen currentScreen;
-
-	@Shadow
-	@Final
-	private ReloadableResourceManager resourceManager;
 
 	@Shadow
 	public abstract ResourceManager getResourceManager();
