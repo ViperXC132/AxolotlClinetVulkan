@@ -45,7 +45,6 @@ import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
 import io.github.axolotlclient.util.keybinds.KeyBinds;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.client.option.KeyBind;
@@ -63,6 +62,7 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
+@SuppressWarnings("OverwriteModifiers")
 @Mixin(value = PlatformImplInternal.class, remap = false)
 public class PlatformImplInternalMixin {
     /**

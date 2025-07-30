@@ -46,6 +46,11 @@ public interface AxoKeybinding {
 	}
 
 	@RequiresImpl
+	default void br$registerOnConsumeClick(Runnable runnable) {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
 	default AxoKey br$getBoundKey() {
 		throw BridgeUtil.noImpl();
 	}

@@ -63,6 +63,7 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
+@SuppressWarnings("OverwriteModifiers")
 @Mixin(value = PlatformImplInternal.class, remap = false)
 public class PlatformImplInternalMixin {
 	/**

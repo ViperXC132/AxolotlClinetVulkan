@@ -82,6 +82,8 @@ public abstract class HudManagerCommon extends AbstractCommonModule {
 	}
 
 	public void init() {
+		key.br$registerOnConsumeClick(this::openScreen);
+		toggleHud.br$registerOnConsumeClick(enabled::toggle);
 		Platform.getConfig().addCategory(hudCategory);
 		hudCategory.add(enabled);
 		add(new PingHud());
@@ -192,13 +194,6 @@ public abstract class HudManagerCommon extends AbstractCommonModule {
 
 	@Override
 	public final void tick() {
-		if (key.br$consumeClick()) {
-			openScreen();
-		}
-		if (toggleHud.br$consumeClick()) {
-			enabled.toggle();
-		}
-
 		entries.values().stream()
 			.filter(hudEntry -> hudEntry.isEnabled() && hudEntry.tickable())
 			.forEach(HudEntry::tick);

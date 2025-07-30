@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.blaze3d.platform.InputUtil;
+import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.key.AxoKey;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import net.minecraft.client.option.KeyBind;
@@ -44,34 +45,60 @@ public abstract class KeyBindingMixin implements AxoKeybinding {
 	@Shadow
 	public abstract boolean isPressed();
 
-    @Shadow private InputUtil.Key boundKey;
+	@Shadow
+	private InputUtil.Key boundKey;
 
 	@Shadow
 	public abstract boolean wasPressed();
 
 	@Unique
-	private final List<Runnable> axolotlclient$onClicked = new ArrayList<>();
+	private List<Runnable> axolotlclient$onClicked = null;
 
 	@Unique
-	private final List<Runnable> axolotlclient$onReleased = new ArrayList<>();
+	private List<Runnable> axolotlclient$onConsumeClick = null;
+
+	@Unique
+	private List<Runnable> axolotlclient$onReleased = null;
 
 	@Inject(method = "setPressed", at = @At("HEAD"))
 	private void dispatchHandlers(boolean pressed, CallbackInfo ci) {
-		if (pressed) {
-			this.axolotlclient$onClicked.forEach(Runnable::run);
-		} else {
-			this.axolotlclient$onReleased.forEach(Runnable::run);
+		List<Runnable> handlers = pressed ? this.axolotlclient$onClicked : this.axolotlclient$onReleased;
+		if (handlers != null) {
+			handlers.forEach(Runnable::run);
 		}
+	}
+
+	@Inject(method = "<init>(Ljava/lang/String;Lcom/mojang/blaze3d/platform/InputUtil$Type;ILjava/lang/String;)V", at = @At("TAIL"))
+	private void registerClickHandler(String translationKey, InputUtil.Type type, int code, String category, CallbackInfo ci) {
+		Events.TICK.register(() -> {
+			while (axolotlclient$onConsumeClick != null && wasPressed()) {
+				axolotlclient$onConsumeClick.forEach(Runnable::run);
+			}
+		});
 	}
 
 	@Override
 	public void br$registerOnClicked(Runnable runnable) {
+		if (axolotlclient$onClicked == null) {
+			axolotlclient$onClicked = new ArrayList<>();
+		}
 		axolotlclient$onClicked.add(runnable);
 	}
 
 	@Override
 	public void br$registerOnReleased(Runnable runnable) {
+		if (axolotlclient$onReleased == null) {
+			axolotlclient$onReleased = new ArrayList<>();
+		}
 		axolotlclient$onReleased.add(runnable);
+	}
+
+	@Override
+	public void br$registerOnConsumeClick(Runnable runnable) {
+		if (axolotlclient$onConsumeClick == null) {
+			axolotlclient$onConsumeClick = new ArrayList<>();
+		}
+		axolotlclient$onConsumeClick.add(runnable);
 	}
 
 	@Override

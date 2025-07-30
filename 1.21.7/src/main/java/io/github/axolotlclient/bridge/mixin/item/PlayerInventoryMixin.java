@@ -70,7 +70,7 @@ public abstract class PlayerInventoryMixin implements AxoPlayerInventory {
 
 	@Override
 	public List<? extends AxoItemStack> br$getArmor() {
-		return Stream.of(EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET)
+		return Stream.of(EquipmentSlot.FEET, EquipmentSlot.LEGS, EquipmentSlot.CHEST, EquipmentSlot.HEAD)
 			.map(slot -> equipment.get(slot))
 			.toList();
 	}
