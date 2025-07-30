@@ -25,7 +25,6 @@ package io.github.axolotlclient.bridge.mixin.key;
 import com.mojang.blaze3d.platform.InputUtil;
 import io.github.axolotlclient.bridge.key.AxoKey;
 import io.github.axolotlclient.bridge.key.AxoKeys;
-import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -57,12 +56,24 @@ public class AxoKeysMixin {
 	@Final
 	public static AxoKey MOUSE_RIGHT;
 
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoKey KEY_RSHIFT;
+
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoKey KEY_UNKNOWN;
+
 	@Inject(method = "<clinit>", at = @At("HEAD"), cancellable = true)
 	private static void setStaticValues(CallbackInfo ci) {
-		KEY_I = InputUtil.Type.KEYSYM.createFromKeyCode(GLFW.GLFW_KEY_I);
-		KEY_K = InputUtil.Type.KEYSYM.createFromKeyCode(GLFW.GLFW_KEY_K);
-		MOUSE_LEFT = InputUtil.Type.MOUSE.createFromKeyCode(GLFW.GLFW_MOUSE_BUTTON_1);
-		MOUSE_RIGHT = InputUtil.Type.MOUSE.createFromKeyCode(GLFW.GLFW_MOUSE_BUTTON_2);
+		KEY_I = InputUtil.Type.KEYSYM.createFromKeyCode(InputUtil.KEY_I_CODE);
+		KEY_K = InputUtil.Type.KEYSYM.createFromKeyCode(InputUtil.KEY_K_CODE);
+		MOUSE_LEFT = InputUtil.Type.MOUSE.createFromKeyCode(InputUtil.MOUSE_LEFT_BUTTON_CODE);
+		MOUSE_RIGHT = InputUtil.Type.MOUSE.createFromKeyCode(InputUtil.MOUSE_RIGHT_BUTTON_CODE);
+		KEY_RSHIFT = InputUtil.Type.KEYSYM.createFromKeyCode(InputUtil.KEY_RIGHT_SHIFT_CODE);
+		KEY_UNKNOWN = InputUtil.UNKNOWN_KEY;
 		ci.cancel();
 	}
 }

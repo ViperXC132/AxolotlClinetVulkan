@@ -45,7 +45,11 @@ public abstract class KeyBindingMixin implements AxoKeybinding {
 	public abstract boolean isPressed();
 
     @Shadow private InputUtil.Key boundKey;
-    @Unique
+
+	@Shadow
+	public abstract boolean wasPressed();
+
+	@Unique
 	private final List<Runnable> axolotlclient$onClicked = new ArrayList<>();
 
 	@Unique
@@ -78,5 +82,10 @@ public abstract class KeyBindingMixin implements AxoKeybinding {
 	@Override
 	public AxoKey br$getBoundKey() {
 		return boundKey;
+	}
+
+	@Override
+	public boolean br$consumeClick() {
+		return wasPressed();
 	}
 }

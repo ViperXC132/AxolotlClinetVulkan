@@ -33,6 +33,7 @@ import com.google.gson.stream.JsonWriter;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.bridge.Platform;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
@@ -68,7 +69,9 @@ public abstract class HudManagerCommon extends AbstractCommonModule {
 
 	private final static Path CUSTOM_MODULE_SAVE_PATH = AxolotlClientCommon.resolveConfigFile("custom_hud.json");
 	private final AxoKeybinding key = AxoKeybinding.create(AxoKeys.KEY_RSHIFT, "key.openHud", "category.axolotlclient");
+	private final AxoKeybinding toggleHud = AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "key.toggle_hud", "category.axolotlclient");
 	private final OptionCategory hudCategory = OptionCategory.create("hud");
+	private final BooleanOption enabled = new BooleanOption("enabled", true);
 	private final Map<AxoIdentifier, HudEntry> entries;
 
 	protected HudManagerCommon() {
@@ -80,6 +83,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule {
 
 	public void init() {
 		Platform.getConfig().addCategory(hudCategory);
+		hudCategory.add(enabled);
 		add(new PingHud());
 		add(new FPSHud());
 		add(new CPSHud());
@@ -188,8 +192,11 @@ public abstract class HudManagerCommon extends AbstractCommonModule {
 
 	@Override
 	public final void tick() {
-		if (key.br$isPressed()) {
+		if (key.br$consumeClick()) {
 			openScreen();
+		}
+		if (toggleHud.br$consumeClick()) {
+			enabled.toggle();
 		}
 
 		entries.values().stream()
@@ -233,6 +240,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule {
 	}
 
 	public void render(AxoRenderContext context, float delta) {
+		if (!enabled.get()) return;
 		for (HudEntry hud : getEntries()) {
 			if (hud.isEnabled()) {
 				hud.render(context, delta);

@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.bridge.mixin.internal;
 
+import java.util.Objects;
+
 import com.mojang.blaze3d.platform.InputUtil;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
@@ -36,11 +38,13 @@ import io.github.axolotlclient.bridge.item.AxoItem;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.key.AxoKey;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
+import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.bridge.render.AxoWindow;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
+import io.github.axolotlclient.util.keybinds.KeyBinds;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.PlayerListEntry;
@@ -129,9 +133,9 @@ public class PlatformImplInternalMixin {
 	 */
 	@Overwrite
 	public static AxoKeybinding createKeyBinding(AxoKey defaultKey, String name, String category) {
-		int code = defaultKey == null ? -1 : ((InputUtil.Key) defaultKey).getKeyCode();
+		int code = ((InputUtil.Key) Objects.requireNonNullElse(defaultKey, AxoKeys.KEY_UNKNOWN)).getKeyCode();
 		final var binding = new KeyBind(name, code, category);
-		KeyBindingHelper.registerKeyBinding(binding);
+		KeyBinds.getInstance().register(binding);
 		return binding;
 	}
 

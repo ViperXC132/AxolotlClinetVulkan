@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.bridge.mixin.internal;
 
+import java.util.Objects;
+
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
@@ -35,6 +37,7 @@ import io.github.axolotlclient.bridge.item.AxoItem;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.key.AxoKey;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
+import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.bridge.render.AxoWindow;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
@@ -131,7 +134,7 @@ public class PlatformImplInternalMixin {
 	 */
 	@Overwrite
 	public static AxoKeybinding createKeyBinding(AxoKey defaultKey, String name, String category) {
-		int code = (defaultKey == null ? -1 : ((InputUtil.Key) defaultKey).getCode());
+		int code = ((InputUtil.Key) Objects.requireNonNullElse(defaultKey, AxoKeys.KEY_UNKNOWN)).getCode();
 		final var binding = new KeyBinding(name, code, category);
 		KeyBindingHelper.registerKeyBinding(binding);
 		return binding;

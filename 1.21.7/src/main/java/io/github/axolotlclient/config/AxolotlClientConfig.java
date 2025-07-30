@@ -36,11 +36,10 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.*;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.config.screen.CreditsScreen;
 import io.github.axolotlclient.mixin.OverlayTextureAccessor;
+import io.github.axolotlclient.util.keybinds.KeyBinds;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import io.github.axolotlclient.util.options.GenericOption;
 import lombok.Getter;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -171,11 +170,6 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 		AxolotlClient.config.add(creditsBGM);
 
 		var toggleFullbright = new KeyMapping("toggle_fullbright", -1, "category.axolotlclient");
-		KeyBindingHelper.registerKeyBinding(toggleFullbright);
-		ClientTickEvents.END_CLIENT_TICK.register(minecraft -> {
-			if (toggleFullbright.consumeClick()) {
-				fullBright.toggle();
-			}
-		});
+		KeyBinds.getInstance().registerWithSimpleAction(toggleFullbright, fullBright::toggle);
 	}
 }

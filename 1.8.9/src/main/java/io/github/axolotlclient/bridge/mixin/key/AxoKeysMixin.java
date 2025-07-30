@@ -57,12 +57,24 @@ public class AxoKeysMixin {
 	@Final
 	public static AxoKey MOUSE_RIGHT;
 
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoKey KEY_RSHIFT;
+
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoKey KEY_UNKNOWN;
+
 	@Inject(method = "<clinit>", at = @At("HEAD"), cancellable = true)
 	private static void setStaticValues(CallbackInfo ci) {
 		KEY_I = AxoKeyImpl.get(Keyboard.KEY_I);
 		KEY_K = AxoKeyImpl.get(Keyboard.KEY_K);
 		MOUSE_LEFT = AxoKeyImpl.get(-100);
 		MOUSE_RIGHT = AxoKeyImpl.get(-99);
+		KEY_RSHIFT = AxoKeyImpl.get(Keyboard.KEY_RSHIFT);
+		KEY_UNKNOWN = AxoKeyImpl.get(0);
 		ci.cancel();
 	}
 }
