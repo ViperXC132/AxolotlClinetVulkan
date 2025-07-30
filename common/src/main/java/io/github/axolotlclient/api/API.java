@@ -457,9 +457,11 @@ public class API {
 		}
 		statusUpdateFuture = statusUpdateExecutor.scheduleAtFixedRate(() -> {
 			try {
-				Request request = statusUpdateProvider.getStatus();
-				if (request != null) {
-					post(request);
+				if (apiOptions.sendStatusUpdates.get()) {
+					Request request = statusUpdateProvider.getStatus();
+					if (request != null) {
+						post(request);
+					}
 				}
 			} catch (Throwable e) {
 				logger.warn("Failed to send status update! Skipping... ", e);
