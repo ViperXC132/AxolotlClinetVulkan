@@ -68,7 +68,7 @@ subprojects {
 
 	tasks.getByName("jar", Jar::class) {
 		filesMatching("LICENSE") {
-			rename("^(LICENSE.*?)(\\..*)?$", "\$1_${archiveBaseName}\$2")
+			rename("^(LICENSE.*?)(\\..*)?$", "$1_${archiveBaseName}$2")
 		}
 	}
 

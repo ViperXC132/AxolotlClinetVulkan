@@ -778,5 +778,15 @@
 	"graphics.copy_text": "Export to Clipboard",
 	"graphics.paste_text": "Import from Clipboard",
 	"graphics.paste_text.failed": "Import Failed",
-	"graphics.paste_text.failed.desc": "The clipboard does not contain valid data!"
+	"graphics.paste_text.failed.desc": "The clipboard does not contain valid data!",
+	"profiles.title": "Profiles",
+	"profiles.configure": "Manage",
+	"profiles.configure.list": "Manage Profiles",
+	"profiles.profile.load": "Load",
+	"profiles.profile.remove": "Remove",
+	"profiles.profile.default_new_name": "New Profile",
+	"profiles.duplicated": "%s - Copy",
+	"profiles.profile.duplicate": "Duplicate",
+	"profiles.profile.current": "Current!",
+	"profiles.profile.add": "Add empty Profile"
 }

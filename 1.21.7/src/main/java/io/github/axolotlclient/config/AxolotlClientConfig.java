@@ -35,6 +35,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.*;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.config.screen.CreditsScreen;
+import io.github.axolotlclient.config.screen.ProfilesScreen;
 import io.github.axolotlclient.mixin.OverlayTextureAccessor;
 import io.github.axolotlclient.util.keybinds.KeyBinds;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
@@ -168,6 +169,9 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 		rendering.add(noRain);
 
 		hidden.add(creditsBGM, someNiceBackground);
+
+		general.add(new GenericOption("profiles.title", "profiles.configure", () ->
+			Minecraft.getInstance().setScreen(new ProfilesScreen(Minecraft.getInstance().screen))), false);
 
 		var toggleFullbright = new KeyMapping("toggle_fullbright", -1, "category.axolotlclient");
 		KeyBinds.getInstance().registerWithSimpleAction(toggleFullbright, fullBright::toggle);
