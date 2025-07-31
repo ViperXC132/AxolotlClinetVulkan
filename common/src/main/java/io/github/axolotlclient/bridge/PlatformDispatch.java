@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.bridge;
 
+import java.util.List;
+
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import io.github.axolotlclient.bridge.render.AxoSprite;
@@ -41,6 +43,11 @@ public class PlatformDispatch {
 
 	@RequiresImpl
 	public static AxoSprite.Dynamic ipHud$getServerIcon() {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	public static void autoBoop$openFiltersScreen(List<String> filters) {
 		throw BridgeUtil.noImpl();
 	}
 }

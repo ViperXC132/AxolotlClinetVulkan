@@ -24,6 +24,7 @@ package io.github.axolotlclient.bridge.mixin;
 
 import java.io.IOException;
 import java.util.Base64;
+import java.util.List;
 import java.util.Objects;
 
 import com.google.common.base.Preconditions;
@@ -33,6 +34,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.util.GraphicsImpl;
 import io.github.axolotlclient.bridge.PlatformDispatch;
 import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
 import io.github.axolotlclient.bridge.render.AxoSprite;
+import io.github.axolotlclient.modules.hypixel.autoboop.FilterListConfigurationScreen;
 import io.github.axolotlclient.util.ThreadExecuter;
 import net.minecraft.class_9191;
 import net.minecraft.client.MinecraftClient;
@@ -154,5 +156,14 @@ public class PlatformDispatchMixin {
 		}
 
 		return new Impl();
+	}
+
+	/**
+	 * @author moehreag
+	 * @reason Implement bridge.
+	 */
+	@Overwrite
+	public static void autoBoop$openFiltersScreen(List<String> filters) {
+		MinecraftClient.getInstance().setScreen(new FilterListConfigurationScreen(filters, MinecraftClient.getInstance().currentScreen));
 	}
 }

@@ -22,10 +22,8 @@
 
 package io.github.axolotlclient.modules.hypixel;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
@@ -39,6 +37,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringArrayOption;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
+import io.github.axolotlclient.bridge.PlatformDispatch;
 import io.github.axolotlclient.util.ThreadExecuter;
 import io.github.axolotlclient.util.options.GenericOption;
 import lombok.Getter;
@@ -49,7 +48,7 @@ public class AutoBoop implements AbstractHypixelMod {
 	private static final Pattern FRIEND_JOINED = Pattern.compile("^Friend > (\\b[A-Za-z0-9_§]{3,16}\\b) joined\\.$");
 
 	public void handleMessage(String message) {
-		if(!enabled.get()) {
+		if (!enabled.get()) {
 			return;
 		}
 
@@ -60,10 +59,9 @@ public class AutoBoop implements AbstractHypixelMod {
 				if (FilterListMode.fromId(filterListMode.get())
 					.getFunc().apply(player, filters)) {
 					CompletableFuture.runAsync(() -> {
-						// TODO: this is not thread safe!
 						AxoMinecraftClient.getInstance().br$sendToServer("/boop " + player);
 						AxolotlClientCommon.getInstance().getLogger().info("Booped " + player);
-					}, CompletableFuture.delayedExecutor(1, TimeUnit.SECONDS, ThreadExecuter.service()));
+					}, CompletableFuture.delayedExecutor(1, TimeUnit.SECONDS, AxoMinecraftClient.getInstance()));
 				}
 			}
 		});
@@ -72,19 +70,17 @@ public class AutoBoop implements AbstractHypixelMod {
 	protected final List<String> filters = new ArrayList<>();
 	protected final OptionCategory cat = OptionCategory.create("autoboop");
 	protected final BooleanOption enabled = new BooleanOption("enabled", "autoboop.enabled.tooltip", false);
-	protected final GenericOption filterList = new GenericOption("autoboop.filterlist", "autoboop.filterlist.configure", () -> {
-		// TODO: handle this?
-		// openFiltersScreen(filters)
-	}) {
+	protected final GenericOption filterList = new GenericOption("autoboop.filterlist", "autoboop.filterlist.configure", () -> PlatformDispatch.autoBoop$openFiltersScreen(filters)) {
 		@Override
 		public String toSerializedValue() {
-			return String.join(",", filters);
+			return filters.stream().map(s -> s.getBytes(StandardCharsets.UTF_8)).map(s -> Base64.getEncoder().encodeToString(s)).collect(Collectors.joining(","));
 		}
 
 		@Override
 		public void fromSerializedValue(String s) {
 			filters.clear();
-			filters.addAll(Arrays.asList(s.split(",")));
+			filters.addAll(Arrays.stream(s.split(",")).map(v -> Base64.getDecoder().decode(v))
+				.map(v -> new String(v, StandardCharsets.UTF_8)).toList());
 		}
 	};
 	protected final StringArrayOption filterListMode = new StringArrayOption("autoboop.filterlist.mode", Arrays.stream(FilterListMode.values()).map(FilterListMode::getId).toArray(String[]::new));

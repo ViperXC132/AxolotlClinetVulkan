@@ -24,12 +24,11 @@
 package io.github.axolotlclient;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
 import com.google.gson.JsonObject;
@@ -129,7 +128,7 @@ public abstract class AxolotlClientCommon {
 	private void initConfig() {
 		AxolotlClientConfig.getInstance()
 			.register(configManager = new VersionedJsonConfigManager(getMainConfigFile(),
-				config.getConfig(), 4, (oldVersion, newVersion, config, json) -> {
+				config.getConfig(), 5, (oldVersion, newVersion, config, json) -> {
 				if (oldVersion.getMajor() <= 1) {
 					if (json.has("hud")) {
 						var hud = json.get("hud").getAsJsonObject();
@@ -171,6 +170,21 @@ public abstract class AxolotlClientCommon {
 						}
 
 						apiOptions.addProperty("api.privacy_policy_accepted", "privacy_policy_state." + hiddenOptions.get("privacyPolicyAccepted").getAsString().toLowerCase(Locale.ROOT));
+					}
+				}
+				if (oldVersion.getMajor() <= 4) {
+					if (json.has("hypixel-mods")) {
+						var hypixel = json.get("hypixel-mods").getAsJsonObject();
+						var autoboop = hypixel.get("autoboop");
+						if (autoboop != null) {
+							var filterlist = autoboop.getAsJsonObject().get("autoboop.filterlist");
+							if (filterlist != null) {
+								filterlist.getAsString();
+								autoboop.getAsJsonObject().addProperty("autoboop.filterlist", Arrays.stream(filterlist.getAsString().split(","))
+									.map(s -> s.getBytes(StandardCharsets.UTF_8))
+									.map(s -> Base64.getEncoder().encodeToString(s)).collect(Collectors.joining(",")));
+							}
+						}
 					}
 				}
 				return json;
