@@ -22,20 +22,14 @@
 
 package io.github.axolotlclient;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
-import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.APIOptions;
 import io.github.axolotlclient.api.StatusUpdateProviderImpl;
 import io.github.axolotlclient.bridge.impl.Bridge;
-import io.github.axolotlclient.modules.Module;
 import io.github.axolotlclient.modules.ModuleLoader;
 import io.github.axolotlclient.modules.auth.Auth;
-import io.github.axolotlclient.modules.blur.MotionBlur;
 import io.github.axolotlclient.modules.freelook.Freelook;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hypixel.HypixelMods;
@@ -60,18 +54,13 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 
 	public static final HashMap<ResourceLocation, Resource> runtimeResources = new HashMap<>();
 	public static final ResourceLocation badgeIcon = ResourceLocation.fromNamespaceAndPath(MODID, "textures/badge.png");
-	public static final OptionCategory config = OptionCategory.create("storedOptions");
-	public static final BooleanOption someNiceBackground = new BooleanOption("defNoSecret", false);
-	public static final List<Module> modules = new ArrayList<>();
 	public static final Logger LOGGER = new LoggerImpl();
 
 	private void addBuiltinModules() {
-		// registerModule(SkyResourceManager.getInstance());
 		registerModule(Zoom.getInstance());
 		registerModule(HudManager.getInstance());
 		registerModule(HypixelMods.getInstance());
-		registerModule(MotionBlur.getInstance());
-		// registerModule(MenuBlur.getInstance());
+		//registerModule(MotionBlur.getInstance()); // TODO this is broken since 1.21.2
 		registerModule(ScrollableTooltips.getInstance());
 		registerModule(DiscordRPC.getInstance());
 		registerModule(Freelook.getInstance());

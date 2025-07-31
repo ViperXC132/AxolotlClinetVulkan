@@ -79,7 +79,7 @@ public class CreditsScreen extends Screen {
 		}
 
 		renderBackground(matrices);
-		if (AxolotlClient.someNiceBackground.get()) { // Credit to pridelib for the colors
+		if (AxolotlClient.config().someNiceBackground.get()) { // Credit to pridelib for the colors
 			DrawUtil.fill(matrices, 0, 0, width, height / 6, 0xFFff0018);
 			DrawUtil.fill(matrices, 0, height / 6, width, height * 2 / 6, 0xFFffa52c);
 			DrawUtil.fill(matrices, 0, height * 2 / 6, width, height / 2, 0xFFffff41);

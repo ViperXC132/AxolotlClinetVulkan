@@ -181,7 +181,7 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 
 		rendering.add(noRain);
 
-		AxolotlClient.hiddenConfig.add(creditsBGM);
+		hidden.add(creditsBGM, someNiceBackground);
 
 		var toggleFullbright = new KeyBind("toggle_fullbright", -1, "category.axolotlclient");
 		KeyBinds.getInstance().registerWithSimpleAction(toggleFullbright, fullBright::toggle);

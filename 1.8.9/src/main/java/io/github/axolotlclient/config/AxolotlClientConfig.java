@@ -169,9 +169,9 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 		titles.add(scaleTitles, titlePadding);
 		rendering.add(titles);
 
-		AxolotlClient.hiddenConfig.add(creditsBGM);
+		hidden.add(creditsBGM, someNiceBackground);
 
-		AxolotlClient.modules.add(new Module() {
+		AxolotlClient.getInstance().modules.add(new Module() {
 			@Override
 			public void lateInit() {
 				if (System.getProperty("org.lwjgl.input.Mouse.disableRawInput") == null) {

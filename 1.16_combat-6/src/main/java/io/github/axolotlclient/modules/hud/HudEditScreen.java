@@ -64,7 +64,7 @@ public class HudEditScreen extends Screen {
 
 	static {
 		hudEditScreenCategory.add(snapping);
-		AxolotlClient.hiddenConfig.add(hudEditScreenCategory);
+		AxolotlClient.config().hidden.add(hudEditScreenCategory);
 	}
 
 	private final Screen parent;

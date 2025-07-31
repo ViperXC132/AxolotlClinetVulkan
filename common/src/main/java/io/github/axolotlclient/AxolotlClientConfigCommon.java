@@ -27,6 +27,7 @@ import java.util.Locale;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
 import net.fabricmc.loader.api.FabricLoader;
@@ -61,6 +62,7 @@ public abstract class AxolotlClientConfigCommon {
 	// options
 	public final OptionCategory config = OptionCategory.create("config");
 	public final OptionCategory hidden = OptionCategory.create("storedOptions");
+	public final BooleanOption someNiceBackground = new BooleanOption("defNoSecret", false);
 	public final StringOption datetimeFormat = new StringOption("datetime_format", "yyyy/MM/dd HH:mm:ss", s -> dateTimeFormatter = DateTimeFormatter.ofPattern(s));
 	public final EnumOption<MenuButtonMode> titleScreenOptionButtonMode = new EnumOption<>("title_screen_button_mode", MenuButtonMode.class, MenuButtonMode.MODMENU);
 	public final EnumOption<MenuButtonMode> gameMenuScreenOptionButtonMode = new EnumOption<>("game_menu_screen_button_mode", MenuButtonMode.class, MenuButtonMode.MODMENU);
