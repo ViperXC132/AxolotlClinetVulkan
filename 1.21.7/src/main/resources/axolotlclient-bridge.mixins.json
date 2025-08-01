@@ -25,6 +25,7 @@
 		"key.GameOptionsMixin",
 		"key.KeyBindingMixin",
 		"key.KeyMixin",
+		"render.AxoSpritesMixin",
 		"render.FontMixin",
 		"render.GuiGraphicsMixin",
 		"render.WindowMixin",

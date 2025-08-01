@@ -39,7 +39,7 @@
 		"axolotlclient.e4mc.mixins.json"
 	],
 	"custom": {
-		"axolotlclient:bridge_impl_version": "V1_21_7",
+		"axolotlclient:bridge_impl_version": "V1_21_8",
 		"loom:injected_interfaces": {
 			"net/minecraft/class_2960": [
 				"io/github/axolotlclient/bridge/util/AxoIdentifier"
