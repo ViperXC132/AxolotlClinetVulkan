@@ -213,11 +213,10 @@ public abstract class AxolotlClientCommon {
 		earlyModuleInit();
 		initConfig();
 
-		ConfigUI.getInstance().runWhenLoaded(() -> {
-			lateModuleInit();
-			Events.TICK.register(() -> modules.forEach(Module::tick));
-			initFeatureDisabler();
-		});
+		ConfigUI.getInstance().runWhenLoaded(this::lateModuleInit);
+
+		Events.TICK.register(() -> modules.forEach(Module::tick));
+		initFeatureDisabler();
 
 		// register events
 
