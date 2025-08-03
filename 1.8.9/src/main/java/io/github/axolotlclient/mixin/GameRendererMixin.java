@@ -58,7 +58,6 @@ import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.At.Shift;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -94,7 +93,7 @@ public abstract class GameRendererMixin {
 			this.viewDistance = (float) (this.viewDistance * 2 + Minecraft.getInstance().player.getSourcePos().y);
 			Entity entity = this.minecraft.getCamera();
 
-			GL11.glFog(2918, this.setFogColor(this.fogRed, this.fogGreen, this.fogBlue, 1.0F));
+			GL11.glFogfv(2918, this.setFogColor(this.fogRed, this.fogGreen, this.fogBlue, 1.0F));
 			GL11.glNormal3f(0.0F, -1.0F, 0.0F);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			Block block = Camera.getBlockInside(this.minecraft.world, entity, tickDelta);
@@ -197,7 +196,7 @@ public abstract class GameRendererMixin {
 		}
 	}
 
-	@Inject(method = "render(FJ)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;bindWrite(Z)V", shift = Shift.BEFORE))
+	@Inject(method = "render(FJ)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;bindWrite(Z)V"))
 	public void axolotlclient$worldMotionBlur(float tickDelta, long nanoTime, CallbackInfo ci) {
 		MenuBlur.getInstance().updateBlur();
 		axolotlclient$postRender(tickDelta, nanoTime, null);

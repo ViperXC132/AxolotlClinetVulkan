@@ -54,9 +54,9 @@ public class HudEditScreen extends Screen {
 	private static final BooleanOption snapping = new BooleanOption("snapping", true);
 	private static final OptionCategory hudEditScreenCategory = OptionCategory.create("hudEditScreen");
 	private static final int GRAB_TOLERANCE = 5;
-	private static final long MOVE_CURSOR = GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_ALL_CURSOR);
-	private static final long DEFAULT_CURSOR = GLFW.glfwCreateStandardCursor(GLFW.GLFW_ARROW_CURSOR);
-	private static final long NWSE_RESIZE_CURSOR = GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_NWSE_CURSOR),
+	private final long MOVE_CURSOR = GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_ALL_CURSOR);
+	private final long DEFAULT_CURSOR = GLFW.glfwCreateStandardCursor(GLFW.GLFW_ARROW_CURSOR);
+	private final long NWSE_RESIZE_CURSOR = GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_NWSE_CURSOR),
 		NESW_RESIZE_CURSOR = GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_NESW_CURSOR);
 
 	public static boolean isSnappingEnabled() {
@@ -188,6 +188,10 @@ public class HudEditScreen extends Screen {
 		setCursor(DEFAULT_CURSOR);
 		mode = ModificationMode.NONE;
 		super.removed();
+		GLFW.glfwDestroyCursor(MOVE_CURSOR);
+		GLFW.glfwDestroyCursor(DEFAULT_CURSOR);
+		GLFW.glfwDestroyCursor(NESW_RESIZE_CURSOR);
+		GLFW.glfwDestroyCursor(NWSE_RESIZE_CURSOR);
 	}
 
 	@Override

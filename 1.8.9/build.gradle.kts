@@ -59,9 +59,10 @@ dependencies {
 	localRuntime("org.slf4j:slf4j-jdk14:1.7.36")
 
 	compileOnly("org.lwjgl:lwjgl-glfw:${lwjglVersion}")
+	compileOnly("org.lwjgl:lwjgl-sdl:3.4.0-SNAPSHOT")
 
-	modCompileOnly("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}")
-	modLocalRuntime("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}:all-remapped")
+	modImplementation("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}")
+	//modLocalRuntime("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}:all-remapped")
 
 	include(implementation("org.lwjgl", "lwjgl-tinyfd", lwjglVersion))
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-linux"))
@@ -79,6 +80,7 @@ dependencies {
 }
 
 configurations.configureEach {
+	exclude("org.lwjgl.lwjgl")
 	resolutionStrategy {
 		dependencySubstitution {
 			substitute(module("io.netty:netty-all:4.0.23.Final")).using(module("io.netty:netty-all:4.0.56.Final"))

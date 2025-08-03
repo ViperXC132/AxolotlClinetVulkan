@@ -247,7 +247,8 @@ public class SkinManagementScreen extends Screen {
 		var hashes = skins.stream().map(Asset::textureKey).collect(Collectors.toSet());
 		var defaultSkinHash = Auth.getInstance().getSkinManager().getDefaultSkinHash(account);
 		var local = new ArrayList<>(loadLocalSkins());
-		var localHashes = local.stream().collect(Collectors.toMap(Asset::textureKey, Function.identity()));
+		var localHashes = local.stream().collect(Collectors.toMap(Asset::textureKey, Function.identity(), (skin, skin2) -> skin));
+		local.removeIf(s -> !localHashes.containsValue(s));
 		skins.replaceAll(s -> {
 			if (s instanceof MSApi.MCProfile.OnlineSkin online) {
 				if (localHashes.containsKey(s.textureKey()) && localHashes.get(s.textureKey()) instanceof Skin.Local file) {

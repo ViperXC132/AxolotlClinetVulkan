@@ -179,7 +179,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 		navBar.add(capesTab);
 		var importButton = new VanillaButtonWidget(capesTab.getX() + capesTab.getWidth() - 11, capesTab.getY() - 13, 11, 11, I18n.translate("skins.manage.import"), btn -> {
 			btn.active = false;
-			SkinImportUtil.openImportSkinDialog().thenAccept(this::filesDragged).thenRun(() -> btn.active = true);
+			SkinImportUtil.openImportSkinDialog().thenAccept(this::onFileDrop).thenRun(() -> btn.active = true);
 		}) {
 			private final Identifier SPRITE = new Identifier("axolotlclient", "textures/gui/sprites/download.png");
 
@@ -300,7 +300,8 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 		var hashes = skins.stream().map(Asset::textureKey).collect(Collectors.toSet());
 		var defaultSkinHash = Auth.getInstance().getSkinManager().getDefaultSkinHash(account);
 		var local = new ArrayList<>(loadLocalSkins());
-		var localHashes = local.stream().collect(Collectors.toMap(Asset::textureKey, Function.identity()));
+		var localHashes = local.stream().collect(Collectors.toMap(Asset::textureKey, Function.identity(), (skin, skin2) -> skin));
+		local.removeIf(s -> !localHashes.containsValue(s));
 		skins.replaceAll(s -> {
 			if (s instanceof MSApi.MCProfile.OnlineSkin online) {
 				if (localHashes.containsKey(s.textureKey()) && localHashes.get(s.textureKey()) instanceof Skin.Local file) {
@@ -358,8 +359,8 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 		}
 	}
 
-	//@Override
-	public void filesDragged(List<Path> packs) {
+	@Override
+	public void onFileDrop(List<Path> packs) {
 		if (packs.isEmpty()) return;
 		packs.forEach(p -> {
 			try {

@@ -54,9 +54,8 @@ public class ScreenshotUtils extends AbstractModule {
 	private static final ScreenshotUtils Instance = new ScreenshotUtils();
 	private final OptionCategory category = OptionCategory.create("screenshotUtils");
 	private final BooleanOption enabled = new BooleanOption("enabled", false);
-	private final GenericOption openViewer = new GenericOption("imageViewer", "openViewer", () -> {
-		Minecraft.getInstance().openScreen(new GalleryScreen(Minecraft.getInstance().screen));
-	});
+	private final GenericOption openViewer = new GenericOption("imageViewer", "openViewer",
+		() -> Minecraft.getInstance().openScreen(new GalleryScreen(Minecraft.getInstance().screen)));
 
 	private final Map<BooleanSupplier, Action> actions = new LinkedHashMap<>();
 

@@ -36,7 +36,7 @@ import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.config.screen.CreditsScreen;
 import io.github.axolotlclient.config.screen.ProfilesScreen;
 import io.github.axolotlclient.modules.Module;
-import io.github.axolotlclient.util.GLFWUtil;
+import io.github.axolotlclient.util.WindowAccess;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import io.github.axolotlclient.util.options.GenericOption;
 import lombok.Getter;
@@ -44,7 +44,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.options.KeyBinding;
 import net.ornithemc.osl.keybinds.api.KeyBindingEvents;
 import net.ornithemc.osl.lifecycle.api.client.MinecraftClientEvents;
-import org.lwjgl.glfw.GLFW;
 
 public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 
@@ -73,7 +72,7 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 	public final ColorOption loadingScreenColor = new ColorOption("loadingBgColor", new Color(-1));
 	public final BooleanOption nightMode = new BooleanOption("nightMode", false);
 	public final BooleanOption rawMouseInput = new BooleanOption("rawMouseInput", false, v ->
-		GLFWUtil.runUsingGlfwHandle(h -> GLFW.glfwSetInputMode(h, GLFW.GLFW_RAW_MOUSE_MOTION, v ? 1 : 0)));
+		WindowAccess.getInstance().setRawMouseMotion(v));
 
 	public final BooleanOption enableCustomOutlines = new BooleanOption("enabled", false);
 	public final ColorOption outlineColor = new ColorOption("color", Color.parse("#DD000000"));
@@ -175,10 +174,15 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 		AxolotlClient.getInstance().modules.add(new Module() {
 			@Override
 			public void lateInit() {
-				if (System.getProperty("org.lwjgl.input.Mouse.disableRawInput") == null) {
-					System.setProperty("org.lwjgl.input.Mouse.disableRawInput", "true");
+				if (WindowAccess.getInstance().rawMouseMotionAvailable()) {
+
+					if (System.getProperty("org.lwjgl.input.Mouse.disableRawInput") == null) {
+						System.setProperty("org.lwjgl.input.Mouse.disableRawInput", "true");
+					}
+					WindowAccess.getInstance().setRawMouseMotion(rawMouseInput.get());
+				} else {
+					AxolotlClient.getInstance().getConfigManager().suppressName(rawMouseInput.getName());
 				}
-				GLFWUtil.runUsingGlfwHandle(h -> GLFW.glfwSetInputMode(h, GLFW.GLFW_RAW_MOUSE_MOTION, rawMouseInput.get() ? 1 : 0));
 			}
 		});
 
