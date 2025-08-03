@@ -68,8 +68,8 @@ public class HotbarHUD extends TextHudEntry {
 
 		context.br$pushMatrix();
 		context.br$translateMatrix(0, 0, -90);
-		new DrawUtil().drawTexture(pos.x, pos.y, 0, 0, 182, 22);
-		new DrawUtil().drawTexture(pos.x - 1 + playerEntity.inventory.selectedSlot * 20, pos.y - 1, 0, 22, 24, 22);
+		DrawUtil.drawTexture(pos.x, pos.y, 0, 0, 182, 22, 256, 256);
+		DrawUtil.drawTexture(pos.x - 1 + playerEntity.inventory.selectedSlot * 20, pos.y - 1, 0, 22, 24, 22, 256, 256);
 		context.br$pushMatrix();
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.blendFuncSeparate(770, 771, 1, 0);
@@ -88,6 +88,8 @@ public class HotbarHUD extends TextHudEntry {
 		Lighting.turnOff();
 		GlStateManager.disableRescaleNormal();
 		GlStateManager.disableBlend();
+		context.br$popMatrix();
+		context.br$popMatrix();
 	}
 
 	@Override
@@ -95,11 +97,6 @@ public class HotbarHUD extends TextHudEntry {
 		DrawPosition pos = getPos();
 		DrawUtil.drawCenteredString(Minecraft.getInstance().textRenderer, getName(), pos.x + width / 2,
 			pos.y + height / 2 - 4, -1, true);
-	}
-
-	@Override
-	public boolean movable() {
-		return true;
 	}
 
 	@Override
