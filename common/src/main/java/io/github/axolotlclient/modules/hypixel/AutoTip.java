@@ -67,7 +67,7 @@ public class AutoTip implements AbstractHypixelMod {
 			final var serverAddress = AxoMinecraftClient.getInstance().br$getServerAddress();
 			final var isHypixel = serverAddress != null && serverAddress.contains("hypixel");
 
-			if (System.currentTimeMillis() - lastTime > 1200000 && isHypixel && enabled.get()) {
+			if (System.currentTimeMillis() - lastTime > 1200000 && isHypixel && enabled.get() && client.br$getPlayer() != null) {
 				client.br$sendToServer("/tip all");
 				lastTime = System.currentTimeMillis();
 			}

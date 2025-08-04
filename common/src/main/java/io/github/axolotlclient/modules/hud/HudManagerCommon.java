@@ -105,7 +105,6 @@ public abstract class HudManagerCommon extends AbstractCommonModule {
 		add(new CompassHud());
 		add(new TPSHud());
 		add(new ComboHud());
-		//add(new PlayerHud()); // TODO
 		add(new MouseMovementHud());
 		add(new DayCounterHud());
 		add(new InventoryHud());

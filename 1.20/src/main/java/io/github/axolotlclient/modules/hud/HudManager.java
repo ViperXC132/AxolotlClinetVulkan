@@ -25,6 +25,7 @@ package io.github.axolotlclient.modules.hud;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import io.github.axolotlclient.modules.hud.gui.hud.PackDisplayHud;
+import io.github.axolotlclient.modules.hud.gui.hud.PlayerHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
@@ -54,6 +55,7 @@ public class HudManager extends HudManagerCommon {
 		add(new ScoreboardHud());
 		add(new KeystrokeHud());
 		add(new PackDisplayHud());
+		add(new PlayerHud());
 	}
 
 	@Override
