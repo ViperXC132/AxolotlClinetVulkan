@@ -1,3 +1,25 @@
+/*
+ * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
+ *
+ * This file is part of AxolotlClient.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ * For more information, see the LICENSE file.
+ */
+
 package io.github.axolotlclient.config.screen;
 
 import java.util.List;
@@ -108,9 +130,8 @@ public class ProfilesScreen extends io.github.axolotlclient.AxolotlClientConfig.
 				this.profile = profile;
 				profileName = new TextFieldWidget(textRenderer, 0, 0, 150, 20, "");
 				profileName.setText(profile.name());
-				loadButton = new VanillaButtonWidget(0, 0, 50, 20, LOAD_BUTTON_TITLE, btn -> {
-					Profiles.getInstance().switchTo(profile);
-				});
+				loadButton = new VanillaButtonWidget(0, 0, 50, 20, LOAD_BUTTON_TITLE, btn ->
+					Profiles.getInstance().switchTo(profile));
 				duplicateButton = new VanillaButtonWidget(0, 0, 50, 20, DUPLICATE_BUTTON_TITLE, b -> {
 					var dup = Profiles.getInstance().duplicate(profile);
 					double d = (double) ProfilesList.this.getMaxScroll() - ProfilesList.this.getScrollAmount();
