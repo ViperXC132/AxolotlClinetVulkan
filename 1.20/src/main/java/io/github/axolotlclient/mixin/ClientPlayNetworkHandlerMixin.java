@@ -22,8 +22,7 @@
 
 package io.github.axolotlclient.mixin;
 
-import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hud.gui.hud.simple.TPSHud;
+import io.github.axolotlclient.bridge.events.Events;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.network.packet.s2c.play.WorldTimeUpdateS2CPacket;
 import org.spongepowered.asm.mixin.Mixin;
@@ -36,7 +35,6 @@ public abstract class ClientPlayNetworkHandlerMixin {
 
 	@Inject(method = "onWorldTimeUpdate", at = @At("HEAD"))
 	private void axolotlclient$onWorldUpdate(WorldTimeUpdateS2CPacket packet, CallbackInfo ci) {
-		TPSHud tpsHud = (TPSHud) HudManager.getInstance().get(TPSHud.ID);
-		tpsHud.updateTime(packet.getTime());
+		Events.UPDATE_TIME.invoker().accept(packet.getTime());
 	}
 }

@@ -31,6 +31,7 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tessellator;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.credits.Credits;
 import io.github.axolotlclient.mixin.SoundManagerAccessor;
@@ -70,7 +71,7 @@ public class CreditsScreen extends Screen {
 
 	@Override
 	public void render(int mouseX, int mouseY, float tickDelta) {
-		if (AxolotlClient.CONFIG.creditsBGM.get() && !minecraft.getSoundManager().isPlaying(bgm)) {
+		if (AxolotlClient.config().creditsBGM.get() && !minecraft.getSoundManager().isPlaying(bgm)) {
 			if (((SoundSystemAccessor) ((SoundManagerAccessor) Minecraft.getInstance().getSoundManager())
 				.getSoundSystem()).getChannelsByEvent().get(bgm) == null) {
 				Minecraft.getInstance().getSoundManager().play(bgm);
@@ -78,7 +79,7 @@ public class CreditsScreen extends Screen {
 		}
 
 		renderBackground();
-		if (AxolotlClient.someNiceBackground.get()) { // Credit to pridelib for the colors
+		if (AxolotlClient.config().someNiceBackground.get()) { // Credit to pridelib for the colors
 			DrawUtil.fill(0, 0, width, height / 6, 0xFFff0018);
 			DrawUtil.fill(0, height / 6, width, height * 2 / 6, 0xFFffa52c);
 			DrawUtil.fill(0, height * 2 / 6, width, height / 2, 0xFFffff41);
@@ -143,11 +144,11 @@ public class CreditsScreen extends Screen {
 				creditOverlay = null;
 			}
 		} else if (button.id == 1) {
-			AxolotlClient.CONFIG.creditsBGM.toggle();
-			AxolotlClient.configManager.save();
+			AxolotlClient.config().creditsBGM.toggle();
+			AxolotlClientCommon.getInstance().saveConfig();
 			stopBGM();
 			button.message = I18n.translate("creditsBGM") + ": "
-				+ I18n.translate(AxolotlClient.CONFIG.creditsBGM.get() ? "options.on" : "options.off");
+				+ I18n.translate(AxolotlClient.config().creditsBGM.get() ? "options.on" : "options.off");
 		}
 	}
 
@@ -157,7 +158,7 @@ public class CreditsScreen extends Screen {
 			new ButtonWidget(0, width / 2 - 75, height - 50 + 22, 150, 20, I18n.translate("back")));
 
 		this.buttons.add(new ButtonWidget(1, 6, this.height - 26, 100, 20, I18n.translate("creditsBGM")
-			+ ": " + I18n.translate(AxolotlClient.CONFIG.creditsBGM.get() ? "options.on" : "options.off")));
+			+ ": " + I18n.translate(AxolotlClient.config().creditsBGM.get() ? "options.on" : "options.off")));
 
 		credits.clear();
 		initCredits();

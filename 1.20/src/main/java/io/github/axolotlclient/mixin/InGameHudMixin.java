@@ -24,11 +24,11 @@ package io.github.axolotlclient.mixin;
 
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hud.gui.hud.PotionsHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ActionBarHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.CrosshairHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.HotbarHUD;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ScoreboardHud;
+import io.github.axolotlclient.modules.hud.gui.hud.PotionsHud;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.util.events.Events;
 import io.github.axolotlclient.util.events.impl.ScoreboardRenderEvent;
@@ -223,7 +223,7 @@ public abstract class InGameHudMixin {
 
 	@Inject(method = "renderVignetteOverlay", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$removeVignette(GuiGraphics graphics, Entity entity, CallbackInfo ci) {
-		if (AxolotlClient.CONFIG.removeVignette.get()) {
+		if (AxolotlClient.config().removeVignette.get()) {
 			ci.cancel();
 		}
 	}

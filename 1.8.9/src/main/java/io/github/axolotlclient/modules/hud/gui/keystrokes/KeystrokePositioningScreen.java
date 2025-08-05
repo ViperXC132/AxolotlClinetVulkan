@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
+import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
@@ -76,7 +77,7 @@ public class KeystrokePositioningScreen extends Screen {
 			HudEditScreen.toggleSnapping();
 			buttonWidget.message = I18n.translate("hud.snapping") + ": " +
 				I18n.translate(HudEditScreen.isSnappingEnabled() ? "options.on" : "options.off");
-			AxolotlClient.configManager.save();
+			AxolotlClient.getInstance().saveConfig();
 		}
 	}
 
@@ -94,7 +95,7 @@ public class KeystrokePositioningScreen extends Screen {
 		GlStateManager.pushMatrix();
 		GlStateManager.translatef(0, 0, -300);
 		super.renderBackground();
-		HudManager.getInstance().renderPlaceholder(partialTick);
+		HudManager.getInstance().renderPlaceholder(AxoRenderContextImpl.getInstance(), partialTick);
 		GlStateManager.popMatrix();
 		fillGradient(0, 0, this.width, this.height, -1072689136, -804253680);
 	}

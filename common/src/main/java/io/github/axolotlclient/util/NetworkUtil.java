@@ -31,9 +31,26 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class NetworkUtil {
+	private static final String UA_PATTERN = "AxolotlClient/%s Minecraft/%s";
 
-	public HttpClient createHttpClient(String id) {
-		return Methanol.newBuilder().userAgent("AxolotlClient/" + id + " (" + AxolotlClientCommon.getUAVersionString() + ") contact: moehreag<at>gmail.com")
+	public String getUserAgent() {
+		return getUserAgent(false);
+	}
+
+	public String getUserAgent(boolean includeContact) {
+		var ua = UA_PATTERN.formatted(AxolotlClientCommon.VERSION, AxolotlClientCommon.GAME_VERSION);
+		if (includeContact) {
+			return ua + " contact: moehreag<at>gmail.com";
+		}
+		return ua;
+	}
+
+	public HttpClient createHttpClient() {
+		return createHttpClient(false);
+	}
+
+	public HttpClient createHttpClient(boolean includeContact) {
+		return Methanol.newBuilder().userAgent(getUserAgent(includeContact))
 			.followRedirects(HttpClient.Redirect.NORMAL)
 			.requestTimeout(Duration.ofMinutes(1))
 			.executor(ThreadExecuter.service()).build();

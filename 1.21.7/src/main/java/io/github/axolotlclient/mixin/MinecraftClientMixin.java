@@ -30,6 +30,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ReceivingLevelScreen;
+import net.minecraft.client.main.GameConfig;
 import net.minecraft.client.multiplayer.ClientLevel;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -46,7 +47,7 @@ public abstract class MinecraftClientMixin {
 	 */
 	@Inject(method = "createTitle", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$getWindowTitle(CallbackInfoReturnable<String> cir) {
-		if (AxolotlClient.CONFIG.customWindowTitle.get()) {
+		if (AxolotlClient.config().customWindowTitle.get()) {
 			cir.setReturnValue("AxolotlClient " + SharedConstants.getCurrentVersion().name());
 		}
 	}
@@ -73,5 +74,10 @@ public abstract class MinecraftClientMixin {
 	@Inject(method = "onGameLoadFinished", at = @At(value = "INVOKE", target = "Ljava/lang/Runnable;run()V", remap = false))
 	private void onGameLoad(Minecraft.GameLoadCookie gameLoadCookie, CallbackInfo ci) {
 		Events.GAME_LOAD_EVENT.invoker().invoke((Minecraft) (Object) this);
+	}
+
+	@Inject(method = "<init>", at = @At("TAIL"))
+	private void ready(GameConfig gameConfig, CallbackInfo ci) {
+		io.github.axolotlclient.bridge.events.Events.CLIENT_READY.invoker().run();
 	}
 }

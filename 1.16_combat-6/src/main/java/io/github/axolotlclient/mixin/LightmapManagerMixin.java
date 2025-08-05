@@ -34,7 +34,7 @@ public abstract class LightmapManagerMixin {
 
 	@Redirect(method = "update", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;gamma:D"))
 	public double axolotlclient$fullBright(GameOptions instance) {
-		if (AxolotlClient.CONFIG.fullBright.get()) {
+		if (AxolotlClient.config().fullBright.get()) {
 			return 15D;
 		}
 		return instance.gamma;

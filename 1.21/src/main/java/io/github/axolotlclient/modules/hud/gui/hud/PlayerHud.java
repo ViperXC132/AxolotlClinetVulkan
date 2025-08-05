@@ -22,19 +22,14 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud;
 
-import java.util.List;
-
-import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.DoubleOption;
-import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.util.events.Events;
 import io.github.axolotlclient.util.events.impl.PlayerDirectionChangeEvent;
 import lombok.Getter;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Axis;
 import net.minecraft.util.math.MathHelper;
 import org.joml.Quaternionf;
@@ -47,22 +42,12 @@ import org.joml.Vector3f;
  * @license GPL-3.0
  */
 
-public class PlayerHud extends BoxHudEntry {
-
-	public static final Identifier ID = Identifier.of("kronhud", "playerhud");
+public class PlayerHud extends PlayerHudCommon {
 	@Getter
 	private static boolean currentlyRendering;
-	private final DoubleOption rotation = new DoubleOption("rotation", 0d, 0d, 360d);
-	private final BooleanOption dynamicRotation = new BooleanOption("dynamicrotation", true);
-	private final BooleanOption autoHide = new BooleanOption("autoHide", false);
-	private float lastYawOffset = 0;
-	private float yawOffset = 0;
-	private float lastYOffset = 0;
-	private float yOffset = 0;
-	private long hide;
 
 	public PlayerHud() {
-		super(62, 94, true);
+		super();
 		Events.PLAYER_DIRECTION_CHANGE.register(this::onPlayerDirectionChange);
 	}
 
@@ -71,15 +56,9 @@ public class PlayerHud extends BoxHudEntry {
 	}
 
 	@Override
-	public boolean tickable() {
-		return true;
-	}
-
-	@Override
 	public void tick() {
-		lastYawOffset = yawOffset;
-		yawOffset *= .93f;
-		lastYOffset = yOffset;
+		super.tick();
+		var client = MinecraftClient.getInstance();
 		if (client.player != null && client.player.isInSwimmingPose()) {
 			float rawPitch = client.player.isTouchingWater() ? -90.0F - client.player.getPitch() : -90.0F;
 			float pitch = MathHelper.lerp(client.player.getLeaningPitch(1), 0.0F, rawPitch);
@@ -107,30 +86,9 @@ public class PlayerHud extends BoxHudEntry {
 	}
 
 	@Override
-	public Identifier getId() {
-		return ID;
-	}
-
-	@Override
-	public List<Option<?>> getConfigurationOptions() {
-		List<Option<?>> options = super.getConfigurationOptions();
-		options.add(dynamicRotation);
-		options.add(rotation);
-		options.add(autoHide);
-		return options;
-	}
-
-	@Override
-	public void renderComponent(GuiGraphics graphics, float delta) {
-		renderPlayer(graphics, false, getTruePos().x() + 31 * getScale(), getTruePos().y() + 86 * getScale(), delta);
-	}
-
-	@Override
-	public void renderPlaceholderComponent(GuiGraphics graphics, float delta) {
-		renderPlayer(graphics, true, getTruePos().x() + 31 * getScale(), getTruePos().y() + 86 * getScale(), 0); // If delta was delta, it would start jittering
-	}
-
-	public void renderPlayer(GuiGraphics graphics, boolean placeholder, double x, double y, float delta) {
+	protected void renderPlayer(AxoRenderContext ctx, boolean placeholder, double x, double y, float delta) {
+		var client = MinecraftClient.getInstance();
+		var graphics = (GuiGraphics) ctx;
 		if (client.player == null) {
 			return;
 		}
@@ -174,7 +132,7 @@ public class PlayerHud extends BoxHudEntry {
 
 	private boolean isPerformingAction() {
 		// inspired by tr7zw's mod
-		ClientPlayerEntity player = client.player;
+		ClientPlayerEntity player = MinecraftClient.getInstance().player;
 		return player.isSneaking() || player.isSprinting() || player.isFallFlying() || player.getAbilities().flying
 			|| player.isSubmergedInWater() || player.isInSwimmingPose() || player.hasVehicle()
 			|| player.isUsingItem() || player.handSwinging || player.hurtTime > 0 || player.isOnFire();

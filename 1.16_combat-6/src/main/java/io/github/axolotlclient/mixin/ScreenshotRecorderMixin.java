@@ -34,7 +34,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(net.minecraft.client.util.ScreenshotUtils.class)
 public abstract class ScreenshotRecorderMixin {
-
 	// for some reason @WrapOperation doesn't like injecting at <init>
 	@Redirect(method = "method_1661", at = @At(value = "INVOKE", target = "Ljava/util/function/Consumer;accept(Ljava/lang/Object;)V", ordinal = 0))
 	private static void axolotlclient$onScreenshotSaveSuccess(Consumer<MutableText> instance, Object t, @Local(argsOnly = true) File target) {

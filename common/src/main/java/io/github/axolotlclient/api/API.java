@@ -246,7 +246,7 @@ public class API {
 					builder.method(method, HttpRequest.BodyPublishers.noBody());
 				}
 				if (client == null) {
-					client = NetworkUtil.createHttpClient("API");
+					client = NetworkUtil.createHttpClient();
 				}
 
 				HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
@@ -389,7 +389,9 @@ public class API {
 				logDetailed("Connecting to websocket..");
 				URI gateway = Request.Route.GATEWAY.create().resolve();
 				String uri = (gateway.getScheme().endsWith("s") ? "wss" : "ws") + gateway.toString().substring(gateway.getScheme().length());
-				socket = client.newWebSocketBuilder().header("Authorization", auth.token())
+				socket = client.newWebSocketBuilder()
+					.header("Authorization", auth.token())
+					.header("User-Agent", NetworkUtil.getUserAgent())
 					.buildAsync(URI.create(uri), new ClientEndpoint()).join();
 				logDetailed("Socket connected");
 			} catch (Exception e) {
@@ -467,14 +469,14 @@ public class API {
 		}, 50, Constants.STATUS_UPDATE_DELAY * 1000, TimeUnit.MILLISECONDS);
 	}
 
-	public String sanitizeUUID(String uuid) {
+	public static String sanitizeUUID(String uuid) {
 		if (uuid.contains("-")) {
 			return validateUUID(uuid.replace("-", ""));
 		}
 		return validateUUID(uuid);
 	}
 
-	private String validateUUID(String uuid) {
+	private static String validateUUID(String uuid) {
 		if (uuid.length() != 32) {
 			throw new IllegalArgumentException("Not a valid UUID (undashed): " + uuid);
 		}

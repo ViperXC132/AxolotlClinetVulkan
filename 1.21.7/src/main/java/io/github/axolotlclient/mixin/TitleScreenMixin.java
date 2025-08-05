@@ -34,7 +34,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.realmsclient.gui.screens.RealmsNotificationsScreen;
 import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.CommonOptions;
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.APIOptions;
 import io.github.axolotlclient.api.FriendsScreen;
@@ -150,7 +150,7 @@ public abstract class TitleScreenMixin extends Screen {
 		at = @At(value = "INVOKE",
 			target = "Lnet/minecraft/client/gui/components/Button;builder(Lnet/minecraft/network/chat/Component;Lnet/minecraft/client/gui/components/Button$OnPress;)Lnet/minecraft/client/gui/components/Button$Builder;", ordinal = 2))
 	private Button.Builder axolotlclient$noRealmsbutOptionsButton(Component message, Button.OnPress onPress, Operation<Button.Builder> original) {
-		if (CommonOptions.titleScreenOptionButtonMode.get().showButton()) {
+		if (AxolotlClientConfigCommon.instance().titleScreenOptionButtonMode.get().showButton()) {
 			message = Component.translatable("config");
 			onPress = buttonWidget -> minecraft.setScreen(new HudEditScreen(this));
 		}

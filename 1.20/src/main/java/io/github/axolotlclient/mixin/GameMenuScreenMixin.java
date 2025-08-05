@@ -25,7 +25,7 @@ package io.github.axolotlclient.mixin;
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import io.github.axolotlclient.CommonOptions;
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.ChatsSidebar;
 import io.github.axolotlclient.api.FriendsScreen;
@@ -65,7 +65,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 
 	@Redirect(method = "initWidgets", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/GameMenuScreen;createLinkConfirmationButton(Lnet/minecraft/text/Text;Ljava/lang/String;)Lnet/minecraft/client/gui/widget/ButtonWidget;", ordinal = 1))
 	private ButtonWidget axolotlclient$addClientOptionsButton(GameMenuScreen instance, Text text, String string) {
-		if (!CommonOptions.gameMenuScreenOptionButtonMode.get().showButton()) {
+		if (!AxolotlClientConfigCommon.instance().gameMenuScreenOptionButtonMode.get().showButton()) {
 			return createLinkConfirmationButton(text, string);
 		}
 
@@ -82,7 +82,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 	private ButtonWidget.PressAction axolotlclient$clearFeatureRestrictions(ButtonWidget.PressAction onPress) {
 		return (buttonWidget) -> {
 			if (Objects.equals(HypixelMods.getInstance().cacheMode.get(),
-				HypixelMods.HypixelCacheMode.ON_CLIENT_DISCONNECT)) {
+				HypixelMods.HypixelApiCacheMode.ON_CLIENT_DISCONNECT)) {
 				HypixelAbstractionLayer.getInstance().clearPlayerData();
 			}
 			onPress.onPress(buttonWidget);

@@ -32,7 +32,7 @@ import java.util.List;
 
 import com.mojang.blaze3d.platform.InputUtil;
 import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.CommonOptions;
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.APIOptions;
 import io.github.axolotlclient.api.FriendsScreen;
@@ -157,7 +157,7 @@ public abstract class TitleScreenMixin extends Screen {
 		at = @At(value = "INVOKE",
 			target = "Lnet/minecraft/client/gui/widget/ButtonWidget;builder(Lnet/minecraft/text/Text;Lnet/minecraft/client/gui/widget/ButtonWidget$PressAction;)Lnet/minecraft/client/gui/widget/ButtonWidget$Builder;", ordinal = 2))
 	private void axolotlclient$noRealmsbutOptionsButton(Args args) {
-		if (CommonOptions.titleScreenOptionButtonMode.get().showButton()) {
+		if (AxolotlClientConfigCommon.instance().titleScreenOptionButtonMode.get().showButton()) {
 			args.set(0, Text.translatable("config"));
 			args.set(1, (ButtonWidget.PressAction) buttonWidget -> MinecraftClient.getInstance()
 				.setScreen(new HudEditScreen(this)));

@@ -33,7 +33,7 @@ import java.util.List;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.CommonOptions;
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.APIOptions;
 import io.github.axolotlclient.api.FriendsScreen;
@@ -66,6 +66,9 @@ public abstract class TitleScreenMixin extends Screen {
 
 	@Shadow
 	public abstract void render(int par1, int par2, float par3);
+
+	@Shadow
+	private boolean f_2867010;
 
 	@Inject(method = "initWidgetsNormal", at = @At("TAIL"))
 	private void axolotlclient$replaceRealmsButton(int i, int j, CallbackInfo ci) {
@@ -135,14 +138,14 @@ public abstract class TitleScreenMixin extends Screen {
 
 	@Inject(method = "initWidgetsNormal", at = @At("TAIL"))
 	private void axolotlclient$addOptionsButton(int y, int spacingY, CallbackInfo ci) {
-		if (CommonOptions.titleScreenOptionButtonMode.get().showButton()) {
+		if (AxolotlClientConfigCommon.instance().titleScreenOptionButtonMode.get().showButton()) {
 			buttons.add(new ButtonWidget(192, this.width / 2 - 100, y + spacingY * 3, I18n.translate("config") + "..."));
 		}
 	}
 
 	@ModifyConstant(method = "init", constant = @Constant(intValue = 72))
 	private int axolotlclient$moveButtons(int constant) {
-		if (CommonOptions.titleScreenOptionButtonMode.get().showButton()) {
+		if (AxolotlClientConfigCommon.instance().titleScreenOptionButtonMode.get().showButton()) {
 			return constant + 25;
 		}
 		return constant;
@@ -186,5 +189,10 @@ public abstract class TitleScreenMixin extends Screen {
 			.getResource(new Identifier("axolotlclient", "texts/splashes.txt")).asStream()) {
 			list.addAll(IOUtils.readLines(input));
 		}
+	}
+
+	@Inject(method = "<init>", at = @At("TAIL"))
+	private void disableRealms(CallbackInfo ci) {
+		this.f_2867010 = true;
 	}
 }

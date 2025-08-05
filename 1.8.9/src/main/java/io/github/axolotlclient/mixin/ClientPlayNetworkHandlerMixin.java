@@ -27,8 +27,7 @@ import java.util.UUID;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hud.gui.hud.simple.TPSHud;
+import io.github.axolotlclient.bridge.events.Events;
 import net.minecraft.client.network.PlayerInfo;
 import net.minecraft.client.network.handler.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
@@ -53,8 +52,7 @@ public abstract class ClientPlayNetworkHandlerMixin {
 
 	@Inject(method = "handleWorldTime", at = @At("HEAD"))
 	private void axolotlclient$onWorldUpdate(WorldTimeS2CPacket packet, CallbackInfo ci) {
-		TPSHud tpsHud = (TPSHud) HudManager.getInstance().get(TPSHud.ID);
-		tpsHud.updateTime(packet.getTime());
+		Events.UPDATE_TIME.invoker().accept(packet.getTime());
 	}
 
 	@Inject(method = "handleTeam", at = @At(value = "INVOKE", target = "Lnet/minecraft/scoreboard/Scoreboard;removeTeam(Lnet/minecraft/scoreboard/team/Team;)V"), cancellable = true)

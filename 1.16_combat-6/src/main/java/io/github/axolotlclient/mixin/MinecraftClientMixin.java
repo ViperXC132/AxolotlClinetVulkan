@@ -49,7 +49,7 @@ public abstract class MinecraftClientMixin {
 	 */
 	@Inject(method = "getWindowTitle", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$getWindowTitle(CallbackInfoReturnable<String> cir) {
-		if (AxolotlClient.CONFIG.customWindowTitle.get()) {
+		if (AxolotlClient.config().customWindowTitle.get()) {
 			cir.setReturnValue("AxolotlClient" + " " + SharedConstants.getGameVersion().getName());
 		}
 	}
@@ -91,5 +91,10 @@ public abstract class MinecraftClientMixin {
 	@Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;openScreen(Lnet/minecraft/client/gui/screen/Screen;)V"))
 	private void onGameLoad(CallbackInfo ci) {
 		Events.GAME_LOAD_EVENT.invoker().invoke((MinecraftClient) (Object) this);
+	}
+
+	@Inject(method = "<init>", at = @At("TAIL"))
+	private void ready(RunArgs args, CallbackInfo ci) {
+		io.github.axolotlclient.bridge.events.Events.CLIENT_READY.invoker().run();
 	}
 }

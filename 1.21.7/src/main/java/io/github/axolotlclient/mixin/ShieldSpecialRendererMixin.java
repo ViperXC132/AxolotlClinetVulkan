@@ -39,7 +39,7 @@ public abstract class ShieldSpecialRendererMixin {
 
 	@Inject(method = "render(Lnet/minecraft/core/component/DataComponentMap;Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;IIZ)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/ShieldModel;handle()Lnet/minecraft/client/model/geom/ModelPart;"))
 	private void axolotlclient$lowShield(DataComponentMap dataComponentMap, ItemDisplayContext itemDisplayContext, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, boolean bl, CallbackInfo ci) {
-		if (AxolotlClient.CONFIG.lowShield.get()
+		if (AxolotlClient.config().lowShield.get()
 			&& Minecraft.getInstance().options.getCameraType().isFirstPerson()
 			&& (itemDisplayContext.equals(ItemDisplayContext.FIRST_PERSON_LEFT_HAND)
 			|| itemDisplayContext.equals(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND))) {

@@ -31,7 +31,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringArrayOption;
-import io.github.axolotlclient.modules.AbstractModule;
+import io.github.axolotlclient.modules.AbstractCommonModule;
 import io.github.axolotlclient.util.FeatureDisabler;
 import io.github.axolotlclient.util.keybinds.KeyBinds;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
@@ -40,7 +40,7 @@ import net.minecraft.client.option.KeyBind;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.entity.Entity;
 
-public class Freelook extends AbstractModule {
+public class Freelook extends AbstractCommonModule {
 
 	private static final Freelook INSTANCE = new Freelook();
 	private static final KeyBind KEY = KeyBinds.getInstance().register(new KeyBind("key.freelook", InputUtil.KEY_V_CODE, "category.axolotlclient"));
@@ -70,7 +70,7 @@ public class Freelook extends AbstractModule {
 	public void init() {
 		category.add(enabled, mode, perspective, invert, toggle);
 		category.add(perspectiveAlt, toggleAlt);
-		AxolotlClient.CONFIG.addCategory(category);
+		AxolotlClient.config().addCategory(category);
 	}
 
 	@Override

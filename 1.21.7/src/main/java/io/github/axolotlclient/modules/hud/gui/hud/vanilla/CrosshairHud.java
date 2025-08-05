@@ -35,15 +35,18 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.mixin.GameRendererAccessor;
-import io.github.axolotlclient.modules.hud.gui.AbstractHudEntry;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
+import io.github.axolotlclient.modules.hud.gui.entry.AbstractHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.Util;
 import lombok.AllArgsConstructor;
 import net.minecraft.client.AttackIndicatorStatus;
 import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.BlockPos;
@@ -79,6 +82,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 	private final BooleanOption applyBlend = new BooleanOption("applyBlend", true);
 	private final BooleanOption overrideF3 = new BooleanOption("overrideF3", false);
 	private final BooleanOption customAttackIndicator = new BooleanOption("crosshairhud.custom_attack_indicator", false);
+	private final Minecraft client = (Minecraft) super.client;
 
 	private final GraphicsOption customTextureGraphics = new GraphicsOption("customTextureGraphics",
 		new int[][]{
@@ -109,7 +113,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 	}
 
 	@Override
-	public ResourceLocation getId() {
+	public AxoIdentifier getId() {
 		return ID;
 	}
 
@@ -152,7 +156,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 	);
 
 	@Override
-	public void render(GuiGraphics graphics, float delta) {
+	public void render(AxoRenderContext graphics, float delta) {
 	}
 
 	public void renderCrosshair(GuiGraphics graphics, float delta) {
@@ -268,7 +272,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 	}
 
 	@Override
-	public void renderPlaceholder(GuiGraphics graphics, float delta) {
+	public void renderPlaceholder(AxoRenderContext graphics, float delta) {
 		// Shouldn't need this...
 	}
 

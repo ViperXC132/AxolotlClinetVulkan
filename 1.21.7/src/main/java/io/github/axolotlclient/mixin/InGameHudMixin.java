@@ -26,10 +26,10 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hud.gui.hud.PotionsHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ActionBarHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.CrosshairHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ScoreboardHud;
+import io.github.axolotlclient.modules.hud.gui.hud.PotionsHud;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.util.events.Events;
 import io.github.axolotlclient.util.events.impl.ScoreboardRenderEvent;
@@ -58,7 +58,7 @@ public abstract class InGameHudMixin {
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderEffects(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
 	private void onHudRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-		HudManager.getInstance().render(guiGraphics, deltaTracker);
+		HudManager.getInstance().render(guiGraphics, deltaTracker.getGameTimeDeltaTicks());
 	}
 
 	@Inject(method = "renderEffects", at = @At("HEAD"), cancellable = true)
@@ -125,7 +125,7 @@ public abstract class InGameHudMixin {
 
 	@Inject(method = "renderVignette", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$removeVignette(GuiGraphics graphics, Entity entity, CallbackInfo ci) {
-		if (AxolotlClient.CONFIG.removeVignette.get()) {
+		if (AxolotlClient.config().removeVignette.get()) {
 			ci.cancel();
 		}
 	}

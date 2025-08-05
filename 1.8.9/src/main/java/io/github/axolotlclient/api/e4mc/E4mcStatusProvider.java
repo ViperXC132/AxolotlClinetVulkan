@@ -19,7 +19,6 @@
  *
  * For more information, see the LICENSE file.
  */
-
 package io.github.axolotlclient.api.e4mc;
 
 import io.github.axolotlclient.api.types.Status;

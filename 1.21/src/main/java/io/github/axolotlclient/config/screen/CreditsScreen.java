@@ -70,7 +70,7 @@ public class CreditsScreen extends Screen {
 
 	@Override
 	public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		if (AxolotlClient.someNiceBackground.get()) { // Credit to pridelib for the colors
+		if (AxolotlClient.config().someNiceBackground.get()) { // Credit to pridelib for the colors
 			graphics.fill(0, 0, width, height / 6, 0xFFff0018);
 			graphics.fill(0, height / 6, width, height * 2 / 6, 0xFFffa52c);
 			graphics.fill(0, height * 2 / 6, width, height / 2, 0xFFffff41);
@@ -84,7 +84,7 @@ public class CreditsScreen extends Screen {
 
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float tickDelta) {
-		if (AxolotlClient.CONFIG.creditsBGM.get() && !MinecraftClient.getInstance().getSoundManager().isPlaying(bgm)) {
+		if (AxolotlClient.config().creditsBGM.get() && !MinecraftClient.getInstance().getSoundManager().isPlaying(bgm)) {
 			MinecraftClient.getInstance().getSoundManager().play(bgm);
 		}
 
@@ -130,13 +130,13 @@ public class CreditsScreen extends Screen {
 		}).positionAndSize(width / 2 - 75, height - 50 + 22, 150, 20).build());
 
 		this.addDrawableSelectableElement(new ButtonWidget.Builder(Text.translatable("creditsBGM").append(": ")
-			.append(Text.translatable(AxolotlClient.CONFIG.creditsBGM.get() ? "options.on" : "options.off")),
+			.append(Text.translatable(AxolotlClient.config().creditsBGM.get() ? "options.on" : "options.off")),
 			buttonWidget -> {
-				AxolotlClient.CONFIG.creditsBGM.toggle();
-				AxolotlClient.configManager.save();
+				AxolotlClient.config().creditsBGM.toggle();
+				AxolotlClient.getInstance().getConfigManager().save();
 				stopBGM();
 				buttonWidget.setMessage(Text.translatable("creditsBGM").append(": ").append(
-					Text.translatable(AxolotlClient.CONFIG.creditsBGM.get() ? "options.on" : "options.off")));
+					Text.translatable(AxolotlClient.config().creditsBGM.get() ? "options.on" : "options.off")));
 			}).positionAndSize(6, this.height - 26, 100, 20).build());
 	}
 

@@ -709,7 +709,6 @@
 	"playerstats.error.failed_data": "Failed to retrieve player data!",
 	"playerstats.bedwars.solo": "Solo",
 	"playerstats.bedwars.duos": "Duos",
-	"playerstats.bedwars.trios": "Trios",
 	"playerstats.bedwars.fours": "Fours",
 	"playerstats.bedwars.core": "Core",
 	"playerstats.bedwars.dreams": "Dreams",
@@ -774,6 +773,6 @@
 	"hud.entry.usage.move": "Press Escape or Space to exit movement mode, use arrow keys to move this HUD. Press Enter to open this module's options.",
 	"toggle_fullbright": "Toggle FullBright",
 	"inventoryhud": "Inventory HUD",
-	"api.send_status_updates": "Send Status Updates",
-	"api.send_status_updates.tooltip": "Disabling this hides your activity. <br>However it does not make you appear offline."
+	"key.toggle_hud": "Toggle HUD modules",
+	"coordshud.unknown_biome": "Unknown"
 }

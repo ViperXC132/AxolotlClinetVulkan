@@ -27,10 +27,12 @@ import java.util.List;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Identifier;
 
@@ -41,13 +43,16 @@ public class DebugCountersHud extends TextHudEntry implements DynamicallyPositio
 	private final BooleanOption showCCount = new BooleanOption("debugcounters.ccount", true);
 	private final BooleanOption showECount = new BooleanOption("debugcounters.ecount", false);
 	private final BooleanOption showPCount = new BooleanOption("debugcounters.pcount", false);
+	private final MinecraftClient client = (MinecraftClient) super.client;
 
 	public DebugCountersHud() {
 		super(115, 32, true);
 	}
 
 	@Override
-	public void renderComponent(GuiGraphics graphics, float delta) {
+	public void renderComponent(AxoRenderContext context, float delta) {
+		final var graphics = (GuiGraphics) context;
+
 		if (client.world == null) {
 			renderPlaceholderComponent(graphics, delta);
 		}
@@ -84,7 +89,9 @@ public class DebugCountersHud extends TextHudEntry implements DynamicallyPositio
 	}
 
 	@Override
-	public void renderPlaceholderComponent(GuiGraphics graphics, float delta) {
+	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
+		final var graphics = (GuiGraphics) context;
+
 		DrawPosition pos = getPos();
 		int lineY = pos.y() + 2;
 		int lineX = pos.x() + 1;

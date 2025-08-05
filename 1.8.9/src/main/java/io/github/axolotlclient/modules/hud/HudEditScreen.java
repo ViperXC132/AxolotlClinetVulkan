@@ -31,6 +31,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.util.ConfigStyles;
+import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
 import io.github.axolotlclient.modules.hud.snapping.SnappingHelper;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
@@ -69,7 +70,7 @@ public class HudEditScreen extends Screen {
 
 	static {
 		hudEditScreenCategory.add(snapping);
-		AxolotlClient.config.add(hudEditScreenCategory);
+		AxolotlClient.config().hidden.add(hudEditScreenCategory);
 	}
 
 	private final Screen parent;
@@ -129,7 +130,7 @@ public class HudEditScreen extends Screen {
 			entry = HudManager.getInstance().getEntryXY(mouseX, mouseY);
 			entry.ifPresent(abstractHudEntry -> abstractHudEntry.setHovered(true));
 		}
-		HudManager.getInstance().renderPlaceholder(delta);
+		HudManager.getInstance().renderPlaceholder(AxoRenderContextImpl.getInstance(), delta);
 		if (entry.isPresent()) {
 			var bounds = entry.get().getTrueBounds();
 			if (mode == ModificationMode.NONE && bounds.isMouseOver(mouseX, mouseY)) {
@@ -213,6 +214,7 @@ public class HudEditScreen extends Screen {
 		if (current != null) {
 			AxolotlClientConfig.getInstance().getConfigManager(current.getCategory()).save();
 		}
+
 		current = null;
 		snap = null;
 		mouseDown = false;
@@ -290,22 +292,22 @@ public class HudEditScreen extends Screen {
 	@Override
 	protected void buttonClicked(ButtonWidget button) {
 		switch (button.id) {
-			case 3:
-				snapping.toggle();
-				button.message = I18n.translate("hud.snapping") + ": "
-					+ I18n.translate(snapping.get() ? "options.on" : "options.off");
-				AxolotlClient.configManager.save();
-				break;
-			case 1:
-				Screen screen = ConfigStyles.createScreen(this, AxolotlClient.configManager.getRoot());
-				Minecraft.getInstance().openScreen(screen);
-				break;
-			case 0:
-				Minecraft.getInstance().openScreen(parent);
-				break;
-			case 2:
-				Minecraft.getInstance().openScreen(null);
-				break;
+		case 3:
+			snapping.toggle();
+			button.message = I18n.translate("hud.snapping") + ": "
+				+ I18n.translate(snapping.get() ? "options.on" : "options.off");
+			AxolotlClient.getInstance().getConfigManager().save();
+			break;
+		case 1:
+			Screen screen = ConfigStyles.createScreen(this, AxolotlClient.getInstance().getConfigManager().getRoot());
+			Minecraft.getInstance().openScreen(screen);
+			break;
+		case 0:
+			Minecraft.getInstance().openScreen(parent);
+			break;
+		case 2:
+			Minecraft.getInstance().openScreen(null);
+			break;
 		}
 	}
 

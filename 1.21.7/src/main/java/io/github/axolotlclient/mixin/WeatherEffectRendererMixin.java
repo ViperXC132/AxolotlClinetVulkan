@@ -37,7 +37,7 @@ public class WeatherEffectRendererMixin {
 	@Inject(method = "render(Lnet/minecraft/world/level/Level;Lnet/minecraft/client/renderer/MultiBufferSource;IFLnet/minecraft/world/phys/Vec3;)V", at = @At("HEAD"),
 		cancellable = true)
 	private void noRain(Level level, MultiBufferSource multiBufferSource, int i, float f, Vec3 vec3, CallbackInfo ci) {
-		if (AxolotlClient.CONFIG.noRain.get()) {
+		if (AxolotlClient.config().noRain.get()) {
 			ci.cancel();
 		}
 	}

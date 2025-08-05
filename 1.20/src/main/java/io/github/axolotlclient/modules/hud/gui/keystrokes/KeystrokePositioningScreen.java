@@ -76,7 +76,7 @@ public class KeystrokePositioningScreen extends Screen {
 				HudEditScreen.toggleSnapping();
 				buttonWidget.setMessage(Text.translatable("hud.snapping").append(": ")
 					.append(Text.translatable(HudEditScreen.isSnappingEnabled() ? "options.on" : "options.off")));
-				AxolotlClient.configManager.save();
+				AxolotlClient.getInstance().getConfigManager().save();
 			}).positionAndSize(width / 2 - 50, height - 50, 100, 20).build());
 	}
 

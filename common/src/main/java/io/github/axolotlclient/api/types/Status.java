@@ -79,7 +79,7 @@ public class Status {
 	public String getLastOnline() {
 		return lastOnline == null ? null :
 			API.getInstance().getTranslationProvider()
-				.translate("api.status.last_online", lastOnline.atZone(ZoneId.systemDefault()).format(AxolotlClientCommon.getInstance().formatter));
+				.translate("api.status.last_online", lastOnline.atZone(ZoneId.systemDefault()).format(AxolotlClientCommon.getInstance().getConfig().getDateTimeFormatter()));
 	}
 
 	public void setOnline(boolean online) {

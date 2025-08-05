@@ -34,6 +34,6 @@ public class AbstractInventoryScreenMixin {
 	@WrapWithCondition(method = "applyStatusEffectOffset", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/ingame/AbstractInventoryScreen;x:I"))
 	private boolean noInventoryShift(AbstractInventoryScreen<?> instance, int value) {
 
-		return AxolotlClient.CONFIG.inventoryPotionEffectOffset.get();
+		return AxolotlClient.config().inventoryPotionEffectOffset.get();
 	}
 }

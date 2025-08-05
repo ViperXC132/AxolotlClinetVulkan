@@ -22,7 +22,7 @@
 
 package io.github.axolotlclient.mixin;
 
-import io.github.axolotlclient.modules.hypixel.nickhider.NickHider;
+import io.github.axolotlclient.modules.hypixel.NickHider;
 import io.github.axolotlclient.util.events.Events;
 import io.github.axolotlclient.util.events.impl.ReceiveChatMessageEvent;
 import net.minecraft.client.gui.hud.ChatHud;
@@ -60,6 +60,6 @@ public abstract class ChatHudMixin {
 
 	@ModifyArg(method = "addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignature;Lnet/minecraft/client/gui/hud/ChatMessageTag;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/ChatHud;addMessage(Lnet/minecraft/text/Text;Lnet/minecraft/network/message/MessageSignature;ILnet/minecraft/client/gui/hud/ChatMessageTag;Z)V"), index = 0)
 	private Text axolotlclient$editChat(Text message) {
-		return NickHider.getInstance().editMessage(message);
+		return (Text) NickHider.getInstance().editMessage(message);
 	}
 }

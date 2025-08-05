@@ -36,15 +36,15 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.mixin.KeyBindAccessor;
-import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
-import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
-import io.github.axolotlclient.modules.hud.gui.hud.simple.CPSHud;
+import io.github.axolotlclient.modules.hud.ClickInputTracker;
 import io.github.axolotlclient.modules.hud.gui.keystrokes.KeystrokePositioningScreen;
 import io.github.axolotlclient.modules.hud.gui.keystrokes.KeystrokesScreen;
+import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.Justification;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
+import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.GsonHelper;
@@ -63,6 +63,9 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawCenteredString;
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawString;
+
 /**
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
@@ -79,12 +82,13 @@ public class KeystrokeHud extends TextHudEntry {
 	private final ColorOption pressedBackgroundColor = new ColorOption("heldbackgroundcolor", new Color(0x64FFFFFF));
 	private final ColorOption pressedOutlineColor = new ColorOption("heldoutlinecolor", ClientColors.BLACK);
 
+	private final MinecraftClient client = (MinecraftClient) super.client;
+
 	private final GenericOption keystrokesOption = new GenericOption("keystrokes", "keystrokes.configure", () -> client.setScreen(new KeystrokesScreen(KeystrokeHud.this, client.currentScreen)));
 	private final GenericOption configurePositions = new GenericOption("keystrokes.positions", "keystrokes.positions.configure",
 		() -> client.setScreen(new KeystrokePositioningScreen(client.currentScreen, this)));
 	private final IntegerOption animationTime = new IntegerOption("keystrokes.animation_time", 100, 0, 500);
 	public ArrayList<Keystroke> keystrokes;
-
 
 	public KeystrokeHud() {
 		super(53, 61, true);
@@ -155,7 +159,8 @@ public class KeystrokeHud extends TextHudEntry {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, float delta) {
+	public void render(AxoRenderContext context, float delta) {
+		GuiGraphics graphics = (GuiGraphics) context;
 		graphics.getMatrices().push();
 		scale(graphics);
 		renderComponent(graphics, delta);
@@ -163,7 +168,9 @@ public class KeystrokeHud extends TextHudEntry {
 	}
 
 	@Override
-	public void renderComponent(GuiGraphics graphics, float delta) {
+	public void renderComponent(AxoRenderContext context, float delta) {
+		GuiGraphics graphics = (GuiGraphics) context;
+
 		if (keystrokes == null) {
 			setKeystrokes();
 		}
@@ -173,7 +180,7 @@ public class KeystrokeHud extends TextHudEntry {
 	}
 
 	@Override
-	public void renderPlaceholderComponent(GuiGraphics graphics, float delta) {
+	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
 		renderComponent(graphics, delta);
 	}
 
@@ -190,10 +197,6 @@ public class KeystrokeHud extends TextHudEntry {
 		}
 		for (Keystroke stroke : keystrokes) {
 			stroke.offset = pos;
-		}
-		HudEntry hud = HudManager.getInstance().get(CPSHud.ID);
-		if (!hud.isEnabled()) {
-			hud.tick();
 		}
 	}
 
@@ -284,10 +287,10 @@ public class KeystrokeHud extends TextHudEntry {
 			}
 			Rectangle rect = getRenderPosition();
 			if (background.get()) {
-				fillRect(matrices, rect, getColor());
+				DrawUtil.fillRect(matrices, rect, getColor());
 			}
 			if (outline.get()) {
-				outlineRect(matrices, rect, getOutlineColor());
+				DrawUtil.outlineRect(matrices, rect, getOutlineColor());
 			}
 			if ((float) (Util.getMeasuringTimeMs() - start) / getAnimTime() >= 1) {
 				start = -1;
@@ -500,9 +503,9 @@ public class KeystrokeHud extends TextHudEntry {
 			Rectangle bounds = stroke.bounds;
 			Rectangle spaceBounds = new Rectangle(bounds.x() + stroke.offset.x() + 4,
 				bounds.y() + stroke.offset.y() + bounds.height() / 2 - 1, bounds.width() - 8, 1);
-			fillRect(matrices, spaceBounds, stroke.getFGColor());
+			DrawUtil.fillRect(matrices, spaceBounds, stroke.getFGColor());
 			if (hud.shadow.get()) {
-				fillRect(matrices, spaceBounds.offset(1, 1), new Color(
+				DrawUtil.fillRect(matrices, spaceBounds.offset(1, 1), new Color(
 					(stroke.getFGColor().toInt() & 16579836) >> 2 | stroke.getFGColor().toInt() & -16777216));
 			}
 		}),
@@ -516,7 +519,7 @@ public class KeystrokeHud extends TextHudEntry {
 			graphics.getMatrices().push();
 			graphics.getMatrices().translate(centerX, cpsY, 0);
 			graphics.getMatrices().scale(0.5f, 0.5f, 1);
-			String cpsText = CPSHud.ClickList.LEFT.clicks() + " CPS";
+			String cpsText = ClickInputTracker.getInstance().leftMouse.clicks() + " CPS";
 			graphics.getMatrices().translate(-hud.client.textRenderer.getWidth(cpsText) / 2f, 0, 0);
 			drawString(graphics, cpsText, 0, 0, stroke.getFGColor(), hud.shadow.get());
 			graphics.getMatrices().pop();
@@ -531,7 +534,7 @@ public class KeystrokeHud extends TextHudEntry {
 			graphics.getMatrices().push();
 			graphics.getMatrices().translate(centerX, cpsY, 0);
 			graphics.getMatrices().scale(0.5f, 0.5f, 1);
-			String cpsText = CPSHud.ClickList.RIGHT.clicks() + " CPS";
+			String cpsText = ClickInputTracker.getInstance().rightMouse.clicks() + " CPS";
 			graphics.getMatrices().translate(-hud.client.textRenderer.getWidth(cpsText) / 2f, 0, 0);
 			drawString(graphics, cpsText, 0, 0, stroke.getFGColor(), hud.shadow.get());
 			graphics.getMatrices().pop();

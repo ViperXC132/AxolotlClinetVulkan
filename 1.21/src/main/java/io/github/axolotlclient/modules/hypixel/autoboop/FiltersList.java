@@ -69,7 +69,15 @@ public class FiltersList extends ElementListWidget<FiltersList.Entry> {
 		screen.filters.clear();
 		screen.filters.addAll(children().stream().filter(e -> e instanceof FilterEntry)
 			.map(e -> (FilterEntry) e)
-			.map(e -> e.editBox.getText()).toList());
+			.map(e -> e.editBox.getText())
+			.filter(s -> !s.isBlank()).toList());
+	}
+
+	@Override
+	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		children().stream().filter(e -> e instanceof FilterEntry)
+			.map(e -> (FilterEntry) e).map(e -> e.editBox).forEach(e -> e.setFocused(false));
+		return super.mouseClicked(mouseX, mouseY, button);
 	}
 
 	@Environment(EnvType.CLIENT)

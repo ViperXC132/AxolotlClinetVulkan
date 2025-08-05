@@ -22,22 +22,17 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud;
 
-import java.util.List;
-
-import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.DoubleOption;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.mixin.GuiGraphicsAccessor;
-import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
 import io.github.axolotlclient.modules.hud.util.PlayerHudEntityRenderState;
 import io.github.axolotlclient.util.events.Events;
 import io.github.axolotlclient.util.events.impl.PlayerDirectionChangeEvent;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
@@ -51,21 +46,12 @@ import org.joml.Vector3f;
  * @license GPL-3.0
  */
 
-public class PlayerHud extends BoxHudEntry {
+public class PlayerHud extends PlayerHudCommon {
 
-	public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("kronhud", "playerhud");
-	private final DoubleOption rotation = new DoubleOption("rotation", 0d, 0d, 360d);
-	private final BooleanOption dynamicRotation = new BooleanOption("dynamicrotation", true);
-	private final BooleanOption autoHide = new BooleanOption("autoHide", false);
-	private float lastYawOffset = 0;
-	private float yawOffset = 0;
-	private float lastYOffset = 0;
-	private float yOffset = 0;
-	private long hide;
 	private LivingEntityRenderState reusedPlayerRendererState = null;
 
 	public PlayerHud() {
-		super(62, 94, true);
+		super();
 		Events.PLAYER_DIRECTION_CHANGE.register(this::onPlayerDirectionChange);
 	}
 
@@ -74,15 +60,9 @@ public class PlayerHud extends BoxHudEntry {
 	}
 
 	@Override
-	public boolean tickable() {
-		return true;
-	}
-
-	@Override
 	public void tick() {
-		lastYawOffset = yawOffset;
-		yawOffset *= .93f;
-		lastYOffset = yOffset;
+		super.tick();
+		var client = Minecraft.getInstance();
 		if (client.player != null && client.player.isVisuallySwimming()) {
 			float rawPitch = client.player.isInWater() ? -90.0F - client.player.getXRot() : -90.0F;
 			float pitch = Mth.lerp(client.player.getSwimAmount(1), 0.0F, rawPitch);
@@ -109,32 +89,9 @@ public class PlayerHud extends BoxHudEntry {
 	}
 
 	@Override
-	public ResourceLocation getId() {
-		return ID;
-	}
-
-	@Override
-	public List<Option<?>> getConfigurationOptions() {
-		List<Option<?>> options = super.getConfigurationOptions();
-		options.add(dynamicRotation);
-		options.add(rotation);
-		options.add(autoHide);
-		return options;
-	}
-
-	@Override
-	public void renderComponent(GuiGraphics graphics, float delta) {
-		renderPlayer(graphics, false, getTruePos().x(), getTruePos().y(), delta);
-	}
-
-	@Override
-	public void renderPlaceholderComponent(GuiGraphics graphics, float delta) {
-		renderPlayer(graphics, true, getTrueX(), getTrueY(),
-			0
-		); // If delta was delta, it would start jittering
-	}
-
-	public void renderPlayer(GuiGraphics graphics, boolean placeholder, double x, double y, float delta) {
+	protected void renderPlayer(AxoRenderContext ctx, boolean placeholder, double x, double y, float delta) {
+		var client = Minecraft.getInstance();
+		var graphics = (GuiGraphics) ctx;
 		if (client.player == null) {
 			return;
 		}
@@ -155,7 +112,6 @@ public class PlayerHud extends BoxHudEntry {
 
 		float scale = getScale() * 30;
 
-
 		Quaternionf quaternion = new Quaternionf().rotateZ((float) Math.PI);
 
 		// Rotate to whatever is wanted. Also make sure to offset the yaw
@@ -167,9 +123,6 @@ public class PlayerHud extends BoxHudEntry {
 		Quaternionf quaternionf2 = new Quaternionf().fromAxisAngleDeg(new Vector3f(0, 1, 0), deltaYaw - 180 + rotation.get().floatValue());
 		quaternion.mul(quaternionf2);
 
-		// Save these to set them back later
-		float pastYaw = client.player.getYRot();
-		float pastPrevYaw = client.player.yRotO;
 		renderEntityInInventory(graphics,
 			(int) (x),
 			(int) (y),
@@ -180,9 +133,6 @@ public class PlayerHud extends BoxHudEntry {
 			quaternion,
 			quaternionf2,
 			client.player);
-
-		client.player.setYRot(pastYaw);
-		client.player.yRotO = pastPrevYaw;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -198,7 +148,7 @@ public class PlayerHud extends BoxHudEntry {
 		@Nullable Quaternionf quaternionf2,
 		LivingEntity livingEntity
 	) {
-		EntityRenderDispatcher entityRenderDispatcher = client.getEntityRenderDispatcher();
+		EntityRenderDispatcher entityRenderDispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
 		EntityRenderer<LivingEntity, LivingEntityRenderState> entityRenderer = (EntityRenderer<LivingEntity, LivingEntityRenderState>) entityRenderDispatcher.getRenderer(livingEntity);
 		if (reusedPlayerRendererState == null) {
 			reusedPlayerRendererState = entityRenderer.createRenderState();
@@ -211,7 +161,7 @@ public class PlayerHud extends BoxHudEntry {
 
 	private boolean isPerformingAction() {
 		// inspired by tr7zw's mod
-		LocalPlayer player = client.player;
+		LocalPlayer player = Minecraft.getInstance().player;
 		return player.isCrouching() || player.isSprinting() || player.isFallFlying() || player.getAbilities().flying ||
 			player.isUnderWater() || player.isVisuallySwimming() || player.isPassenger() || player.isUsingItem() ||
 			player.isHandsBusy() || player.hurtTime > 0 || player.isOnFire();

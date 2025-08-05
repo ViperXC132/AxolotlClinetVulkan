@@ -22,9 +22,8 @@
 
 package io.github.axolotlclient.mixin;
 
-import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hud.gui.hud.simple.ComboHud;
-import io.github.axolotlclient.modules.hud.gui.hud.simple.ReachHud;
+import io.github.axolotlclient.bridge.entity.AxoPlayer;
+import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.modules.particles.Particles;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
@@ -47,18 +46,7 @@ public abstract class PlayerEntityMixin extends LivingEntity {
 
 	@Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;getAttributeValue(Lnet/minecraft/core/Holder;)D"))
 	private void axolotlclient$getReach(Entity entity, CallbackInfo ci) {
-		if ((Object) this == Minecraft.getInstance().player
-			|| entity.equals(Minecraft.getInstance().player)) {
-			ReachHud reachDisplayHud = (ReachHud) HudManager.getInstance().get(ReachHud.ID);
-			if (reachDisplayHud != null && reachDisplayHud.isEnabled()) {
-				reachDisplayHud.updateDistance(this, entity);
-			}
-
-			ComboHud comboHud = (ComboHud) HudManager.getInstance().get(ComboHud.ID);
-			if (comboHud != null) {
-				comboHud.onEntityAttack(entity);
-			}
-		}
+		Events.PLAYER_ATTACK.invoker().accept((AxoPlayer) this, entity);
 	}
 
 	@Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;setLastHurtMob(Lnet/minecraft/world/entity/Entity;)V"))

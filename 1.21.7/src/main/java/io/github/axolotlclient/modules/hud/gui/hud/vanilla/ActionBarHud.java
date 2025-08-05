@@ -28,7 +28,9 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -48,13 +50,14 @@ public class ActionBarHud extends TextHudEntry {
 	public final IntegerOption timeShown = new IntegerOption("timeshown", 60, 40, 300);
 	public final BooleanOption customTextColor = new BooleanOption("customtextcolor", false);
 	private final String placeholder = "Action Bar";
+	private final Minecraft client = (Minecraft) super.client;
 
 	public ActionBarHud() {
 		super(115, 13, false);
 	}
 
 	@Override
-	public void renderComponent(GuiGraphics graphics, float delta) {
+	public void renderComponent(AxoRenderContext graphics, float delta) {
 	}
 
 	public void render(GuiGraphics graphics, Component actionBar, int color) {
@@ -67,13 +70,12 @@ public class ActionBarHud extends TextHudEntry {
 				ARGB.alpha(color)
 			).toInt() : textColor.get().toInt()) : color, shadow.get()
 		);
-
 	}
 
 	@Override
-	public void renderPlaceholderComponent(GuiGraphics graphics, float delta) {
-		graphics.drawString(client.font, placeholder, (int) ((float) getPos().x() + Math.round((float) getWidth() / 2) -
-				(float) client.font.width(placeholder) / 2),
+	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
+		graphics.br$drawString(placeholder, (int) ((float) getPos().x() + Math.round((float) getWidth() / 2) -
+				(float) client.br$getFont().br$getWidth(placeholder) / 2),
 			(int) ((float) getPos().y() + 3), -1, false
 		);
 	}

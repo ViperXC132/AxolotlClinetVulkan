@@ -86,7 +86,7 @@ public interface Positionable {
 		return 1f;
 	}
 
-	default void setScale(float scale) {
+	default void setScale(float max) {
 
 	}
 
@@ -112,7 +112,7 @@ public interface Positionable {
 	 * @param trueY Pixel value of y
 	 */
 	default void setTrueY(int trueY) {
-		setY((int) (trueY / getScale()));
+		setX((int) (trueY / getScale()));
 	}
 
 	/**
@@ -154,7 +154,7 @@ public interface Positionable {
 	 */
 	default Rectangle getBounds() {
 		DrawPosition pos = getPos();
-		return new Rectangle(pos.x, pos.y, getWidth(), getHeight());
+		return new Rectangle(pos.x(), pos.y(), getWidth(), getHeight());
 	}
 
 	/**
@@ -186,7 +186,7 @@ public interface Positionable {
 	int getHeight();
 
 	/**
-	 * Sets the raw height (this is unscaled)
+	 * Setsw the raw height (this is unscaled)
 	 */
 	void setHeight(int height);
 
@@ -197,7 +197,7 @@ public interface Positionable {
 	 */
 	default Rectangle getTrueBounds() {
 		DrawPosition pos = getTruePos();
-		return new Rectangle(pos.x, pos.y, getTrueWidth(), getTrueHeight());
+		return new Rectangle(pos.x(), pos.y(), getTrueWidth(), getTrueHeight());
 	}
 
 	/**

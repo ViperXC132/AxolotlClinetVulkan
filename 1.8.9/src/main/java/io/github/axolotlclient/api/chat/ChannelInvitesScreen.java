@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import com.mojang.realmsclient.gui.ChatFormatting;
 import io.github.axolotlclient.api.requests.ChannelRequest;
 import io.github.axolotlclient.api.types.ChannelInvite;
 import io.github.axolotlclient.api.util.UUIDHelper;
@@ -35,6 +34,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.text.Formatting;
 
 public class ChannelInvitesScreen extends Screen {
 	private final Screen parent;
@@ -155,7 +155,7 @@ public class ChannelInvitesScreen extends Screen {
 			public void render(int index, int x, int y, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovere) {
 				drawString(textRenderer, I18n.translate("api.channels.invite.name", invite.channelName()), x + 2, y + 2, -1);
 				if (fromName.isDone()) {
-					drawString(textRenderer, ChatFormatting.ITALIC + I18n.translate("api.channels.invite.from", fromName.join()), x + 15, y + entryHeight - textRenderer.fontHeight - 1, 0x808080);
+					drawString(textRenderer, Formatting.ITALIC + I18n.translate("api.channels.invite.from", fromName.join()), x + 15, y + entryHeight - textRenderer.fontHeight - 1, 0x808080);
 				}
 			}
 

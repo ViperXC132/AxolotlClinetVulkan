@@ -37,11 +37,14 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.modules.hud.util.RenderUtil;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.scoreboard.*;
 import net.minecraft.text.LiteralText;
@@ -86,20 +89,22 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 	private final EnumOption<AnchorPoint> anchor = new EnumOption<>("anchorpoint", AnchorPoint.class,
 		AnchorPoint.MIDDLE_RIGHT);
 
+	private final MinecraftClient client = (MinecraftClient) super.client;
+
 	public ScoreboardHud() {
 		super(200, 146, true);
 	}
 
 	@Override
-	public void render(MatrixStack matrices, float delta) {
-		matrices.push();
+	public void render(AxoRenderContext matrices, float delta) {
+		matrices.br$pushMatrix();
 		scale(matrices);
 		renderComponent(matrices, delta);
-		matrices.pop();
+		matrices.br$popMatrix();
 	}
 
 	@Override
-	public void renderComponent(MatrixStack matrices, float delta) {
+	public void renderComponent(AxoRenderContext matrices, float delta) {
 		Scoreboard scoreboard = this.client.world.getScoreboard();
 		ScoreboardObjective scoreboardObjective = null;
 		Team team = scoreboard.getPlayerTeam(this.client.player.getEntityName());
@@ -113,13 +118,13 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 		ScoreboardObjective scoreboardObjective2 = scoreboardObjective != null ? scoreboardObjective
 			: scoreboard.getObjectiveForSlot(1);
 		if (scoreboardObjective2 != null) {
-			this.renderScoreboardSidebar(matrices, scoreboardObjective2);
+			this.renderScoreboardSidebar((MatrixStack) matrices, scoreboardObjective2);
 		}
 	}
 
 	@Override
-	public void renderPlaceholderComponent(MatrixStack matrices, float delta) {
-		renderScoreboardSidebar(matrices, placeholder);
+	public void renderPlaceholderComponent(AxoRenderContext matrices, float delta) {
+		renderScoreboardSidebar((MatrixStack) matrices, placeholder);
 	}
 
 	// Abusing this could break some stuff/could allow for unfair advantages. The goal is not to do this, so it won't
@@ -208,7 +213,7 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 				client.textRenderer.draw(matrices, scoreText, (float) scoreX, (float) relativeY, Colors.WHITE.withAlpha(textAlpha.get()).toInt());
 			}
 			if (this.scores.get()) {
-				drawString(matrices, score, (float) (scoreX + maxWidth - client.textRenderer.getWidth(score) - 6),
+				DrawUtil.drawString(matrices, score, (float) (scoreX + maxWidth - client.textRenderer.getWidth(score) - 6),
 					(float) relativeY, scoreColor.get().toInt(), shadow.get());
 			}
 			if (num == scoresSize) {

@@ -28,7 +28,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hypixel.nickhider.NickHider;
+import io.github.axolotlclient.modules.hypixel.NickHider;
 import io.github.axolotlclient.util.Util;
 import io.github.axolotlclient.util.events.Events;
 import io.github.axolotlclient.util.events.impl.ReceiveChatMessageEvent;
@@ -81,7 +81,7 @@ public abstract class ChatHudMixin {
 		if (hud.isEnabled()) {
 			hud.resetAnimation();
 		}
-		return NickHider.getInstance().editMessage(message);
+		return (Text) NickHider.getInstance().editMessage(message);
 	}
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/chat/ChatGui;fill(IIIII)V", ordinal = 0))

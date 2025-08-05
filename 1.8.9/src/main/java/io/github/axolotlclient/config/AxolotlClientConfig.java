@@ -32,7 +32,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.*;
-import io.github.axolotlclient.CommonOptions;
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.config.screen.CreditsScreen;
 import io.github.axolotlclient.modules.Module;
 import io.github.axolotlclient.util.GLFWUtil;
@@ -45,7 +45,7 @@ import net.ornithemc.osl.keybinds.api.KeyBindingEvents;
 import net.ornithemc.osl.lifecycle.api.client.MinecraftClientEvents;
 import org.lwjgl.glfw.GLFW;
 
-public class AxolotlClientConfig {
+public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 
 	public final BooleanOption showOwnNametag = new BooleanOption("showOwnNametag", false);
 	public final BooleanOption useShadows = new BooleanOption("useShadows", false);
@@ -96,24 +96,15 @@ public class AxolotlClientConfig {
 	public final OptionCategory outlines = OptionCategory.create("blockOutlines");
 	public final OptionCategory timeChanger = OptionCategory.create("timeChanger");
 	public final OptionCategory titles = OptionCategory.create("titles");
-	@Getter
-	private final OptionCategory config = OptionCategory.create("config");
 
 	@Getter
 	private final List<Option<?>> options = new ArrayList<>();
 
-	public void add(Option<?> option) {
-		options.add(option);
-	}
-
-	public void addCategory(OptionCategory cat) {
-		config.add(cat);
-	}
-
-	public void init() {
+	public AxolotlClientConfig() {
 		config.add(general);
 		config.add(nametagOptions);
 		config.add(rendering);
+		config.add(hidden);
 
 		nametagOptions.add(showOwnNametag);
 		nametagOptions.add(useShadows);
@@ -129,9 +120,11 @@ public class AxolotlClientConfig {
 		general.add(rawMouseInput);
 		general.add(openCredits);
 		general.add(debugLogOutput);
-		general.add(CommonOptions.datetimeFormat);
-		general.add(CommonOptions.titleScreenOptionButtonMode);
-		general.add(CommonOptions.gameMenuScreenOptionButtonMode);
+
+		general.add(datetimeFormat);
+		general.add(titleScreenOptionButtonMode);
+		general.add(gameMenuScreenOptionButtonMode);
+
 		ConfigUI.getInstance().runWhenLoaded(() -> {
 			general.getOptions().removeIf(o -> "configStyle".equals(o.getName()));
 			String[] themes = ConfigUI.getInstance().getStyleNames().stream().map(s -> "configStyle." + s)
@@ -144,8 +137,10 @@ public class AxolotlClientConfig {
 					ConfigUI.getInstance().setStyle(s.split("\\.")[1]);
 					Minecraft.getInstance().openScreen(null);
 				}));
-				AxolotlClient.configManager.load();
+				AxolotlClient.getInstance().getConfigManager().load();
 				ConfigUI.getInstance().setStyle(configStyle.get().split("\\.")[1]);
+			} else {
+				AxolotlClient.getInstance().getConfigManager().load();
 			}
 		});
 
@@ -174,9 +169,9 @@ public class AxolotlClientConfig {
 		titles.add(scaleTitles, titlePadding);
 		rendering.add(titles);
 
-		AxolotlClient.config.add(creditsBGM);
+		hidden.add(creditsBGM, someNiceBackground);
 
-		AxolotlClient.modules.add(new Module() {
+		AxolotlClient.getInstance().modules.add(new Module() {
 			@Override
 			public void lateInit() {
 				if (System.getProperty("org.lwjgl.input.Mouse.disableRawInput") == null) {

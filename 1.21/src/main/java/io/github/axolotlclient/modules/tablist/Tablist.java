@@ -62,7 +62,7 @@ public class Tablist extends AbstractModule {
 		tablist.add(pingColor0, pingColor1, pingColor2, pingColor3, pingColor4, pingColor5);
 		tablist.add(backgroundEnabled, customBackgroundColor, backgroundColor);
 
-		AxolotlClient.CONFIG.rendering.add(tablist);
+		AxolotlClient.config().rendering.add(tablist);
 	}
 
 	public boolean renderNumericPing(GuiGraphics graphics, int width, int x, int y, PlayerListEntry entry) {

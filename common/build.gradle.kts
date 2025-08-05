@@ -3,11 +3,13 @@ plugins {
 	id("com.gradleup.shadow")
 }
 
-group = project.property("maven_group").toString()+"."+project.property("archives_base_name").toString()
-base.archivesName.set(project.property("archives_base_name").toString()+"-common")
+group = project.property("maven_group").toString() + "." + project.property("archives_base_name").toString()
+base.archivesName.set(project.property("archives_base_name").toString() + "-common")
 
 dependencies {
 	compileOnly("net.fabricmc:fabric-loader:${project.property("fabric_loader")}")
+	testCompileOnly("net.fabricmc:fabric-loader:${project.property("fabric_loader")}")
+	compileOnly("net.fabricmc:sponge-mixin:0.16.1+mixin.0.8.7")
 	compileOnly("org.jetbrains:annotations:24.0.0")
 
 	// take the oldest version just to build against
@@ -23,7 +25,7 @@ dependencies {
 	testRuntimeOnly(compileOnly("org.apache.commons:commons-lang3:3.3.2")!!)
 	testRuntimeOnly(compileOnly("org.lwjgl:lwjgl-glfw:3.3.2")!!)
 
-	shadow(implementation("io.github.CDAGaming:DiscordIPC:0.10.2"){
+	shadow(implementation("io.github.CDAGaming:DiscordIPC:0.10.2") {
 		isTransitive = false
 	})
 	shadow(implementation("com.kohlschutter.junixsocket:junixsocket-common:2.10.1")!!)
@@ -31,6 +33,9 @@ dependencies {
 
 	shadow(implementation("com.github.mizosoft.methanol:methanol:1.8.0")!!)
 	shadow(implementation("io.nayuki:qrcodegen:1.8.0")!!)
+
+	compileOnly("net.hypixel:mod-api:1.0.1")
+	compileOnly("com.mojang:brigadier:1.0.18")
 }
 
 tasks.jar {
@@ -94,7 +99,9 @@ publishing {
 	repositories {
 		maven {
 			name = "owlMaven"
-			val repository = if(project.version.toString().contains("beta") || project.version.toString().contains("alpha")) "snapshots" else "releases"
+			val repository = if (project.version.toString().contains("beta") || project.version.toString()
+					.contains("alpha")
+			) "snapshots" else "releases"
 			url = uri("https://moehreag.duckdns.org/maven/$repository")
 			credentials(PasswordCredentials::class)
 			authentication {

@@ -32,6 +32,6 @@ public abstract class RenderLayerMixin {
     private static OptionalDouble axolotlclient$customOutlineWidth(){
         // The game needs to be restarted for changes to have effects.
         // Yes, it would need very large quirks to change that, and no, I won't do those.
-        return OptionalDouble.of(AxolotlClient.CONFIG.outlineWidth.get());
+        return OptionalDouble.of(AxolotlClient.config().outlineWidth.get());
     }*/
 }

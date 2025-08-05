@@ -149,7 +149,7 @@ public class Zoom extends AbstractModule {
 		zoom.add(smoothCamera);
 		KeyBinds.getInstance().register(key);
 
-		AxolotlClient.CONFIG.rendering.add(zoom);
+		AxolotlClient.config().rendering.add(zoom);
 
 		active = false;
 

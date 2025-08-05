@@ -69,7 +69,7 @@ public class HudEditScreen extends Screen {
 
 	static {
 		hudEditScreenCategory.add(snapping);
-		AxolotlClient.config.add(hudEditScreenCategory);
+		AxolotlClient.config().hidden.add(hudEditScreenCategory);
 	}
 
 	private final Screen parent;
@@ -171,12 +171,12 @@ public class HudEditScreen extends Screen {
 				snapping.toggle();
 				buttonWidget.setMessage(Component.translatable("hud.snapping").append(": ")
 					.append(Component.translatable(snapping.get() ? "options.on" : "options.off")));
-				AxolotlClient.configManager.save();
+				AxolotlClient.getInstance().getConfigManager().save();
 			}).bounds(width / 2 - 50, height / 2 + 12, 100, 20).build());
 
 		this.addRenderableWidget(Button.builder(Component.translatable("hud.clientOptions"),
 			buttonWidget -> {
-				Screen screen = ConfigStyles.createScreen(this, AxolotlClient.configManager.getRoot());
+				Screen screen = ConfigStyles.createScreen(this, AxolotlClient.getInstance().getConfigManager().getRoot());
 				minecraft.setScreen(screen);
 			}).bounds(width / 2 - 75, height / 2 - 10, 150, 20).build());
 

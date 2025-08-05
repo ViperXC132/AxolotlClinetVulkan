@@ -23,7 +23,7 @@
 package io.github.axolotlclient.mixin;
 
 import com.mojang.authlib.GameProfile;
-import io.github.axolotlclient.modules.hypixel.nickhider.NickHider;
+import io.github.axolotlclient.modules.hypixel.NickHider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.PlayerInfo;
 import net.minecraft.client.resource.skin.DefaultSkinUtils;

@@ -70,7 +70,7 @@ public class Freelook extends AbstractModule {
 	public void init() {
 		category.add(enabled, mode, perspective, invert, toggle);
 		category.add(perspectiveAlt, toggleAlt);
-		AxolotlClient.CONFIG.addCategory(category);
+		AxolotlClient.config().addCategory(category);
 	}
 
 	@Override

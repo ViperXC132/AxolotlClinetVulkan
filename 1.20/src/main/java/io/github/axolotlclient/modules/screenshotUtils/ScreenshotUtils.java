@@ -106,7 +106,7 @@ public class ScreenshotUtils extends AbstractModule {
 			MinecraftClient.getInstance().setScreen(new GalleryScreen(MinecraftClient.getInstance().currentScreen));
 		}));
 
-		AxolotlClient.CONFIG.general.add(category);
+		AxolotlClient.config().general.add(category);
 	}
 
 	public MutableText onScreenshotTaken(MutableText text, File shot) {

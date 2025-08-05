@@ -264,7 +264,7 @@ public class MSAuth {
 	}
 
 	private HttpClient getHttpClient() {
-		return NetworkUtil.createHttpClient("Auth");
+		return NetworkUtil.createHttpClient();
 	}
 
 	public CompletableFuture<Optional<Account>> refreshToken(String token, Account account) {

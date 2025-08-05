@@ -150,7 +150,7 @@ public class Zoom extends AbstractModule {
 		zoom.add(decreaseSensitivity);
 		zoom.add(smoothCamera);
 
-		AxolotlClient.CONFIG.rendering.add(zoom);
+		AxolotlClient.config().rendering.add(zoom);
 
 		keyBinding = new KeyBinding("key.zoom", Keyboard.KEY_C, "category.axolotlclient");
 		active = false;
