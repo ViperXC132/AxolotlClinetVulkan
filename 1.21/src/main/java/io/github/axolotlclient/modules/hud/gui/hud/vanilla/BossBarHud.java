@@ -97,7 +97,7 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 		int prevLength = bossBars.size();
 		bossBars = ((BossBarHudAccessor) client.inGameHud.getBossBarHud()).axolotlclient$getBossBars();
 		if (bossBars != null && bossBars.size() != prevLength) {
-			if (bossBars.size() == 0) {
+			if (bossBars.isEmpty()) {
 				// Just leave it alone, it's not rendering anyway
 				return;
 			}

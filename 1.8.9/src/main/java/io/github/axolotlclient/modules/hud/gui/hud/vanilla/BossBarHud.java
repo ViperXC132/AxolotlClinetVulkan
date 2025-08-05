@@ -35,6 +35,7 @@ import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
+import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.util.ClientColors;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
@@ -76,11 +77,11 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 			if (bar.get()) {
 				GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 				//GlStateManager.color4f(barColor.get().getRed(), barColor.get().getGreen(), barColor.get().getBlue(), barColor.get().getAlpha());
-				// drawTexture(pos.x, pos.y + 12, 0, 74, 182, 5);
-				// drawTexture(pos.x, pos.y + 12, 0, 74, 182, 5);
+				DrawUtil.drawTexture(pos.x, pos.y + 12, 0, 74, 182, 5, 256, 256);
+				DrawUtil.drawTexture(pos.x, pos.y + 12, 0, 74, 182, 5, 256, 256);
 				if (BossBar.health * 183F > 0) {
 					//GlStateManager.color4f(barColor.get().getRed(), barColor.get().getGreen(), barColor.get().getBlue(), barColor.get().getAlpha());
-					// drawTexture(pos.x, pos.y + 12, 0, 79, (int) (BossBar.health * 183F), 5);
+					DrawUtil.drawTexture(pos.x, pos.y + 12, 0, 79, (int) (BossBar.health * 183F), 5, 256, 256);
 				}
 			}
 

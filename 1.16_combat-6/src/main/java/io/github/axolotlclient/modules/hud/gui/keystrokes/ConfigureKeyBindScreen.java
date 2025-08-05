@@ -352,7 +352,7 @@ class CyclingButtonWidget<T> extends ButtonWidget {
 
 		static <T> CyclingButtonWidget.Values<T> of(Collection<T> values) {
 			final List<T> list = ImmutableList.copyOf(values);
-			return new CyclingButtonWidget.Values<T>() {
+			return new CyclingButtonWidget.Values<>() {
 				@Override
 				public List<T> getCurrent() {
 					return list;
@@ -368,7 +368,7 @@ class CyclingButtonWidget<T> extends ButtonWidget {
 		static <T> CyclingButtonWidget.Values<T> of(BooleanSupplier alternativeToggle, List<T> defaults, List<T> alternatives) {
 			final List<T> list = ImmutableList.copyOf(defaults);
 			final List<T> list2 = ImmutableList.copyOf(alternatives);
-			return new CyclingButtonWidget.Values<T>() {
+			return new CyclingButtonWidget.Values<>() {
 				@Override
 				public List<T> getCurrent() {
 					return alternativeToggle.getAsBoolean() ? list2 : list;
