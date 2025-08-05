@@ -23,7 +23,6 @@
 package io.github.axolotlclient.modules.hud.gui.hud;
 
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.modules.hud.gui0.hud.PlayerHudCommon;
 import io.github.axolotlclient.util.events.Events;
 import io.github.axolotlclient.util.events.impl.PlayerDirectionChangeEvent;
 import lombok.Getter;

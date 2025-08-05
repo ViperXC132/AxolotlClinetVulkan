@@ -26,7 +26,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.IntegerWidget;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
-import io.github.axolotlclient.modules.hud.gui0.layout.Justification;
+import io.github.axolotlclient.modules.hud.gui.layout.Justification;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;

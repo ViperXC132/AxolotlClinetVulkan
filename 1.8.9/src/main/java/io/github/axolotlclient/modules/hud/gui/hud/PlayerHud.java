@@ -26,7 +26,6 @@ import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.modules.hud.gui0.hud.PlayerHudCommon;
 import io.github.axolotlclient.util.events.Events;
 import io.github.axolotlclient.util.events.impl.PlayerDirectionChangeEvent;
 import lombok.Getter;

@@ -27,8 +27,8 @@ import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import io.github.axolotlclient.modules.hud.gui.hud.PackDisplayHud;
 import io.github.axolotlclient.modules.hud.gui.hud.PlayerHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
-import io.github.axolotlclient.modules.hud.gui0.hud.simple.ComboHud;
-import io.github.axolotlclient.modules.hud.gui0.hud.simple.ReachHud;
+import io.github.axolotlclient.modules.hud.gui.hud.simple.ComboHud;
+import io.github.axolotlclient.modules.hud.gui.hud.simple.ReachHud;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 

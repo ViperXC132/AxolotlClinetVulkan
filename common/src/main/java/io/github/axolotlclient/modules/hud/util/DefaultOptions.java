@@ -24,9 +24,9 @@ package io.github.axolotlclient.modules.hud.util;
 
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.DoubleOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
-import io.github.axolotlclient.modules.hud.gui0.component.HudEntry;
-import io.github.axolotlclient.modules.hud.gui0.layout.AnchorPoint;
-import io.github.axolotlclient.modules.hud.gui0.layout.CardinalOrder;
+import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
+import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.gui.layout.CardinalOrder;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import lombok.experimental.UtilityClass;
 

@@ -37,7 +37,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.TextFieldWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.IntegerWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.VanillaButtonWidget;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
-import io.github.axolotlclient.modules.hud.gui0.layout.Justification;
+import io.github.axolotlclient.modules.hud.gui.layout.Justification;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import lombok.Getter;
 import net.minecraft.client.gui.screen.Screen;

@@ -25,7 +25,7 @@ package io.github.axolotlclient.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hud.gui0.hud.simple.ToggleSprintHud;
+import io.github.axolotlclient.modules.hud.gui.hud.simple.ToggleSprintHud;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.KeyboardInput;

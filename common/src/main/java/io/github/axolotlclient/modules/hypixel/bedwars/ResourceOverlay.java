@@ -33,7 +33,7 @@ import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoItems;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
-import io.github.axolotlclient.modules.hud.gui0.entry.BoxHudEntry;
+import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
 import io.github.axolotlclient.util.ItemUtil;
 
 public class ResourceOverlay extends BoxHudEntry {

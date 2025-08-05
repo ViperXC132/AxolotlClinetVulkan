@@ -25,7 +25,6 @@ package io.github.axolotlclient.modules.hud.gui.hud;
 import com.mojang.blaze3d.lighting.DiffuseLighting;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.modules.hud.gui0.hud.PlayerHudCommon;
 import io.github.axolotlclient.util.events.Events;
 import io.github.axolotlclient.util.events.impl.PlayerDirectionChangeEvent;
 import lombok.Getter;

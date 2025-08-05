@@ -28,7 +28,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
-import io.github.axolotlclient.modules.hud.gui0.entry.BoxHudEntry;
+import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hypixel.bedwars.upgrades.BedwarsTeamUpgrades;
 import io.github.axolotlclient.modules.hypixel.bedwars.upgrades.TeamUpgrade;
