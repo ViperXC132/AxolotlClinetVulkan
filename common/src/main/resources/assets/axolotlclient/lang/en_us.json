@@ -774,5 +774,9 @@
 	"toggle_fullbright": "Toggle FullBright",
 	"inventoryhud": "Inventory HUD",
 	"key.toggle_hud": "Toggle HUD modules",
-	"coordshud.unknown_biome": "Unknown"
+	"coordshud.unknown_biome": "Unknown",
+	"graphics.copy_text": "Export to Clipboard",
+	"graphics.paste_text": "Import from Clipboard",
+	"graphics.paste_text.failed": "Import Failed",
+	"graphics.paste_text.failed.desc": "The clipboard does not contain valid data!"
 }

@@ -213,7 +213,11 @@ public abstract class AxolotlClientCommon {
 		earlyModuleInit();
 		initConfig();
 
-		ConfigUI.getInstance().runWhenLoaded(this::lateModuleInit);
+		ConfigUI.getInstance().runWhenLoaded(() -> {
+			ConfigUI.getInstance().addWidget("vanilla", "graphics", "io.github.axolotlclient.util.options.vanilla.AxoGraphicsWidget");
+			ConfigUI.getInstance().addWidget("rounded", "graphics", "io.github.axolotlclient.util.options.rounded.AxoGraphicsWidget");
+			lateModuleInit();
+		});
 
 		Events.TICK.register(() -> modules.forEach(Module::tick));
 		initFeatureDisabler();
