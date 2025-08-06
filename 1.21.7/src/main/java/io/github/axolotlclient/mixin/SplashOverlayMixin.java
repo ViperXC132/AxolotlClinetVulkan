@@ -25,7 +25,6 @@ package io.github.axolotlclient.mixin;
 import java.util.function.IntSupplier;
 
 import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.modules.auth.Auth;
 import net.fabricmc.loader.api.FabricLoader;
@@ -51,8 +50,7 @@ public abstract class SplashOverlayMixin {
 	private static void axolotlclient$customBackgroundColor(CallbackInfo ci) {
 		if (!FabricLoader.getInstance().isModLoaded("dark-loading-screen")) {
 			if (AxolotlClient.config() != null) {
-				Color color = AxolotlClient.config().loadingScreenColor.get();
-				BRAND_BACKGROUND = color::toInt;
+				BRAND_BACKGROUND = AxolotlClient.config().loadingScreenColor.get()::toInt;
 				//ColorUtil.Argb32.of(color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue());
 			}
 		}

@@ -34,6 +34,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.*;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.config.screen.CreditsScreen;
+import io.github.axolotlclient.config.screen.ProfilesScreen;
 import io.github.axolotlclient.modules.Module;
 import io.github.axolotlclient.util.GLFWUtil;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
@@ -180,6 +181,9 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 				GLFWUtil.runUsingGlfwHandle(h -> GLFW.glfwSetInputMode(h, GLFW.GLFW_RAW_MOUSE_MOTION, rawMouseInput.get() ? 1 : 0));
 			}
 		});
+
+		general.add(new GenericOption("profiles.title", "profiles.configure", () ->
+			Minecraft.getInstance().openScreen(new ProfilesScreen(Minecraft.getInstance().screen))), false);
 
 		var toggleFullbright = new KeyBinding("toggle_fullbright", 0, "category.axolotlclient");
 		KeyBindingEvents.REGISTER_KEYBINDS.register(reg -> reg.register(toggleFullbright));

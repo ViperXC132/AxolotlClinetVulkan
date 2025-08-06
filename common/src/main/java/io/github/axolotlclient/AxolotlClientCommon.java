@@ -35,10 +35,13 @@ import com.google.gson.JsonObject;
 import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
+import io.github.axolotlclient.AxolotlClientConfig.impl.managers.JsonConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.impl.managers.VersionedJsonConfigManager;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.config.profiles.ProfileAware;
+import io.github.axolotlclient.config.profiles.Profiles;
 import io.github.axolotlclient.modules.Module;
 import io.github.axolotlclient.modules.hud.ClickInputTracker;
 import io.github.axolotlclient.util.Logger;
@@ -53,6 +56,10 @@ public abstract class AxolotlClientCommon {
 	// static utility methods
 	public static Path resolveConfigFile(String file) {
 		return FabricLoader.getInstance().getConfigDir().resolve(MODID).resolve(file);
+	}
+
+	public static Path resolveProfileConfigFile(String file) {
+		return Profiles.getInstance().resolveProfileFile(file);
 	}
 
 	public static final boolean NVG_SUPPORTED = OSUtil.getOS() != OSUtil.OperatingSystem.OTHER &&
@@ -77,7 +84,7 @@ public abstract class AxolotlClientCommon {
 	private AxolotlClientConfigCommon config;
 	private Logger logger;
 	private NotificationProvider notificationProvider;
-	private ConfigManager configManager;
+	private JsonConfigManager configManager;
 	private boolean initializing = false;
 	public final List<Module> modules = new ArrayList<>();
 
@@ -126,8 +133,20 @@ public abstract class AxolotlClientCommon {
 	}
 
 	private void initConfig() {
-		AxolotlClientConfig.getInstance()
-			.register(configManager = new VersionedJsonConfigManager(getMainConfigFile(),
+		var configFile = getMainConfigFile();
+		if (Files.notExists(configFile)) {
+			var legacy = new Path[]{resolveConfigFile("axolotlclient.json"), FabricLoader.getInstance().getConfigDir().resolve("AxolotlClient.json")};
+			for (Path p : legacy) {
+				try {
+					if (Files.exists(p)) {
+						Files.move(p, configFile);
+					}
+				} catch (IOException e) {
+					logger.warn("Failed to move config file, it might get reset! ", e);
+				}
+			}
+		}
+		configManager = new VersionedJsonConfigManager(configFile,
 				config.getConfig(), 5, (oldVersion, newVersion, config, json) -> {
 				if (oldVersion.getMajor() <= 1) {
 					if (json.has("hud")) {
@@ -188,7 +207,7 @@ public abstract class AxolotlClientCommon {
 					}
 				}
 				return json;
-			}));
+			});
 
 		AxolotlClientConfig.getInstance().register(configManager);
 
@@ -205,6 +224,8 @@ public abstract class AxolotlClientCommon {
 
 		initializing = true;
 		instance = this;
+
+		Profiles.getInstance().loadProfiles();
 
 		this.logger = logger;
 		this.notificationProvider = provider;
@@ -243,16 +264,23 @@ public abstract class AxolotlClientCommon {
 	}
 
 	public Path getMainConfigFile() {
-		var legacy = FabricLoader.getInstance().getConfigDir().resolve("AxolotlClient.json");
-		var current = resolveConfigFile("axolotlclient.json");
+		var path = resolveProfileConfigFile("axolotlclient.json");
 		try {
-			if (Files.exists(legacy)) {
-				Files.createDirectories(current.getParent());
-				Files.move(legacy, current);
-			}
+			Files.createDirectories(path.getParent());
 		} catch (IOException e) {
-			logger.warn("Failed to move config file, it might get reset! ", e);
+			getLogger().warn("Failed to create config directory, config may not be saved correctly!", e);
 		}
-		return current;
+		return path;
+	}
+
+	public void reloadConfig() {
+		configManager.setFile(getMainConfigFile());
+		configManager.load();
+		for (Module m : modules) {
+			if (m instanceof ProfileAware p) {
+				p.reloadConfig();
+			}
+		}
+		lateModuleInit();
 	}
 }

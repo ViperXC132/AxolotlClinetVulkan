@@ -24,7 +24,6 @@ package io.github.axolotlclient.modules.hud;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -41,6 +40,7 @@ import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoWindow;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.config.profiles.ProfileAware;
 import io.github.axolotlclient.modules.AbstractCommonModule;
 import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
 import io.github.axolotlclient.modules.hud.gui.component.Positionable;
@@ -63,11 +63,11 @@ import lombok.Getter;
  *
  * @license GPL-3.0
  */
-public abstract class HudManagerCommon extends AbstractCommonModule {
+public abstract class HudManagerCommon extends AbstractCommonModule implements ProfileAware {
 	@Getter
 	private static HudManagerCommon instance;
 
-	private final static Path CUSTOM_MODULE_SAVE_PATH = AxolotlClientCommon.resolveConfigFile("custom_hud.json");
+	private final static String CUSTOM_MODULE_SAVE_FILE_NAME = "custom_hud.json";
 	private final AxoKeybinding key = AxoKeybinding.create(AxoKeys.KEY_RSHIFT, "key.openHud", "category.axolotlclient");
 	private final AxoKeybinding toggleHud = AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "key.toggle_hud", "category.axolotlclient");
 	private final OptionCategory hudCategory = OptionCategory.create("hud");
@@ -141,10 +141,11 @@ public abstract class HudManagerCommon extends AbstractCommonModule {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void loadCustomEntries() {
+	public void loadCustomEntries() {
 		try {
-			if (Files.exists(CUSTOM_MODULE_SAVE_PATH)) {
-				var obj = (List<Object>) GsonHelper.read(Files.readString(CUSTOM_MODULE_SAVE_PATH));
+			var path = AxolotlClientCommon.resolveProfileConfigFile(CUSTOM_MODULE_SAVE_FILE_NAME);
+			if (Files.exists(path)) {
+				var obj = (List<Object>) GsonHelper.read(Files.readString(path));
 				obj.forEach(o -> {
 					CustomHudEntry entry = new CustomHudEntry();
 					var values = (Map<String, Object>) o;
@@ -166,8 +167,9 @@ public abstract class HudManagerCommon extends AbstractCommonModule {
 
 	public void saveCustomEntries() {
 		try {
-			Files.createDirectories(CUSTOM_MODULE_SAVE_PATH.getParent());
-			var writer = Files.newBufferedWriter(CUSTOM_MODULE_SAVE_PATH);
+			var path = AxolotlClientCommon.resolveProfileConfigFile(CUSTOM_MODULE_SAVE_FILE_NAME);
+			Files.createDirectories(path.getParent());
+			var writer = Files.newBufferedWriter(path);
 			var json = new JsonWriter(writer);
 			json.beginArray();
 			for (Map.Entry<AxoIdentifier, HudEntry> entry : entries.entrySet()) {
@@ -274,6 +276,17 @@ public abstract class HudManagerCommon extends AbstractCommonModule {
 			.stream()
 			.map(Positionable::getTrueBounds)
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public void reloadConfig() {
+		entries.entrySet().removeIf(entry -> entry.getValue() instanceof CustomHudEntry);
+		loadCustomEntries();
+		for (var hud : getEntries()) {
+			if (hud instanceof ProfileAware p) {
+				p.reloadConfig();
+			}
+		}
 	}
 
 	protected abstract void openScreen();
