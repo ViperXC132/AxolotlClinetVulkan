@@ -61,7 +61,7 @@ public class AxoGraphicsWidget extends GraphicsWidget {
 
 			int buttonX = gridX + maxGridWidth + 10;
 			int buttonY = gridY + 60;
-			var back = (ButtonWidget) children().getLast();
+			var back = (ButtonWidget) children().get(children().size()-1);
 			remove(back);
 			addDrawableChild(ButtonWidget.builder(Text.translatable("graphics.copy_text"),
 					btn -> client.keyboard.setClipboard(Base64.getEncoder().encodeToString(graphics.getPixelData())))
