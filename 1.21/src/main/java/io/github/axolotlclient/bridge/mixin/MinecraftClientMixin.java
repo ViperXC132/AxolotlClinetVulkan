@@ -136,7 +136,7 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient{
 	@Override
 	public void br$sendToServer(String msg) {
 		if (msg.startsWith("/")) {
-			player.networkHandler.sendCommand(msg);
+			player.networkHandler.sendCommand(msg.substring(1));
 		} else {
 			player.networkHandler.sendChatCommand(msg);
 		}
