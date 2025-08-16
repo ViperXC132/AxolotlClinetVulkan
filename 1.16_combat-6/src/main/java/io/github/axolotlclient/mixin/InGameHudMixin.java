@@ -23,16 +23,16 @@
 package io.github.axolotlclient.mixin;
 
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.bridge.events.Events;
+import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.HudManagerCommon;
+import io.github.axolotlclient.modules.hud.gui.hud.PotionsHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ActionBarHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.CrosshairHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.HotbarHUD;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ScoreboardHud;
-import io.github.axolotlclient.modules.hud.gui.hud.PotionsHud;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
-import io.github.axolotlclient.util.events.Events;
-import io.github.axolotlclient.util.events.impl.ScoreboardRenderEvent;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.hud.InGameHud;
@@ -94,7 +94,7 @@ public abstract class InGameHudMixin {
 	public void axolotlclient$renderScoreboard(MatrixStack matrices, ScoreboardObjective objective, CallbackInfo ci) {
 		ScoreboardHud hud = (ScoreboardHud) HudManager.getInstance().get(ScoreboardHud.ID);
 		ScoreboardRenderEvent event = new ScoreboardRenderEvent(objective);
-		Events.SCOREBOARD_RENDER_EVENT.invoker().invoke(event);
+		Events.SCOREBOARD_RENDER_EVENT.invoker().accept(event);
 		if (event.isCancelled() || hud.isEnabled()) {
 			ci.cancel();
 		}

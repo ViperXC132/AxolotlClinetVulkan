@@ -63,7 +63,7 @@ public class IPHud extends TextHudEntry implements DynamicallyPositionable {
 			}
 		});
 
-		Events.CONNECT.register(() -> {
+		Events.CONNECTION_PLAY_READY.register(() -> {
 			if (showIcon.get()) {
 				sprite = PlatformDispatch.ipHud$getServerIcon();
 			}

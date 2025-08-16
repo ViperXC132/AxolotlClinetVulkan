@@ -97,6 +97,18 @@
 			],
 			"net/minecraft/unmapped/C_6577431": [
 				"io/github/axolotlclient/bridge/resource/AxoResourceManager"
+			],
+			"net/minecraft/unmapped/C_3945557": [
+				"io/github/axolotlclient/bridge/scores/AxoObjective"
+			],
+			"net/minecraft/unmapped/C_0814381": [
+				"io/github/axolotlclient/bridge/scores/AxoScoreboard"
+			],
+			"net/minecraft/unmapped/C_3526030": [
+				"io/github/axolotlclient/bridge/scores/AxoScoreboardScore"
+			],
+			"net/minecraft/unmapped/C_4143404": [
+				"io/github/axolotlclient/bridge/scores/AxoTeam"
 			]
 		},
 		"depends": {

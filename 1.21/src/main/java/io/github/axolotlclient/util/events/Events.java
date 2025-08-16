@@ -24,7 +24,10 @@ package io.github.axolotlclient.util.events;
 
 import java.util.Arrays;
 
-import io.github.axolotlclient.util.events.impl.*;
+import io.github.axolotlclient.util.events.impl.KeyBindChangeEvent;
+import io.github.axolotlclient.util.events.impl.KeyPressEvent;
+import io.github.axolotlclient.util.events.impl.MouseInputEvent;
+import io.github.axolotlclient.util.events.impl.PlayerDirectionChangeEvent;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.client.MinecraftClient;
@@ -35,9 +38,6 @@ public class Events {
 	public static final Event<EventCallback<KeyBindChangeEvent>> KEYBIND_CHANGE = createEvent();
 	public static final Event<EventCallback<KeyPressEvent>> KEY_PRESS = createEvent();
 	public static final Event<EventCallback<PlayerDirectionChangeEvent>> PLAYER_DIRECTION_CHANGE = createEvent();
-	public static final Event<EventCallback<ScoreboardRenderEvent>> SCOREBOARD_RENDER_EVENT = createEvent();
-	public static final Event<EventCallback<ReceiveChatMessageEvent>> RECEIVE_CHAT_MESSAGE_EVENT = createEvent();
-	public static final Event<EventCallback<WorldLoadEvent>> WORLD_LOAD_EVENT = createEvent();
 	public static final Event<EventCallback<MinecraftClient>> GAME_LOAD_EVENT = createEvent();
 
 	private static <T> Event<EventCallback<T>> createEvent() {

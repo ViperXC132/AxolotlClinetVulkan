@@ -24,8 +24,8 @@ package io.github.axolotlclient.modules.mcci;
 
 import io.github.axolotlclient.api.Request;
 import io.github.axolotlclient.api.requests.StatusUpdate;
+import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.modules.AbstractModule;
-import io.github.axolotlclient.util.events.Events;
 
 public class MccIslandMods extends AbstractModule {
 
@@ -39,7 +39,7 @@ public class MccIslandMods extends AbstractModule {
 
 	@Override
 	public void init() {
-		Events.RECEIVE_CHAT_MESSAGE_EVENT.register(event -> {
+		Events.RECEIVE_CHAT_MESSAGE.register(event -> {
 			event.setCancelled(MccIslandLocation.waitingForResponse(event.getOriginalMessage()));
 		});
 		noxesium.init();

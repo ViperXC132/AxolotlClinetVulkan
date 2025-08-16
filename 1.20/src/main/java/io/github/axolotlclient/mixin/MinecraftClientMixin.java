@@ -23,10 +23,10 @@
 package io.github.axolotlclient.mixin;
 
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.bridge.events.types.WorldLoadEvent;
 import io.github.axolotlclient.modules.blur.MenuBlur;
 import io.github.axolotlclient.modules.rpc.DiscordRPC;
 import io.github.axolotlclient.util.events.Events;
-import io.github.axolotlclient.util.events.impl.WorldLoadEvent;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
@@ -74,7 +74,7 @@ public abstract class MinecraftClientMixin {
 
 	@Inject(method = "joinWorld", at = @At("HEAD"))
 	private void axolotlclient$onWorldLoad(ClientWorld world, CallbackInfo ci) {
-		Events.WORLD_LOAD_EVENT.invoker().invoke(new WorldLoadEvent(world));
+		io.github.axolotlclient.bridge.events.Events.WORLD_LOAD_EVENT.invoker().accept(new WorldLoadEvent(world));
 	}
 
 	@Inject(method = "onGameLoaded", at = @At(value = "TAIL"))

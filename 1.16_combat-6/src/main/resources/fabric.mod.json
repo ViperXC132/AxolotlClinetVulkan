@@ -105,6 +105,18 @@
 			],
 			"net/minecraft/class_3300": [
 				"io/github/axolotlclient/bridge/resource/AxoResourceManager"
+			],
+			"net/minecraft/class_266": [
+				"io/github/axolotlclient/bridge/scores/AxoObjective"
+			],
+			"net/minecraft/class_269": [
+				"io/github/axolotlclient/bridge/scores/AxoScoreboard"
+			],
+			"net/minecraft/class_267": [
+				"io/github/axolotlclient/bridge/scores/AxoScoreboardScore"
+			],
+			"net/minecraft/class_268": [
+				"io/github/axolotlclient/bridge/scores/AxoTeam"
 			]
 		}
 	},

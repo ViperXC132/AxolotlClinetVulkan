@@ -82,8 +82,9 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 	}
 
 	private void renderEffects(AxoRenderContext graphics, List<AxoStatusEffectInstance> effects) {
-		int calcWidth = calculateWidth(effects);
-		int calcHeight = calculateHeight(effects);
+		boolean noEffects = effects.isEmpty();
+		int calcWidth = noEffects ? 0 : calculateWidth(effects);
+		int calcHeight = noEffects ? 0 : calculateHeight(effects);
 		boolean changed = false;
 		if (calcWidth != width) {
 			setWidth(calcWidth);
@@ -96,8 +97,11 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 		if (changed) {
 			onBoundsUpdate();
 		}
+		if (noEffects) {
+			return;
+		}
 		int lastPos = 0;
-		CardinalOrder direction = (order.get());
+		CardinalOrder direction = order.get();
 
 		Rectangle bounds = getBounds();
 		int x = bounds.x();

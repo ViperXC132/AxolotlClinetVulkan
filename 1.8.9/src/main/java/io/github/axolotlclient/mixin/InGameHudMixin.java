@@ -25,13 +25,13 @@ package io.github.axolotlclient.mixin;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.bridge.events.Events;
+import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.util.Util;
-import io.github.axolotlclient.util.events.Events;
-import io.github.axolotlclient.util.events.impl.ScoreboardRenderEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GameGui;
 import net.minecraft.client.render.TextRenderer;
@@ -60,8 +60,8 @@ public abstract class InGameHudMixin {
 	@Inject(method = "renderScoreboardObjective", at = @At("HEAD"), cancellable = true)
 	public void axolotlclient$customScoreBoard(ScoreboardObjective objective, Window window, CallbackInfo ci) {
 		ScoreboardHud hud = (ScoreboardHud) HudManager.getInstance().get(ScoreboardHud.ID);
-		ScoreboardRenderEvent event = new ScoreboardRenderEvent(window, objective);
-		Events.SCOREBOARD_RENDER_EVENT.invoker().invoke(event);
+		ScoreboardRenderEvent event = new ScoreboardRenderEvent(objective);
+		Events.SCOREBOARD_RENDER_EVENT.invoker().accept(event);
 		if (event.isCancelled() || hud.isEnabled()) {
 			ci.cancel();
 		}

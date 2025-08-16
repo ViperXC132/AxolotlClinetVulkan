@@ -788,5 +788,6 @@
 	"profiles.duplicated": "%s - Copy",
 	"profiles.profile.duplicate": "Duplicate",
 	"profiles.profile.current": "Current!",
-	"profiles.profile.add": "Add empty Profile"
+	"profiles.profile.add": "Add empty Profile",
+	"api.sent_status_updates": "Send Status Updates"
 }

@@ -153,7 +153,7 @@ public class BedwarsGame {
 	}
 
 	private void debug(String message) {
-		//mc.gui.getChat().addMessage(AxoText.literal("§b§lINFO:§8 " + message));
+		AxoMinecraftClient.getInstance().br$sendToClient(AxoText.literal("§b§lINFO:§8 " + message));
 	}
 
 	private void died(ReceiveChatMessageEvent event, BedwarsPlayer player, @Nullable BedwarsPlayer killer,

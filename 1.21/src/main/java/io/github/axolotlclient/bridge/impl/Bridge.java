@@ -27,6 +27,12 @@ import io.github.axolotlclient.bridge.events.Events;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
+import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
+import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceType;
+import net.minecraft.util.Identifier;
 
 public class Bridge {
 	@SuppressWarnings({"rawtypes", "unchecked"})
@@ -34,6 +40,20 @@ public class Bridge {
 		ClientLifecycleEvents.CLIENT_STARTED.register(minecraft -> Events.CLIENT_START.invoker().run());
 		ClientLifecycleEvents.CLIENT_STOPPING.register(minecraft -> Events.CLIENT_STOP.invoker().run());
 		ClientTickEvents.END_CLIENT_TICK.register(minecraft -> Events.TICK.invoker().run());
+		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new SimpleSynchronousResourceReloadListener() {
+
+			@Override
+			public void reload(ResourceManager manager) {
+				Events.END_RESOURCE_RELOAD.invoker().run();
+			}
+
+			@Override
+			public Identifier getFabricId() {
+				return Identifier.of("axolotlclient", "bridge/resource_listener");
+			}
+		});
+		ClientPlayConnectionEvents.JOIN.register((clientPlayNetworkHandler, packetSender, minecraftClient) -> Events.CONNECTION_PLAY_READY.invoker().run());
+		ClientPlayConnectionEvents.DISCONNECT.register((clientPlayNetworkHandler, minecraftClient) -> Events.DISCONNECT.invoker().run());
 
 		ClientCommandRegistrationCallback.EVENT.register((commandDispatcher, commandBuildContext) ->
 			Events.COMMAND_REGISTER.invoker().accept(() -> (CommandDispatcher) commandDispatcher));
