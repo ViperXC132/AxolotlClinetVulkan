@@ -37,4 +37,9 @@ public interface AxoScoreboard {
 	default AxoTeam br$getTeamOfMember(String s) {
 		throw BridgeUtil.noImpl();
 	}
+
+	@RequiresImpl
+	default AxoTeam br$getTeam(String s) {
+		return br$getTeamOfMember(s);
+	}
 }

@@ -1,6 +1,8 @@
 package io.github.axolotlclient.bridge.mixin.scoreboard;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 
 import io.github.axolotlclient.bridge.scores.AxoObjective;
 import io.github.axolotlclient.bridge.scores.AxoScoreboard;
@@ -21,7 +23,9 @@ public abstract class ScoreboardMixin implements AxoScoreboard {
 
 	@Override
 	public Collection<? extends AxoScoreboardScore> br$getScores(AxoObjective objective) {
-		return getEntriesForObjective((ScoreboardObjective) objective);
+		var entries = new ArrayList<>(getEntriesForObjective((ScoreboardObjective) objective));
+		entries.sort(Comparator.comparing(ScoreboardEntry::value).reversed().thenComparing(ScoreboardEntry::owner, String.CASE_INSENSITIVE_ORDER));
+		return entries;
 	}
 
 	@Override

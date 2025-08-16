@@ -190,11 +190,11 @@ public class BedwarsMod implements AbstractHypixelMod {
 		final var scoreboard = event.getObjective().br$getScoreboard();
 		final var scores = scoreboard.br$getScores(event.getObjective());
 		final var filteredScores = scores.stream()
-			.filter(score -> score.br$getOwner() != null && !score.br$getOwner().startsWith("#"))
+			.filter(score -> !score.br$isHidden())
 			.toList();
 
 		waiting = filteredScores.stream().anyMatch(score -> {
-			final var team = scoreboard.br$getTeamOfMember(score.br$getOwner());
+			final var team = scoreboard.br$getTeam(score.br$getOwner());
 			String format = AxoText.strip(team.br$getMemberDisplayName(score.br$getOwner())).replaceAll("[^A-z0-9 .:]", "");
 			return format.contains("Waiting...") || format.contains("Starting in");
 		});

@@ -21,6 +21,9 @@ public abstract class ScoreboardMixin implements AxoScoreboard {
 	@Shadow
 	public abstract Team getTeamOfMember(String string);
 
+	@Shadow
+	public abstract Team getTeam(String string);
+
 	@Override
 	public Collection<? extends AxoScoreboardScore> br$getScores(AxoObjective objective) {
 		return getScores();
@@ -29,5 +32,10 @@ public abstract class ScoreboardMixin implements AxoScoreboard {
 	@Override
 	public AxoTeam br$getTeamOfMember(String s) {
 		return getTeamOfMember(s);
+	}
+
+	@Override
+	public AxoTeam br$getTeam(String s) {
+		return getTeam(s);
 	}
 }

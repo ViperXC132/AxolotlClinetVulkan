@@ -47,7 +47,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.hud.PlayerListHud;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.scoreboard.ScoreHolder;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.text.StringVisitable;
@@ -213,7 +212,7 @@ public abstract class PlayerListHudMixin {
 			return;
 		}
 
-		game.renderCustomScoreboardObjective(graphics, c_hyyqqfbu.name().getString(), objective.getScoreboard().getScore(ScoreHolder.of(c_hyyqqfbu.name().getString()), objective).getScore(), y, endX);
+		game.renderCustomScoreboardObjective(graphics, c_hyyqqfbu.name().getString(), c_hyyqqfbu.score(), y, endX);
 
 		ci.cancel();
 	}

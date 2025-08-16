@@ -16,4 +16,10 @@ public abstract class ScoreboardScoreMixin implements AxoScoreboardScore {
 	public @Nullable String br$getOwner() {
 		return getOwner();
 	}
+
+	@Override
+	public boolean br$isHidden() {
+		String owner = br$getOwner();
+		return owner == null || owner.startsWith("#");
+	}
 }

@@ -278,9 +278,7 @@ public class BedwarsGame {
 				return;
 			}
 			if (BedwarsMessages.matched(BedwarsMessages.GAME_END, rawMessage, m -> {
-				BedwarsTeam win =
-                    players.values().stream().filter(p -> !p.isFinalKilled()).findFirst().map(BedwarsPlayer::getTeam).orElse(null);
-				this.won = win;
+				this.won = players.values().stream().filter(p -> !p.isFinalKilled()).findFirst().map(BedwarsPlayer::getTeam).orElse(null);
 				this.wonTick = Platform.tickCount() + 10;
 			})) {
 				return;
@@ -371,8 +369,8 @@ public class BedwarsGame {
 		AxoScoreboard scoreboard = event.getObjective().br$getScoreboard();
 		final var scores = scoreboard.br$getScores(event.getObjective());
 		List<AxoScoreboardScore> filteredScores = scores.stream()
-			.filter(score -> score.br$getOwner() != null && !score.br$getOwner().startsWith("#"))
-			.collect(Collectors.toList());
+			.filter(score -> !score.br$isHidden())
+			.collect(Collectors.toCollection(ArrayList::new)); // explicitly declare the type since we require mutability
 		Collections.reverse(filteredScores);
 		if (filteredScores.size() < 3) {
 			return;
@@ -387,7 +385,7 @@ public class BedwarsGame {
 		try {
 			seconds = Integer.parseInt(timer.split(":")[1].substring(0, 2));
 		} catch (Exception e) {
-			AxolotlClientCommon.getInstance().getLogger().warn("couldn't parse timer: ", e);
+			AxolotlClientCommon.getInstance().getLogger().warn("couldn't parse timer '"+timer+"': ", e);
 			return;
 		}
 		int target = (60 - seconds) % 60;
@@ -450,8 +448,7 @@ public class BedwarsGame {
 		return mode.apply(stats);
 	}
 
-	public void renderCustomScoreboardObjective(AxoRenderContext context, String playerName, int objectiveValue, int y
-        , int endX) {
+	public void renderCustomScoreboardObjective(AxoRenderContext context, String playerName, int objectiveValue, int y, int endX) {
 		BedwarsPlayer bedwarsPlayer = getPlayer(playerName).orElse(null);
 		if (bedwarsPlayer == null) {
 			return;

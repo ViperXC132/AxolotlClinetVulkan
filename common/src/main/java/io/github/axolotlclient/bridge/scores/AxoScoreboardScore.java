@@ -31,4 +31,9 @@ public interface AxoScoreboardScore {
 	default @Nullable String br$getOwner() {
 		throw BridgeUtil.noImpl();
 	}
+
+	@RequiresImpl
+	default boolean br$isHidden() {
+		return BridgeUtil.noImplValue();
+	}
 }

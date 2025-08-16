@@ -12,8 +12,16 @@ public abstract class PlayerScoreEntryMixin implements AxoScoreboardScore {
 	@Shadow
 	public abstract String owner();
 
+	@Shadow
+	public abstract boolean isHidden();
+
 	@Override
 	public @Nullable String br$getOwner() {
 		return owner();
+	}
+
+	@Override
+	public boolean br$isHidden() {
+		return br$getOwner() == null || isHidden();
 	}
 }

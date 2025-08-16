@@ -47,10 +47,11 @@ dependencies {
 
 	implementation(include(project(path = ":common", configuration = "shadow"))!!)
 
-	include("org.apache.logging.log4j:log4j-slf4j-impl:2.0-beta9") {
+	include("org.apache.logging.log4j:log4j-slf4j-impl:2.19.0") {
 		exclude(group = "org.apache.logging.log4j", module = "log4j-api")
 		exclude(group = "org.apache.logging.log4j", module = "log4j-core")
 	}
+	include("org.apache.logging.log4j:core:2.19.0")
 	implementation(include("org.slf4j:slf4j-api:1.7.36")!!)
 	localRuntime("org.slf4j:slf4j-jdk14:1.7.36")
 
