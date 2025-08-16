@@ -74,12 +74,11 @@ public class ArrowHud extends TextHudEntry {
 			final var mainHand = player.br$getInventory().br$getMainHand().br$getItem();
 
 			if(!mainHand.br$is(AxoItemClass.RANGED_WEAPON)) {
-				return;
-			}
-
-			if(BridgeVersion.version() != BridgeVersion.V1_8) {
+				if (BridgeVersion.version() == BridgeVersion.V1_8) {
+					return;
+				}
 				final var offHand = player.br$getInventory().br$getOffHand().br$getItem();
-				if (offHand.br$is(AxoItemClass.RANGED_WEAPON)) {
+				if (!offHand.br$is(AxoItemClass.RANGED_WEAPON)) {
 					return;
 				}
 			}
