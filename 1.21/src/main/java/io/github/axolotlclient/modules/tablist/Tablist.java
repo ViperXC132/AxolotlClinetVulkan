@@ -42,7 +42,7 @@ public class Tablist extends AbstractModule {
 	public final BooleanOption showHeader = new BooleanOption("showHeader", true);
 	public final BooleanOption showFooter = new BooleanOption("showFooter", true);
 	public final BooleanOption alwaysShowHeadLayer = new BooleanOption("alwaysShowHeadLayer", false);
-	private final BooleanOption numericalPing = new BooleanOption("numericalPing", false);
+	public final BooleanOption numericalPing = new BooleanOption("numericalPing", false);
 	private final BooleanOption smallPingText = new BooleanOption("tablist.small_ping_text", false);
 	private final ColorOption pingColor0 = new ColorOption("pingColor0", Color.parse("#FF00FFFF"));
 	private final ColorOption pingColor1 = new ColorOption("pingColor1", Color.parse("#FF00FF00"));

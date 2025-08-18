@@ -93,6 +93,16 @@ public abstract class PlayerListHudMixin {
 			UserRequest.getOnline(info.getProfile().getId().toString())) width += 10;
 		if (Tablist.getInstance().numericalPing.get())
 			width += (instance.width(String.valueOf(info.getLatency())) - 10);
+		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().isWaiting()) {
+			if (!info.getProfile().getName().contains(ChatFormatting.OBFUSCATED.toString())) {
+				try {
+					String uuid = UUIDHelper.toUndashed(info.getProfile().getId());
+					String render = LevelHead.getDisplayString(LevelHead.Mode.BEDWARS, uuid);
+					width += instance.width(render) + 2;
+				} catch (Exception ignored) {
+				}
+			}
+		}
 		return width;
 	}
 
@@ -101,9 +111,7 @@ public abstract class PlayerListHudMixin {
 	public void axolotlclient$moveName2(GuiGraphics instance, Font font, Component component, int x, int y, int color, Operation<Integer> original, @Local PlayerInfo info) {
 		if (AxolotlClient.config().showBadges.get() &&
 			UserRequest.getOnline(info.getProfile().getId().toString())) {
-
 			instance.blit(RenderPipelines.GUI_TEXTURED, AxolotlClient.badgeIcon, x, y, 0, 0, 8, 8, 8, 8);
-
 			x += 9;
 		}
 		original.call(instance, font, component, x, y, color);
@@ -155,32 +163,28 @@ public abstract class PlayerListHudMixin {
 		return drawHat || Tablist.getInstance().alwaysShowHeadLayer.get();
 	}
 
-	@Inject(method = "render", at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/client/gui/components/PlayerTabOverlay;renderPingIcon(Lnet/minecraft/client/gui/GuiGraphics;IIILnet/minecraft/client/multiplayer/PlayerInfo;)V"))
-	public void axolotlclient$renderWithoutObjective(GuiGraphics graphics, int scaledWindowWidth, Scoreboard scoreboard, Objective objective, CallbackInfo ci,
-													 @Local(ordinal = 1) int i,
-													 @Local(ordinal = 7) int n,
-													 @Local(ordinal = 14) int v,
-													 @Local(ordinal = 15) int y,
-													 @Local PlayerInfo playerListEntry2) {
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/PlayerTabOverlay;renderPingIcon(Lnet/minecraft/client/gui/GuiGraphics;IIILnet/minecraft/client/multiplayer/PlayerInfo;)V"))
+	private void renderWithoutObjective(PlayerTabOverlay instance, GuiGraphics guiGraphics, int width, int x, int y, PlayerInfo playerInfo, Operation<Void> original) {
 		if (!BedwarsMod.getInstance().isEnabled() || !BedwarsMod.getInstance().isWaiting()) {
 			return;
 		}
-		int startX = v + i + 1;
-		int endX = startX + n;
+		int endX = x + width - 1;
 		String render;
 		try {
-			if (playerListEntry2.getProfile().getName().contains(ChatFormatting.OBFUSCATED.toString())) {
+			if (playerInfo.getProfile().getName().contains(ChatFormatting.OBFUSCATED.toString())) {
 				return;
 			}
 
-			String uuid = UUIDHelper.toUndashed(playerListEntry2.getProfile().getId());
+			String uuid = UUIDHelper.toUndashed(playerInfo.getProfile().getId());
 			render = LevelHead.getDisplayString(LevelHead.Mode.BEDWARS, uuid);
 		} catch (Exception e) {
 			return;
 		}
-		graphics.drawString(minecraft.font, render,
-			(endX - this.minecraft.font.width(render)) + 20, y, -1
+		guiGraphics.drawString(minecraft.font,
+			render,
+			(endX - minecraft.font.width(render)) + 20,
+			y,
+			-1
 		);
 	}
 

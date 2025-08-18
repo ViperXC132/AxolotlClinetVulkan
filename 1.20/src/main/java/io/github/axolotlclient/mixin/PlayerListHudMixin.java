@@ -30,7 +30,6 @@ import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.api.requests.UserRequest;
@@ -52,11 +51,9 @@ import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -68,8 +65,6 @@ public abstract class PlayerListHudMixin {
 	private Text header;
 	@Shadow
 	private Text footer;
-	@Unique
-	private GameProfile axolotlclient$profile;
 	@Shadow
 	@Final
 	private MinecraftClient client;
@@ -89,29 +84,34 @@ public abstract class PlayerListHudMixin {
 		return orig;
 	}
 
-	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/PlayerListHud;getPlayerName(Lnet/minecraft/client/network/PlayerListEntry;)Lnet/minecraft/text/Text;"))
-	private PlayerListEntry axolotlclient$getPlayer(PlayerListEntry playerEntry) {
-		axolotlclient$profile = playerEntry.getProfile();
-		return playerEntry;
-	}
-
-	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;getWidth(Lnet/minecraft/text/StringVisitable;)I"))
-	private int axolotlclient$moveName(TextRenderer instance, StringVisitable text) {
-		if (axolotlclient$profile != null && AxolotlClient.config().showBadges.get() && UserRequest.getOnline(axolotlclient$profile.getId().toString()))
-			return instance.getWidth(text) + 10;
-		return instance.getWidth(text);
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;getWidth(Lnet/minecraft/text/StringVisitable;)I", ordinal = 0))
+	private int axolotlclient$moveName(TextRenderer instance, StringVisitable text, Operation<Integer> original, @Local PlayerListEntry entry) {
+		var width = original.call(instance, text);
+		if (AxolotlClient.config().showBadges.get() && UserRequest.getOnline(entry.getProfile().getId().toString())) {
+			width += 10;
+		}
+		if (Tablist.getInstance().numericalPing.get())
+			width += (instance.getWidth(String.valueOf(entry.getLatency())) - 10);
+		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().isWaiting()) {
+			if (!entry.getProfile().getName().contains(Formatting.OBFUSCATED.toString())) {
+				try {
+					String uuid = UUIDHelper.toUndashed(entry.getProfile().getId());
+					String render = LevelHead.getDisplayString(LevelHead.Mode.BEDWARS, uuid);
+					width += instance.getWidth(render) + 2;
+				} catch (Exception ignored) {
+				}
+			}
+		}
+		return width;
 	}
 
 	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawShadowedText(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)I"))
-	public int axolotlclient$moveName2(GuiGraphics instance, TextRenderer renderer, Text text, int x, int y, int color) {
-		if (axolotlclient$profile != null && AxolotlClient.config().showBadges.get() && UserRequest.getOnline(axolotlclient$profile.getId().toString())) {
+	public int axolotlclient$moveName2(GuiGraphics instance, TextRenderer renderer, Text text, int x, int y, int color, @Local PlayerListEntry entry) {
+		if (AxolotlClient.config().showBadges.get() && UserRequest.getOnline(entry.getProfile().getId().toString())) {
 			RenderSystem.setShaderColor(1, 1, 1, 1);
-
 			instance.drawTexture(AxolotlClient.badgeIcon, x, y, 8, 8, 0, 0, 8, 8, 8, 8);
-
 			x += 9;
 		}
-		axolotlclient$profile = null;
 		return instance.drawShadowedText(renderer, text, x, y, color);
 	}
 
@@ -155,35 +155,24 @@ public abstract class PlayerListHudMixin {
 		return drawHat || Tablist.getInstance().alwaysShowHeadLayer.get();
 	}
 
-	@Inject(
-		method = "render",
-		at = @At(
-			value = "INVOKE",
-			target = "Lnet/minecraft/client/gui/hud/PlayerListHud;renderLatencyIcon(Lnet/minecraft/client/gui/GuiGraphics;IIILnet/minecraft/client/network/PlayerListEntry;)V"
-		)
-	)
-	public void axolotlclient$renderWithoutObjective(
-		GuiGraphics graphics, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective, CallbackInfo ci,
-		@Local(ordinal = 1) int i,
-		@Local(ordinal = 6) int n, @Local(ordinal = 13) int v, @Local(ordinal = 14) int y, @Local PlayerListEntry playerListEntry2
-	) {
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/PlayerListHud;renderLatencyIcon(Lnet/minecraft/client/gui/GuiGraphics;IIILnet/minecraft/client/network/PlayerListEntry;)V"))
+	private void renderWithoutObjective(PlayerListHud instance, GuiGraphics guiGraphics, int width, int x, int y, PlayerListEntry playerListEntry, Operation<Void> original) {
 		if (!BedwarsMod.getInstance().isEnabled() || !BedwarsMod.getInstance().isWaiting()) {
 			return;
 		}
-		int startX = v + i + 1;
-		int endX = startX + n;
+		int endX = x + width - 1;
 		String render;
 		try {
-			if (playerListEntry2.getProfile().getName().contains(Formatting.OBFUSCATED.toString())) {
+			if (playerListEntry.getProfile().getName().contains(Formatting.OBFUSCATED.toString())) {
 				return;
 			}
 
-			String uuid = UUIDHelper.toUndashed(playerListEntry2.getProfile().getId());
+			String uuid = UUIDHelper.toUndashed(playerListEntry.getProfile().getId());
 			render = LevelHead.getDisplayString(LevelHead.Mode.BEDWARS, uuid);
 		} catch (Exception e) {
 			return;
 		}
-		graphics.drawShadowedText(client.textRenderer,
+		guiGraphics.drawShadowedText(client.textRenderer,
 			render,
 			(endX - this.client.textRenderer.getWidth(render)) + 20,
 			y,

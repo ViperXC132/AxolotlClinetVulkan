@@ -212,7 +212,7 @@ public abstract class InGameHudMixin {
 			value = "INVOKE",
 			target = "Lnet/minecraft/util/math/MathHelper;ceil(D)I")
 	)
-	public void axolotlclient$displayHardcoreHearts(GuiGraphics graphics, PlayerEntity player, int x, int y, int lines, int regeneratingHeartIndex, float maxHealth, int lastHealth, int health, int absorption, boolean blinking, CallbackInfo ci, @Local LocalBooleanRef hardcore) {
+	public void axolotlclient$displayHardcoreHearts(GuiGraphics graphics, PlayerEntity player, int x, int y, int lines, int regeneratingHeartIndex, float maxHealth, int lastHealth, int health, int absorption, boolean blinking, CallbackInfo ci, @Local(ordinal = 1) LocalBooleanRef hardcore) {
 		if (BedwarsMod.getInstance().isEnabled() &&
 			BedwarsMod.getInstance().inGame() && BedwarsMod.getInstance().hardcoreHearts.get() &&
 			!BedwarsMod.getInstance().getGame().get().getSelf().isBed()) {

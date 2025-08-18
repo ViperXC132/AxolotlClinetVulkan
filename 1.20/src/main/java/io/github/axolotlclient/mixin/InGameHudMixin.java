@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
@@ -40,6 +42,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
+import net.minecraft.world.WorldProperties;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -192,18 +195,12 @@ public abstract class InGameHudMixin {
 		return scaledWidth;
 	}
 
-	@ModifyVariable(
-		method = "renderHealthBar",
-		at = @At(
-			value = "STORE"
-		),
-		ordinal = 13
-	)
-	public int axolotlclient$displayHardcoreHearts(int v) {
-		boolean hardcore = BedwarsMod.getInstance().isEnabled() &&
+	@WrapOperation(method = "renderHealthBar", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/WorldProperties;isHardcore()Z"))
+	private boolean axolotlclient$displayHardcoreHearts(WorldProperties instance, Operation<Boolean> original) {
+		if (BedwarsMod.getInstance().isEnabled() &&
 			BedwarsMod.getInstance().inGame() && BedwarsMod.getInstance().hardcoreHearts.get() &&
-			!BedwarsMod.getInstance().getGame().get().getSelf().isBed();
-		return hardcore ? 9 * 5 : v;
+			!BedwarsMod.getInstance().getGame().get().getSelf().isBed()) return true;
+		return original.call(instance);
 	}
 
 	@ModifyVariable(
