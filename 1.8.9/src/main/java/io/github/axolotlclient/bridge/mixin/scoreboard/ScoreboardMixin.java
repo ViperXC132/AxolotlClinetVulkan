@@ -29,6 +29,7 @@ import io.github.axolotlclient.bridge.scores.AxoScoreboard;
 import io.github.axolotlclient.bridge.scores.AxoScoreboardScore;
 import io.github.axolotlclient.bridge.scores.AxoTeam;
 import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardScore;
 import net.minecraft.scoreboard.team.Team;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,17 +39,17 @@ import org.spongepowered.asm.mixin.Shadow;
 public abstract class ScoreboardMixin implements AxoScoreboard {
 
 	@Shadow
-	public abstract Collection<ScoreboardScore> getScores();
-
-	@Shadow
 	public abstract Team getTeamOfMember(String string);
 
 	@Shadow
 	public abstract Team getTeam(String string);
 
+	@Shadow
+	public abstract Collection<ScoreboardScore> getScores(ScoreboardObjective scoreboardObjective);
+
 	@Override
 	public Collection<? extends AxoScoreboardScore> br$getScores(AxoObjective objective) {
-		return getScores();
+		return getScores((ScoreboardObjective) objective);
 	}
 
 	@Override

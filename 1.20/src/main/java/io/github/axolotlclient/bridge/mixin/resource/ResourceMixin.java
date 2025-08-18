@@ -24,6 +24,7 @@ package io.github.axolotlclient.bridge.mixin.resource;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 
 import io.github.axolotlclient.bridge.resource.AxoResource;
 import net.minecraft.resource.Resource;
@@ -36,8 +37,16 @@ public abstract class ResourceMixin implements AxoResource {
 	@Shadow
 	public abstract BufferedReader openBufferedReader() throws IOException;
 
+	@Shadow
+	public abstract InputStream open() throws IOException;
+
 	@Override
 	public BufferedReader br$asReader() throws IOException {
 		return openBufferedReader();
+	}
+
+	@Override
+	public InputStream br$asStream() throws IOException {
+		return open();
 	}
 }

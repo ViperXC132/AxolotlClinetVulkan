@@ -129,7 +129,7 @@ public class PlatformDispatchMixin {
 		final var minecraft = MinecraftClient.getInstance();
 		final var graphics = new GraphicsImpl(0, 0);
 		final var serverEntry = minecraft.getCurrentServerEntry();
-		Preconditions.checkState(serverEntry != null, "no server");
+		if (serverEntry == null) return null;
 
 		graphics.setPixelData(Base64.getDecoder().decode(serverEntry.getFavicon()));
 		final var img = NativeImage.read(Objects.requireNonNull(serverEntry.getFavicon()));

@@ -24,13 +24,10 @@ package io.github.axolotlclient.bridge.mixin;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.Base64;
 import java.util.List;
 import java.util.Objects;
 
-import com.google.common.base.Preconditions;
 import com.google.common.hash.Hashing;
-import io.github.axolotlclient.AxolotlClientConfig.impl.util.GraphicsImpl;
 import io.github.axolotlclient.bridge.PlatformDispatch;
 import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
 import io.github.axolotlclient.bridge.render.AxoSprite;
@@ -124,15 +121,13 @@ public class PlatformDispatchMixin {
 	@Overwrite
 	public static AxoSprite.Dynamic ipHud$getServerIcon() throws IOException {
 		final var minecraft = MinecraftClient.getInstance();
-		final var graphics = new GraphicsImpl(0, 0);
 		final var serverEntry = minecraft.getCurrentServerEntry();
-		Preconditions.checkState(serverEntry != null, "no server");
 
-		graphics.setPixelData(Base64.getDecoder().decode(serverEntry.getIcon()));
-		final var img = NativeImage.read(Objects.requireNonNull(serverEntry.getIcon()));
+		final var img = NativeImage.read(Objects.requireNonNull(serverEntry == null ? minecraft.getServer().getServerMetadata().getFavicon() : serverEntry.getIcon()));
 		final var icon = new NativeImageBackedTexture(img);
 		final var iconId = new Identifier(
-			"servers/" + Hashing.sha1().hashUnencodedChars(minecraft.getCurrentServerEntry().address) + "/icon"
+			serverEntry == null ? "worlds/" + Hashing.sha1().hashUnencodedChars(minecraft.getServer().getSt().) + "/icon" :
+				"servers/" + Hashing.sha1().hashUnencodedChars(minecraft.getCurrentServerEntry().address) + "/icon"
 		);
 		icon.upload();
 		minecraft.getTextureManager().registerTexture(iconId, icon);

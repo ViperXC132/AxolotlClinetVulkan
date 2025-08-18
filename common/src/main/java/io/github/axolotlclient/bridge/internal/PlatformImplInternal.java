@@ -34,6 +34,7 @@ import io.github.axolotlclient.bridge.key.AxoKey;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.bridge.render.AxoWindow;
+import io.github.axolotlclient.bridge.scores.AxoTeam;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.bridge.util.AxoText;
 import org.jetbrains.annotations.ApiStatus;
@@ -127,6 +128,11 @@ public class PlatformImplInternal {
 
 	@RequiresImpl
 	public static void setTabListHeader(AxoText text) {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	public static String getTeamMemberDisplayName(AxoTeam team, String s) {
 		throw BridgeUtil.noImpl();
 	}
 }

@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
@@ -38,6 +40,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.hud.in_game.InGameHud;
 import net.minecraft.client.render.DeltaTracker;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
@@ -203,18 +206,18 @@ public abstract class InGameHudMixin {
 		return instance.getScaledWindowWidth();
 	}
 
-	@ModifyVariable(
+	@Inject(
 		method = "renderHealthBar",
 		at = @At(
-			value = "STORE"
-		),
-		ordinal = 13
+			value = "INVOKE",
+			target = "Lnet/minecraft/util/math/MathHelper;ceil(D)I")
 	)
-	public int axolotlclient$displayHardcoreHearts(int v) {
-		boolean hardcore = BedwarsMod.getInstance().isEnabled() &&
+	public void axolotlclient$displayHardcoreHearts(GuiGraphics graphics, PlayerEntity player, int x, int y, int lines, int regeneratingHeartIndex, float maxHealth, int lastHealth, int health, int absorption, boolean blinking, CallbackInfo ci, @Local LocalBooleanRef hardcore) {
+		if (BedwarsMod.getInstance().isEnabled() &&
 			BedwarsMod.getInstance().inGame() && BedwarsMod.getInstance().hardcoreHearts.get() &&
-			!BedwarsMod.getInstance().getGame().get().getSelf().isBed();
-		return hardcore ? 9 * 5 : v;
+			!BedwarsMod.getInstance().getGame().get().getSelf().isBed()) {
+			hardcore.set(true);
+		}
 	}
 
 	@ModifyVariable(

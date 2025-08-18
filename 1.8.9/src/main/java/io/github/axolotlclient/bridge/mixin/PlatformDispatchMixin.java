@@ -118,10 +118,12 @@ public class PlatformDispatchMixin {
 		final var minecraft = Minecraft.getInstance();
 
 		var graphics = new GraphicsImpl(0, 0);
-		graphics.setPixelData(Base64.getDecoder().decode(minecraft.getCurrentServerEntry().getIcon()));
+		var serverEntry = minecraft.getCurrentServerEntry();
+		if (serverEntry == null) return null;
+		graphics.setPixelData(Base64.getDecoder().decode(serverEntry.getIcon()));
 		final var icon = Util.getTexture(
 			graphics,
-			"servers/" + Hashing.sha1().hashUnencodedChars(minecraft.getCurrentServerEntry().address) + "/icon"
+			"servers/" + Hashing.sha1().hashUnencodedChars(serverEntry.address) + "/icon"
 		);
 
 		class Impl implements AxoSprite.Dynamic, AxoSpriteImpl {

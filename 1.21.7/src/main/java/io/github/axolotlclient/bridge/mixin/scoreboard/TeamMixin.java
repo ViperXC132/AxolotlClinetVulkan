@@ -30,8 +30,4 @@ import org.spongepowered.asm.mixin.Mixin;
 @Mixin(PlayerTeam.class)
 public abstract class TeamMixin implements AxoTeam {
 
-	@Override
-	public String br$getMemberDisplayName(String s) {
-		return PlayerTeam.formatNameForTeam((PlayerTeam) (Object) this, Component.nullToEmpty(s)).getString();
-	}
 }

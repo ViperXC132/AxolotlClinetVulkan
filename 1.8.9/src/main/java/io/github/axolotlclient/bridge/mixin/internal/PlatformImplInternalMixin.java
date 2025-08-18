@@ -43,6 +43,7 @@ import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.bridge.render.AxoWindow;
+import io.github.axolotlclient.bridge.scores.AxoTeam;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.util.Util;
@@ -56,6 +57,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.locale.I18n;
 import net.minecraft.resource.Identifier;
+import net.minecraft.scoreboard.team.AbstractTeam;
+import net.minecraft.scoreboard.team.Team;
 import net.minecraft.text.Formatting;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Text;
@@ -127,7 +130,7 @@ public class PlatformImplInternalMixin {
 	 */
 	@Overwrite
 	public static AxoKeybinding createKeyBinding(AxoKey defaultKey, String name, String category) {
-		final var id = ((AxoKeyImpl)Objects.requireNonNullElse(defaultKey, AxoKeys.KEY_UNKNOWN)).id();
+		final var id = ((AxoKeyImpl) Objects.requireNonNullElse(defaultKey, AxoKeys.KEY_UNKNOWN)).id();
 		final var binding = new KeyBinding(name, id, category);
 		Bridge.addKeybind(binding);
 		return binding;
@@ -225,5 +228,14 @@ public class PlatformImplInternalMixin {
 	@Overwrite
 	public static void setTabListHeader(AxoText text) {
 		Minecraft.getInstance().gui.getPlayerTabOverlay().setHeader((Text) text);
+	}
+
+	/**
+	 * @author moehreag
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static String getTeamMemberDisplayName(AxoTeam team, String s) {
+		return Team.getMemberDisplayName((AbstractTeam) team, s);
 	}
 }

@@ -23,6 +23,7 @@
 package io.github.axolotlclient.bridge.mixin.resource;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -40,5 +41,10 @@ public interface ResourceMixin extends AxoResource {
 	@Override
 	default BufferedReader br$asReader() {
 		return new BufferedReader(new InputStreamReader(getInputStream()));
+	}
+
+	@Override
+	default InputStream br$asStream() throws IOException {
+		return getInputStream();
 	}
 }

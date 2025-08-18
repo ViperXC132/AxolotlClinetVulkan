@@ -34,6 +34,7 @@ import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
 import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
 import io.github.axolotlclient.bridge.events.types.WorldLoadEvent;
+import io.github.axolotlclient.bridge.scores.AxoTeam;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
 import lombok.Getter;
@@ -195,7 +196,7 @@ public class BedwarsMod implements AbstractHypixelMod {
 
 		waiting = filteredScores.stream().anyMatch(score -> {
 			final var team = scoreboard.br$getTeam(score.br$getOwner());
-			String format = AxoText.strip(team.br$getMemberDisplayName(score.br$getOwner())).replaceAll("[^A-z0-9 .:]", "");
+			String format = AxoText.strip(AxoTeam.br$getMemberDisplayName(team, score.br$getOwner())).replaceAll("[^A-z0-9 .:]", "");
 			return format.contains("Waiting...") || format.contains("Starting in");
 		});
 	}

@@ -29,7 +29,6 @@ import java.util.UUID;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.authlib.GameProfile;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.AxolotlClient;
@@ -52,7 +51,6 @@ import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -60,7 +58,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(PlayerListHud.class)
 public abstract class PlayerListHudMixin {
@@ -96,11 +93,23 @@ public abstract class PlayerListHudMixin {
 		return playerEntry;
 	}
 
-	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;getWidth(Lnet/minecraft/text/StringVisitable;)I"))
-	private int axolotlclient$moveName(TextRenderer instance, StringVisitable text) {
-		if (axolotlclient$profile != null && AxolotlClient.config().showBadges.get() && UserRequest.getOnline(axolotlclient$profile.getId().toString()))
-			return instance.getWidth(text) + 10;
-		return instance.getWidth(text);
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;getWidth(Lnet/minecraft/text/StringVisitable;)I"))
+	private int axolotlclient$moveName(TextRenderer instance, StringVisitable text, Operation<Integer> original) {
+		var width = original.call(instance, text);
+		if (axolotlclient$profile != null && AxolotlClient.config().showBadges.get() && UserRequest.getOnline(axolotlclient$profile.getId().toString())) {
+			width += 10;
+		}
+		if (BedwarsMod.getInstance().isEnabled() && !BedwarsMod.getInstance().isWaiting()) {
+			if (!axolotlclient$profile.getName().contains(Formatting.OBFUSCATED.toString())) {
+				try {
+					String uuid = UUIDHelper.toUndashed(axolotlclient$profile.getId());
+					String render = LevelHead.getDisplayString(LevelHead.Mode.BEDWARS, uuid);
+					width += instance.getWidth(render) + 2;
+				} catch (Exception ignored) {
+				}
+			}
+		}
+		return width;
 	}
 
 	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawShadowedText(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)I"))
@@ -156,13 +165,38 @@ public abstract class PlayerListHudMixin {
 		return drawHat || Tablist.getInstance().alwaysShowHeadLayer.get();
 	}
 
-	@Inject(
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/PlayerListHud;renderLatencyIcon(Lnet/minecraft/client/gui/GuiGraphics;IIILnet/minecraft/client/network/PlayerListEntry;)V"))
+	private void renderWithoutObjective(PlayerListHud instance, GuiGraphics guiGraphics, int width, int x, int y, PlayerListEntry playerListEntry, Operation<Void> original) {
+		if (!BedwarsMod.getInstance().isEnabled() || !BedwarsMod.getInstance().isWaiting()) {
+			return;
+		}
+		int endX = x + width - 1;
+		String render;
+		try {
+			if (playerListEntry.getProfile().getName().contains(Formatting.OBFUSCATED.toString())) {
+				return;
+			}
+
+			String uuid = UUIDHelper.toUndashed(playerListEntry.getProfile().getId());
+			render = LevelHead.getDisplayString(LevelHead.Mode.BEDWARS, uuid);
+		} catch (Exception e) {
+			return;
+		}
+		guiGraphics.drawShadowedText(client.textRenderer,
+			render,
+			(endX - this.client.textRenderer.getWidth(render)) + 20,
+			y,
+			-1
+		);
+	}
+
+
+	/*@Inject(
 		method = "render",
 		at = @At(
 			value = "INVOKE",
 			target = "Lnet/minecraft/client/gui/hud/PlayerListHud;renderLatencyIcon(Lnet/minecraft/client/gui/GuiGraphics;IIILnet/minecraft/client/network/PlayerListEntry;)V"
-		),
-		locals = LocalCapture.CAPTURE_FAILHARD
+		)
 	)
 	public void axolotlclient$renderWithoutObjective(
 		GuiGraphics graphics, int scaledWindowWidth, Scoreboard scoreboard, @Nullable ScoreboardObjective objective, CallbackInfo ci,
@@ -190,7 +224,7 @@ public abstract class PlayerListHudMixin {
 			y,
 			-1
 		);
-	}
+	}*/
 
 	@Inject(
 		method = "renderScoreboardObjective",

@@ -22,15 +22,16 @@
 
 package io.github.axolotlclient.bridge.mixin.scoreboard;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 
 import io.github.axolotlclient.bridge.scores.AxoObjective;
 import io.github.axolotlclient.bridge.scores.AxoScoreboard;
 import io.github.axolotlclient.bridge.scores.AxoScoreboardScore;
 import io.github.axolotlclient.bridge.scores.AxoTeam;
-import net.minecraft.scoreboard.*;
+import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.scoreboard.ScoreboardEntry;
+import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.scoreboard.Team;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -45,9 +46,7 @@ public abstract class ScoreboardMixin implements AxoScoreboard {
 
 	@Override
 	public Collection<? extends AxoScoreboardScore> br$getScores(AxoObjective objective) {
-		var entries = new ArrayList<>(getEntriesForObjective((ScoreboardObjective) objective));
-		entries.sort(Comparator.comparing(ScoreboardEntry::value).reversed().thenComparing(ScoreboardEntry::owner, String.CASE_INSENSITIVE_ORDER));
-		return entries;
+		return getEntriesForObjective((ScoreboardObjective) objective);
 	}
 
 	@Override

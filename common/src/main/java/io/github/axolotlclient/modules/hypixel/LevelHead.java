@@ -52,7 +52,7 @@ public class LevelHead implements AbstractHypixelMod {
 	}
 
 	public String getDisplayString(String uuid) {
-		return getDisplayString(mode.get(), API.getInstance().sanitizeUUID(uuid));
+		return getDisplayString(mode.get(), API.sanitizeUUID(uuid));
 	}
 
 
