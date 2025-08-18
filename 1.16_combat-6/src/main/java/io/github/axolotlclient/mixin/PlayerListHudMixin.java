@@ -160,20 +160,23 @@ public abstract class PlayerListHudMixin {
 	}
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/PlayerListHud;renderLatencyIcon(Lnet/minecraft/client/util/math/MatrixStack;IIILnet/minecraft/client/network/PlayerListEntry;)V"))
-	private void renderWithoutObjective(PlayerListHud instance, MatrixStack matrixStack, int width, int x, int y, PlayerListEntry playerListEntry, Operation<Void> original) {
+	private void axolotlclient$renderWithoutObjective(PlayerListHud instance, MatrixStack matrixStack, int width, int x, int y, PlayerListEntry playerListEntry, Operation<Void> original) {
 		if (!BedwarsMod.getInstance().isEnabled() || !BedwarsMod.getInstance().isWaiting()) {
+			original.call(instance, matrixStack, width, x, y, playerListEntry);
 			return;
 		}
 		int endX = x + width - 1;
 		String render;
 		try {
 			if (playerListEntry.getProfile().getName().contains(Formatting.OBFUSCATED.toString())) {
+				original.call(instance, matrixStack, width, x, y, playerListEntry);
 				return;
 			}
 
 			String uuid = UUIDHelper.toUndashed(playerListEntry.getProfile().getId());
 			render = LevelHead.getDisplayString(LevelHead.Mode.BEDWARS, uuid);
 		} catch (Exception e) {
+			original.call(instance, matrixStack, width, x, y, playerListEntry);
 			return;
 		}
 		DrawableHelper.drawStringWithShadow(matrixStack,

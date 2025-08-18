@@ -789,5 +789,5 @@
 	"profiles.profile.duplicate": "Duplicate",
 	"profiles.profile.current": "Current!",
 	"profiles.profile.add": "Add empty Profile",
-	"api.sent_status_updates": "Send Status Updates"
+	"api.send_status_updates": "Send Status Updates"
 }

@@ -159,20 +159,23 @@ public abstract class PlayerListHudMixin extends GuiElement {
 	}
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;renderPing(IIILnet/minecraft/client/network/PlayerInfo;)V"))
-	private void renderWithoutObjective(PlayerTabOverlay instance, int width, int x, int y, PlayerInfo playerInfo, Operation<Void> original) {
+	private void axolotlclient$renderWithoutObjective(PlayerTabOverlay instance, int width, int x, int y, PlayerInfo playerInfo, Operation<Void> original) {
 		if (!BedwarsMod.getInstance().isEnabled() || !BedwarsMod.getInstance().isWaiting()) {
+			original.call(instance, width, x, y, playerInfo);
 			return;
 		}
 		int endX = x + width - 1;
 		String render;
 		try {
 			if (playerInfo.getProfile().getName().contains(Formatting.OBFUSCATED.toString())) {
+				original.call(instance, width, x, y, playerInfo);
 				return;
 			}
 
 			String uuid = UUIDHelper.toUndashed(playerInfo.getProfile().getId());
 			render = LevelHead.getDisplayString(LevelHead.Mode.BEDWARS, uuid);
 		} catch (Exception e) {
+			original.call(instance, width, x, y, playerInfo);
 			return;
 		}
 		minecraft.textRenderer.drawWithShadow(

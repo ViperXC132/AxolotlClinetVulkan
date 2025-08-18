@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.api.requests.UserRequest;
@@ -133,7 +134,7 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
 	}
 
 	@Inject(method = "renderNameTag", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Lnet/minecraft/network/chat/Component;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)V", ordinal = 1))
-	public void axolotlclient$addLevel(S entityRenderState, Component c, PoseStack matrices, MultiBufferSource vertexConsumers, int light, CallbackInfo ci) {
+	public void axolotlclient$addLevel(S entityRenderState, Component c, PoseStack matrices, MultiBufferSource vertexConsumers, int light, CallbackInfo ci, @Local(ordinal = 2) int bgColor) {
 		if (entityRenderState instanceof PlayerRenderState state && c.equals(entityRenderState.nameTag)) {
 			if (Minecraft.getInstance().getCurrentServer() != null && Minecraft.getInstance().getCurrentServer().ip.contains("hypixel.net")) {
 				AbstractClientPlayer entity = (AbstractClientPlayer) Minecraft.getInstance().level.getEntity(state.id);
@@ -146,7 +147,8 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
 							float y = c.getString().contains("deadmau5") ? -20 : -10;
 
 							Matrix4f matrix4f = matrices.last().pose();
-							textRenderer.drawInBatch(text, x, y, LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.config().useShadows.get(), matrix4f, vertexConsumers, Font.DisplayMode.NORMAL, LevelHead.getInstance().background.get() ? 127 : 0, light);
+							textRenderer.drawInBatch(text, x, y, LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.config().useShadows.get(), matrix4f, vertexConsumers, Font.DisplayMode.SEE_THROUGH, LevelHead.getInstance().background.get() ? bgColor : 0, light);
+							textRenderer.drawInBatch(text, x, y, LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.config().useShadows.get(), matrix4f, vertexConsumers, Font.DisplayMode.NORMAL, 0, light);
 						}
 					} else if (LevelHead.getInstance().enabled.get()) {
 						String text = LevelHead.getInstance().getDisplayString(entity.getStringUUID());
@@ -155,7 +157,8 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
 						float y = c.getString().contains("deadmau5") ? -20 : -10;
 
 						Matrix4f matrix4f = matrices.last().pose();
-						textRenderer.drawInBatch(text, x, y, LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.config().useShadows.get(), matrix4f, vertexConsumers, Font.DisplayMode.NORMAL, LevelHead.getInstance().background.get() ? 127 : 0, light);
+						textRenderer.drawInBatch(text, x, y, LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.config().useShadows.get(), matrix4f, vertexConsumers, Font.DisplayMode.SEE_THROUGH, LevelHead.getInstance().background.get() ? bgColor : 0, light);
+						textRenderer.drawInBatch(text, x, y, LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.config().useShadows.get(), matrix4f, vertexConsumers, Font.DisplayMode.NORMAL, 0, light);
 					}
 				}
 			}

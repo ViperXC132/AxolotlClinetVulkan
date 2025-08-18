@@ -44,14 +44,8 @@ public class NoxesiumIntegration {
 			ClientTickEvents.END_CLIENT_TICK.register(c -> {
 				if (!inizialized) {
 					inizialized = true;
-					NoxesiumPackets.CLIENT_MCC_SERVER.addListener(this, (self, packet, ctx) -> {
-						System.out.println(packet);
-						currentServer = packet;
-					});
-					NoxesiumPackets.CLIENT_MCC_GAME_STATE.addListener(this, (self, packet, ctx) -> {
-						System.out.println(packet);
-						currentGameState = packet;
-					});
+					NoxesiumPackets.CLIENT_MCC_SERVER.addListener(this, (self, packet, ctx) -> currentServer = packet);
+					NoxesiumPackets.CLIENT_MCC_GAME_STATE.addListener(this, (self, packet, ctx) -> currentGameState = packet);
 				}
 			});
 

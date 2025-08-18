@@ -167,7 +167,6 @@ public class BedwarsMod implements AbstractHypixelMod {
 	private boolean checkReady() {
 		for (final var player : AxoMinecraftClient.getInstance().br$getOnlinePlayers()) {
 			String name = Platform.getTabNameFor(player).replaceAll("§.", "");
-			System.out.println("name: "+name);
 			if (name.charAt(1) == ' ') {
 				return true;
 			}

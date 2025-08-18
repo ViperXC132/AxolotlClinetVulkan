@@ -51,7 +51,13 @@ public interface ResourceManagerMixin extends AxoResourceManager {
 	@Override
 	default Map<AxoIdentifier, AxoResource> br$listResources(String namespace, String prefix, Predicate<AxoIdentifier> filter) {
 		// this cast is maybe not ideal
-		return findResources(prefix, s -> filter.test(AxoIdentifier.of(s)))
+		return findResources(prefix, s -> {
+			try {
+				return filter.test(AxoIdentifier.of(s));
+			} catch (Exception e) {
+				return false;
+			}
+		})
 			.stream().map(id -> {
 				try {
 					return getResource(id);

@@ -166,18 +166,21 @@ public abstract class PlayerListHudMixin {
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/PlayerTabOverlay;renderPingIcon(Lnet/minecraft/client/gui/GuiGraphics;IIILnet/minecraft/client/multiplayer/PlayerInfo;)V"))
 	private void renderWithoutObjective(PlayerTabOverlay instance, GuiGraphics guiGraphics, int width, int x, int y, PlayerInfo playerInfo, Operation<Void> original) {
 		if (!BedwarsMod.getInstance().isEnabled() || !BedwarsMod.getInstance().isWaiting()) {
+			original.call(instance, guiGraphics, width, x, y, playerInfo);
 			return;
 		}
 		int endX = x + width - 1;
 		String render;
 		try {
 			if (playerInfo.getProfile().getName().contains(ChatFormatting.OBFUSCATED.toString())) {
+				original.call(instance, guiGraphics, width, x, y, playerInfo);
 				return;
 			}
 
 			String uuid = UUIDHelper.toUndashed(playerInfo.getProfile().getId());
 			render = LevelHead.getDisplayString(LevelHead.Mode.BEDWARS, uuid);
 		} catch (Exception e) {
+			original.call(instance, guiGraphics, width, x, y, playerInfo);
 			return;
 		}
 		guiGraphics.drawString(minecraft.font,

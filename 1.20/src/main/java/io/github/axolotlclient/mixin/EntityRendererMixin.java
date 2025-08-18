@@ -125,7 +125,7 @@ public abstract class EntityRendererMixin<T extends Entity> {
 
 	@Inject(method = "renderLabelIfPresent", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;draw(Lnet/minecraft/text/Text;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/render/VertexConsumerProvider;Lnet/minecraft/client/font/TextRenderer$TextLayerType;II)I", ordinal = 1))
 	public void axolotlclient$addLevel(T entity, Text string, MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light,
-									   CallbackInfo ci) {
+									   CallbackInfo ci, @Local(ordinal = 2) int bgColor) {
 		if (entity instanceof AbstractClientPlayerEntity && string.equals(entity.getDisplayName())) {
 			if (MinecraftClient.getInstance().getCurrentServerEntry() != null
 				&& MinecraftClient.getInstance().getCurrentServerEntry().address.contains("hypixel.net")) {
@@ -141,7 +141,11 @@ public abstract class EntityRendererMixin<T extends Entity> {
 						Matrix4f matrix4f = matrices.peek().getModel();
 						MinecraftClient.getInstance().textRenderer.draw(text, x, y,
 							LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.config().useShadows.get(),
-							matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, LevelHead.getInstance().background.get() ? 127 : 0,
+							matrix4f, vertexConsumers, TextRenderer.TextLayerType.SEE_THROUGH, LevelHead.getInstance().background.get() ? bgColor : 0,
+							light);
+						MinecraftClient.getInstance().textRenderer.draw(text, x, y,
+							LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.config().useShadows.get(),
+							matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0,
 							light);
 					}
 				} else if (LevelHead.getInstance().enabled.get()) {
@@ -152,7 +156,11 @@ public abstract class EntityRendererMixin<T extends Entity> {
 					Matrix4f matrix4f = matrices.peek().getModel();
 					MinecraftClient.getInstance().textRenderer.draw(text, x, y,
 						LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.config().useShadows.get(),
-						matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, LevelHead.getInstance().background.get() ? 127 : 0,
+						matrix4f, vertexConsumers, TextRenderer.TextLayerType.SEE_THROUGH, LevelHead.getInstance().background.get() ? bgColor : 0,
+						light);
+					MinecraftClient.getInstance().textRenderer.draw(text, x, y,
+						LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.config().useShadows.get(),
+						matrix4f, vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0,
 						light);
 				}
 			}
