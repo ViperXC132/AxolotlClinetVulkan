@@ -100,8 +100,7 @@ public class TextRenderUtilsMixin {
 
 	@Unique
 	private static Text format(Text text) {
-		var reformatted = formatFromCodes(text.getContent());
-		reformatted.setStyle(text.getStyle());
+		var reformatted = formatFromCodes(text.getStyle().asString()+text.getContent());
 		for (Text sib : text.getSiblings()) {
 			reformatted.append(format(sib));
 		}

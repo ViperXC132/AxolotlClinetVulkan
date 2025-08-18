@@ -154,6 +154,15 @@ public class PlatformImplInternalMixin {
 	}
 
 	/**
+	 * @author moehreag
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static AxoText.Mutable createEmpty() {
+		return Component.empty();
+	}
+
+	/**
 	 * @author Flowey
 	 * @reason Implement bridge platform.
 	 */

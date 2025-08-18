@@ -121,6 +121,10 @@ public interface AxoText {
 		}
 	}
 
+	static Mutable empty() {
+		return PlatformImplInternal.createEmpty();
+	}
+
 	static Mutable literal(String value) {
 		return PlatformImplInternal.createLiteral(value);
 	}

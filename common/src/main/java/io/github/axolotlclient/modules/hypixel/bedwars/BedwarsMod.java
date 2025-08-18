@@ -116,9 +116,9 @@ public class BedwarsMod implements AbstractHypixelMod {
 		if (currentGame != null) {
 			currentGame.onChatMessage(rawMessage, event);
 
-			final var time = AxoText.literal(currentGame.getFormattedTime())
+			final var time = AxoText.empty().br$append(AxoText.literal(currentGame.getFormattedTime())
 				.br$color(AxoText.Color.GRAY)
-				.br$append(" ");
+				.br$append(" "));
 
 			if (!event.isCancelled() && showChatTime.get()) {
 				// Add time to every message received in game

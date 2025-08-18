@@ -106,6 +106,10 @@ public class PlatformImplInternal {
 		throw BridgeUtil.noImpl();
 	}
 
+	public static AxoText.Mutable createEmpty() {
+		return createLiteral("");
+	}
+
 	@RequiresImpl
 	public static AxoText.Mutable createLiteral(String text) {
 		throw BridgeUtil.noImpl();
