@@ -70,7 +70,7 @@ public class AxoSpritesMixin {
 		}
 		BADGE = new Simple((ResourceLocation) AxolotlClientCommon.BADGE_PATH, 0, 0, 16, 16);
 		BARRIER_ITEM_ICON = new Simple(ResourceLocation.withDefaultNamespace("textures/item/barrier.png"), 0, 0, 16, 16);
-		FURNACE_OFF = new Simple(ResourceLocation.withDefaultNamespace("textures/blocks/furnace_front.png"), 0, 0, 16, 16);
+		FURNACE_OFF = new Simple(ResourceLocation.withDefaultNamespace("textures/block/furnace_front.png"), 0, 0, 16, 16);
 		FURNACE_ON = new Simple(ResourceLocation.withDefaultNamespace("textures/block/furnace_front_on.png"), 0, 0, 16, 16);
 		info.cancel();
 	}

@@ -61,7 +61,7 @@ public class AxoSpritesMixin {
 	private static void setStaticValues(CallbackInfo info) {
 		BADGE = new AxoSpriteImpl.Simple((Identifier) AxolotlClientCommon.BADGE_PATH, 0, 0, 16, 16);
 		BARRIER_ITEM_ICON = new AxoSpriteImpl.Simple(Identifier.ofDefault("textures/item/barrier.png"), 0, 0, 16, 16);
-		FURNACE_OFF = new AxoSpriteImpl.Simple(Identifier.ofDefault("textures/blocks/furnace_front.png"), 0, 0, 16, 16);
+		FURNACE_OFF = new AxoSpriteImpl.Simple(Identifier.ofDefault("textures/block/furnace_front.png"), 0, 0, 16, 16);
 		FURNACE_ON = new AxoSpriteImpl.Simple(Identifier.ofDefault("textures/block/furnace_front_on.png"), 0, 0, 16, 16);
 		info.cancel();
 	}

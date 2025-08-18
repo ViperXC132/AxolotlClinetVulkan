@@ -103,7 +103,7 @@ public class BedwarsGame {
 			for (int i = 0; i < value.size(); i++) {
 				AxoPlayerListEntry e = value.get(i);
 				BedwarsPlayer p = new BedwarsPlayer(teamPlayerList.getKey(), e, i + 1);
-				if (mc.br$getSession().uuid().equals(e.br$getId().toString())) {
+				if (mc.br$getPlayer().br$getUuid().equals(e.br$getId()) || mc.br$getSession().username().equals(e.br$getName())) {
 					me = p;
 				}
 				players.put(e.br$getName(), p);
