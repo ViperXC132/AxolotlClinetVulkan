@@ -18,7 +18,6 @@
 		"ConnectScreenMixin",
 		"ControlsOptionsScreenMixin",
 		"DebugHudMixin",
-		"DecoderHandlerMixin",
 		"DownloadingTerrainScreenMixin",
 		"EmitterParticleMixin",
 		"EntityMixin",
