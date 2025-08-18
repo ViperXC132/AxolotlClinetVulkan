@@ -42,6 +42,7 @@ public class DeviceCodeDisplayScreen extends Screen {
 	private String status;
 	private boolean working;
 	private final Identifier qrCode;
+	private final DeviceFlowData data;
 
 	public DeviceCodeDisplayScreen(Screen parent, DeviceFlowData data) {
 		super();
@@ -62,6 +63,12 @@ public class DeviceCodeDisplayScreen extends Screen {
 			buttons.clear();
 			status = I18n.translate(s);
 		});
+		this.data = data;
+	}
+
+	@Override
+	public void removed() {
+		data.cancel();
 	}
 
 	@Override

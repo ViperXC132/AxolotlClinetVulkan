@@ -44,6 +44,7 @@ public class DeviceCodeDisplayScreen extends Screen {
 	private Component status;
 	private boolean working;
 	private final ResourceLocation qrCode;
+	private final DeviceFlowData data;
 
 	public DeviceCodeDisplayScreen(Screen parent, DeviceFlowData data) {
 		super(Component.translatable("auth.add"));
@@ -63,6 +64,12 @@ public class DeviceCodeDisplayScreen extends Screen {
 			clearWidgets();
 			status = Component.translatable(s);
 		});
+		this.data = data;
+	}
+
+	@Override
+	public void removed() {
+		data.cancel();
 	}
 
 	@Override

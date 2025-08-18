@@ -47,6 +47,8 @@ public class DeviceFlowData {
 
 	@Setter
 	private StatusConsumer statusConsumer;
+	@Getter
+	private boolean cancelled;
 
 	public void setStatus(String status) {
 		if (statusConsumer != null) {
@@ -65,6 +67,10 @@ public class DeviceFlowData {
 			}
 		}
 		return gr;
+	}
+
+	public void cancel() {
+		cancelled = true;
 	}
 
 	public interface StatusConsumer {
