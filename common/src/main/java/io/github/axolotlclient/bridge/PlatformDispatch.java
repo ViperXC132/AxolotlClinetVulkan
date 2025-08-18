@@ -27,13 +27,12 @@ import java.util.List;
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import io.github.axolotlclient.bridge.render.AxoSprite;
-import io.github.axolotlclient.bridge.scores.AxoTeam;
 import org.apache.commons.lang3.mutable.MutableInt;
 
 /**
  * Logic to dispatch to the platform implementation whenever it is not worth it to try and abstract things in a more
  * granular manner.
- *
+ * <p>
  * TODO: it may be more advisable to not route everything through a trampoline class, instead overwriting the callee
  */
 public class PlatformDispatch {

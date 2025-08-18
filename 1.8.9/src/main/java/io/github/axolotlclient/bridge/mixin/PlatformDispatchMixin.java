@@ -119,12 +119,9 @@ public class PlatformDispatchMixin {
 
 		var graphics = new GraphicsImpl(0, 0);
 		var serverEntry = minecraft.getCurrentServerEntry();
-		if (serverEntry == null) return null;
+		if (serverEntry == null) return null; // 1.8.9 does not store singleplayer world icons
 		graphics.setPixelData(Base64.getDecoder().decode(serverEntry.getIcon()));
-		final var icon = Util.getTexture(
-			graphics,
-			"servers/" + Hashing.sha1().hashUnencodedChars(serverEntry.address) + "/icon"
-		);
+		final var icon = Util.getTexture(graphics, "servers/" + Hashing.sha1().hashUnencodedChars(serverEntry.address) + "/icon");
 
 		class Impl implements AxoSprite.Dynamic, AxoSpriteImpl {
 			@Override

@@ -93,7 +93,7 @@ public class IPHud extends TextHudEntry implements DynamicallyPositionable {
 			updated = true;
 		}
 		int req = graphics.br$getFont().br$getWidth(getValue()) + 4;
-		if (showIcon.get()) {
+		if (showIcon.get() && sprite != null) {
 			req += getHeight() + 1;
 		}
 		if (w != req) {
@@ -121,7 +121,7 @@ public class IPHud extends TextHudEntry implements DynamicallyPositionable {
 		int textX = pos.x() + getWidth() / 2;
 
 		if (showIcon.get() && sprite != null) {
-			int imageSize = getHeight() - 2 + 1;
+			int imageSize = getHeight() - 2;
 			textX += imageSize / 2;
 			graphics.br$drawTexture(pos.x() + 1, pos.y() + 1, imageSize, imageSize, sprite);
 		}

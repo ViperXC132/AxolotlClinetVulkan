@@ -24,7 +24,6 @@ package io.github.axolotlclient.bridge.mixin.scoreboard;
 
 import io.github.axolotlclient.bridge.scores.AxoTeam;
 import net.minecraft.scoreboard.Team;
-import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(Team.class)

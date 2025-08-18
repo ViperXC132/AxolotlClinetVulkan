@@ -251,9 +251,7 @@ public class BedwarsGame {
 				event.setCancelled(true);
 				return;
 			}
-			if (BedwarsDeathType.getDeath(rawMessage, (type, m) -> {
-				died(m, rawMessage, event, type);
-			})) {
+			if (BedwarsDeathType.getDeath(rawMessage, (type, m) -> died(m, rawMessage, event, type))) {
 				return;
 			}
 			if (BedwarsMessages.matched(BedwarsMessages.BED_DESTROY, rawMessage, m -> {

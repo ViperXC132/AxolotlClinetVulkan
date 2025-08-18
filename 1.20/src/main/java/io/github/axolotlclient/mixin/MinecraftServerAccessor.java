@@ -20,13 +20,16 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.bridge.mixin.scoreboard;
+package io.github.axolotlclient.mixin;
 
-import io.github.axolotlclient.bridge.scores.AxoTeam;
-import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.world.storage.WorldSaveStorage;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(PlayerTeam.class)
-public abstract class TeamMixin implements AxoTeam {
+@Mixin(MinecraftServer.class)
+public interface MinecraftServerAccessor {
 
+	@Accessor("session")
+	WorldSaveStorage.Session getStorageSource();
 }

@@ -37,6 +37,7 @@
 		"MinecraftClientAccessor",
 		"MinecraftClientMainMixin",
 		"MinecraftClientMixin",
+		"MinecraftServerAccessor",
 		"ModStatusMixin",
 		"MouseMixin",
 		"OverlayTextureAccessor",

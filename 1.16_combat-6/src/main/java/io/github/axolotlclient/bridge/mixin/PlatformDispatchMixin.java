@@ -31,6 +31,7 @@ import com.google.common.hash.Hashing;
 import io.github.axolotlclient.bridge.PlatformDispatch;
 import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
 import io.github.axolotlclient.bridge.render.AxoSprite;
+import io.github.axolotlclient.mixin.MinecraftServerAccessor;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hypixel.autoboop.FilterListConfigurationScreen;
 import io.github.axolotlclient.util.ThreadExecuter;
@@ -125,8 +126,8 @@ public class PlatformDispatchMixin {
 
 		final var img = NativeImage.read(Objects.requireNonNull(serverEntry == null ? minecraft.getServer().getServerMetadata().getFavicon() : serverEntry.getIcon()));
 		final var icon = new NativeImageBackedTexture(img);
-		final var iconId = new Identifier(
-			serverEntry == null ? "worlds/" + Hashing.sha1().hashUnencodedChars(minecraft.getServer().getSt().) + "/icon" :
+		final var iconId = new Identifier("axolotlclient",
+			serverEntry == null ? "worlds/" + Hashing.sha1().hashUnencodedChars(((MinecraftServerAccessor) minecraft.getServer()).getStorageSource().getDirectoryName()) + "/icon" :
 				"servers/" + Hashing.sha1().hashUnencodedChars(minecraft.getCurrentServerEntry().address) + "/icon"
 		);
 		icon.upload();
@@ -136,7 +137,7 @@ public class PlatformDispatchMixin {
 			@Override
 			public void draw(MinecraftClient client, MatrixStack stack, int sX, int sY, int sW, int sH) {
 				client.getTextureManager().bindTexture(iconId);
-				DrawUtil.drawTexture(stack, sX, sY, 0, 0, sW, sH, 16, 16);
+				DrawUtil.drawTexture(stack, sX, sY, 0, 0, sW, sH,  sW, sH);
 			}
 
 			@Override

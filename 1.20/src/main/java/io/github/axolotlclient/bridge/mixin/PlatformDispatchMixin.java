@@ -23,17 +23,14 @@
 package io.github.axolotlclient.bridge.mixin;
 
 import java.io.IOException;
-import java.util.Base64;
 import java.util.List;
-import java.util.Objects;
 
-import com.google.common.base.Preconditions;
 import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.texture.NativeImage;
-import io.github.axolotlclient.AxolotlClientConfig.impl.util.GraphicsImpl;
 import io.github.axolotlclient.bridge.PlatformDispatch;
 import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
 import io.github.axolotlclient.bridge.render.AxoSprite;
+import io.github.axolotlclient.mixin.MinecraftServerAccessor;
 import io.github.axolotlclient.modules.hypixel.autoboop.FilterListConfigurationScreen;
 import io.github.axolotlclient.util.ThreadExecuter;
 import net.minecraft.client.MinecraftClient;
@@ -127,16 +124,24 @@ public class PlatformDispatchMixin {
 	@Overwrite
 	public static AxoSprite.Dynamic ipHud$getServerIcon() throws IOException {
 		final var minecraft = MinecraftClient.getInstance();
-		final var graphics = new GraphicsImpl(0, 0);
 		final var serverEntry = minecraft.getCurrentServerEntry();
-		if (serverEntry == null) return null;
-
-		graphics.setPixelData(Base64.getDecoder().decode(serverEntry.getFavicon()));
-		final var img = NativeImage.read(Objects.requireNonNull(serverEntry.getFavicon()));
+		final NativeImage img;
+		if (serverEntry == null) {
+			var icon = minecraft.getServer().getServerMetadata().favicon();
+			if (icon.isEmpty()) {
+				return null;
+			} else {
+				img = NativeImage.read(icon.get().iconBytes());
+			}
+		} else {
+			img = NativeImage.read(serverEntry.getFavicon());
+		}
 		final var icon = new NativeImageBackedTexture(img);
-		final var iconId = new Identifier(
-			"servers/" + Hashing.sha1().hashUnencodedChars(minecraft.getCurrentServerEntry().address) + "/icon"
+		final var iconId = new Identifier("axolotlclient",
+			serverEntry == null ? "worlds/" + Hashing.sha1().hashUnencodedChars(((MinecraftServerAccessor) minecraft.getServer()).getStorageSource().getDirectoryName()) + "/icon" :
+				"servers/" + Hashing.sha1().hashUnencodedChars(minecraft.getCurrentServerEntry().address) + "/icon"
 		);
+
 		icon.upload();
 		minecraft.getTextureManager().registerTexture(iconId, icon);
 
@@ -144,7 +149,7 @@ public class PlatformDispatchMixin {
 			@Override
 			public void draw(MinecraftClient client, GuiGraphics stack, int sX, int sY, int sW, int sH) {
 				client.getTextureManager().bindTexture(iconId);
-				stack.drawTexture(iconId, sX, sY, 0, 0, sW, sH, 16, 16);
+				stack.drawTexture(iconId, sX, sY, 0, 0, sW, sH,  sW, sH);
 			}
 
 			@Override

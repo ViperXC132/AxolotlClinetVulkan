@@ -30,6 +30,7 @@ import com.mojang.blaze3d.platform.NativeImage;
 import io.github.axolotlclient.bridge.PlatformDispatch;
 import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
 import io.github.axolotlclient.bridge.render.AxoSprite;
+import io.github.axolotlclient.mixin.MinecraftServerAccessor;
 import io.github.axolotlclient.modules.hypixel.autoboop.FilterListConfigurationScreen;
 import io.github.axolotlclient.util.ThreadExecuter;
 import net.minecraft.client.Minecraft;
@@ -80,10 +81,24 @@ public class PlatformDispatchMixin {
 	@Overwrite
 	public static AxoSprite.Dynamic ipHud$getServerIcon() throws IOException {
 		final var minecraft = Minecraft.getInstance();
-		final var icon = FaviconTexture.forServer(minecraft.getTextureManager(), Objects.requireNonNull(minecraft.getCurrentServer()).ip);
+
+		final var icon = minecraft.getCurrentServer() == null ?
+			FaviconTexture.forWorld(minecraft.getTextureManager(), ((MinecraftServerAccessor) minecraft.getSingleplayerServer()).getStorageSource().getLevelId()) :
+			FaviconTexture.forServer(minecraft.getTextureManager(), Objects.requireNonNull(minecraft.getCurrentServer()).ip);
 
 		try {
-			icon.upload(NativeImage.read(minecraft.getCurrentServer().getIconBytes()));
+			final NativeImage img;
+			if (minecraft.getCurrentServer() == null) {
+				var i = minecraft.getSingleplayerServer().getStatus().favicon();
+				if (i.isEmpty()) {
+					return null;
+				} else {
+					img = NativeImage.read(i.get().iconBytes());
+				}
+			} else {
+				img = NativeImage.read(minecraft.getCurrentServer().getIconBytes());
+			}
+			icon.upload(img);
 		} catch (Throwable e) {
 			icon.close();
 			throw e;
@@ -92,7 +107,7 @@ public class PlatformDispatchMixin {
 		class Impl implements AxoSprite.Dynamic, AxoSpriteImpl {
 			@Override
 			public void draw(Minecraft client, GuiGraphics stack, int sX, int sY, int sW, int sH) {
-				stack.blit(RenderPipelines.GUI_TEXTURED, icon.textureLocation(), sX, sY, 0, 0, sW, sH, 16, 16, -1);
+				stack.blit(RenderPipelines.GUI_TEXTURED, icon.textureLocation(), sX, sY, 0, 0, sW, sH, sW, sH, -1);
 			}
 
 			@Override
