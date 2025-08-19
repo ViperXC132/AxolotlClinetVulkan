@@ -375,9 +375,12 @@ public class BedwarsGame {
 		}
 		AxoScoreboardScore score = filteredScores.get(2);
 		AxoTeam team = scoreboard.br$getTeamOfMember(score.br$getOwner());
-		String timer = AxoTeam.br$getMemberDisplayName(team, score.br$getOwner());
+		String timer = AxoText.strip(AxoTeam.br$getMemberDisplayName(team, score.br$getOwner()));
 		if (!timer.contains(":")) {
 			return;
+		}
+		if (timer.contains(score.br$getOwner())) {
+			timer = timer.replace(score.br$getOwner(), "");
 		}
 		int seconds;
 		try {

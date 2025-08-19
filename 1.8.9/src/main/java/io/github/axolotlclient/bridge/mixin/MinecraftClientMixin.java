@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import com.google.common.util.concurrent.ListenableFuture;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.AxoPlayerListEntry;
 import io.github.axolotlclient.bridge.AxoSession;
@@ -47,6 +48,7 @@ import net.minecraft.client.render.TextRenderer;
 import net.minecraft.client.resource.manager.ResourceManager;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -84,6 +86,9 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 
 	@Shadow
 	public abstract ResourceManager getResourceManager();
+
+	@Shadow
+	public abstract ListenableFuture<Object> submit(Runnable runnable);
 
 	@Override
 	public @Nullable AxoPlayer br$getPlayer() {
@@ -147,5 +152,10 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	@Override
 	public AxoResourceManager br$getResourceManager() {
 		return getResourceManager();
+	}
+
+	@Override
+	public void execute(@NotNull Runnable command) {
+		this.submit(command);
 	}
 }

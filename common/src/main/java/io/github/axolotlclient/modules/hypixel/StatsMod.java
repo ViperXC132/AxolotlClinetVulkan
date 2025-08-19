@@ -94,7 +94,7 @@ public class StatsMod implements AbstractHypixelMod {
 		hover.br$append("\n");
 		hover.br$append(statText("playerstats.bedwars.summary_short", data.wins(), data.losses(), data.wlr()));
 
-		text.br$setStyle(text.br$getStyle()
+		text.br$withStyle(s -> s
 			.br$color(GOLD)
 			.br$tooltip(hover)
 		);
@@ -127,7 +127,7 @@ public class StatsMod implements AbstractHypixelMod {
 		hover.br$append("\n");
 		hover.br$append(statText("playerstats.skywars.summary", data.wins(), data.losses(), data.wlr()));
 
-		statText(key).br$withStyle(s -> s
+		text.br$withStyle(s -> s
 			.br$color(GOLD)
 			.br$tooltip(hover)
 		);
