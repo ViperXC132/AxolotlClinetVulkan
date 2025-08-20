@@ -89,7 +89,10 @@ public class HypixelMods extends AbstractCommonModule {
 
 	private void addSubModule(AbstractHypixelMod mod) {
 		this.subModules.add(mod);
-		this.category.add(mod.getCategory());
+		var category = mod.getCategory();
+		if (category != null) {
+			this.category.add(category);
+		}
 	}
 
 	public enum HypixelApiCacheMode {

@@ -36,6 +36,7 @@ import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.bridge.render.AxoWindow;
 import io.github.axolotlclient.bridge.scores.AxoTeam;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.bridge.util.AxoProfiler;
 import io.github.axolotlclient.bridge.util.AxoText;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
@@ -52,6 +53,11 @@ public class PlatformImplInternal {
 
 	@RequiresImpl
 	public static AxoMinecraftClient getMinecraftClientInstance() {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	public static AxoProfiler getProfiler() {
 		throw BridgeUtil.noImpl();
 	}
 

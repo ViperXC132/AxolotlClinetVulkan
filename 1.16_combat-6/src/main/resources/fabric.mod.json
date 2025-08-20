@@ -117,6 +117,9 @@
 			],
 			"net/minecraft/class_268": [
 				"io/github/axolotlclient/bridge/scores/AxoTeam"
+			],
+			"net/minecraft/class_3695": [
+				"io/github/axolotlclient/bridge/util/AxoProfiler"
 			]
 		}
 	},

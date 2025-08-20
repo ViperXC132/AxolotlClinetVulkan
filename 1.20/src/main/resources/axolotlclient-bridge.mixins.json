@@ -37,6 +37,7 @@
 		"scoreboard.TeamMixin",
 		"util.IdentifierMixin",
 		"util.MutableTextMixin",
+		"util.ProfilerMixin",
 		"util.StyleMixin",
 		"util.TextMixin",
 		"world.WorldMixin"

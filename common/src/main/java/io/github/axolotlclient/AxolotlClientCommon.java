@@ -40,6 +40,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.managers.VersionedJsonCo
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.bridge.util.AxoProfiler;
 import io.github.axolotlclient.config.profiles.ProfileAware;
 import io.github.axolotlclient.config.profiles.Profiles;
 import io.github.axolotlclient.modules.Module;
@@ -147,67 +148,67 @@ public abstract class AxolotlClientCommon {
 			}
 		}
 		configManager = new VersionedJsonConfigManager(configFile,
-				config.getConfig(), 5, (oldVersion, newVersion, config, json) -> {
-				if (oldVersion.getMajor() <= 1) {
-					if (json.has("hud")) {
-						var hud = json.get("hud").getAsJsonObject();
-						if (hud.has("keystrokehud")) {
-							var keystrokes = hud.get("keystrokehud")
-								.getAsJsonObject();
-							var mousemovement = new JsonObject();
-							mousemovement.addProperty("enabled", keystrokes.get("enabled").getAsBoolean() && keystrokes.get("mousemovement").getAsBoolean());
-							mousemovement.addProperty("mouseMovementIndicator", keystrokes.get("mouseMovementIndicator").getAsString());
-							mousemovement.addProperty("mouseMovementIndicatorOuter", keystrokes.get("mouseMovementIndicatorOuter").getAsString());
-							hud.add("mousemovementhud", mousemovement);
-						}
+			config.getConfig(), 5, (oldVersion, newVersion, config, json) -> {
+			if (oldVersion.getMajor() <= 1) {
+				if (json.has("hud")) {
+					var hud = json.get("hud").getAsJsonObject();
+					if (hud.has("keystrokehud")) {
+						var keystrokes = hud.get("keystrokehud")
+							.getAsJsonObject();
+						var mousemovement = new JsonObject();
+						mousemovement.addProperty("enabled", keystrokes.get("enabled").getAsBoolean() && keystrokes.get("mousemovement").getAsBoolean());
+						mousemovement.addProperty("mouseMovementIndicator", keystrokes.get("mouseMovementIndicator").getAsString());
+						mousemovement.addProperty("mouseMovementIndicatorOuter", keystrokes.get("mouseMovementIndicatorOuter").getAsString());
+						hud.add("mousemovementhud", mousemovement);
 					}
 				}
-				if (oldVersion.getMajor() <= 2) {
-					if (json.has("hud")) {
-						var hud = json.get("hud").getAsJsonObject();
-						if (hud.has("armorhud")) {
-							var armorhud = hud.get("armorhud").getAsJsonObject();
-							if (armorhud.has("armorhud.main_hand_item_top")) {
-								var mainItemTop = armorhud.get("armorhud.main_hand_item_top").getAsBoolean();
-								if (mainItemTop) {
-									armorhud.addProperty("armorhud.main_hand_item_position", "armorhud.main_hand_item_position.top");
-								}
+			}
+			if (oldVersion.getMajor() <= 2) {
+				if (json.has("hud")) {
+					var hud = json.get("hud").getAsJsonObject();
+					if (hud.has("armorhud")) {
+						var armorhud = hud.get("armorhud").getAsJsonObject();
+						if (armorhud.has("armorhud.main_hand_item_top")) {
+							var mainItemTop = armorhud.get("armorhud.main_hand_item_top").getAsBoolean();
+							if (mainItemTop) {
+								armorhud.addProperty("armorhud.main_hand_item_position", "armorhud.main_hand_item_position.top");
 							}
 						}
 					}
 				}
-				if (oldVersion.getMajor() <= 3) {
-					if (json.has("storedOptions")) {
-						var hiddenOptions = json.get("storedOptions").getAsJsonObject();
+			}
+			if (oldVersion.getMajor() <= 3) {
+				if (json.has("storedOptions")) {
+					var hiddenOptions = json.get("storedOptions").getAsJsonObject();
 
-						JsonObject apiOptions;
-						if (json.has("api.category")) {
-							apiOptions = json.get("api.category").getAsJsonObject();
-						} else {
-							apiOptions = new JsonObject();
-							json.add("api.category", apiOptions);
+					JsonObject apiOptions;
+					if (json.has("api.category")) {
+						apiOptions = json.get("api.category").getAsJsonObject();
+					} else {
+						apiOptions = new JsonObject();
+						json.add("api.category", apiOptions);
+					}
+
+					apiOptions.addProperty("api.privacy_policy_accepted", "privacy_policy_state." + hiddenOptions.get("privacyPolicyAccepted").getAsString().toLowerCase(Locale.ROOT));
+				}
+			}
+			if (oldVersion.getMajor() <= 4) {
+				if (json.has("hypixel-mods")) {
+					var hypixel = json.get("hypixel-mods").getAsJsonObject();
+					var autoboop = hypixel.get("autoboop");
+					if (autoboop != null) {
+						var filterlist = autoboop.getAsJsonObject().get("autoboop.filterlist");
+						if (filterlist != null) {
+							filterlist.getAsString();
+							autoboop.getAsJsonObject().addProperty("autoboop.filterlist", Arrays.stream(filterlist.getAsString().split(","))
+								.map(s -> s.getBytes(StandardCharsets.UTF_8))
+								.map(s -> Base64.getEncoder().encodeToString(s)).collect(Collectors.joining(",")));
 						}
-
-						apiOptions.addProperty("api.privacy_policy_accepted", "privacy_policy_state." + hiddenOptions.get("privacyPolicyAccepted").getAsString().toLowerCase(Locale.ROOT));
 					}
 				}
-				if (oldVersion.getMajor() <= 4) {
-					if (json.has("hypixel-mods")) {
-						var hypixel = json.get("hypixel-mods").getAsJsonObject();
-						var autoboop = hypixel.get("autoboop");
-						if (autoboop != null) {
-							var filterlist = autoboop.getAsJsonObject().get("autoboop.filterlist");
-							if (filterlist != null) {
-								filterlist.getAsString();
-								autoboop.getAsJsonObject().addProperty("autoboop.filterlist", Arrays.stream(filterlist.getAsString().split(","))
-									.map(s -> s.getBytes(StandardCharsets.UTF_8))
-									.map(s -> Base64.getEncoder().encodeToString(s)).collect(Collectors.joining(",")));
-							}
-						}
-					}
-				}
-				return json;
-			});
+			}
+			return json;
+		});
 
 		AxolotlClientConfig.getInstance().register(configManager);
 
@@ -240,7 +241,11 @@ public abstract class AxolotlClientCommon {
 			lateModuleInit();
 		});
 
-		Events.TICK.register(() -> modules.forEach(Module::tick));
+		Events.TICK.register(() -> {
+			AxoProfiler.get().br$push("AxolotlClient");
+			modules.forEach(Module::tick);
+			AxoProfiler.get().br$pop();
+		});
 		initFeatureDisabler();
 
 		// register events

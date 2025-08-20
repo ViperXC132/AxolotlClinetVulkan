@@ -51,6 +51,8 @@ import org.jetbrains.annotations.Nullable;
 public class BedwarsGame {
 	private final Map<String, BedwarsPlayer> players = new HashMap<>();
 	private final Map<UUID, BedwarsPlayer> playersById = new HashMap<>();
+	@Getter
+	private final Map<BedwarsTeam, List<AxoPlayerListEntry>> playersByTeam = new HashMap<>();
 	private final AxoMinecraftClient mc;
 	private final BedwarsMod mod;
 	@Getter
@@ -77,7 +79,7 @@ public class BedwarsGame {
 		mod.upgradesOverlay.onStart(upgrades);
 		players.clear();
 		playersById.clear();
-		Map<BedwarsTeam, List<AxoPlayerListEntry>> teamPlayers = new HashMap<>();
+		playersByTeam.clear();
 		for (AxoPlayerListEntry player : mc.br$getOnlinePlayers()) {
 			String name = Platform.getTabNameFor(player).replaceAll("§.", "");
 			if (name.charAt(1) != ' ') {
@@ -87,7 +89,7 @@ public class BedwarsGame {
 			if (team == null) {
 				continue;
 			}
-			teamPlayers.compute(team, (t, entries) -> {
+			playersByTeam.compute(team, (t, entries) -> {
 				if (entries == null) {
 					List<AxoPlayerListEntry> players = new ArrayList<>();
 					players.add(player);
@@ -97,7 +99,7 @@ public class BedwarsGame {
 				return entries;
 			});
 		}
-		for (Map.Entry<BedwarsTeam, List<AxoPlayerListEntry>> teamPlayerList : teamPlayers.entrySet()) {
+		for (Map.Entry<BedwarsTeam, List<AxoPlayerListEntry>> teamPlayerList : playersByTeam.entrySet()) {
 			teamPlayerList.getValue().sort(Comparator.comparing(AxoPlayerListEntry::br$getName));
 			List<AxoPlayerListEntry> value = teamPlayerList.getValue();
 			for (int i = 0; i < value.size(); i++) {
@@ -111,6 +113,8 @@ public class BedwarsGame {
 			}
 		}
 		this.started = true;
+
+		mod.statsOverlay.onStart();
 	}
 
 	private AxoText calculateTopBarText() {

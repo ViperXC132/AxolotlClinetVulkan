@@ -40,6 +40,7 @@ import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoWindow;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.bridge.util.AxoProfiler;
 import io.github.axolotlclient.config.profiles.ProfileAware;
 import io.github.axolotlclient.modules.AbstractCommonModule;
 import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
@@ -113,6 +114,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 
 		addNonConfigured(BedwarsMod.getInstance().getUpgradesOverlay());
 		addNonConfigured(BedwarsMod.getInstance().getResourceOverlay());
+		addNonConfigured(BedwarsMod.getInstance().getStatsOverlay());
 
 		entries.values().forEach(HudEntry::init);
 
@@ -195,9 +197,17 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 
 	@Override
 	public final void tick() {
+		AxoProfiler.get().br$push("hud_modules");
 		entries.values().stream()
 			.filter(hudEntry -> hudEntry.isEnabled() && hudEntry.tickable())
-			.forEach(HudEntry::tick);
+			.forEach(hudEntry -> {
+				AxoProfiler.get().br$push(hudEntry.getNameKey());
+				AxoProfiler.get().br$push("tick");
+				hudEntry.tick();
+				AxoProfiler.get().br$pop();
+				AxoProfiler.get().br$pop();
+			});
+		AxoProfiler.get().br$pop();
 	}
 
 	public final HudManagerCommon add(AbstractHudEntry entry) {

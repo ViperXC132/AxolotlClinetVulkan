@@ -55,6 +55,12 @@ public interface AxoText {
 		public final char charCode;
 		public final int id;
 		public final int rgb;
+
+
+		@Override
+		public String toString() {
+			return "§"+charCode;
+		}
 	}
 
 	interface Style {

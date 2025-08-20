@@ -109,6 +109,9 @@
 			],
 			"net/minecraft/unmapped/C_4143404": [
 				"io/github/axolotlclient/bridge/scores/AxoTeam"
+			],
+			"net/minecraft/unmapped/C_8525326": [
+				"io/github/axolotlclient/bridge/util/AxoProfiler"
 			]
 		},
 		"depends": {

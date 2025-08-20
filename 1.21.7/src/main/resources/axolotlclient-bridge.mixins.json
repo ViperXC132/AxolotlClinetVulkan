@@ -38,6 +38,7 @@
 		"util.ComponentMixin",
 		"util.IdentifierMixin",
 		"util.MutableComponentMixin",
+		"util.ProfilerMixin",
 		"util.StyleMixin",
 		"world.WorldMixin"
 	],

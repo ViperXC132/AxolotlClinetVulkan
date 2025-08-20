@@ -43,6 +43,7 @@ import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.bridge.render.AxoWindow;
 import io.github.axolotlclient.bridge.scores.AxoTeam;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.bridge.util.AxoProfiler;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
 import io.github.axolotlclient.util.keybinds.KeyBinds;
@@ -85,6 +86,15 @@ public class PlatformImplInternalMixin {
     public static AxoMinecraftClient getMinecraftClientInstance() {
         return MinecraftClient.getInstance();
     }
+
+	/**
+	 * @author moehreag
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static AxoProfiler getProfiler() {
+		return MinecraftClient.getInstance().getProfiler();
+	}
 
     /**
      * @author Flowey
