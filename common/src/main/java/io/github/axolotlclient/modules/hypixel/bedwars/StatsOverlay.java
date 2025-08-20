@@ -48,11 +48,6 @@ import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
 import io.github.axolotlclient.modules.hypixel.PlayerData;
 import io.github.axolotlclient.modules.hypixel.PlayerData.Bedwars.CombinedGameData;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 import org.jetbrains.annotations.Nullable;
 
 public class StatsOverlay extends BoxHudEntry implements DynamicallyPositionable {
