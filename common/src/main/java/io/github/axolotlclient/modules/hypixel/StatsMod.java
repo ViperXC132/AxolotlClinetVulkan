@@ -25,7 +25,6 @@ package io.github.axolotlclient.modules.hypixel;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.api.API;
@@ -35,7 +34,7 @@ import io.github.axolotlclient.bridge.commands.Commands;
 import io.github.axolotlclient.bridge.commands.PlayerArgument;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.util.AxoText;
-import io.github.axolotlclient.bridge.util.AxoText.Color;
+import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsPrestige;
 import lombok.Getter;
 
 import static io.github.axolotlclient.bridge.commands.Commands.argument;
@@ -59,27 +58,6 @@ public class StatsMod implements AbstractHypixelMod {
 				return literal(s.toString()).br$color(GREEN);
 			}
 		}).toArray());
-	}
-
-	private static final List<Color> RAINBOW = List.of(RED, GOLD, YELLOW, GREEN, AQUA, LIGHT_PURPLE, DARK_PURPLE);
-
-	private static AxoText formatBedwarsPrestige(int level) {
-		String levelString = level + "☆";
-		return switch (level / 100) {
-			case 0 -> literal(levelString).br$color(GRAY);
-			case 1 -> literal(levelString).br$color(WHITE);
-			case 2 -> literal(levelString).br$color(GOLD);
-			case 3 -> literal(levelString).br$color(AQUA);
-			case 4 -> literal(levelString).br$color(DARK_GREEN);
-			case 5 -> literal(levelString).br$color(DARK_AQUA);
-			case 6 -> literal(levelString).br$color(DARK_RED);
-			case 7 -> literal(levelString).br$color(LIGHT_PURPLE);
-			case 8 -> literal(levelString).br$color(BLUE);
-			case 9 -> literal(levelString).br$color(DARK_PURPLE);
-			default -> IntStream.range(0, levelString.length())
-				.mapToObj(x -> literal(levelString.substring(x, x + 1)).br$color(RAINBOW.get(x % RAINBOW.size())))
-				.reduce(literal(""), AxoText.Mutable::br$append);
-		};
 	}
 
 	private static AxoText buildBedwarsGameMode(String key, PlayerData.Bedwars.BedwarsGameData data) {
@@ -186,7 +164,7 @@ public class StatsMod implements AbstractHypixelMod {
 			final var allStats = data.bedwars().all();
 			List.of(
 				translatable("playerstats.bedwars.title", data.formattedName(),
-					formatBedwarsPrestige(data.bedwars().level())),
+					BedwarsPrestige.format(data.bedwars().level())),
 				statText("playerstats.bedwars.kdr", allStats.kills(), allStats.deaths(), allStats.kdr()),
 				statText("playerstats.bedwars.fkdr", allStats.finalKills(), allStats.finalDeaths(), allStats.fkdr()),
 				statText("playerstats.bedwars.beds", allStats.bedsBroken(), allStats.bedsLost(), allStats.bblr()),
@@ -204,12 +182,11 @@ public class StatsMod implements AbstractHypixelMod {
 				buildSkywarsGameModesLine(data.skywars())
 			).forEach(c::br$sendFeedback);
 		}),
-		new Entry("duels", (c, uuid, username, data) -> {
+		new Entry("duels", (c, uuid, username, data) ->
 			List.of(
-				translatable("playerstats.duels.title", data.formattedName()),
-				buildDuelsGameModesLine(data.duels())
-			).forEach(c::br$sendFeedback);
-		})
+			translatable("playerstats.duels.title", data.formattedName()),
+			buildDuelsGameModesLine(data.duels())
+		).forEach(c::br$sendFeedback))
 	);
 
 	@Getter

@@ -800,5 +800,11 @@
 	"hud.padding": "Padding",
 	"hud.column_margin": "Column Margin",
 	"hud.row_margin": "Row Margin",
-	"bedwars.toggle_stats_overlay": "Toggle Stats Overlay"
+	"bedwars.toggle_stats_overlay": "Toggle Stats Overlay",
+	"bedwars.stats.overlay.header.level": "Level",
+	"bedwars.stats_overlay.column.level": "Show Level",
+	"bedwars.stats_overlay.column.fkdr": "Show Final Kill/Death Ratios",
+	"bedwars.stats_overlay.column.kdr": "Show Kill/Death Ratios",
+	"bedwars.stats_overlay.column.wlr": "Show Win/Loose Ratios",
+	"bedwars.stats_overlay.column.ws": "Show Winstreaks"
 }

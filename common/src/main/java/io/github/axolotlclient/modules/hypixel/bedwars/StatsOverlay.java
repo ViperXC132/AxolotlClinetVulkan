@@ -26,8 +26,10 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.api.API;
@@ -44,6 +46,7 @@ import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
+import io.github.axolotlclient.modules.hypixel.PlayerData;
 import io.github.axolotlclient.modules.hypixel.PlayerData.Bedwars.CombinedGameData;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -56,29 +59,30 @@ public class StatsOverlay extends BoxHudEntry implements DynamicallyPositionable
 	@FunctionalInterface
 	private interface EntryRenderer {
 
-		AxoText render(BedwarsTeam team, String name, CombinedGameData data, int winstreak);
+		AxoText render(BedwarsTeam team, String name, PlayerData.Bedwars data, int winstreak);
 	}
 
-	private record Entry(boolean acceptNull, String name, EntryRenderer compRenderer) {
+	private record Entry(boolean acceptNull, String name, Predicate<StatsOverlay> condition, EntryRenderer compRenderer) {
 
 	}
 
 	private static final List<Entry> RENDER_ENTRIES = List.of(
-		new Entry(true, "bedwars.stats_overlay.header.player", (t, n, bw, ws) -> AxoText.literal(t.getColorSection() + n)),
-		new Entry(false, "bedwars.stats_overlay.header.fkdr", (t, n, bw, ws) -> AxoText.literal("%.2f (%s/%s)".formatted(bw.fkdr(), bw.finalKills(), bw.finalDeaths())).br$color(AxoText.Color.GOLD)),
-		new Entry(false, "bedwars.stats_overlay.header.kdr", (t, n, bw, ws) -> AxoText.literal("%.2f (%s/%s)".formatted(bw.kdr(), bw.kills(), bw.deaths())).br$color(AxoText.Color.GOLD)),
-		new Entry(false, "bedwars.stats_overlay.header.wlr", (t, n, bw, ws) -> AxoText.literal("%.2f (%s/%s)".formatted(bw.wlr(), bw.wins(), bw.losses())).br$color(AxoText.Color.GOLD)),
-		new Entry(false, "bedwars.stats_overlay.header.ws", (t, n, bw, ws) -> AxoText.literal(ws).br$color(AxoText.Color.GOLD))
+		new Entry(true, "bedwars.stats_overlay.header.player", hud -> true, (t, n, bw, ws) -> AxoText.literal(t.getColorSection() + n)),
+		new Entry(false, "bedwars.stats.overlay.header.level", o -> o.columnLevel.get(), (t, n, bw, ws) -> BedwarsPrestige.format(bw.level())),
+		new Entry(false, "bedwars.stats_overlay.header.fkdr", o -> o.columnFkdr.get(), (t, n, bw, ws) -> AxoText.literal("%.2f (%s/%s)".formatted(bw.core().fkdr(), bw.core().finalKills(), bw.core().finalDeaths())).br$color(AxoText.Color.GOLD)),
+		new Entry(false, "bedwars.stats_overlay.header.kdr", o -> o.columnKdr.get(), (t, n, bw, ws) -> AxoText.literal("%.2f (%s/%s)".formatted(bw.core().kdr(), bw.core().kills(), bw.core().deaths())).br$color(AxoText.Color.GOLD)),
+		new Entry(false, "bedwars.stats_overlay.header.wlr", o -> o.columnWlr.get(), (t, n, bw, ws) -> AxoText.literal("%.2f (%s/%s)".formatted(bw.core().wlr(), bw.core().wins(), bw.core().losses())).br$color(AxoText.Color.GOLD)),
+		new Entry(false, "bedwars.stats_overlay.header.ws", o -> o.columnWs.get(), (t, n, bw, ws) -> AxoText.literal(ws).br$color(AxoText.Color.GOLD))
 	);
 
 	private class RenderHelper {
 
-		private final Map<String, IntObjectPair<CombinedGameData>> stats;
+		private final Map<String, PlayerData.Bedwars> stats;
 		private final Map<BedwarsTeam, List<String>> playersByTeam;
 		private int xCursor = getPos().x + padding.get();
 		private int yFinal = 0;
 
-		private RenderHelper(Map<String, IntObjectPair<CombinedGameData>> stats, Map<BedwarsTeam, List<String>> playersByTeam) {
+		private RenderHelper(Map<String, PlayerData.Bedwars> stats, Map<BedwarsTeam, List<String>> playersByTeam) {
 			this.stats = stats;
 			this.playersByTeam = playersByTeam;
 		}
@@ -100,7 +104,7 @@ public class StatsOverlay extends BoxHudEntry implements DynamicallyPositionable
 					final var data = stats.get(playerName);
 					final var text = data == null ?
 						(renderEntry.acceptNull ? renderEntry.compRenderer.render(team, playerName, null, 0) : AxoText.literal("?").br$color(AxoText.Color.RED)) :
-						renderEntry.compRenderer.render(team, playerName, data.right(), data.left());
+						renderEntry.compRenderer.render(team, playerName, data, data.all().winstreak());
 
 					newXCursor = Math.max(newXCursor, ctx.br$drawString(text, xCursor, currY, 0xffffffff, shadow));
 					currY += dy;
@@ -113,7 +117,9 @@ public class StatsOverlay extends BoxHudEntry implements DynamicallyPositionable
 
 		private void render(AxoRenderContext ctx) {
 			for (final var renderEntry : RENDER_ENTRIES) {
-				renderColumn(ctx, renderEntry);
+				if (renderEntry.condition().test(StatsOverlay.this)) {
+					renderColumn(ctx, renderEntry);
+				}
 			}
 
 			// don't multiply the padding by two, since it's already accounted for by the cursors
@@ -129,7 +135,6 @@ public class StatsOverlay extends BoxHudEntry implements DynamicallyPositionable
 				onBoundsUpdate();
 			}
 		}
-
 	}
 
 	private static final Map<BedwarsTeam, List<String>> SAMPLE_PLAYERS = new EnumMap<>(BedwarsTeam.class);
@@ -139,11 +144,18 @@ public class StatsOverlay extends BoxHudEntry implements DynamicallyPositionable
 		SAMPLE_PLAYERS.put(BedwarsTeam.GREEN, List.of("herobrine", "steve"));
 	}
 
-	private static final Map<String, IntObjectPair<CombinedGameData>> SAMPLE_STATS = Map.of(
-		"FloweyTF", IntObjectPair.of(3, new CombinedGameData(4234, 5634, 500, 300, 1469, 336, 230, 123)),
-		"Adaklys", IntObjectPair.of(3, new CombinedGameData(1984, 2048, 300, 500, 834, 737, 123, 273)),
-		"steve", IntObjectPair.of(3, new CombinedGameData(10, 1, 10, 1, 10, 1, 10, 1))
+	private static final Map<String, PlayerData.Bedwars> SAMPLE_STATS = Map.of(
+		"FloweyTF",  createFake(525, 3, new CombinedGameData(4234, 5634, 500, 300, 1469, 336, 230, 123)),
+		"Adaklys",  createFake(179, 3, new CombinedGameData(1984, 2048, 300, 500, 834, 737, 123, 273)),
+		"steve", createFake(5, 3, new CombinedGameData(10, 1, 10, 1, 10, 1, 10, 1))
 	);
+
+	private static PlayerData.Bedwars createFake(int level, int winstreak, CombinedGameData data) {
+		return new PlayerData.Bedwars(level,
+			new PlayerData.Bedwars.GameData(0, 0, 0, 0, winstreak, 0, 0, 0, 0),
+			data, null, null, null, null, null, null, null, null, null,
+			null, null, null, null, null, null, null, null);
+	}
 
 	public final static AxoIdentifier ID = AxoIdentifier.of("axolotlclient", "bedwars_stats_overlay");
 
@@ -152,9 +164,14 @@ public class StatsOverlay extends BoxHudEntry implements DynamicallyPositionable
 	protected final IntegerOption padding = new IntegerOption("hud.padding", 3, 1, 10);
 	protected final IntegerOption columnMargin = new IntegerOption("hud.column_margin", 3, 0, 10);
 	protected final IntegerOption rowMargin = new IntegerOption("hud.row_margin", 1, 0, 10);
+	private final BooleanOption columnLevel = new BooleanOption("bedwars.stats_overlay.column.level", false);
+	private final BooleanOption columnFkdr = new BooleanOption("bedwars.stats_overlay.column.fkdr", true);
+	private final BooleanOption columnKdr = new BooleanOption("bedwars.stats_overlay.column.kdr", true);
+	private final BooleanOption columnWlr = new BooleanOption("bedwars.stats_overlay.column.wlr", true);
+	private final BooleanOption columnWs = new BooleanOption("bedwars.stats_overlay.column.ws", true);
 	private final BedwarsMod mod;
 
-	private Map<String, IntObjectPair<CombinedGameData>> stats = new HashMap<>();
+	private Map<String, PlayerData.Bedwars> stats = new HashMap<>();
 	private final Map<BedwarsTeam, List<String>> playersByTeam = new EnumMap<>(BedwarsTeam.class);
 	private final AxoKeybinding toggle = AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "bedwars.toggle_stats_overlay", "category.axolotlclient");
 	private boolean shouldRender = false;
@@ -196,9 +213,7 @@ public class StatsOverlay extends BoxHudEntry implements DynamicallyPositionable
 								return;
 							}
 
-							capturedStats.put(entry.br$getName(), IntObjectPair.of(
-								playerData.get().bedwars().all().winstreak(),
-								playerData.get().bedwars().core())
+							capturedStats.put(entry.br$getName(), playerData.get().bedwars()
 							);
 						}, client));
 			}));
@@ -260,19 +275,11 @@ public class StatsOverlay extends BoxHudEntry implements DynamicallyPositionable
 		opts.add(padding);
 		opts.add(columnMargin);
 		opts.add(rowMargin);
+		opts.add(columnLevel);
+		opts.add(columnFkdr);
+		opts.add(columnKdr);
+		opts.add(columnWlr);
+		opts.add(columnWs);
 		return opts;
-	}
-
-	@Accessors(fluent = true)
-	@Getter
-	@Setter
-	@AllArgsConstructor(access = AccessLevel.PRIVATE)
-	private static class IntObjectPair<T> {
-		private int left;
-		private T right;
-
-		static <A> IntObjectPair<A> of(int left, A right) {
-			return new IntObjectPair<>(left, right);
-		}
 	}
 }
