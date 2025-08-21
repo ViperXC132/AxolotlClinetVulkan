@@ -130,6 +130,7 @@ public class ProfilesScreen extends io.github.axolotlclient.AxolotlClientConfig.
 				this.profile = profile;
 				profileName = new TextFieldWidget(textRenderer, 0, 0, 150, 20, "");
 				profileName.setText(profile.name());
+				profileName.setChangedListener(profile::setName);
 				loadButton = new VanillaButtonWidget(0, 0, 50, 20, LOAD_BUTTON_TITLE, btn ->
 					Profiles.getInstance().switchTo(profile));
 				duplicateButton = new VanillaButtonWidget(0, 0, 50, 20, DUPLICATE_BUTTON_TITLE, b -> {

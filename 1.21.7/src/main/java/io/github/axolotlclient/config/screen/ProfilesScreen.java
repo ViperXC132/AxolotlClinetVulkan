@@ -157,6 +157,7 @@ public class ProfilesScreen extends Screen {
 				this.profile = profile;
 				profileName = new EditBox(getFont(), 0, 0, 150, 20, Component.empty());
 				profileName.setValue(profile.name());
+				profileName.setResponder(profile::setName);
 				loadButton = Button.builder(LOAD_BUTTON_TITLE, btn ->
 					Profiles.getInstance().switchTo(profile)).bounds(0, 0, 50, 20).build();
 				duplicateButton = Button.builder(DUPLICATE_BUTTON_TITLE, b -> {

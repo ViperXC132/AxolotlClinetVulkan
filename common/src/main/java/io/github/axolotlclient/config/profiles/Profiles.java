@@ -39,6 +39,7 @@ import com.google.gson.stream.JsonWriter;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.bridge.util.AxoI18n;
 import io.github.axolotlclient.util.GsonHelper;
+import lombok.Setter;
 
 public class Profiles {
 	private static final Path PROFILES_CONFIG = AxolotlClientCommon.resolveConfigFile("profiles").resolve("profiles.json");
@@ -128,9 +129,47 @@ public class Profiles {
 		return duplicate;
 	}
 
-	public record Profile(String name, String id) {
+	public static final class Profile {
+		@Setter
+		private String name;
+		private final String id;
+
+		public Profile(String name, String id) {
+			this.name = name;
+			this.id = id;
+		}
+
 		public Path getPath() {
 			return AxolotlClientCommon.resolveConfigFile("profiles").resolve(id());
+		}
+
+		public String name() {
+			return name;
+		}
+
+		public String id() {
+			return id;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == this) return true;
+			if (obj == null || obj.getClass() != this.getClass()) return false;
+			var that = (Profile) obj;
+			return Objects.equals(this.name, that.name) &&
+				Objects.equals(this.id, that.id);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(name, id);
+		}
+
+		@Override
+		public String toString() {
+			return "Profile[" +
+				"name=" + name + ", " +
+				"id=" + id + ']';
 		}
 	}
 

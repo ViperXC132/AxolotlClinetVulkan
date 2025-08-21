@@ -148,6 +148,7 @@ public class ProfilesScreen extends Screen {
 				this.profile = profile;
 				profileName = new TextFieldWidget(textRenderer, 0, 0, 150, 20, Text.empty());
 				profileName.setText(profile.name());
+				profileName.setChangedListener(profile::setName);
 				loadButton = ButtonWidget.builder(LOAD_BUTTON_TITLE, btn ->
 					Profiles.getInstance().switchTo(profile)).positionAndSize(0, 0, 50, 20).build();
 				duplicateButton = ButtonWidget.builder(DUPLICATE_BUTTON_TITLE, b -> {

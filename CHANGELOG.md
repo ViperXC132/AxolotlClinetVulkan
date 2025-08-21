@@ -1,6 +1,6 @@
 ## Changelog:
 
-### *3.1.5*
+### 3.1.5
 
 - fix a few bugs (#154, #155)
 - add Bedwars StatsOverlay (#145)
