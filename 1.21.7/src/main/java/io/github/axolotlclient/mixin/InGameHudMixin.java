@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.expression.Expression;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.AxolotlClient;
@@ -42,6 +44,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.scores.Objective;
+import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -49,6 +52,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+@Debug(export = true)
 @Mixin(Gui.class)
 public abstract class InGameHudMixin {
 
@@ -113,14 +117,15 @@ public abstract class InGameHudMixin {
 		original.call(instance, graphics, type, x, y, hardcoreMod || hardcore, blinking, half);
 	}
 
-	@WrapOperation(method = "renderPlayerHealth", at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/client/gui/Gui;renderFood(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/entity/player/Player;II)V"))
-	public void axolotlclient$dontHunger(Gui instance, GuiGraphics graphics, Player player, int y, int x, Operation<Void> original) {
-		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().inGame() &&
+	@Expression("? == 0")
+	@ModifyExpressionValue(method = "renderPlayerHealth", at = @At(value = "MIXINEXTRAS:EXPRESSION", ordinal = 1))
+	public boolean axolotlclient$dontHunger(boolean original) {
+		if (original && BedwarsMod.getInstance().isEnabled() &&
+			BedwarsMod.getInstance().inGame() &&
 			!BedwarsMod.getInstance().showHunger.get()) {
-			return;
+			return false;
 		}
-		original.call(instance, graphics, player, y, x);
+		return original;
 	}
 
 	@Inject(method = "renderVignette", at = @At("HEAD"), cancellable = true)

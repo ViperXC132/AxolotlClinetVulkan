@@ -22,6 +22,10 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.expression.Expression;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import io.github.axolotlclient.AxolotlClient;
@@ -47,7 +51,10 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArgs;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
@@ -220,19 +227,15 @@ public abstract class InGameHudMixin {
 		}
 	}
 
-	@ModifyVariable(
-		method = "renderStatusBars",
-		at = @At(
-			value = "STORE"
-		), ordinal = 15
-	)
-	public int axolotlclient$dontHunger(int heartCount) {
-		if (heartCount == 0 && BedwarsMod.getInstance().isEnabled() &&
+	@Expression("? == 0")
+	@ModifyExpressionValue(method = "renderStatusBars", at = @At(value = "MIXINEXTRAS:EXPRESSION", ordinal = 1))
+	public boolean axolotlclient$dontHunger(boolean original) {
+		if (original && BedwarsMod.getInstance().isEnabled() &&
 			BedwarsMod.getInstance().inGame() &&
 			!BedwarsMod.getInstance().showHunger.get()) {
-			return 3;
+			return false;
 		}
-		return heartCount;
+		return original;
 	}
 
 	@Inject(method = "renderVignetteOverlay", at = @At("HEAD"), cancellable = true)
@@ -242,11 +245,11 @@ public abstract class InGameHudMixin {
 		}
 	}
 
-	@ModifyVariable(method = "renderStatusBars", at = @At("STORE"), ordinal = 12)
-	private int axolotlclient$dontShowArmor(int armorValue) {
+	@WrapOperation(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/in_game/InGameHud;renderArmorBar(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/entity/player/PlayerEntity;IIII)V"))
+	private static void axolotlclient$dontShowArmor(GuiGraphics graphics, PlayerEntity player, int y, int uncappedMaxHealth, int cappedMaxHealth, int x, Operation<Void> original) {
 		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().inGame() && !BedwarsMod.getInstance().displayArmor.get()) {
-			return 0;
+			return;
 		}
-		return armorValue;
+		original.call(graphics, player, y, uncappedMaxHealth, cappedMaxHealth, x);
 	}
 }
