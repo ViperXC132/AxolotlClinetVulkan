@@ -226,9 +226,9 @@ public abstract class AxolotlClientCommon {
 		initializing = true;
 		instance = this;
 
+		this.logger = logger;
 		Profiles.getInstance().loadProfiles();
 
-		this.logger = logger;
 		this.notificationProvider = provider;
 		config = createConfig();
 

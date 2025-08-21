@@ -30,7 +30,6 @@ public class Events {
 
 	public static final Event<EventCallback<MouseInputEvent>> MOUSE_INPUT = createEvent();
 	public static final Event<EventCallback<KeyBindChangeEvent>> KEYBIND_CHANGE = createEvent();
-	public static final Event<EventCallback<KeyPressEvent>> KEY_PRESS = createEvent();
 	public static final Event<EventCallback<PlayerDirectionChangeEvent>> PLAYER_DIRECTION_CHANGE = createEvent();
 	public static final Event<EventCallback<Minecraft>> GAME_LOAD_EVENT = createEvent();
 

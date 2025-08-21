@@ -22,9 +22,9 @@
 
 package io.github.axolotlclient.mixin;
 
+import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import io.github.axolotlclient.util.events.Events;
 import io.github.axolotlclient.util.events.impl.KeyBindChangeEvent;
-import io.github.axolotlclient.util.events.impl.KeyPressEvent;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import org.spongepowered.asm.mixin.Mixin;
@@ -43,7 +43,7 @@ public abstract class KeyBindMixin {
 	@Inject(method = "setPressed", at = @At("RETURN"))
 	public void axolotlclient$onPress(boolean pressed, CallbackInfo ci) {
 		if (pressed) {
-			Events.KEY_PRESS.invoker().invoke(new KeyPressEvent((KeyBinding) (Object) this));
+			io.github.axolotlclient.bridge.events.Events.KEY_INPUT.invoker().accept(((AxoKeybinding) this).br$getBoundKey());
 		}
 	}
 }

@@ -25,7 +25,6 @@ package io.github.axolotlclient.mixin;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.util.events.impl.KeyBindChangeEvent;
-import io.github.axolotlclient.util.events.impl.KeyPressEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.options.KeyBinding;
 import org.lwjgl.input.Keyboard;
@@ -50,7 +49,6 @@ public abstract class KeyBindingMixin {
 		if (pressed) {
 			// TODO: handle event for unbound keys as well
 			Events.KEY_INPUT.invoker().accept(key.br$getBoundKey());
-			io.github.axolotlclient.util.events.Events.KEY_PRESS.invoker().invoke(new KeyPressEvent(key));
 		}
 	}
 

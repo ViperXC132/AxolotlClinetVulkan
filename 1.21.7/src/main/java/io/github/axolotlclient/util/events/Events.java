@@ -25,7 +25,6 @@ package io.github.axolotlclient.util.events;
 import java.util.Arrays;
 
 import io.github.axolotlclient.util.events.impl.KeyBindChangeEvent;
-import io.github.axolotlclient.util.events.impl.KeyPressEvent;
 import io.github.axolotlclient.util.events.impl.MouseInputEvent;
 import io.github.axolotlclient.util.events.impl.PlayerDirectionChangeEvent;
 import net.fabricmc.fabric.api.event.Event;
@@ -36,7 +35,6 @@ public class Events {
 
 	public static final Event<EventCallback<MouseInputEvent>> MOUSE_INPUT = createEvent();
 	public static final Event<EventCallback<KeyBindChangeEvent>> KEYBIND_CHANGE = createEvent();
-	public static final Event<EventCallback<KeyPressEvent>> KEY_PRESS = createEvent();
 	public static final Event<EventCallback<PlayerDirectionChangeEvent>> PLAYER_DIRECTION_CHANGE = createEvent();
 	public static final Event<EventCallback<Minecraft>> GAME_LOAD_EVENT = createEvent();
 
