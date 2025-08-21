@@ -37,6 +37,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.config.profiles.ProfileAware;
 import io.github.axolotlclient.mixin.KeyBindAccessor;
 import io.github.axolotlclient.modules.hud.ClickInputTracker;
 import io.github.axolotlclient.modules.hud.gui.keystrokes.KeystrokePositioningScreen;
@@ -72,7 +73,7 @@ import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawString;
  * @license GPL-3.0
  */
 
-public class KeystrokeHud extends TextHudEntry {
+public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 
 	private static final Path KEYSTROKE_SAVE_FILE = AxolotlClientCommon.resolveConfigFile("keystrokes.json");
 	public static final Identifier ID = new Identifier("kronhud", "keystrokehud");
@@ -223,6 +224,16 @@ public class KeystrokeHud extends TextHudEntry {
 	@Override
 	public Identifier getId() {
 		return ID;
+	}
+
+	@Override
+	public void reloadConfig() {
+		keystrokes = null;
+	}
+
+	@Override
+	public void saveConfig() {
+		saveKeystrokes();
 	}
 
 	public interface KeystrokeRenderer {

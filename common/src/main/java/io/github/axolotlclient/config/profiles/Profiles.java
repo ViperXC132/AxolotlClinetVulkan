@@ -118,6 +118,7 @@ public class Profiles {
 	}
 
 	public Profile duplicate(Profile profile) {
+		AxolotlClientCommon.getInstance().saveConfig();
 		var duplicate = newProfile(AxoI18n.translate("profiles.duplicated", profile.name()));
 		try {
 			Files.copy(profile.getPath(), duplicate.getPath());

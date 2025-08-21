@@ -24,5 +24,7 @@ package io.github.axolotlclient.config.profiles;
 
 public interface ProfileAware {
 
+	void saveConfig();
+
 	void reloadConfig();
 }

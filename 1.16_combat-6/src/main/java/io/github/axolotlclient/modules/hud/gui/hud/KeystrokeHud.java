@@ -231,6 +231,11 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 		keystrokes = null;
 	}
 
+	@Override
+	public void saveConfig() {
+		saveKeystrokes();
+	}
+
 	public interface KeystrokeRenderer {
 
 		void render(Keystroke stroke, MatrixStack graphics);

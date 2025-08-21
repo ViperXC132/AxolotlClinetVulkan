@@ -299,6 +299,16 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 		}
 	}
 
+	@Override
+	public void saveConfig() {
+		saveCustomEntries();
+		for (var hud : getEntries()) {
+			if (hud instanceof ProfileAware p) {
+				p.saveConfig();
+			}
+		}
+	}
+
 	protected abstract void openScreen();
 
 	protected abstract void addExtraHud();

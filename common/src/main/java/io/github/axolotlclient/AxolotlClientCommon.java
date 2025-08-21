@@ -64,7 +64,7 @@ public abstract class AxolotlClientCommon {
 	}
 
 	public static final boolean NVG_SUPPORTED = OSUtil.getOS() != OSUtil.OperatingSystem.OTHER &&
-		!Objects.requireNonNullElse(System.getenv("TMPDIR"), "").contains("Android");
+		!Objects.requireNonNullElse(System.getenv("TMPDIR"), "").contains("Android") && !FabricLoader.getInstance().isModLoaded("vulkanmod");
 
 	public static final String VERSION = FabricLoader.getInstance()
 		.getModContainer("axolotlclient-common")
@@ -266,6 +266,11 @@ public abstract class AxolotlClientCommon {
 
 	public void saveConfig() {
 		getConfigManager().save();
+		for (Module m : modules) {
+			if (m instanceof ProfileAware p) {
+				p.saveConfig();
+			}
+		}
 	}
 
 	public Path getMainConfigFile() {
