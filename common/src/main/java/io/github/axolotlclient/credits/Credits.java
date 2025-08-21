@@ -34,7 +34,6 @@ public class Credits {
 
 	static {
 		contributor("moehreag", "Author, Programming", "https://github.com/moehreag");
-		contributor("YakisikliBaran", "Turkish Translation");
 		contributor("TheKodeToad", "Contributor", "Motion Blur", "Freelook", "Zoom");
 		contributor("DragonEggBedrockBreaking", "Bugfixes", "Inspiration of new Features");
 		contributor("Astralchroma", "Backend Development", "Backend Hosting");
@@ -42,6 +41,7 @@ public class Credits {
 		contributor("xlingy", "Website author");
 		contributor("DarkKronicle", "Bedwars Overlay", "Author of KronHUD, the best HUD mod!");
 		contributor("Floweynt", "Playerstats command");
+		contributor("XXLSteve", "French Translation");
 
 		otherPerson("AMereBagatelle", "Author of the excellent FabricSkyBoxes Mod");
 	}
