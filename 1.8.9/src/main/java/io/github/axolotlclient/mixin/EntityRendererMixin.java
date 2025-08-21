@@ -105,6 +105,10 @@ public abstract class EntityRendererMixin<T extends Entity> {
 		int y = text.contains("deadmau5") ? -20 : -10;
 
 		if (LevelHead.getInstance().background.get()) {
+			y -= 2;
+		}
+
+		if (LevelHead.getInstance().background.get()) {
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBuilder();
 			GlStateManager.disableTexture();

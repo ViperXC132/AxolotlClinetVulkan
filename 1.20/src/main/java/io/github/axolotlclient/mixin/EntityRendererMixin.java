@@ -30,6 +30,7 @@ import io.github.axolotlclient.api.requests.UserRequest;
 import io.github.axolotlclient.modules.hypixel.LevelHead;
 import io.github.axolotlclient.modules.hypixel.NickHider;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
+import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.Util;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -138,9 +139,13 @@ public abstract class EntityRendererMixin<T extends Entity> {
 						float x = -textRenderer.getWidth(text) / 2F;
 						float y = string.getString().contains("deadmau5") ? -20 : -10;
 
+						if (LevelHead.getInstance().background.get()) {
+							y -= 2;
+						}
+
 						Matrix4f matrix4f = matrices.peek().getModel();
 						MinecraftClient.getInstance().textRenderer.draw(text, x, y,
-							LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.config().useShadows.get(),
+							ClientColors.ARGB.color(0x20, LevelHead.getInstance().textColor.get().toInt()), AxolotlClient.config().useShadows.get(),
 							matrix4f, vertexConsumers, TextRenderer.TextLayerType.SEE_THROUGH, LevelHead.getInstance().background.get() ? bgColor : 0,
 							light);
 						MinecraftClient.getInstance().textRenderer.draw(text, x, y,
@@ -153,9 +158,13 @@ public abstract class EntityRendererMixin<T extends Entity> {
 					float x = -textRenderer.getWidth(text) / 2F;
 					float y = string.getString().contains("deadmau5") ? -20 : -10;
 
+					if (LevelHead.getInstance().background.get()) {
+						y -= 2;
+					}
+
 					Matrix4f matrix4f = matrices.peek().getModel();
 					MinecraftClient.getInstance().textRenderer.draw(text, x, y,
-						LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.config().useShadows.get(),
+						ClientColors.ARGB.color(0x20, LevelHead.getInstance().textColor.get().toInt()), AxolotlClient.config().useShadows.get(),
 						matrix4f, vertexConsumers, TextRenderer.TextLayerType.SEE_THROUGH, LevelHead.getInstance().background.get() ? bgColor : 0,
 						light);
 					MinecraftClient.getInstance().textRenderer.draw(text, x, y,

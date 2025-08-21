@@ -32,9 +32,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.authlib.GameProfile;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.api.requests.UserRequest;
-import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
-import io.github.axolotlclient.modules.hypixel.LevelHead;
 import io.github.axolotlclient.modules.hypixel.NickHider;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsGame;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
@@ -48,7 +46,6 @@ import net.minecraft.client.render.TextRenderer;
 import net.minecraft.network.Connection;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.text.Formatting;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -90,16 +87,6 @@ public abstract class PlayerListHudMixin extends GuiElement {
 		}
 		if (Tablist.getInstance().numericalPing.get())
 			width += (instance.getWidth(String.valueOf(entry.getPing())) - 10);
-		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().isWaiting()) {
-			if (!entry.getProfile().getName().contains(Formatting.OBFUSCATED.toString())) {
-				try {
-					String uuid = UUIDHelper.toUndashed(entry.getProfile().getId());
-					String render = LevelHead.getDisplayString(LevelHead.Mode.BEDWARS, uuid);
-					width += instance.getWidth(render) + 2;
-				} catch (Exception ignored) {
-				}
-			}
-		}
 		return width;
 	}
 
@@ -156,34 +143,6 @@ public abstract class PlayerListHudMixin extends GuiElement {
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getPlayer(Ljava/util/UUID;)Lnet/minecraft/entity/living/player/PlayerEntity;"))
 	private UUID axolotlclient$makeStuff(UUID par1) {
 		return Tablist.getInstance().alwaysShowHeadLayer.get() ? Minecraft.getInstance().player.getUuid() : par1;
-	}
-
-	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;renderPing(IIILnet/minecraft/client/network/PlayerInfo;)V"))
-	private void axolotlclient$renderWithoutObjective(PlayerTabOverlay instance, int width, int x, int y, PlayerInfo playerInfo, Operation<Void> original) {
-		if (!BedwarsMod.getInstance().isEnabled() || !BedwarsMod.getInstance().isWaiting()) {
-			original.call(instance, width, x, y, playerInfo);
-			return;
-		}
-		int endX = x + width - 1;
-		String render;
-		try {
-			if (playerInfo.getProfile().getName().contains(Formatting.OBFUSCATED.toString())) {
-				original.call(instance, width, x, y, playerInfo);
-				return;
-			}
-
-			String uuid = UUIDHelper.toUndashed(playerInfo.getProfile().getId());
-			render = LevelHead.getDisplayString(LevelHead.Mode.BEDWARS, uuid);
-		} catch (Exception e) {
-			original.call(instance, width, x, y, playerInfo);
-			return;
-		}
-		minecraft.textRenderer.drawWithShadow(
-			render,
-			(endX - minecraft.textRenderer.getWidth(render)) + 20,
-			y,
-			-1
-		);
 	}
 
 	@Inject(

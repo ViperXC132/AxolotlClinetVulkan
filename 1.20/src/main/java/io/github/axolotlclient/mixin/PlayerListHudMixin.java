@@ -33,8 +33,6 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.api.requests.UserRequest;
-import io.github.axolotlclient.api.util.UUIDHelper;
-import io.github.axolotlclient.modules.hypixel.LevelHead;
 import io.github.axolotlclient.modules.hypixel.NickHider;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsGame;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
@@ -50,7 +48,6 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -92,16 +89,6 @@ public abstract class PlayerListHudMixin {
 		}
 		if (Tablist.getInstance().numericalPing.get())
 			width += (instance.getWidth(String.valueOf(entry.getLatency())) - 10);
-		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().isWaiting()) {
-			if (!entry.getProfile().getName().contains(Formatting.OBFUSCATED.toString())) {
-				try {
-					String uuid = UUIDHelper.toUndashed(entry.getProfile().getId());
-					String render = LevelHead.getDisplayString(LevelHead.Mode.BEDWARS, uuid);
-					width += instance.getWidth(render) + 2;
-				} catch (Exception ignored) {
-				}
-			}
-		}
 		return width;
 	}
 
@@ -153,34 +140,6 @@ public abstract class PlayerListHudMixin {
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/PlayerFaceRenderer;draw(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/Identifier;IIIZZ)V"), index = 5)
 	private boolean axolotlclient$renderHatLayer(boolean drawHat) {
 		return drawHat || Tablist.getInstance().alwaysShowHeadLayer.get();
-	}
-
-	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/PlayerListHud;renderLatencyIcon(Lnet/minecraft/client/gui/GuiGraphics;IIILnet/minecraft/client/network/PlayerListEntry;)V"))
-	private void axolotlclient$renderWithoutObjective(PlayerListHud instance, GuiGraphics guiGraphics, int width, int x, int y, PlayerListEntry playerListEntry, Operation<Void> original) {
-		if (!BedwarsMod.getInstance().isEnabled() || !BedwarsMod.getInstance().isWaiting()) {
-			original.call(instance, guiGraphics, width, x, y, playerListEntry);
-			return;
-		}
-		int endX = x + width - 1;
-		String render;
-		try {
-			if (playerListEntry.getProfile().getName().contains(Formatting.OBFUSCATED.toString())) {
-				original.call(instance, guiGraphics, width, x, y, playerListEntry);
-				return;
-			}
-
-			String uuid = UUIDHelper.toUndashed(playerListEntry.getProfile().getId());
-			render = LevelHead.getDisplayString(LevelHead.Mode.BEDWARS, uuid);
-		} catch (Exception e) {
-			original.call(instance, guiGraphics, width, x, y, playerListEntry);
-			return;
-		}
-		guiGraphics.drawShadowedText(client.textRenderer,
-			render,
-			(endX - this.client.textRenderer.getWidth(render)) + 20,
-			y,
-			-1
-		);
 	}
 
 	@Inject(
