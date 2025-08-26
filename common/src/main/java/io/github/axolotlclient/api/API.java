@@ -36,6 +36,7 @@ import io.github.axolotlclient.api.requests.AccountSettingsRequest;
 import io.github.axolotlclient.api.requests.GlobalDataRequest;
 import io.github.axolotlclient.api.types.*;
 import io.github.axolotlclient.api.util.*;
+import io.github.axolotlclient.bridge.util.AxoI18n;
 import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.util.GsonHelper;
 import io.github.axolotlclient.util.Logger;
@@ -53,9 +54,9 @@ public class API {
 	@Getter
 	private final Logger logger;
 	@Getter
-	private final NotificationProvider notificationProvider;
+	private final NotificationProvider notificationProvider = AxolotlClientCommon.getInstance().getNotificationProvider();
 	@Getter
-	private final TranslationProvider translationProvider;
+	private final TranslationProvider translationProvider = AxoI18n::translate;
 	private final StatusUpdateProvider statusUpdateProvider;
 	@Getter
 	private final Options apiOptions;
@@ -74,14 +75,11 @@ public class API {
 	private final ScheduledExecutorService statusUpdateExecutor;
 	private static final List<BiContainer<Runnable, ListenerType>> afterStartupListeners = new ArrayList<>();
 
-	public API(Logger logger, TranslationProvider translationProvider,
-			   StatusUpdateProvider statusUpdateProvider, Options apiOptions) {
+	public API(StatusUpdateProvider statusUpdateProvider, Options apiOptions) {
 		if (Instance != null) {
 			throw new IllegalStateException("API may only be instantiated once!");
 		}
-		this.logger = logger;
-		this.notificationProvider = AxolotlClientCommon.getInstance().getNotificationProvider();
-		this.translationProvider = translationProvider;
+		this.logger = AxolotlClientCommon.getInstance().getLogger();
 		this.statusUpdateProvider = statusUpdateProvider;
 		this.apiOptions = apiOptions;
 		handlers = new HashSet<>();

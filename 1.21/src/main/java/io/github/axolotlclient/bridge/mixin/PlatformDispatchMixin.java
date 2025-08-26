@@ -154,8 +154,10 @@ public class PlatformDispatchMixin {
 
 			@Override
 			public void close() {
-				minecraft.getTextureManager().destroyTexture(iconId);
-				icon.close();
+				minecraft.execute(() -> {
+					minecraft.getTextureManager().destroyTexture(iconId);
+					icon.close();
+				});
 			}
 		}
 

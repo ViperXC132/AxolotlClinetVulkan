@@ -292,5 +292,6 @@ public abstract class AxolotlClientCommon {
 			}
 		}
 		lateModuleInit();
+		API.getInstance().restart();
 	}
 }

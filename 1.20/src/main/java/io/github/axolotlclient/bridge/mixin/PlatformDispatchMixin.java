@@ -149,13 +149,15 @@ public class PlatformDispatchMixin {
 			@Override
 			public void draw(MinecraftClient client, GuiGraphics stack, int sX, int sY, int sW, int sH) {
 				client.getTextureManager().bindTexture(iconId);
-				stack.drawTexture(iconId, sX, sY, 0, 0, sW, sH,  sW, sH);
+				stack.drawTexture(iconId, sX, sY, 0, 0, sW, sH, sW, sH);
 			}
 
 			@Override
 			public void close() {
-				minecraft.getTextureManager().destroyTexture(iconId);
-				icon.close();
+				minecraft.execute(() -> {
+					minecraft.getTextureManager().destroyTexture(iconId);
+					icon.close();
+				});
 			}
 		}
 

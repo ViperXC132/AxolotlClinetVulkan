@@ -49,7 +49,6 @@ import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.LoggerImpl;
 import io.github.axolotlclient.util.notifications.Notifications;
 import net.fabricmc.api.ClientModInitializer;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
 
@@ -90,7 +89,7 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 		addExternalModules();
 
 		init(LOGGER, Notifications.getInstance());
-		new API(LOGGER, I18n::translate, new StatusUpdateProviderImpl(), APIOptions.getInstance());
+		new API(new StatusUpdateProviderImpl(), APIOptions.getInstance());
 
 		LOGGER.debug("Debug Output enabled, Logs will be quite verbose!");
 		LOGGER.info("AxolotlClient Initialized");

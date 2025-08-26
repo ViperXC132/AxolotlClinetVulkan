@@ -34,10 +34,7 @@ import io.github.axolotlclient.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.RenderStateShard;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
 import net.minecraft.client.renderer.entity.state.PlayerRenderState;
@@ -153,7 +150,7 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
 
 							Matrix4f matrix4f = matrices.last().pose();
 							textRenderer.drawInBatch(text, x, y, ClientColors.ARGB.color(0x20, LevelHead.getInstance().textColor.get().toInt()), AxolotlClient.config().useShadows.get(), matrix4f, vertexConsumers, Font.DisplayMode.SEE_THROUGH, LevelHead.getInstance().background.get() ? bgColor : 0, light);
-							textRenderer.drawInBatch(text, x, y, LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.config().useShadows.get(), matrix4f, vertexConsumers, Font.DisplayMode.NORMAL, 0, light);
+							textRenderer.drawInBatch(text, x, y, LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.config().useShadows.get(), matrix4f, vertexConsumers, Font.DisplayMode.NORMAL, 0, LightTexture.lightCoordsWithEmission(light, 2));
 						}
 					} else if (LevelHead.getInstance().enabled.get()) {
 						String text = LevelHead.getInstance().getDisplayString(entity.getStringUUID());
@@ -167,7 +164,7 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
 
 						Matrix4f matrix4f = matrices.last().pose();
 						textRenderer.drawInBatch(text, x, y, ClientColors.ARGB.color(0x20, LevelHead.getInstance().textColor.get().toInt()), AxolotlClient.config().useShadows.get(), matrix4f, vertexConsumers, Font.DisplayMode.SEE_THROUGH, LevelHead.getInstance().background.get() ? bgColor : 0, light);
-						textRenderer.drawInBatch(text, x, y, LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.config().useShadows.get(), matrix4f, vertexConsumers, Font.DisplayMode.NORMAL, 0, light);
+						textRenderer.drawInBatch(text, x, y, LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.config().useShadows.get(), matrix4f, vertexConsumers, Font.DisplayMode.NORMAL, 0, LightTexture.lightCoordsWithEmission(light, 2));
 					}
 				}
 			}

@@ -23,7 +23,6 @@
 package io.github.axolotlclient.modules.hud.gui.hud;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -40,9 +39,9 @@ import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.config.profiles.ProfileAware;
 import io.github.axolotlclient.mixin.KeyBindAccessor;
 import io.github.axolotlclient.modules.hud.ClickInputTracker;
+import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.keystrokes.KeystrokePositioningScreen;
 import io.github.axolotlclient.modules.hud.gui.keystrokes.KeystrokesScreen;
-import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.Justification;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
@@ -76,7 +75,7 @@ import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawString;
 
 public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 
-	private static final Path KEYSTROKE_SAVE_FILE = AxolotlClientCommon.resolveConfigFile("keystrokes.json");
+	private static final String KEYSTROKE_SAVE_FILE_NAME = "keystrokes.json";
 	public static final Identifier ID = new Identifier("kronhud", "keystrokehud");
 
 	private final ColorOption pressedTextColor = new ColorOption("heldtextcolor", new Color(0xFF000000));
@@ -482,8 +481,9 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 
 	public void saveKeystrokes() {
 		try {
-			Files.createDirectories(KEYSTROKE_SAVE_FILE.getParent());
-			Files.writeString(KEYSTROKE_SAVE_FILE, GsonHelper.GSON.toJson(keystrokes.stream().map(Keystroke::serialize).toList()));
+			var path = AxolotlClientCommon.resolveProfileConfigFile(KEYSTROKE_SAVE_FILE_NAME);
+			Files.createDirectories(path.getParent());
+			Files.writeString(path, GsonHelper.GSON.toJson(keystrokes.stream().map(Keystroke::serialize).toList()));
 		} catch (Exception e) {
 			AxolotlClient.LOGGER.warn("Failed to save keystroke configuration!", e);
 		}
@@ -492,8 +492,9 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 	@SuppressWarnings("unchecked")
 	public void loadKeystrokes() {
 		try {
-			if (Files.exists(KEYSTROKE_SAVE_FILE)) {
-				List<?> entries = (List<?>) GsonHelper.read(Files.readString(KEYSTROKE_SAVE_FILE));
+			var path = AxolotlClientCommon.resolveProfileConfigFile(KEYSTROKE_SAVE_FILE_NAME);
+			if (Files.exists(path)) {
+				List<?> entries = (List<?>) GsonHelper.read(Files.readString(path));
 				var loaded = entries.stream().map(e -> (Map<String, Object>) e)
 					.map(KeystrokeHud.this::deserializeKey)
 					.toList();

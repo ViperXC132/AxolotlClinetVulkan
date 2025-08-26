@@ -66,11 +66,13 @@ public class Profiles {
 			for (String name : new String[]{"axolotlclient.json", "custom_hud.json", "keystrokes.json"}) {
 				var oldPath = AxolotlClientCommon.resolveConfigFile(name);
 				var newPath = resolveProfileFile(name);
-				try {
-					Files.createDirectories(newPath.getParent());
-					Files.move(oldPath, newPath);
-				} catch (IOException e) {
-					AxolotlClientCommon.getInstance().getLogger().warn("Failed to move {} to profile-based config path at {}", oldPath, newPath, e);
+				if (Files.exists(oldPath) && !Files.exists(newPath)) {
+					try {
+						Files.createDirectories(newPath.getParent());
+						Files.move(oldPath, newPath);
+					} catch (IOException e) {
+						AxolotlClientCommon.getInstance().getLogger().warn("Failed to move {} to profile-based config path at {}", oldPath, newPath, e);
+					}
 				}
 			}
 		}

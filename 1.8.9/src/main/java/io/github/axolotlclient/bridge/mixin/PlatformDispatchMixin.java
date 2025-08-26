@@ -132,7 +132,7 @@ public class PlatformDispatchMixin {
 
 			@Override
 			public void close() {
-				minecraft.getTextureManager().close(icon);
+				minecraft.submit(() -> minecraft.getTextureManager().close(icon));
 			}
 		}
 

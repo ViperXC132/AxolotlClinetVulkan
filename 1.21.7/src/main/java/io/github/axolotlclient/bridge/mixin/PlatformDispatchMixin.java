@@ -112,7 +112,7 @@ public class PlatformDispatchMixin {
 
 			@Override
 			public void close() {
-				icon.close();
+				minecraft.execute(icon::close);
 			}
 		}
 
