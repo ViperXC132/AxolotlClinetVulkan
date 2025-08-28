@@ -130,7 +130,7 @@ public abstract class EntityRendererMixin<T extends Entity> {
 
 						Matrix4f matrix4f = matrices.peek().getModel();
 						MinecraftClient.getInstance().textRenderer.draw(text, x, y,
-							ClientColors.ARGB.color(0x20, LevelHead.getInstance().textColor.get().toInt()), AxolotlClient.config().useShadows.get(),
+							ClientColors.ARGB.color(0x20, LevelHead.getInstance().textColor.get().toInt()), false,
 							matrix4f, vertexConsumers, true, LevelHead.getInstance().background.get() ? bgColor : 0,
 							light);
 						MinecraftClient.getInstance().textRenderer.draw(text, x, y,
@@ -150,7 +150,7 @@ public abstract class EntityRendererMixin<T extends Entity> {
 
 					Matrix4f matrix4f = matrices.peek().getModel();
 					MinecraftClient.getInstance().textRenderer.draw(text, x, y,
-						ClientColors.ARGB.color(0x20, LevelHead.getInstance().textColor.get().toInt()), AxolotlClient.config().useShadows.get(),
+						ClientColors.ARGB.color(0x20, LevelHead.getInstance().textColor.get().toInt()), false,
 						matrix4f, vertexConsumers, true, LevelHead.getInstance().background.get() ? bgColor : 0,
 						light);
 					MinecraftClient.getInstance().textRenderer.draw(text, x, y,

@@ -149,7 +149,7 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
 							}
 
 							Matrix4f matrix4f = matrices.last().pose();
-							textRenderer.drawInBatch(text, x, y, ClientColors.ARGB.color(0x20, LevelHead.getInstance().textColor.get().toInt()), AxolotlClient.config().useShadows.get(), matrix4f, vertexConsumers, Font.DisplayMode.SEE_THROUGH, LevelHead.getInstance().background.get() ? bgColor : 0, light);
+							textRenderer.drawInBatch(text, x, y, ClientColors.ARGB.color(0x20, LevelHead.getInstance().textColor.get().toInt()), false, matrix4f, vertexConsumers, Font.DisplayMode.SEE_THROUGH, LevelHead.getInstance().background.get() ? bgColor : 0, light);
 							textRenderer.drawInBatch(text, x, y, LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.config().useShadows.get(), matrix4f, vertexConsumers, Font.DisplayMode.NORMAL, 0, LightTexture.lightCoordsWithEmission(light, 2));
 						}
 					} else if (LevelHead.getInstance().enabled.get()) {
@@ -163,7 +163,7 @@ public abstract class EntityRendererMixin<T extends Entity, S extends EntityRend
 						}
 
 						Matrix4f matrix4f = matrices.last().pose();
-						textRenderer.drawInBatch(text, x, y, ClientColors.ARGB.color(0x20, LevelHead.getInstance().textColor.get().toInt()), AxolotlClient.config().useShadows.get(), matrix4f, vertexConsumers, Font.DisplayMode.SEE_THROUGH, LevelHead.getInstance().background.get() ? bgColor : 0, light);
+						textRenderer.drawInBatch(text, x, y, ClientColors.ARGB.color(0x20, LevelHead.getInstance().textColor.get().toInt()), false, matrix4f, vertexConsumers, Font.DisplayMode.SEE_THROUGH, LevelHead.getInstance().background.get() ? bgColor : 0, light);
 						textRenderer.drawInBatch(text, x, y, LevelHead.getInstance().textColor.get().toInt(), AxolotlClient.config().useShadows.get(), matrix4f, vertexConsumers, Font.DisplayMode.NORMAL, 0, LightTexture.lightCoordsWithEmission(light, 2));
 					}
 				}
