@@ -192,8 +192,6 @@ public class StatsMod implements AbstractHypixelMod {
 	@Getter
 	private static final StatsMod instance = new StatsMod();
 
-	private final OptionCategory playerstats = OptionCategory.create("playerstats");
-
 	private void register(Commands commands) {
 		final var command = Commands.literal("playerstats");
 
@@ -241,6 +239,6 @@ public class StatsMod implements AbstractHypixelMod {
 
 	@Override
 	public OptionCategory getCategory() {
-		return playerstats;
+		return null;
 	}
 }

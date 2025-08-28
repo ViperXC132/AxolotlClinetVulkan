@@ -42,7 +42,7 @@ import io.github.axolotlclient.bridge.util.AxoI18n;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
-import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
+import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
@@ -50,14 +50,15 @@ import io.github.axolotlclient.modules.hypixel.PlayerData;
 import io.github.axolotlclient.modules.hypixel.PlayerData.Bedwars.CombinedGameData;
 import org.jetbrains.annotations.Nullable;
 
-public class StatsOverlay extends BoxHudEntry implements DynamicallyPositionable {
+public class StatsOverlay extends TextHudEntry implements DynamicallyPositionable {
 	@FunctionalInterface
 	private interface EntryRenderer {
 
 		AxoText render(BedwarsTeam team, String name, PlayerData.Bedwars data, int winstreak);
 	}
 
-	private record Entry(boolean acceptNull, String name, Predicate<StatsOverlay> condition, EntryRenderer compRenderer) {
+	private record Entry(boolean acceptNull, String name, Predicate<StatsOverlay> condition,
+						 EntryRenderer compRenderer) {
 
 	}
 
@@ -83,11 +84,10 @@ public class StatsOverlay extends BoxHudEntry implements DynamicallyPositionable
 		}
 
 		private void renderColumn(AxoRenderContext ctx, Entry renderEntry) {
-			final var shadow = true;
 			final var dy = AxoMinecraftClient.getInstance().br$getFont().br$getFontHeight() + rowMargin.get();
 
 			int currY = getPos().y + padding.get();
-			int newXCursor = ctx.br$drawString(AxoI18n.translate(renderEntry.name), xCursor, currY, 0xffffffff, shadow);
+			int newXCursor = ctx.br$drawString(AxoI18n.translate(renderEntry.name), xCursor, currY, 0xffffffff, shadow.get());
 
 			currY += dy;
 
@@ -101,7 +101,7 @@ public class StatsOverlay extends BoxHudEntry implements DynamicallyPositionable
 						(renderEntry.acceptNull ? renderEntry.compRenderer.render(team, playerName, null, 0) : AxoText.literal("?").br$color(AxoText.Color.RED)) :
 						renderEntry.compRenderer.render(team, playerName, data, data.all().winstreak());
 
-					newXCursor = Math.max(newXCursor, ctx.br$drawString(text, xCursor, currY, 0xffffffff, shadow));
+					newXCursor = Math.max(newXCursor, ctx.br$drawString(text, xCursor, currY, 0xffffffff, shadow.get()));
 					currY += dy;
 				}
 			}
@@ -140,8 +140,8 @@ public class StatsOverlay extends BoxHudEntry implements DynamicallyPositionable
 	}
 
 	private static final Map<String, PlayerData.Bedwars> SAMPLE_STATS = Map.of(
-		"FloweyTF",  createFake(525, 3, new CombinedGameData(4234, 5634, 500, 300, 1469, 336, 230, 123)),
-		"Adaklys",  createFake(179, 3, new CombinedGameData(1984, 2048, 300, 500, 834, 737, 123, 273)),
+		"FloweyTF", createFake(525, 3, new CombinedGameData(4234, 5634, 500, 300, 1469, 336, 230, 123)),
+		"Adaklys", createFake(179, 3, new CombinedGameData(1984, 2048, 300, 500, 834, 737, 123, 273)),
 		"steve", createFake(5, 3, new CombinedGameData(10, 1, 10, 1, 10, 1, 10, 1))
 	);
 
@@ -164,11 +164,13 @@ public class StatsOverlay extends BoxHudEntry implements DynamicallyPositionable
 	private final BooleanOption columnKdr = new BooleanOption("bedwars.stats_overlay.column.kdr", true);
 	private final BooleanOption columnWlr = new BooleanOption("bedwars.stats_overlay.column.wlr", true);
 	private final BooleanOption columnWs = new BooleanOption("bedwars.stats_overlay.column.ws", true);
+	private final BooleanOption toggleKey = new BooleanOption("toggle", "bedwars.stats_overlay.toggle", true);
+	private final BooleanOption autoActivate = new BooleanOption("bedwars.stats_overlay.auto_activate", true);
 	private final BedwarsMod mod;
 
 	private Map<String, PlayerData.Bedwars> stats = new HashMap<>();
 	private final Map<BedwarsTeam, List<String>> playersByTeam = new EnumMap<>(BedwarsTeam.class);
-	private final AxoKeybinding toggle = AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "bedwars.toggle_stats_overlay", "category.axolotlclient");
+	private final AxoKeybinding toggle = AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "bedwars_stats_overlay", "category.axolotlclient");
 	private boolean shouldRender = false;
 	@Nullable
 	private String errorMessage = null;
@@ -182,7 +184,7 @@ public class StatsOverlay extends BoxHudEntry implements DynamicallyPositionable
 		playersByTeam.clear();
 		// can't call clear here, since we need a fresh map to avoid requests from writing
 		stats = new HashMap<>();
-		shouldRender = true;
+		shouldRender = toggleKey.get() && autoActivate.get();
 
 		if (!API.getInstance().getApiOptions().enabled.get()) {
 			errorMessage = "API Not Enabled!";
@@ -221,7 +223,7 @@ public class StatsOverlay extends BoxHudEntry implements DynamicallyPositionable
 	@Override
 	public void render(AxoRenderContext ctx, float delta) {
 		if (errorMessage != null) {
-			ctx.br$drawString(AxoText.Color.RED + errorMessage, getPos().x, getPos().y, 0xffffffff, true);
+			ctx.br$drawString(AxoText.Color.RED + errorMessage, getPos().x, getPos().y, 0xffffffff, shadow.get());
 		}
 
 		if (mod.inGame() && shouldRender) {
@@ -242,8 +244,12 @@ public class StatsOverlay extends BoxHudEntry implements DynamicallyPositionable
 	@Override
 	public void tick() {
 		if (mod.inGame()) {
-			if (this.toggle.br$consumeClick()) {
-				shouldRender = !shouldRender;
+			if (toggleKey.get()) {
+				if (this.toggle.br$consumeClick()) {
+					shouldRender = !shouldRender;
+				}
+			} else {
+				shouldRender = toggle.br$isPressed();
 			}
 		}
 	}
@@ -266,6 +272,7 @@ public class StatsOverlay extends BoxHudEntry implements DynamicallyPositionable
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		final var opts = super.getConfigurationOptions();
+		opts.remove(textColor);
 		opts.add(anchor);
 		opts.add(padding);
 		opts.add(columnMargin);
@@ -275,6 +282,8 @@ public class StatsOverlay extends BoxHudEntry implements DynamicallyPositionable
 		opts.add(columnKdr);
 		opts.add(columnWlr);
 		opts.add(columnWs);
+		opts.add(toggleKey);
+		opts.add(autoActivate);
 		return opts;
 	}
 }

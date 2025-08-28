@@ -405,7 +405,7 @@
 	"title_short": "Options du Client",
 	"tnttime": "Secondes TNT",
 	"toggle": "Basculer",
-	"toggle.tooltip": "Utilisez la touche pour basculer l'activation de Freelook.",
+	"freelook.toggle.tooltip": "Utilisez la touche pour basculer l'activation de Freelook.",
 	"toggleSneak": "Activer le basculage d'accroupissement",
 	"toggleSprint": "Activer le basculage de Sprint",
 	"togglesprint": "Modifieurs de Bascules",
@@ -800,11 +800,12 @@
 	"hud.padding": "Marge intérieure",
 	"hud.column_margin": "Marge de colonne",
 	"hud.row_margin": "Marge de ligne",
-	"bedwars.toggle_stats_overlay": "Basculer la superposition des statistiques",
+	"bedwars.stats_overlay.toggle": "Basculer la superposition des statistiques",
 	"bedwars.stats.overlay.header.level": "Niveau",
 	"bedwars.stats_overlay.column.level": "Afficher le niveau",
 	"bedwars.stats_overlay.column.fkdr": "Afficher le ratio Final Kills/Morts",
 	"bedwars.stats_overlay.column.kdr": "Afficher le ratio Kills/Morts",
 	"bedwars.stats_overlay.column.wlr": "Afficher le ratio Victoires/Défaites",
-	"bedwars.stats_overlay.column.ws": "Afficher les séries de victoires"
+	"bedwars.stats_overlay.column.ws": "Afficher les séries de victoires",
+	"bedwars.stats_overlay.auto_activate": "Activation automatique"
 }

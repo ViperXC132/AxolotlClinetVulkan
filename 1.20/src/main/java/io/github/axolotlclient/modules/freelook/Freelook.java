@@ -52,9 +52,9 @@ public class Freelook extends AbstractCommonModule {
 		new String[]{"snap_perspective", "freelook"},
 		"freelook", value -> FeatureDisabler.update());
 	private final BooleanOption invert = new BooleanOption("invert", false);
-	private final EnumOption<Perspective> perspective = new EnumOption<Perspective>("perspective", Perspective.class,
+	private final EnumOption<Perspective> perspective = new EnumOption<>("perspective", Perspective.class,
 		Perspective.THIRD_PERSON_BACK);
-	private final BooleanOption toggle = new BooleanOption("toggle", false);
+	private final BooleanOption toggle = new BooleanOption("toggle", "freelook.toggle.tooltip", false);
 	private final EnumOption<Perspective> perspectiveAlt = new EnumOption<>("perspective.alt", Perspective.class,
 		Perspective.THIRD_PERSON_FRONT);
 	private final BooleanOption toggleAlt = new BooleanOption("toggle.alt", false);
