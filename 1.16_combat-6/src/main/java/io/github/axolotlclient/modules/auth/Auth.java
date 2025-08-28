@@ -61,7 +61,7 @@ public class Auth extends Accounts implements Module {
 	@Override
 	public void init() {
 		load();
-		this.auth = new MSAuth(AxolotlClient.LOGGER, this, () -> client.options.language);
+		this.auth = new MSAuth(this, () -> client.options.language);
 		if (isContained(client.getSession().getUuid())) {
 			current = getAccounts().stream().filter(account -> account.getUuid().equals(client.getSession().getUuid())).toList().get(0);
 			current.setAuthToken(client.getSession().getAccessToken());

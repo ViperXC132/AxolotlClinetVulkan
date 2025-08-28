@@ -22,10 +22,12 @@
 
 package io.github.axolotlclient.modules.auth;
 
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -35,6 +37,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Supplier;
 
 import com.github.mizosoft.methanol.FormBodyPublisher;
+import com.github.mizosoft.methanol.MediaType;
+import com.github.mizosoft.methanol.MultipartBodyPublisher;
 import com.google.gson.JsonObject;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.util.GsonHelper;
@@ -59,11 +63,11 @@ public class MSAuth {
 
 	public static MSAuth INSTANCE;
 
-	public MSAuth(Logger logger, Accounts accounts, Supplier<String> languageSupplier) {
-		this.logger = logger;
+	public MSAuth(Accounts accounts, Supplier<String> languageSupplier) {
+		this.logger = AxolotlClientCommon.getInstance().getLogger();
+		this.client = NetworkUtil.createHttpClient();
 		this.accounts = accounts;
 		this.languageSupplier = languageSupplier;
-		this.client = getHttpClient();
 		INSTANCE = this;
 	}
 
@@ -169,7 +173,7 @@ public class MSAuth {
 		});
 	}
 
-	private record MCProfile(String id, String name, List<Skin> skins, List<Cape> capes) {
+	public record MCProfile(String id, String name, List<Skin> skins, List<Cape> capes) {
 		public static MCProfile get(JsonObject json) {
 			return new MCProfile(json.get("id").getAsString(), json.get("name").getAsString(),
 				GsonHelper.jsonArrayToStream(json.getAsJsonArray("skins"))
@@ -179,19 +183,54 @@ public class MSAuth {
 				.toList());
 		}
 
-		public record Skin(String id, String state, String url, String variant, String textureKey) {
+		public record Skin(String id, String state, String url, String variant) {
+			public static final String VARIANT_CLASSIC = "CLASSIC";
+			public static final String VARIANT_SLIM = "SLIM";
+			public static final String STATE_ACTIVE = "ACTIVE";
+
 			public static Skin get(JsonObject object) {
 				return new Skin(object.get("id").getAsString(),
 					object.get("state").getAsString(),
 					object.get("url").getAsString(),
-					object.get("variant").getAsString(),
-					object.get("textureKey").getAsString());
+					object.get("variant").getAsString());
+			}
+
+			public CompletableFuture<byte[]> getImage() {
+				return INSTANCE.client.sendAsync(HttpRequest.newBuilder(URI.create(url())).GET().build(), HttpResponse.BodyHandlers.ofByteArray())
+					.thenApplyAsync(res -> {
+						if (res.statusCode() == 200) {
+							return res.body();
+						}
+						throw new IllegalArgumentException("anormal status: " + res.statusCode());
+					});
+			}
+
+			public boolean isClassicVariant() {
+				return VARIANT_CLASSIC.equals(variant());
+			}
+
+			public boolean isSlimVariant() {
+				return VARIANT_SLIM.equals(variant());
+			}
+
+			public boolean isActive() {
+				return STATE_ACTIVE.equals(state());
 			}
 		}
 
 		public record Cape(String id, String state, String url, String alias) {
 			public static Cape get(JsonObject object) {
 				return new Cape(object.get("id").getAsString(), object.get("state").getAsString(), object.get("url").getAsString(), object.get("alias").getAsString());
+			}
+
+			public CompletableFuture<byte[]> getImage() {
+				return INSTANCE.client.sendAsync(HttpRequest.newBuilder(URI.create(url())).GET().build(), HttpResponse.BodyHandlers.ofByteArray())
+					.thenApplyAsync(res -> {
+						if (res.statusCode() == 200) {
+							return res.body();
+						}
+						throw new IllegalArgumentException("anormal status: " + res.statusCode());
+					});
 			}
 		}
 
@@ -263,10 +302,6 @@ public class MSAuth {
 			.header("Authorization", "Bearer " + accessToken).build());
 	}
 
-	private HttpClient getHttpClient() {
-		return NetworkUtil.createHttpClient();
-	}
-
 	public CompletableFuture<Optional<Account>> refreshToken(String token, Account account) {
 		return CompletableFuture.supplyAsync(() -> {
 			logger.debug("refreshing auth code... ");
@@ -310,5 +345,66 @@ public class MSAuth {
 	private CompletableFuture<JsonObject> requestJson(HttpRequest request) {
 		return client.sendAsync(request, HttpResponse.BodyHandlers.ofString())
 			.thenApply(res -> GsonHelper.fromJson(res.body()));
+	}
+
+	public CompletableFuture<Optional<MCProfile>> getProfile(Account account) {
+		return CompletableFuture.supplyAsync(() -> {
+			JsonObject profileJson = getMCProfile(account.getAuthToken()).join();
+			if (profileJson.has("error") && "NOT_FOUND".equals(profileJson.get("error").getAsString())) {
+				AxolotlClientCommon.getInstance().getNotificationProvider().addStatus("auth.notif.login.failed", "auth.notif.login.failed.no_profile");
+				return Optional.empty();
+			}
+			return Optional.of(MCProfile.get(profileJson));
+		});
+	}
+
+	public CompletableFuture<Optional<MCProfile>> setSkin(Account account, MCProfile.Skin skin) {
+		record Body(String variant, String url) {
+		}
+		return requestJson(HttpRequest.newBuilder()
+			.uri(URI.create("https://api.minecraftservices.com/minecraft/profile/skins"))
+			.header("Authorization", "Bearer " + account.getAuthToken())
+			.POST(HttpRequest.BodyPublishers.ofString(GsonHelper.GSON.toJson(new Body(skin.variant(), skin.url())))).build())
+			.thenApply(MCProfile::get).thenApply(Optional::of);
+	}
+
+	public CompletableFuture<Optional<MCProfile>> uploadSkin(Account account, Path skin, String variant) {
+		try {
+			return requestJson(HttpRequest.newBuilder()
+				.uri(URI.create("https://api.minecraftservices.com/minecraft/profile/skins"))
+				.header("Authorization", "Bearer " + account.getAuthToken())
+				.POST(MultipartBodyPublisher.newBuilder()
+					.textPart("variant", variant.toLowerCase(Locale.ROOT))
+					.filePart("file", skin, MediaType.IMAGE_PNG).build()).build())
+				.thenApply(MCProfile::get).thenApply(Optional::of);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public CompletableFuture<Optional<MCProfile>> resetSkin(Account account) {
+		return requestJson(HttpRequest.newBuilder()
+			.uri(URI.create("https://api.minecraftservices.com/minecraft/profile/skins/activate"))
+			.header("Authorization", "Bearer " + account.getAuthToken())
+			.DELETE().build())
+			.thenApply(MCProfile::get).thenApply(Optional::of);
+	}
+
+	public CompletableFuture<Optional<MCProfile>> hideCape(Account account) {
+		return requestJson(HttpRequest.newBuilder()
+			.uri(URI.create("https://api.minecraftservices.com/minecraft/profile/capes/activate"))
+			.header("Authorization", "Bearer " + account.getAuthToken())
+			.DELETE().build())
+			.thenApply(MCProfile::get).thenApply(Optional::of);
+	}
+
+	public CompletableFuture<Optional<MCProfile>> showCape(Account account, MCProfile.Cape cape) {
+		record Body(String capeId) {
+		}
+		return requestJson(HttpRequest.newBuilder()
+			.uri(URI.create("https://api.minecraftservices.com/minecraft/profile/capes/activate"))
+			.header("Authorization", "Bearer " + account.getAuthToken())
+			.PUT(HttpRequest.BodyPublishers.ofString(GsonHelper.GSON.toJson(new Body(cape.id())))).build())
+			.thenApply(MCProfile::get).thenApply(Optional::of);
 	}
 }
