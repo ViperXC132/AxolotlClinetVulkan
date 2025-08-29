@@ -820,5 +820,9 @@
 	"skins.capes.no_cape": "No Cape",
 	"skins.manage.equipped": "Equipped",
 	"skins.manage.equip": "Equip",
-	"skins.loading": "Loading Skins..."
+	"skins.loading": "Loading Skins...",
+	"skins.manage.equipping": "Equipping...",
+	"skins.manage.delete": "Delete Skin",
+	"skins.manage.delete.confirm": "Confirm Deletion",
+	"skins.manage.delete.confirm.desc": "This Skin's file will be deleted permanently!\n Are you sure?"
 }

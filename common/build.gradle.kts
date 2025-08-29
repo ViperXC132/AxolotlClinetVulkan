@@ -32,7 +32,7 @@ dependencies {
 	shadow(implementation("com.kohlschutter.junixsocket:junixsocket-common:2.10.1")!!)
 	shadow(implementation("com.kohlschutter.junixsocket:junixsocket-native-common:2.10.1")!!)
 
-	shadow(implementation("com.github.mizosoft.methanol:methanol:1.8.0")!!)
+	shadow(implementation("com.github.mizosoft.methanol:methanol:1.8.3")!!)
 	shadow(implementation("io.nayuki:qrcodegen:1.8.0")!!)
 
 	compileOnly("net.hypixel:mod-api:1.0.1")

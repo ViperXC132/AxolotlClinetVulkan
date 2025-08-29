@@ -73,6 +73,7 @@ tasks.processResources {
 
 tasks.runClient {
 	classpath(sourceSets.getByName("test").runtimeClasspath)
+	jvmArgs("-XX:+AllowEnhancedClassRedefinition", "-XX:+IgnoreUnrecognizedVMOptions")
 }
 
 tasks.withType(JavaCompile::class).configureEach {

@@ -84,6 +84,7 @@ public class Account {
 	}
 
 	public CompletableFuture<Optional<Account>> refresh(MSApi auth) {
+		if (isOffline()) return CompletableFuture.completedFuture(Optional.empty());
 		return auth.refreshToken(refreshToken, this);
 	}
 

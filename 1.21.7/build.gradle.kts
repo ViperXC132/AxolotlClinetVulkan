@@ -25,6 +25,11 @@ loom {
 			sourceSet("test")
 		}
 	}
+	/*runs {
+		getByName("client") {
+			vmArg("-XX:+AllowEnhancedClassRedefinition -XX:+IgnoreUnrecognizedVMOptions")
+		}
+	}*/
 }
 
 repositories {
@@ -104,6 +109,7 @@ java {
 
 tasks.runClient {
 	classpath(sourceSets.getByName("test").runtimeClasspath)
+	jvmArgs("-XX:+AllowEnhancedClassRedefinition", "-XX:+IgnoreUnrecognizedVMOptions")
 }
 
 // Configure the maven publication

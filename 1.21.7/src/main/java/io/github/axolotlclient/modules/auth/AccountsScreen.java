@@ -80,8 +80,8 @@ public class AccountsScreen extends Screen {
 			.bounds(this.width / 2 - 154, this.height - 52, 100, 20).build());
 
 		addRenderableWidget(skinsButton = Button.builder(Component.translatable("skins.manage"),
-			btn -> minecraft.setScreen(new SkinManagementScreen(
-				this, accountsListWidget.getSelected().getAccount())))
+				btn -> minecraft.setScreen(new SkinManagementScreen(
+					this, accountsListWidget.getSelected().getAccount())))
 			.bounds(this.width / 2 - 50, this.height - 52, 100, 20).build());
 
 		this.addRenderableWidget(Button.builder(Component.translatable("auth.add"), button -> {
@@ -141,7 +141,8 @@ public class AccountsScreen extends Screen {
 		AccountsListWidget.Entry entry = accountsListWidget.getSelected();
 		if (minecraft.level == null && entry != null) {
 			loginButton.active = entry.getAccount().isExpired() || !entry.getAccount().equals(Auth.getInstance().getCurrent());
-			deleteButton.active = refreshButton.active = skinsButton.active = true;
+			refreshButton.active = skinsButton.active = !entry.getAccount().isOffline();
+			deleteButton.active = true;
 		} else {
 			loginButton.active = deleteButton.active = refreshButton.active = skinsButton.active = false;
 		}

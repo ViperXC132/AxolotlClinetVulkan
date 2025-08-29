@@ -84,7 +84,7 @@ public class MSApi {
 			.POST(FormBodyPublisher.newBuilder()
 				.query("client_id", CLIENT_ID)
 				.query("scope", SCOPES).build())
-			.header("ContentType", "application/x-www-form-urlencoded")
+			.header("content-type", "application/x-www-form-urlencoded")
 			.uri(URI.create(MS_DEVICE_CODE_LOGIN_URL + lang[0] + "-" + lang[1].toUpperCase(Locale.ROOT)));
 		return requestJson(builder.build())
 			.thenApply(object -> {
@@ -272,8 +272,8 @@ public class MSApi {
 		HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
 			.uri(URI.create(XBL_AUTH_URL))
 			.POST(HttpRequest.BodyPublishers.ofString(object.toString()))
-			.header("Content-Type", "application/json")
-			.header("Accept", "application/json");
+			.header("content-type", "application/json")
+			.header("accept", "application/json");
 
 		return requestJson(requestBuilder.build()).thenApply(response -> new XblData(Instant.parse(response.get("IssueInstant").getAsString()), Instant.parse(response.get("NotAfter").getAsString()),
 			response.get("Token").getAsString(), new XblData.DisplayClaims(response.get("DisplayClaims").getAsJsonObject().get("xui").getAsJsonArray().get(0).getAsJsonObject().get("uhs").getAsString())));
@@ -379,6 +379,10 @@ public class MSApi {
 		if (profileJson.has("error") && "NOT_FOUND".equals(profileJson.get("error").getAsString())) {
 			throw new IllegalStateException("profile not found");
 		}
+		if (!profileJson.has("id")) {
+			logger.warn("Unexpected profile response: {}", profileJson);
+			throw new IllegalStateException("unexpected error");
+		}
 		return MCProfile.get(profileJson);
 	}
 
@@ -419,9 +423,6 @@ public class MSApi {
 			.uri(URI.create("https://api.minecraftservices.com/minecraft/profile/capes/active"))
 			.header("Authorization", "Bearer " + account.getAuthToken())
 			.build())
-			.thenApply(js -> {
-				return js;
-			})
 			.thenApply(this::extractProfile);
 	}
 
