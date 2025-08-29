@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import io.github.axolotlclient.AxolotlClientCommon;
-import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.auth.MSApi;
@@ -25,7 +24,6 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
@@ -42,6 +40,7 @@ public class SkinManagementScreen extends Screen {
 	private MSApi.MCProfile cachedProfile;
 	private SkinListWidget skinList;
 	private SkinListWidget capesList;
+	private boolean capesTab;
 	private SkinWidget current;
 	private final Watcher skinDirWatcher;
 
@@ -58,46 +57,62 @@ public class SkinManagementScreen extends Screen {
 			initialized = true;
 
 			haF.addTitleHeader(getTitle(), getFont());
-
 			haF.addToFooter(Button.builder(CommonComponents.GUI_BACK, btn -> onClose()).build());
-
 		}
 		haF.arrangeElements();
+		var loadingPlaceholder = new LoadingDotsWidget(getFont(), Component.translatable("skins.loading"));
+		loadingPlaceholder.setRectangle(width, haF.getContentHeight(), 0,
+			haF.getHeaderHeight());
+		addRenderableWidget(loadingPlaceholder);
 		skinList = new SkinListWidget(minecraft, width / 2, haF.getContentHeight() - 24, haF.getHeaderHeight() + 24, LIST_SKIN_HEIGHT + 34);
 		capesList = new SkinListWidget(minecraft, width / 2, haF.getContentHeight() - 24, haF.getHeaderHeight() + 24, skinList.getEntryContentsHeight() + 20);
 		skinList.setX(width / 2);
 		capesList.setX(width / 2);
-		var currentHeight = Math.min((width / 2f) * 120/85, haF.getContentHeight());
-		var currentWidth = currentHeight * 85/120;
+		var currentHeight = Math.min((width / 2f) * 120 / 85, haF.getContentHeight());
+		var currentWidth = currentHeight * 85 / 120;
 		current = new SkinWidget((int) currentWidth, (int) currentHeight, null, account);
 		current.setPosition((int) (width / 4f - currentWidth / 2), (int) (height / 2f - currentHeight / 2));
-		addRenderableWidget(current);
-		addRenderableWidget(skinList);
-		addRenderableWidget(capesList);
-		haF.visitWidgets(this::addRenderableWidget);
-		capesList.visible = capesList.active = false;
+
+		if (!capesTab) {
+			capesList.visible = capesList.active = false;
+		} else {
+			skinList.visible = skinList.active = false;
+		}
 		List<AbstractWidget> navBar = new ArrayList<>();
-		var skinsTab = addRenderableWidget(Button.builder(Component.translatable("skins.nav.skins"), btn -> {
+		var skinsTab = Button.builder(Component.translatable("skins.nav.skins"), btn -> {
 			navBar.forEach(w -> {
 				if (w != btn) w.active = true;
 			});
 			btn.active = false;
 			skinList.visible = skinList.active = true;
 			capesList.visible = capesList.active = false;
-		}).pos(width * 3 / 4 - 102, haF.getHeaderHeight()).width(100).build());
-		skinsTab.active = false;
+			capesTab = false;
+		}).pos(width * 3 / 4 - 102, haF.getHeaderHeight()).width(100).build();
 		navBar.add(skinsTab);
-		var capesTab = addRenderableWidget(Button.builder(Component.translatable("skins.nav.capes"), btn -> {
+		var capesTab = Button.builder(Component.translatable("skins.nav.capes"), btn -> {
 			navBar.forEach(w -> {
 				if (w != btn) w.active = true;
 			});
 			btn.active = false;
 			skinList.visible = skinList.active = false;
 			capesList.visible = capesList.active = true;
-		}).pos(width * 3 / 4 + 2, haF.getHeaderHeight()).width(100).build());
+			this.capesTab = true;
+		}).pos(width * 3 / 4 + 2, haF.getHeaderHeight()).width(100).build();
 		navBar.add(capesTab);
+		skinsTab.active = this.capesTab;
+		capesTab.active = !this.capesTab;
+		Runnable addWidgets = () -> {
+			removeWidget(loadingPlaceholder);
+			addRenderableWidget(current);
+			addRenderableWidget(skinsTab);
+			addRenderableWidget(capesTab);
+			addRenderableWidget(skinList);
+			addRenderableWidget(capesList);
+			haF.visitWidgets(this::addRenderableWidget);
+		};
 		if (cachedProfile != null) {
 			initDisplay();
+			addWidgets.run();
 			return;
 		}
 		CompletableFuture<?> fut;
@@ -110,12 +125,13 @@ public class SkinManagementScreen extends Screen {
 			.thenAccept(profile -> {
 				cachedProfile = profile;
 				initDisplay();
+				addWidgets.run();
 			}).exceptionally(t -> {
 				AxolotlClientCommon.getInstance().getLogger().error("Failed to load skins!", t);
 				var error = Component.translatable("skins.error.failed_to_load");
 				var errorDesc = Component.translatable("skins.error.failed_to_load_desc");
 				addRenderableWidget(new StringWidget(width / 2 - getFont().width(error) / 2, height / 2 - getFont().lineHeight - 2, getFont().width(error), getFont().lineHeight, error, getFont()));
-				addRenderableWidget(new StringWidget(width / 2 - getFont().width(errorDesc) / 2, height / 2 + 1, getFont().width(error), getFont().lineHeight, error, getFont()));
+				addRenderableWidget(new StringWidget(width / 2 - getFont().width(errorDesc) / 2, height / 2 + 1, getFont().width(errorDesc), getFont().lineHeight, errorDesc, getFont()));
 				return null;
 			});
 	}
@@ -161,6 +177,10 @@ public class SkinManagementScreen extends Screen {
 		int columns = Math.max(2, (width / 2 - 25) / LIST_SKIN_WIDTH);
 		List<Skin> skins = new ArrayList<>(profile.skins());
 		var hashes = skins.stream().map(Asset::textureKey).collect(Collectors.toSet());
+		var defaultSkinHash = Auth.getInstance().getSkinManager().getDefaultSkinHash(account);
+		if (!hashes.contains(defaultSkinHash)) {
+			skins.add(null);
+		}
 		var local = new ArrayList<>(loadLocalSkins());
 		local.removeIf(s -> hashes.contains(s.textureKey()));
 		skins.addAll(local);
@@ -189,7 +209,7 @@ public class SkinManagementScreen extends Screen {
 		int entryHeight = skinList.getEntryContentsHeight();
 		for (int i = 0; i < skins.size(); i += columns) {
 			var s = skins.get(i);
-			if (s.isActive()) {
+			if (s != null && s.isActive()) {
 				current.setSkin(s);
 			}
 			var widget = createEntryForSkin(s, entryHeight);
@@ -198,7 +218,7 @@ public class SkinManagementScreen extends Screen {
 			for (int c = 1; c < columns; c++) {
 				if (!(i < skins.size() - c)) continue;
 				var s2 = skins.get(i + c);
-				if (s2.isActive()) {
+				if (s2 != null && s2.isActive()) {
 					current.setSkin(s2);
 				}
 				var widget2 = createEntryForSkin(s2, entryHeight);
@@ -221,7 +241,7 @@ public class SkinManagementScreen extends Screen {
 	}
 
 	private @NotNull Entry createEntryForSkin(Skin skin, int entryHeight) {
-		return createEntry(entryHeight, new SkinWidget(LIST_SKIN_WIDTH, LIST_SKIN_HEIGHT, skin, account).darkenIfEquipped());
+		return createEntry(entryHeight, new SkinWidget(LIST_SKIN_WIDTH, LIST_SKIN_HEIGHT, skin, account).highlightIfEquipped());
 	}
 
 	private @NotNull Entry createEntryForCape(Skin currentSkin, Cape cape, int entryHeight) {
@@ -229,7 +249,7 @@ public class SkinManagementScreen extends Screen {
 	}
 
 	private SkinWidget createWidgetForCape(Skin currentSkin, Cape cape) {
-		SkinWidget widget2 = new SkinWidget(LIST_SKIN_WIDTH, LIST_SKIN_HEIGHT, currentSkin, cape, account).darkenIfEquipped();
+		SkinWidget widget2 = new SkinWidget(LIST_SKIN_WIDTH, LIST_SKIN_HEIGHT, currentSkin, cape, account).highlightIfEquipped();
 		widget2.setRotationY(210);
 		return widget2;
 	}
@@ -384,7 +404,7 @@ public class SkinManagementScreen extends Screen {
 
 		@Override
 		protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-			int y = getY() + 4;
+			int y = getY()+4;
 			for (var w : widgets) {
 				w.setPosition(getX() + 2, y);
 				w.setWidth(getWidth() - 4);
