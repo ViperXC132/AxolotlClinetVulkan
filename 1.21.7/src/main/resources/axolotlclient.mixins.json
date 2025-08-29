@@ -26,6 +26,7 @@
 		"GameRendererMixin",
 		"GuiGraphicsAccessor",
 		"GuiGraphicsMixin",
+		"GuiRendererMixin",
 		"HandledScreenMixin",
 		"InGameHudMixin",
 		"InGameOverlayRendererMixin",

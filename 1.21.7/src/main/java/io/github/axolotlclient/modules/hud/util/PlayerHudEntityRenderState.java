@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.hud.util;
 
+import io.github.axolotlclient.util.IdentifiablePiPRenderState;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState;
 import net.minecraft.client.renderer.entity.state.EntityRenderState;
@@ -39,7 +40,8 @@ public record PlayerHudEntityRenderState(EntityRenderState renderState,
 										 int y1,
 										 float scale,
 										 @Nullable ScreenRectangle scissorArea,
-										 @Nullable ScreenRectangle bounds) implements PictureInPictureRenderState {
+										 @Nullable ScreenRectangle bounds,
+										 PlayerHudEntityRenderer renderer) implements PictureInPictureRenderState, IdentifiablePiPRenderState<PlayerHudEntityRenderer> {
 
 	public PlayerHudEntityRenderState(
 		EntityRenderState entityRenderState,
@@ -51,11 +53,10 @@ public record PlayerHudEntityRenderState(EntityRenderState renderState,
 		int k,
 		int l,
 		float f,
-		@Nullable ScreenRectangle screenRectangle
+		@Nullable ScreenRectangle screenRectangle,
+		PlayerHudEntityRenderer renderer
 	) {
-		this(
-			entityRenderState, vector3f, quaternionf, quaternionf2, i, j, k, l, f, screenRectangle, PictureInPictureRenderState.getBounds(i, j, k, l, screenRectangle)
-		);
+		this(entityRenderState, vector3f, quaternionf, quaternionf2, i, j, k, l, f, screenRectangle, PictureInPictureRenderState.getBounds(i, j, k, l, screenRectangle), renderer);
 	}
 
 }

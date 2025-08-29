@@ -83,7 +83,7 @@ public class Account {
 		return new Account(uuid, name, authToken, msaToken, refreshToken, expiration);
 	}
 
-	public CompletableFuture<Optional<Account>> refresh(MSAuth auth) {
+	public CompletableFuture<Optional<Account>> refresh(MSApi auth) {
 		return auth.refreshToken(refreshToken, this);
 	}
 

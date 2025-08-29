@@ -811,5 +811,13 @@
 	"bedwars.stats_overlay.auto_activate.tooltip": "Automatically activate on game start. Requires the overlay to be in toggle mode.",
 	"inventoryhud.item_background": "Item Background",
 	"inventoryhud.item_background_color": "Item Background Color",
-	"inventoryhud.always_show_item_backgrounds": "Always Show Item Backgrounds"
+	"inventoryhud.always_show_item_backgrounds": "Always Show Item Backgrounds",
+	"skins.manage": "Manage Skins",
+	"skins.nav.skins": "Skins",
+	"skins.nav.capes": "Capes",
+	"skins.error.failed_to_load": "Failed to load skins",
+	"skins.error.failed_to_load_desc": "Your log file may include more information.",
+	"skins.capes.no_cape": "No Cape",
+	"skins.manage.equipped": "Equipped",
+	"skins.manage.equip": "Equip"
 }

@@ -40,7 +40,7 @@ public abstract class Accounts {
 
 	private final List<Account> accounts = new ArrayList<>();
 	protected Account current;
-	protected MSAuth auth;
+	protected MSApi msApi;
 
 	public void load() {
 		Path legacy = AxolotlClientCommon.resolveConfigFile("../accounts.json");

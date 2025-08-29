@@ -63,7 +63,7 @@ public class Auth extends Accounts implements Module {
 	@Override
 	public void init() {
 		load();
-		this.auth = new MSAuth(this, () -> client.options.language);
+		this.msApi = new MSApi(this, () -> client.options.language);
 		if (isContained(client.getSession().getSessionId())) {
 			current = getAccounts().stream().filter(account -> account.getUuid()
 				.equals(UUIDHelper.toUndashed(client.getSession().getPlayerUuid()))).toList().getFirst();
@@ -91,7 +91,7 @@ public class Auth extends Accounts implements Module {
 			if (account.isExpired()) {
 				Notifications.getInstance().addStatus(Text.translatable("auth.notif.title"), Text.translatable("auth.notif.refreshing", account.getName()));
 			}
-			account.refresh(auth).thenAccept(res -> res.ifPresent(a -> {
+			account.refresh(msApi).thenAccept(res -> res.ifPresent(a -> {
 				if (!a.isExpired()) {
 					login(a);
 				}
@@ -129,7 +129,7 @@ public class Auth extends Accounts implements Module {
 		client.execute(() -> client.setScreen(new ConfirmScreen((bl) -> {
 			client.setScreen(current);
 			if (bl) {
-				auth.startDeviceAuth();
+				msApi.startDeviceAuth();
 			}
 		}, Text.translatable("auth"), Text.translatable("auth.accountExpiredNotice", account.getName()))));
 	}

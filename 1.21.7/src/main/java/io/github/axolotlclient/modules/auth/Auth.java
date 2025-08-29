@@ -37,6 +37,7 @@ import io.github.axolotlclient.mixin.MinecraftClientAccessor;
 import io.github.axolotlclient.mixin.ServerPackManagerAccessor;
 import io.github.axolotlclient.mixin.SplashManagerAccessor;
 import io.github.axolotlclient.modules.Module;
+import io.github.axolotlclient.modules.auth.skin.SkinManager;
 import io.github.axolotlclient.util.ThreadExecuter;
 import io.github.axolotlclient.util.notifications.Notifications;
 import io.github.axolotlclient.util.options.GenericOption;
@@ -63,15 +64,17 @@ public class Auth extends Accounts implements Module {
 	private final GenericOption viewAccounts = new GenericOption("viewAccounts", "clickToOpen", () -> mc.setScreen(new AccountsScreen(mc.screen)));
 	private final Set<String> loadingTexture = new HashSet<>();
 	private final Map<String, ResourceLocation> textures = new WeakHashMap<>();
+	@Getter
+	private final SkinManager skinManager = new SkinManager();
 
 	@Override
 	public void init() {
 		load();
-		this.auth = new MSAuth(this, () -> mc.options.languageCode);
+		this.msApi = new MSApi(this, () -> mc.options.languageCode);
 		if (isContained(mc.getUser().getSessionId())) {
 			current = getAccounts().stream().filter(account -> account.getUuid().equals(UUIDHelper.toUndashed(mc.getUser().getProfileId()))).toList().getFirst();
 			if (current.needsRefresh()) {
-				current.refresh(auth).thenRun(this::save);
+				current.refresh(msApi).thenRun(this::save);
 			}
 		} else {
 			current = new Account(mc.getUser().getName(), UUIDHelper.toUndashed(mc.getUser().getProfileId()), mc.getUser().getAccessToken());
@@ -92,7 +95,7 @@ public class Auth extends Accounts implements Module {
 			if (account.isExpired()) {
 				Notifications.getInstance().addStatus(Component.translatable("auth.notif.title"), Component.translatable("auth.notif.refreshing", account.getName()));
 			}
-			account.refresh(auth).thenAccept(res -> res.ifPresent(a -> {
+			account.refresh(msApi).thenAccept(res -> res.ifPresent(a -> {
 				if (!a.isExpired()) {
 					login(a);
 				}
@@ -134,7 +137,7 @@ public class Auth extends Accounts implements Module {
 		mc.execute(() -> mc.setScreen(new ConfirmScreen((bl) -> {
 			mc.setScreen(current);
 			if (bl) {
-				auth.startDeviceAuth();
+				msApi.startDeviceAuth();
 			}
 		}, Component.translatable("auth"), Component.translatable("auth.accountExpiredNotice", account.getName()))));
 	}
