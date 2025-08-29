@@ -245,8 +245,12 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 		}
 	}
 
+	public boolean hudsEnabled() {
+		return enabled.get();
+	}
+
 	public void render(AxoRenderContext context, float delta) {
-		if (!enabled.get()) return;
+		if (!hudsEnabled()) return;
 		for (HudEntry hud : getEntries()) {
 			if (hud.isEnabled()) {
 				hud.render(context, delta);

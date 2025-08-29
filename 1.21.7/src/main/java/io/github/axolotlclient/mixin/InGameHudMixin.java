@@ -66,7 +66,7 @@ public abstract class InGameHudMixin {
 	@Inject(method = "renderEffects", at = @At("HEAD"), cancellable = true)
 	public void axolotlclient$renderStatusEffect(GuiGraphics graphics, DeltaTracker tracker, CallbackInfo ci) {
 		PotionsHud hud = (PotionsHud) HudManager.getInstance().get(PotionsHud.ID);
-		if (hud != null && hud.isEnabled()) {
+		if (HudManager.getInstance().hudsEnabled() && hud != null && hud.isEnabled()) {
 			ci.cancel();
 		}
 	}
@@ -74,7 +74,7 @@ public abstract class InGameHudMixin {
 	@Inject(method = "renderCrosshair", at = @At("HEAD"), cancellable = true)
 	public void axolotlclient$renderCrosshair(GuiGraphics graphics, DeltaTracker tracker, CallbackInfo ci) {
 		CrosshairHud hud = (CrosshairHud) HudManager.getInstance().get(CrosshairHud.ID);
-		if (hud != null && hud.isEnabled()) {
+		if (HudManager.getInstance().hudsEnabled() && hud != null && hud.isEnabled()) {
 			if (minecraft.gui.getDebugOverlay().showDebugScreen() && !hud.overridesF3()) {
 				return;
 			}
@@ -97,7 +97,7 @@ public abstract class InGameHudMixin {
 		target = "Lnet/minecraft/client/gui/GuiGraphics;drawStringWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V"))
 	public void axolotlclient$getActionBar(GuiGraphics instance, Font font, Component text, int x, int y, int width, int color, Operation<Integer> original) {
 		ActionBarHud hud = (ActionBarHud) HudManager.getInstance().get(ActionBarHud.ID);
-		if (hud != null && hud.isEnabled()) {
+		if (HudManager.getInstance().hudsEnabled() && hud != null && hud.isEnabled()) {
 			instance.pose().popMatrix();
 			hud.render(instance, text, color);
 			instance.pose().pushMatrix();

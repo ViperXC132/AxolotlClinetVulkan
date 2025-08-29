@@ -676,7 +676,7 @@
 	"mousemovementhud": "Mouse Movement HUD",
 	"iphud.show_icon": "Show Server Icon",
 	"hud.height": "HUD Height",
-	"coordshud.delimiter": "Delimiter (Minimal Mode)",
+	"coordshud.delimiter": "Delimiter",
 	"coordshud.separator": "Separator (Minimal Mode)",
 	"coordshud.separator.color": "Separator Color (Minimal Mode)",
 	"debugcountershud": "Debug Counters Hud",

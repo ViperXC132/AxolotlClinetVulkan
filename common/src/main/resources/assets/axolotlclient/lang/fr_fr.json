@@ -676,7 +676,7 @@
 	"keystrokes.stroke.add.special": "Ajouter une keystroke spéciale",
 	"mousemovementhud": "HUD de mouvement de la souris",
 	"iphud.show_icon": "Afficher l'icône du serveur",
-	"coordshud.delimiter": "Délimiteur (Mode minimal)",
+	"coordshud.delimiter": "Délimiteur",
 	"coordshud.separator": "Séparateur (Mode minimal)",
 	"coordshud.separator.color": "Couleur du séparateur (Mode minimal)",
 	"debugcountershud": "HUD des compteurs de débogage",

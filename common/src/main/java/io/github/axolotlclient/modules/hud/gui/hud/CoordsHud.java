@@ -140,10 +140,11 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		int width, height;
 		int xStart = pos.x() + 2;
 
+		String del = delimiter.get();
 		if (minimal.get()) {
 			int currPos = xStart;
 			String separator = this.separator.get();
-			currPos = context.br$drawString("XYZ" + delimiter.get(), currPos, pos.y() + 2, firstColor.get().toInt(), shadow.get());
+			currPos = context.br$drawString("XYZ" + del, currPos, pos.y() + 2, firstColor.get().toInt(), shadow.get());
 			currPos = context.br$drawString(fx, currPos, pos.y() + 2, secondColor.get().toInt(),
 				shadow.get());
 			currPos = context.br$drawString(separator, currPos, pos.y() + 2, separatorColor.get().toInt(), shadow.get());
@@ -157,21 +158,20 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		} else {
 			int xEnd;
 			int yEnd = pos.y() + 2;
-			String del = delimiter.get();
-			context.br$drawString("X"+del, xStart, yEnd, firstColor.get().toInt(), shadow.get());
-			xEnd = context.br$drawString(fx, pos.x() + 11, yEnd,
+			int nextX = context.br$drawString("X"+del, xStart, yEnd, firstColor.get().toInt(), shadow.get());
+			xEnd = context.br$drawString(fx, nextX, yEnd,
 				secondColor.get().toInt(), shadow.get());
 			yEnd += 10;
 
-			context.br$drawString("Y"+del, xStart, yEnd, firstColor.get().toInt(), shadow.get());
-			xEnd = Math.max(xEnd, context.br$drawString(fy, pos.x() + 11, yEnd,
+			nextX = context.br$drawString("Y"+del, xStart, yEnd, firstColor.get().toInt(), shadow.get());
+			xEnd = Math.max(xEnd, context.br$drawString(fy, nextX, yEnd,
 				secondColor.get().toInt(), shadow.get()));
 
 			yEnd += 10;
 
-			context.br$drawString("Z"+del, xStart, yEnd, firstColor.get().toInt(), shadow.get());
+			nextX = context.br$drawString("Z"+del, xStart, yEnd, firstColor.get().toInt(), shadow.get());
 
-			xEnd = Math.max(xEnd, context.br$drawString(fz, pos.x() + 11, yEnd, secondColor.get().toInt(), shadow.get()));
+			xEnd = Math.max(xEnd, context.br$drawString(fz, nextX, yEnd, secondColor.get().toInt(), shadow.get()));
 
 			yEnd += 10;
 
@@ -189,8 +189,7 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		}
 
 		if (biome.get()) {
-			int bX = context.br$drawString(AxoI18n.translate("coordshud.biome"), xStart, height + pos.y(), firstColor.get().toInt(), shadow.get());
-			bX += 5;
+			int bX = context.br$drawString(AxoI18n.translate("coordshud.biome")+del, xStart, height + pos.y(), firstColor.get().toInt(), shadow.get());
 			width = Math.max(width + pos.x() - 1, context.br$drawString(biomeName, bX, height + pos.y(), secondColor.get().toInt(), shadow.get())) - pos.x() + 1;
 			height += 10;
 		}
