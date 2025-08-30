@@ -2,7 +2,7 @@
 
 ### 3.1.5
 
-- fix a few bugs (#154, #155)
+- fix a few bugs (#154, #155, #168, #175)
 - add Bedwars StatsOverlay (#145)
 - Fix various hypixel issues (#167)
 - add Inventory HUD (#152)
