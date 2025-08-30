@@ -111,7 +111,3 @@ publishing {
 		}
 	}
 }
-
-tasks.modrinth {
-	enabled = false
-}
