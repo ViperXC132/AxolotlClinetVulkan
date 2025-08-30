@@ -74,7 +74,7 @@ public class JoinMulitplayerScreenMixin extends Screen {
 	@WrapOperation(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/multiplayer/MultiplayerServerListWidget;updateSize(IIII)V"))
 	private void increaseHeaderSize(MultiplayerServerListWidget instance, int width, int height, int top, int bottom, Operation<Void> original) {
 		if (API.getInstance().isAuthenticated() && !WORLD_HOST_INSTALLED) {
-			top += 32 - 60;
+			top += -32 + 60;
 		}
 		original.call(instance, width, height, top, bottom);
 	}

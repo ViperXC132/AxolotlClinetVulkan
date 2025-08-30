@@ -110,7 +110,7 @@ public class PlayerHud extends PlayerHudCommon {
 
 		float lerpY = (lastYOffset + ((yOffset - lastYOffset) * delta));
 
-		float scale = getScale() * 30;
+		float scale = getScale() * 40;
 
 		Quaternionf quaternion = new Quaternionf().rotateZ((float) Math.PI);
 

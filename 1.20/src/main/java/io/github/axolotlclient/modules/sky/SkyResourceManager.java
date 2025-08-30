@@ -33,10 +33,12 @@ import com.google.gson.JsonObject;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.AbstractCommonModule;
 import lombok.Getter;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.fabric.api.resource.SimpleSynchronousResourceReloadListener;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.resource.Resource;
 import net.minecraft.resource.ResourceManager;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,6 +55,11 @@ public class SkyResourceManager extends AbstractCommonModule implements SimpleSy
 
 	@Getter
 	private final static SkyResourceManager Instance = new SkyResourceManager();
+
+	@Override
+	public void init() {
+		ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(this);
+	}
 
 	private static JsonObject loadMCPSky(String loader, Identifier id, Resource resource) {
 		JsonObject object = new JsonObject();

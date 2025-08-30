@@ -123,7 +123,7 @@ public class Freelook extends AbstractCommonModule {
 	}
 
 	private void setPerspective(Perspective perspective) {
-		MinecraftClient.getInstance().options.setPerspective(perspective);
+		client.options.setPerspective(perspective);
 	}
 
 	public boolean consumeRotation(double dx, double dy) {
