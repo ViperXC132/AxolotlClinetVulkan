@@ -808,5 +808,8 @@
 	"bedwars.stats_overlay.column.ws": "Show Winstreaks",
 	"bedwars.stats_overlay.toggle": "Whether the key toggles the overlay.",
 	"bedwars.stats_overlay.auto_activate": "Automatic Activation",
-	"bedwars.stats_overlay.auto_activate.tooltip": "Automatically activate on game start. Requires the overlay to be in toggle mode."
+	"bedwars.stats_overlay.auto_activate.tooltip": "Automatically activate on game start. Requires the overlay to be in toggle mode.",
+	"inventoryhud.item_background": "Item Background",
+	"inventoryhud.item_background_color": "Item Background Color",
+	"inventoryhud.always_show_item_backgrounds": "Always Show Item Backgrounds"
 }

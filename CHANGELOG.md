@@ -1,5 +1,9 @@
 ## Changelog:
 
+### 3.1.6
+
+- Implement more options for the Inventory HUD (#173)
+
 ### 3.1.5
 
 - fix a few bugs (#154, #155, #168, #175)

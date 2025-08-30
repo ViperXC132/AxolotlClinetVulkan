@@ -22,11 +22,15 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import io.github.axolotlclient.AxolotlClientCommon;
+import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoItems;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
@@ -54,6 +58,11 @@ public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable
 	private static final int ITEM_SIZE = 18;
 	private static final int ITEM_TILE_SIZE = 16;
 
+	private final BooleanOption dynamic = new BooleanOption("dynamic", false);
+	private final BooleanOption itemBackground = new BooleanOption("inventoryhud.item_background", true);
+	private final ColorOption itemBackgroundColor = new ColorOption("inventoryhud.item_background_color", backgroundColor.getDefault());
+	private final BooleanOption alwaysShowItemBackgrounds = new BooleanOption("inventoryhud.always_show_item_backgrounds", false);
+
 	public InventoryHud() {
 		super(164, 56, true);
 	}
@@ -66,6 +75,22 @@ public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable
 	@Override
 	public double getDefaultY() {
 		return 0.76;
+	}
+
+	@Override
+	public void render(AxoRenderContext ctx, float delta) {
+		if (dynamic.get()) {
+			boolean render = false;
+			for (AxoItemStack stack : client.br$getPlayer().br$getInventory().br$getNonEquipmentItems()) {
+				if (stack != null && !stack.br$isEmpty()) {
+					render = true;
+					break;
+				}
+			}
+
+			if (!render) return;
+		}
+		super.render(ctx, delta);
 	}
 
 	@Override
@@ -85,17 +110,18 @@ public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable
 
 		for (int i = 0, inventorySlotsLength = inventorySlots.size(); i < inventorySlotsLength; i++) {
 			AxoItemStack stack = inventorySlots.get(i);
-			if (stack != null && !stack.br$isEmpty()) {
-				renderStack(graphics, x + (i % 9) * ITEM_SIZE, y + (i / 9) * ITEM_SIZE, stack);
-			}
+			//if (stack != null && !stack.br$isEmpty()) {
+			renderStack(graphics, x + (i % 9) * ITEM_SIZE, y + (i / 9) * ITEM_SIZE, stack);
+			//}
 		}
 	}
 
-
 	private void renderStack(AxoRenderContext graphics, int x, int y, AxoItemStack itemStack) {
-		if (background.get() && backgroundColor.get().getAlpha() > 0) {
-			graphics.br$fillRect(x, y, ITEM_TILE_SIZE, ITEM_TILE_SIZE, backgroundColor.get().toInt());
+		var empty = itemStack == null || itemStack.br$isEmpty();
+		if ((!empty || alwaysShowItemBackgrounds.get()) && itemBackground.get() && itemBackgroundColor.get().getAlpha() > 0) {
+			graphics.br$fillRect(x, y, ITEM_TILE_SIZE, ITEM_TILE_SIZE, itemBackgroundColor.get().toInt());
 		}
+		if (empty) return;
 
 		graphics.br$renderGuiItemModel(itemStack, x, y);
 		graphics.br$renderGuiItemOverlay(itemStack, x, y, null);
@@ -109,5 +135,12 @@ public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable
 	@Override
 	public AnchorPoint getAnchor() {
 		return AnchorPoint.MIDDLE_MIDDLE;
+	}
+
+	@Override
+	public List<Option<?>> getConfigurationOptions() {
+		var options = super.getConfigurationOptions();
+		Collections.addAll(options, dynamic, itemBackground, itemBackgroundColor, alwaysShowItemBackgrounds);
+		return options;
 	}
 }

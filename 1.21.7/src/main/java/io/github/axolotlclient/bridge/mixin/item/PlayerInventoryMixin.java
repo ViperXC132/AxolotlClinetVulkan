@@ -77,7 +77,7 @@ public abstract class PlayerInventoryMixin implements AxoPlayerInventory {
 
 	@Override
 	public List<? extends AxoItemStack> br$getNonEquipmentItems() {
-		return items;
+		return items.subList(9, 36);
 	}
 
 	@Override
