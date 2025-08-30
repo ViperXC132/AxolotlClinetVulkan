@@ -57,7 +57,7 @@ public class ScrollableTooltips extends AbstractModule {
 		category.add(scrollAmount);
 		category.add(inverse);
 
-		AxolotlClient.CONFIG.rendering.add(category);
+		AxolotlClient.config().rendering.add(category);
 	}
 
 	public boolean onScroll(boolean reverse) {

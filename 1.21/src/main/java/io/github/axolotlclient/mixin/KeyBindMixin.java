@@ -23,9 +23,9 @@
 package io.github.axolotlclient.mixin;
 
 import com.mojang.blaze3d.platform.InputUtil;
+import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import io.github.axolotlclient.util.events.Events;
 import io.github.axolotlclient.util.events.impl.KeyBindChangeEvent;
-import io.github.axolotlclient.util.events.impl.KeyPressEvent;
 import net.minecraft.client.option.KeyBind;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -43,7 +43,7 @@ public abstract class KeyBindMixin {
 	@Inject(method = "setPressed", at = @At("RETURN"))
 	public void axolotlclient$onPress(boolean pressed, CallbackInfo ci) {
 		if (pressed) {
-			Events.KEY_PRESS.invoker().invoke(new KeyPressEvent((KeyBind) ((Object) this)));
+			io.github.axolotlclient.bridge.events.Events.KEY_INPUT.invoker().accept(((AxoKeybinding) this).br$getBoundKey());
 		}
 	}
 }

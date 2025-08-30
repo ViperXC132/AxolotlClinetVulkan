@@ -28,8 +28,10 @@ import java.util.List;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
+import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.ItemUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.living.player.PlayerEntity;
@@ -40,19 +42,21 @@ public class HotbarHUD extends TextHudEntry {
 	public static final Identifier ID = new Identifier("axolotlclient", "hotbarhud");
 	private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
 
+	private final Minecraft client = (Minecraft) super.client;
+
 	public HotbarHUD() {
 		super(182, 22, false);
 	}
 
 	@Override
-	public void render(float delta) {
+	public void render(AxoRenderContext context, float delta) {
 		if (this.client.getCamera() instanceof PlayerEntity) {
-			super.render(delta);
+			super.render(context, delta);
 		}
 	}
 
 	@Override
-	public void renderComponent(float delta) {
+	public void renderComponent(AxoRenderContext context, float delta) {
 		PlayerEntity playerEntity = (PlayerEntity) this.client.getCamera();
 		if (playerEntity == null || playerEntity.inventory == null || playerEntity.inventory.inventorySlots == null) {
 			return;
@@ -62,11 +66,11 @@ public class HotbarHUD extends TextHudEntry {
 		GlStateManager.enableBlend();
 		this.client.getTextureManager().bind(WIDGETS_TEXTURE);
 
-		float f = this.drawOffset;
-		this.drawOffset = -90.0F;
-		this.drawTexture(pos.x, pos.y, 0, 0, 182, 22);
-		this.drawTexture(pos.x - 1 + playerEntity.inventory.selectedSlot * 20, pos.y - 1, 0, 22, 24, 22);
-		this.drawOffset = f;
+		context.br$pushMatrix();
+		context.br$translateMatrix(0, 0, -90);
+		DrawUtil.drawTexture(pos.x, pos.y, 0, 0, 182, 22, 256, 256);
+		DrawUtil.drawTexture(pos.x - 1 + playerEntity.inventory.selectedSlot * 20, pos.y - 1, 0, 22, 24, 22, 256, 256);
+		context.br$pushMatrix();
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.blendFuncSeparate(770, 771, 1, 0);
 		Lighting.turnOnGui();
@@ -84,18 +88,15 @@ public class HotbarHUD extends TextHudEntry {
 		Lighting.turnOff();
 		GlStateManager.disableRescaleNormal();
 		GlStateManager.disableBlend();
+		context.br$popMatrix();
+		context.br$popMatrix();
 	}
 
 	@Override
-	public void renderPlaceholderComponent(float delta) {
+	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
 		DrawPosition pos = getPos();
-		drawCenteredString(Minecraft.getInstance().textRenderer, getName(), pos.x + width / 2,
+		DrawUtil.drawCenteredString(Minecraft.getInstance().textRenderer, getName(), pos.x + width / 2,
 			pos.y + height / 2 - 4, -1, true);
-	}
-
-	@Override
-	public boolean movable() {
-		return true;
 	}
 
 	@Override

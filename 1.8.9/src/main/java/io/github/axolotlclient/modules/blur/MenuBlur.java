@@ -79,7 +79,7 @@ public class MenuBlur extends AbstractModule {
 	public void init() {
 		category.add(enabled, strength, fadeTime, bgColor);
 
-		AxolotlClient.CONFIG.rendering.add(category);
+		AxolotlClient.config().rendering.add(category);
 
 		AxolotlClient.runtimeResources.put(shaderLocation, new MenuBlurShader());
 	}

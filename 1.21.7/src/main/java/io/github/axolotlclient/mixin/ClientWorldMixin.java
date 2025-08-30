@@ -46,15 +46,15 @@ public abstract class ClientWorldMixin {
 	private void axolotlclient$onEntityRemoved(int entityId, Entity.RemovalReason removalReason, CallbackInfo ci) {
 		Entity entity = this.getEntities().get(entityId);
 		if (entity instanceof Player && HypixelMods.getInstance().cacheMode.get()
-			.equals(HypixelMods.HypixelCacheMode.ON_PLAYER_DISCONNECT)) {
+			.equals(HypixelMods.HypixelApiCacheMode.ON_PLAYER_DISCONNECT)) {
 			HypixelAbstractionLayer.getInstance().handleDisconnectEvents(entity.getUUID());
 		}
 	}
 
 	@ModifyArg(method = "setTimeFromServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel$ClientLevelData;setDayTime(J)V"))
 	public long axolotlclient$timeChanger(long time) {
-		if (AxolotlClient.CONFIG.timeChangerEnabled.get()) {
-			return AxolotlClient.CONFIG.customTime.get();
+		if (AxolotlClient.config().timeChangerEnabled.get()) {
+			return AxolotlClient.config().customTime.get();
 		}
 		return time;
 	}

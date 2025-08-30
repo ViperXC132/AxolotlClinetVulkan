@@ -24,7 +24,7 @@ package io.github.axolotlclient.mixin;
 
 import java.util.Objects;
 
-import io.github.axolotlclient.CommonOptions;
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.APIOptions;
 import io.github.axolotlclient.api.ChatsSidebar;
@@ -63,7 +63,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 			buttons.add(new ButtonWidget(234, 10, buttonY, 75, 20, I18n.translate("api.chats")));
 		}
 
-		if (!CommonOptions.gameMenuScreenOptionButtonMode.get().showButton())
+		if (!AxolotlClientConfigCommon.instance().gameMenuScreenOptionButtonMode.get().showButton())
 			return;
 
 		if (minecraft.isInSingleplayer() && !this.minecraft.getServer().isPublished()) {

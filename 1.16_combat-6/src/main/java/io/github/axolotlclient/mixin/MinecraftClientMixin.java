@@ -23,10 +23,10 @@
 package io.github.axolotlclient.mixin;
 
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.bridge.events.types.WorldLoadEvent;
 import io.github.axolotlclient.modules.blur.MenuBlur;
 import io.github.axolotlclient.modules.rpc.DiscordRPC;
 import io.github.axolotlclient.util.events.Events;
-import io.github.axolotlclient.util.events.impl.WorldLoadEvent;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
@@ -49,7 +49,7 @@ public abstract class MinecraftClientMixin {
 	 */
 	@Inject(method = "getWindowTitle", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$getWindowTitle(CallbackInfoReturnable<String> cir) {
-		if (AxolotlClient.CONFIG.customWindowTitle.get()) {
+		if (AxolotlClient.config().customWindowTitle.get()) {
 			cir.setReturnValue("AxolotlClient" + " " + SharedConstants.getGameVersion().getName());
 		}
 	}
@@ -85,11 +85,16 @@ public abstract class MinecraftClientMixin {
 
 	@Inject(method = "joinWorld", at = @At("HEAD"))
 	private void axolotlclient$onWorldLoad(ClientWorld world, CallbackInfo ci) {
-		Events.WORLD_LOAD_EVENT.invoker().invoke(new WorldLoadEvent(world));
+		io.github.axolotlclient.bridge.events.Events.WORLD_LOAD_EVENT.invoker().accept(new WorldLoadEvent(world));
 	}
 
 	@Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;openScreen(Lnet/minecraft/client/gui/screen/Screen;)V"))
 	private void onGameLoad(CallbackInfo ci) {
 		Events.GAME_LOAD_EVENT.invoker().invoke((MinecraftClient) (Object) this);
+	}
+
+	@Inject(method = "<init>", at = @At("TAIL"))
+	private void ready(RunArgs args, CallbackInfo ci) {
+		io.github.axolotlclient.bridge.events.Events.CLIENT_READY.invoker().run();
 	}
 }

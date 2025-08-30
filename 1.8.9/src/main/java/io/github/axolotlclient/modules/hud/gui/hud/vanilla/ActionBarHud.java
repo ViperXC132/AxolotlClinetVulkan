@@ -28,8 +28,10 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import lombok.Getter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resource.Identifier;
 
 /**
@@ -50,6 +52,7 @@ public class ActionBarHud extends TextHudEntry {
 	private String actionBar;
 	private int ticksShown;
 	private int color;
+	private final Minecraft client = (Minecraft) super.client;
 
 	public ActionBarHud() {
 		super(115, 13, false);
@@ -61,7 +64,7 @@ public class ActionBarHud extends TextHudEntry {
 	}
 
 	@Override
-	public void renderComponent(float delta) {
+	public void renderComponent(AxoRenderContext context, float delta) {
 		if (ticksShown >= timeShown.get()) {
 			this.actionBar = null;
 		}
@@ -100,7 +103,7 @@ public class ActionBarHud extends TextHudEntry {
 	}
 
 	@Override
-	public void renderPlaceholderComponent(float delta) {
+	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
 		client.textRenderer.draw(placeholder,
 			(float) getPos().x() + Math.round((float) getWidth() / 2)
 				- (float) client.textRenderer.getWidth(placeholder) / 2,

@@ -62,7 +62,7 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
 
 	@Inject(method = "render(Lnet/minecraft/entity/ItemEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;translate(DDD)V"), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
 	private void minimalItemPhysics(ItemEntity itemEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, CallbackInfo ci, ItemStack itemStack, int j, BakedModel bakedModel, boolean bl, int k, float h, float l, float m) {
-		if (AxolotlClient.CONFIG.flatItems.get()) {
+		if (AxolotlClient.config().flatItems.get()) {
 			matrixStack.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(itemEntity.getPitch(0)));
 			matrixStack.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(90));
 			if (!itemEntity.isOnGround()) {

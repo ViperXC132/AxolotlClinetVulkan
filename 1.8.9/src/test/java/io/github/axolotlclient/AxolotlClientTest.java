@@ -22,11 +22,13 @@
 
 package io.github.axolotlclient;
 
+import io.github.axolotlclient.bridge.internal.BridgeValidationPostprocessor;
 import net.fabricmc.api.ClientModInitializer;
 
 public class AxolotlClientTest implements ClientModInitializer {
+
 	@Override
 	public void onInitializeClient() {
-
+		BridgeValidationPostprocessor.validate();
 	}
 }

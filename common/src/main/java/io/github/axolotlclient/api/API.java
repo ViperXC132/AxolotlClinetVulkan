@@ -36,6 +36,7 @@ import io.github.axolotlclient.api.requests.AccountSettingsRequest;
 import io.github.axolotlclient.api.requests.GlobalDataRequest;
 import io.github.axolotlclient.api.types.*;
 import io.github.axolotlclient.api.util.*;
+import io.github.axolotlclient.bridge.util.AxoI18n;
 import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.util.GsonHelper;
 import io.github.axolotlclient.util.Logger;
@@ -53,9 +54,9 @@ public class API {
 	@Getter
 	private final Logger logger;
 	@Getter
-	private final NotificationProvider notificationProvider;
+	private final NotificationProvider notificationProvider = AxolotlClientCommon.getInstance().getNotificationProvider();
 	@Getter
-	private final TranslationProvider translationProvider;
+	private final TranslationProvider translationProvider = AxoI18n::translate;
 	private final StatusUpdateProvider statusUpdateProvider;
 	@Getter
 	private final Options apiOptions;
@@ -74,14 +75,11 @@ public class API {
 	private final ScheduledExecutorService statusUpdateExecutor;
 	private static final List<BiContainer<Runnable, ListenerType>> afterStartupListeners = new ArrayList<>();
 
-	public API(Logger logger, TranslationProvider translationProvider,
-			   StatusUpdateProvider statusUpdateProvider, Options apiOptions) {
+	public API(StatusUpdateProvider statusUpdateProvider, Options apiOptions) {
 		if (Instance != null) {
 			throw new IllegalStateException("API may only be instantiated once!");
 		}
-		this.logger = logger;
-		this.notificationProvider = AxolotlClientCommon.getInstance().getNotificationProvider();
-		this.translationProvider = translationProvider;
+		this.logger = AxolotlClientCommon.getInstance().getLogger();
 		this.statusUpdateProvider = statusUpdateProvider;
 		this.apiOptions = apiOptions;
 		handlers = new HashSet<>();
@@ -246,7 +244,7 @@ public class API {
 					builder.method(method, HttpRequest.BodyPublishers.noBody());
 				}
 				if (client == null) {
-					client = NetworkUtil.createHttpClient("API");
+					client = NetworkUtil.createHttpClient();
 				}
 
 				HttpResponse<String> response = client.send(builder.build(), HttpResponse.BodyHandlers.ofString());
@@ -389,7 +387,9 @@ public class API {
 				logDetailed("Connecting to websocket..");
 				URI gateway = Request.Route.GATEWAY.create().resolve();
 				String uri = (gateway.getScheme().endsWith("s") ? "wss" : "ws") + gateway.toString().substring(gateway.getScheme().length());
-				socket = client.newWebSocketBuilder().header("Authorization", auth.token())
+				socket = client.newWebSocketBuilder()
+					.header("Authorization", auth.token())
+					.header("User-Agent", NetworkUtil.getUserAgent())
 					.buildAsync(URI.create(uri), new ClientEndpoint()).join();
 				logDetailed("Socket connected");
 			} catch (Exception e) {
@@ -455,9 +455,11 @@ public class API {
 		}
 		statusUpdateFuture = statusUpdateExecutor.scheduleAtFixedRate(() -> {
 			try {
-				Request request = statusUpdateProvider.getStatus();
-				if (request != null) {
-					post(request);
+				if (apiOptions.sendStatusUpdates.get()) {
+					Request request = statusUpdateProvider.getStatus();
+					if (request != null) {
+						post(request);
+					}
 				}
 			} catch (Throwable e) {
 				logger.warn("Failed to send status update! Skipping... ", e);
@@ -465,14 +467,14 @@ public class API {
 		}, 50, Constants.STATUS_UPDATE_DELAY * 1000, TimeUnit.MILLISECONDS);
 	}
 
-	public String sanitizeUUID(String uuid) {
+	public static String sanitizeUUID(String uuid) {
 		if (uuid.contains("-")) {
 			return validateUUID(uuid.replace("-", ""));
 		}
 		return validateUUID(uuid);
 	}
 
-	private String validateUUID(String uuid) {
+	private static String validateUUID(String uuid) {
 		if (uuid.length() != 32) {
 			throw new IllegalArgumentException("Not a valid UUID (undashed): " + uuid);
 		}

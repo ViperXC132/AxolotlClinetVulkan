@@ -22,12 +22,10 @@
 
 package io.github.axolotlclient.config.screen;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Supplier;
 
-import com.mojang.blaze3d.glfw.Window;
-import com.mojang.blaze3d.platform.InputUtil;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.credits.Credits;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
@@ -38,11 +36,11 @@ import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.button.ButtonWidget;
+import net.minecraft.client.gui.widget.button.PlainTextButtonWidget;
+import net.minecraft.client.gui.widget.layout.HeaderFooterLayoutWidget;
 import net.minecraft.client.gui.widget.list.ElementListWidget;
-import net.minecraft.client.gui.widget.list.EntryListWidget;
+import net.minecraft.client.gui.widget.text.TextWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
@@ -51,17 +49,15 @@ import net.minecraft.text.ClickEvent;
 import net.minecraft.text.CommonTexts;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.util.math.MathHelper;
 
 public class CreditsScreen extends Screen {
 
 	public static final HashMap<String, String[]> externalModuleCredits = new HashMap<>();
 	private final Screen parent;
-	private final List<Credit> credits = new ArrayList<>();
 	private final SoundInstance bgm = PositionedSoundInstance.master(SoundEvents.MUSIC_DISC_CHIRP.value(), 1, 1);
-	private Overlay creditOverlay;
-	private EntryListWidget<Credit> creditsList;
+	private final HeaderFooterLayoutWidget haF = new HeaderFooterLayoutWidget(this);
+	private boolean initialized;
 
 	public CreditsScreen(Screen parent) {
 		super(Text.translatable("credits"));
@@ -70,7 +66,7 @@ public class CreditsScreen extends Screen {
 
 	@Override
 	public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		if (AxolotlClient.someNiceBackground.get()) { // Credit to pridelib for the colors
+		if (AxolotlClient.config().someNiceBackground.get()) { // Credit to pridelib for the colors
 			graphics.fill(0, 0, width, height / 6, 0xFFff0018);
 			graphics.fill(0, height / 6, width, height * 2 / 6, 0xFFffa52c);
 			graphics.fill(0, height * 2 / 6, width, height / 2, 0xFFffff41);
@@ -83,201 +79,112 @@ public class CreditsScreen extends Screen {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float tickDelta) {
-		if (AxolotlClient.CONFIG.creditsBGM.get() && !MinecraftClient.getInstance().getSoundManager().isPlaying(bgm)) {
-			MinecraftClient.getInstance().getSoundManager().play(bgm);
-		}
-
-		super.render(graphics, mouseX, mouseY, tickDelta);
-
-		DrawUtil.drawCenteredString(graphics, this.textRenderer, I18n.translate("credits"), width / 2, 20, -1, true);
-
-		if (creditOverlay != null) {
-			creditOverlay.render(graphics);
-		} else {
-			creditsList.render(graphics, mouseX, mouseY, tickDelta);
-		}
-	}
-
-	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (keyCode == InputUtil.KEY_ESCAPE_CODE) {
-			if (creditOverlay == null) {
-				MinecraftClient.getInstance().setScreen(parent);
-			} else {
-				creditOverlay = null;
-			}
-			return true;
-		}
-		return super.keyPressed(keyCode, scanCode, modifiers);
-	}
-
-	@Override
 	public void init() {
-		credits.clear();
-		initCredits();
+		if (initialized) {
+			haF.arrangeElements();
+			haF.visitWidgets(this::addDrawableSelectableElement);
+			return;
+		}
+		initialized = true;
+		haF.addToHeader(getTitle(), textRenderer);
+		haF.addToContents(new CreditsList(client, haF.getWidth(), haF.getContentsHeight(), haF.getHeaderHeight(), 25));
 
-		creditsList = new CreditsList(client, width, height - 100, 50, 25);
-		addSelectableElement(creditsList);
+		var back = haF.addToFooter(ButtonWidget.builder(CommonTexts.BACK, buttonWidget -> closeScreen()).build());
 
-		this.addDrawableSelectableElement(new ButtonWidget.Builder(CommonTexts.BACK, buttonWidget -> {
-			if (creditOverlay == null) {
-				MinecraftClient.getInstance().setScreen(parent);
-				stopBGM();
-			} else {
-				creditOverlay = null;
-			}
-		}).positionAndSize(width / 2 - 75, height - 50 + 22, 150, 20).build());
+		haF.arrangeElements();
+		haF.visitWidgets(this::addDrawableSelectableElement);
 
-		this.addDrawableSelectableElement(new ButtonWidget.Builder(Text.translatable("creditsBGM").append(": ")
-			.append(Text.translatable(AxolotlClient.CONFIG.creditsBGM.get() ? "options.on" : "options.off")),
+		this.addDrawableSelectableElement(ButtonWidget.builder(Text.translatable("creditsBGM").append(": ")
+				.append(Text.translatable(AxolotlClient.config().creditsBGM.get() ? "options.on" : "options.off")),
 			buttonWidget -> {
-				AxolotlClient.CONFIG.creditsBGM.toggle();
-				AxolotlClient.configManager.save();
+				AxolotlClient.config().creditsBGM.toggle();
+				AxolotlClient.getInstance().getConfigManager().save();
 				stopBGM();
 				buttonWidget.setMessage(Text.translatable("creditsBGM").append(": ").append(
-					Text.translatable(AxolotlClient.CONFIG.creditsBGM.get() ? "options.on" : "options.off")));
-			}).positionAndSize(6, this.height - 26, 100, 20).build());
+					Text.translatable(AxolotlClient.config().creditsBGM.get() ? "options.on" : "options.off")));
+			}).positionAndSize(6, back.getY(), 100, 20).build());
 	}
 
 	@Override
-	public void resize(MinecraftClient client, int width, int height) {
-		if (creditOverlay != null)
-			creditOverlay.init();
-		super.resize(client, width, height);
+	public void closeScreen() {
+		client.setScreen(parent);
+		stopBGM();
 	}
 
-	private void initCredits() {
-		credits.add(new SpacerTitle("- - - - - - " + I18n.translate("contributors") + " - - - - - -"));
+	@Override
+	protected void repositionElements() {
+		haF.arrangeElements();
+	}
 
-		Credits.getContributors().forEach(credit -> credits.add(new Credit(credit.getName(), credit.getThings())));
+	@Override
+	public void tick() {
+		tickBGM();
+	}
 
-		credits.add(new SpacerTitle("- - - - - - " + I18n.translate("other_people") + " - - - - - -"));
-
-		Credits.getOtherPeople().forEach(credit -> credits.add(new Credit(credit.getName(), credit.getThings())));
-
-		if (!externalModuleCredits.isEmpty()) {
-			credits.add(new SpacerTitle("- - - - - - " + I18n.translate("external_modules") + " - - - - - -"));
-			externalModuleCredits.forEach((s, s2) -> credits.add(new Credit(s, s2)));
+	public void tickBGM() {
+		if (AxolotlClient.config().creditsBGM.get() && !client.getSoundManager().isPlaying(bgm)) {
+			client.getSoundManager().play(bgm);
 		}
 	}
 
 	private void stopBGM() {
-		MinecraftClient.getInstance().getSoundManager().stop(bgm);
+		client.getSoundManager().stop(bgm);
 	}
 
-	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		super.mouseClicked(mouseX, mouseY, button);
-
-		if (creditOverlay != null) {
-			if (!creditOverlay.isMouseOver(mouseX, mouseY)) {
-				creditOverlay = null;
-				this.creditsList.mouseClicked(mouseX, mouseY, button);
-			} else {
-				creditOverlay.mouseClicked(mouseX, mouseY);
-			}
-		} else {
-			this.creditsList.mouseClicked(mouseX, mouseY, button);
-		}
-		return false;
-	}
-
-	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int button) {
-		return creditsList.mouseReleased(mouseX, mouseY, button) || super.mouseReleased(mouseX, mouseY, button);
-	}
-
-	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-		return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)
-			|| creditsList.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
-	}
-
-	@Override
-	public boolean mouseScrolled(double mouseX, double mouseY, double amountX, double amountY) {
-		return super.mouseScrolled(mouseX, mouseY, amountX, amountY) || creditsList.mouseScrolled(mouseX, mouseY, amountX, amountY);
-	}
-
-	private class CreditsList extends ElementListWidget<Credit> {
+	private class CreditsList extends ElementListWidget<Entry> {
 
 		public CreditsList(MinecraftClient minecraftClient, int width, int height, int top,
 						   int entryHeight) {
 			super(minecraftClient, width, height, top, entryHeight);
-			this.setRenderHeader(false, 0);
 
-			for (Credit c : credits) {
-				addEntry(c);
+			addEntry(new SpacerTitle("- - - - - - " + I18n.translate("contributors") + " - - - - - -"));
+			Credits.getContributors().forEach(credit -> addEntry(new Credit(credit.getName(), credit.getThings())));
+
+			addEntry(new SpacerTitle("- - - - - - " + I18n.translate("other_people") + " - - - - - -"));
+			Credits.getOtherPeople().forEach(credit -> addEntry(new Credit(credit.getName(), credit.getThings())));
+
+			if (!externalModuleCredits.isEmpty()) {
+				addEntry(new SpacerTitle("- - - - - - " + I18n.translate("external_modules") + " - - - - - -"));
+				externalModuleCredits.forEach((s, s2) -> addEntry(new Credit(s, s2)));
 			}
-		}
-
-		@Override
-		public void updateNarration(NarrationMessageBuilder builder) {
-			builder.put(NarrationPart.TITLE, "credits");
-			super.appendNarrations(builder);
-			if (creditOverlay != null) {
-				builder.put(NarrationPart.TITLE, creditOverlay.credit.name);
-				StringBuilder cs = new StringBuilder();
-				for (String s : creditOverlay.credit.things) {
-					cs.append(s).append(". ");
-				}
-				builder.put(NarrationPart.HINT, cs.toString());
-			}
-		}
-
-		@Override
-		public int getRowLeft() {
-			return width / 2;
 		}
 	}
 
-	private class Credit extends ElementListWidget.Entry<Credit> {
+	private abstract static class Entry extends ElementListWidget.Entry<Entry> {
+
+	}
+
+	private class Credit extends Entry {
 
 		private final String name;
 		private final String[] things;
 		private final ButtonWidget c;
-		private boolean hovered;
 
 		public Credit(String name, String... things) {
 			this.name = name;
 			this.things = things;
-			c = ButtonWidget.builder(Text.of(name), buttonWidget -> creditOverlay = new Overlay(this)).positionAndSize(-2, -2, 1, 1).build();
+			c = new ButtonWidget(0, 0, 200, 20, Text.of(name), buttonWidget -> client.setScreen(new CreditOverlay(this)), Supplier::get) {
+				@Override
+				protected void drawWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+					if (isHoveredOrFocused()) {
+						RenderUtil.drawOutline(graphics, getX(), getY(), getWidth(), getHeight(), ClientColors.ERROR.toInt());
+					}
+					int i = this.active ? (isHoveredOrFocused() ? ClientColors.SELECTOR_RED.toInt() : -1) : 10526880;
+					this.drawScrollableText(graphics, textRenderer, i | MathHelper.ceil(this.alpha * 255.0F) << 24);
+				}
+			};
 		}
 
 		@Override
 		public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX,
 						   int mouseY, boolean hovered, float tickDelta) {
-			if (hovered || c.isFocused()) {
-				RenderUtil.drawOutline(graphics, x - 100, y, 200, 20, ClientColors.ERROR.toInt());
-			}
-			this.hovered = hovered;
-			DrawUtil.drawCenteredString(graphics, MinecraftClient.getInstance().textRenderer, name, x, y + 5,
-				hovered || c.isFocused() ? ClientColors.SELECTOR_RED.toInt()
-					: -1,
-				true);
+			c.setPosition(x, y);
+			c.render(graphics, mouseX, mouseY, tickDelta);
 		}
 
 		@Override
 		public List<? extends Element> children() {
 			return List.of(c);
-		}
-
-		@Override
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
-			if (hovered) {
-				creditOverlay = new Overlay(this);
-				return true;
-			}
-			return false;
-		}
-
-		@Nullable
-		@Override
-		public Element getFocused() {
-			if (super.getFocused() == null) {
-				setFocusedChild(c);
-			}
-			return super.getFocused();
 		}
 
 		@Override
@@ -286,92 +193,77 @@ public class CreditsScreen extends Screen {
 		}
 	}
 
-	private class Overlay {
-
-		protected final HashMap<String, ClickEvent> effects = new HashMap<>();
-		protected final HashMap<Integer, String> lines = new HashMap<>();
+	private class CreditOverlay extends Screen {
 		private final Credit credit;
-		private final int x;
-		private final int y;
-		private Window window;
-		private int width;
-		private int height;
 
-		public Overlay(Credit credit) {
-			x = 100;
-			y = 50;
+		public CreditOverlay(Credit credit) {
+			super(Text.of(credit.name));
 			this.credit = credit;
-
-			init();
 		}
 
-		public void init() {
-			window = MinecraftClient.getInstance().getWindow();
-			this.width = window.getScaledWidth() - 200;
-			this.height = window.getScaledHeight() - 100;
+		@Override
+		public void closeScreen() {
+			client.setScreen(CreditsScreen.this);
+		}
 
-			int startY = y + 50;
+		@Override
+		public void init() {
+			int startY = 100;
 			for (String t : credit.things) {
+				int textWidth = textRenderer.br$getWidth(t);
 				if (t.startsWith("http")) {
-					effects.put(t, new ClickEvent(ClickEvent.Action.OPEN_URL, t));
-					lines.put(startY, Formatting.UNDERLINE + t);
+					addDrawableSelectableElement(new PlainTextButtonWidget(width / 2 - textWidth / 2, startY, textWidth, 12,
+						Text.literal(t).setColor(ClientColors.SELECTOR_GREEN.toInt()), btn ->
+						handleTextClick(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, t))), textRenderer));
 				} else {
-					lines.put(startY, t);
+					addDrawable(new TextWidget(width / 2 - textWidth / 2, startY, textWidth, 12,
+						Text.literal(t).setColor(ClientColors.SELECTOR_GREEN.toInt()), textRenderer));
 				}
 				startY += 12;
 			}
+			addDrawableSelectableElement(ButtonWidget.builder(CommonTexts.BACK, buttonWidget -> closeScreen())
+				.position(width / 2 - 75, height - 33 / 2 - 10).build());
 		}
 
-		public void render(GuiGraphics graphics) {
-			RenderUtil.drawRectangle(graphics, x, y, width, height,
+		@Override
+		public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+			super.renderBackground(graphics, mouseX, mouseY, delta);
+			RenderUtil.drawRectangle(graphics, 100, 50, width - 200, height - 100,
 				ClientColors.DARK_GRAY.withAlpha(127));
-			DrawUtil.outlineRect(graphics, x, y, width, height,
+			DrawUtil.outlineRect(graphics, 100, 50, width - 200, height - 100,
 				ClientColors.BLACK.toInt());
-
-			DrawUtil.drawCenteredString(graphics, MinecraftClient.getInstance().textRenderer, credit.name,
-				window.getScaledWidth() / 2, y + 7, -16784327, true);
-
-			lines.forEach(
-				(integer, s) -> DrawUtil.drawCenteredString(graphics, MinecraftClient.getInstance().textRenderer, s,
-					x + width / 2, integer, ClientColors.SELECTOR_GREEN.toInt(), true));
 		}
 
-		public boolean isMouseOver(double mouseX, double mouseY) {
-			return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
+		@Override
+		public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+			super.render(graphics, mouseX, mouseY, delta);
+			DrawUtil.drawCenteredString(graphics, textRenderer, credit.name,
+				width / 2, 57, -16784327, true);
 		}
 
-		public void mouseClicked(double mouseX, double mouseY) {
-			lines.forEach((integer, s) -> {
-				if ((mouseY >= integer && mouseY < integer + 11)
-					&& mouseX >= x + width / 2F - MinecraftClient.getInstance().textRenderer.getWidth(s) / 2F
-					&& mouseX <= x + width / 2F + MinecraftClient.getInstance().textRenderer.getWidth(s) / 2F) {
-					handleTextClick(Style.EMPTY.withClickEvent(effects.get(Formatting.strip(s))));
-				}
-			});
+		@Override
+		public void tick() {
+			CreditsScreen.this.tickBGM();
 		}
 	}
 
-	private class SpacerTitle extends Credit {
+	private class SpacerTitle extends Entry {
 
+		private final String name;
 		public SpacerTitle(String name) {
-			super(name, "");
+			this.name = name;
 		}
 
 		@Override
 		public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX,
 						   int mouseY, boolean hovered, float tickDelta) {
-			DrawUtil.drawCenteredString(graphics, MinecraftClient.getInstance().textRenderer, super.name, x, y, -128374,
+			DrawUtil.drawCenteredString(graphics, textRenderer, name, x + entryWidth / 2, y, -128374,
 				true);
 		}
 
 		@Override
 		public List<? extends Element> children() {
 			return List.of();
-		}
-
-		@Override
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
-			return false;
 		}
 
 		@Override

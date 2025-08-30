@@ -27,11 +27,11 @@ import java.util.List;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import io.github.axolotlclient.bridge.events.Events;
+import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
 import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hypixel.nickhider.NickHider;
+import io.github.axolotlclient.modules.hypixel.NickHider;
 import io.github.axolotlclient.util.Util;
-import io.github.axolotlclient.util.events.Events;
-import io.github.axolotlclient.util.events.impl.ReceiveChatMessageEvent;
 import net.minecraft.client.gui.chat.ChatGui;
 import net.minecraft.client.gui.chat.ChatMessage;
 import net.minecraft.text.LiteralText;
@@ -60,11 +60,11 @@ public abstract class ChatHudMixin {
 	@ModifyVariable(method = "addMessage(Lnet/minecraft/text/Text;I)V", at = @At("HEAD"), argsOnly = true)
 	private Text axolotlclient$onChatMessage(Text message) {
 		ReceiveChatMessageEvent event = new ReceiveChatMessageEvent(false, message.getString(), message);
-		Events.RECEIVE_CHAT_MESSAGE_EVENT.invoker().invoke(event);
+		Events.RECEIVE_CHAT_MESSAGE.invoker().accept(event);
 		if (event.isCancelled()) {
 			return null;
 		} else if (event.getNewMessage() != null) {
-			return event.getNewMessage();
+			return (Text) event.getNewMessage();
 		}
 		return message;
 	}
@@ -81,7 +81,7 @@ public abstract class ChatHudMixin {
 		if (hud.isEnabled()) {
 			hud.resetAnimation();
 		}
-		return NickHider.getInstance().editMessage(message);
+		return (Text) NickHider.getInstance().editMessage(message);
 	}
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/chat/ChatGui;fill(IIIII)V", ordinal = 0))

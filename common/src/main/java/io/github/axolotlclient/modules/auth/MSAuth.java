@@ -94,7 +94,7 @@ public class MSAuth {
 			.thenApply(data -> {
 				logger.debug("waiting for user authorization...");
 				long start = System.currentTimeMillis();
-				while (System.currentTimeMillis() < data.getExpiresIn() * 1000L + start) {
+				while (System.currentTimeMillis() - start < data.getExpiresIn() * 1000L && !data.isCancelled()) {
 					if ((System.currentTimeMillis() - start) % data.getInterval() == 0) {
 						HttpRequest.Builder requestBuilder = HttpRequest.newBuilder().POST(
 								FormBodyPublisher.newBuilder().query("client_id", CLIENT_ID)
@@ -264,7 +264,7 @@ public class MSAuth {
 	}
 
 	private HttpClient getHttpClient() {
-		return NetworkUtil.createHttpClient("Auth");
+		return NetworkUtil.createHttpClient();
 	}
 
 	public CompletableFuture<Optional<Account>> refreshToken(String token, Account account) {

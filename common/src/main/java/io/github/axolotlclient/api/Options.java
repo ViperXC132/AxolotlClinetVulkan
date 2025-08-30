@@ -47,6 +47,7 @@ public abstract class Options implements Module {
 		}
 		AxolotlClientCommon.getInstance().saveConfig();
 	});
+	public final BooleanOption sendStatusUpdates = new BooleanOption("api.send_status_updates", true);
 	public final BooleanOption statusUpdateNotifs = new BooleanOption("statusUpdateNotifs", true);
 	public final BooleanOption friendRequestsEnabled = new BooleanOption("friendRequestsEnabled", true);
 	public final BooleanOption channelInvitesEnabled = new BooleanOption("api.channels.invites.enabled", false);
@@ -107,7 +108,7 @@ public abstract class Options implements Module {
 		account.add(showRegistered, retainUsernames, showLastOnline, showActivity, allowFriendsImageAccess);
 		category.add(pluralkit);
 		category.add(account, false);
-		category.add(enabled, privacyAccepted, friendRequestsEnabled, statusUpdateNotifs, channelInvitesEnabled, detailedLogging, updateNotifications, displayNotes, addShortcutButtons, allowFriendsServerJoin);
+		category.add(enabled, privacyAccepted, friendRequestsEnabled, sendStatusUpdates, statusUpdateNotifs, channelInvitesEnabled, detailedLogging, updateNotifications, displayNotes, addShortcutButtons, allowFriendsServerJoin);
 	}
 
 	public enum PrivacyPolicyState {

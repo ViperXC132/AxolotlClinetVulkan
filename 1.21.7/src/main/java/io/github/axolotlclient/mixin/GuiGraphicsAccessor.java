@@ -19,7 +19,6 @@
  *
  * For more information, see the LICENSE file.
  */
-
 package io.github.axolotlclient.mixin;
 
 import net.minecraft.client.gui.GuiGraphics;

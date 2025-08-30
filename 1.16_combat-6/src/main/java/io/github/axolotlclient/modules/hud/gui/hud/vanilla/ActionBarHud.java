@@ -28,8 +28,10 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import lombok.Getter;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -52,6 +54,7 @@ public class ActionBarHud extends TextHudEntry {
 	private Text actionBar;
 	private int ticksShown;
 	private int color;
+	private final MinecraftClient client = (MinecraftClient) super.client;
 
 	public ActionBarHud() {
 		super(115, 13, false);
@@ -63,7 +66,7 @@ public class ActionBarHud extends TextHudEntry {
 	}
 
 	@Override
-	public void renderComponent(MatrixStack matrices, float delta) {
+	public void renderComponent(AxoRenderContext matrices, float delta) {
 		if (ticksShown >= timeShown.get()) {
 			this.actionBar = null;
 		}
@@ -71,7 +74,7 @@ public class ActionBarHud extends TextHudEntry {
 		if (this.actionBar != null) {
 			if (shadow.get()) {
 				client.textRenderer
-					.drawWithShadow(matrices, actionBar,
+					.drawWithShadow((MatrixStack) matrices, actionBar,
 						(float) getPos().x() + Math.round((float) getWidth() / 2)
 							- (float) client.textRenderer.getWidth(actionBar) / 2,
 						(float) getPos().y() + 3,
@@ -83,7 +86,7 @@ public class ActionBarHud extends TextHudEntry {
 							: color);
 			} else {
 				client.textRenderer
-					.draw(matrices, actionBar,
+					.draw((MatrixStack) matrices, actionBar,
 						(float) getPos().x() + Math.round((float) getWidth() / 2)
 							- ((float) client.textRenderer.getWidth(actionBar) / 2),
 						(float) getPos().y() + 3,
@@ -101,8 +104,8 @@ public class ActionBarHud extends TextHudEntry {
 	}
 
 	@Override
-	public void renderPlaceholderComponent(MatrixStack matrices, float delta) {
-		client.textRenderer.draw(matrices, placeholder, (float) getPos().x() + Math.round((float) getWidth() / 2)
+	public void renderPlaceholderComponent(AxoRenderContext matrices, float delta) {
+		client.textRenderer.draw((MatrixStack) matrices, placeholder, (float) getPos().x() + Math.round((float) getWidth() / 2)
 			- (float) client.textRenderer.getWidth(placeholder) / 2, (float) getPos().y() + 3, -1);
 	}
 

@@ -57,16 +57,16 @@ public class FeatureDisabler {
 	private static final HashMap<String, ForceableBooleanOption> features = Util.make(() -> {
 		HashMap<String, ForceableBooleanOption> features = new HashMap<>();
 		features.put("freelook", Freelook.getInstance().enabled);
-		features.put("timechanger", AxolotlClient.CONFIG.timeChangerEnabled);
-		features.put("lowfire", AxolotlClient.CONFIG.lowFire);
-		features.put("fullbright", AxolotlClient.CONFIG.fullBright);
+		features.put("timechanger", AxolotlClient.config().timeChangerEnabled);
+		features.put("lowfire", AxolotlClient.config().lowFire);
+		features.put("fullbright", AxolotlClient.config().fullBright);
 		return features;
 	});
 	private static String currentAddress = "";
 
 	public static void init() {
-		setServers(AxolotlClient.CONFIG.fullBright, NONE, "gommehd");
-		setServers(AxolotlClient.CONFIG.lowFire, NONE, "gommehd");
+		setServers(AxolotlClient.config().fullBright, NONE, "gommehd");
+		setServers(AxolotlClient.config().lowFire, NONE, "gommehd");
 		setServers(Freelook.getInstance().enabled, () -> Freelook.getInstance().needsDisabling(), "hypixel", "mineplex", "gommehd", "nucleoid", "mccisland");
 		setServers(((ToggleSprintHud) HudManager.getInstance().get(ToggleSprintHud.ID)).toggleSneak, NONE, "hypixel");
 

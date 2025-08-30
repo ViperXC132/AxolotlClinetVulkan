@@ -22,37 +22,13 @@
 
 package io.github.axolotlclient.modules.hud;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import com.mojang.blaze3d.platform.InputUtil;
-import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.AxolotlClientCommon;
-import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
-import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
-import io.github.axolotlclient.modules.AbstractModule;
-import io.github.axolotlclient.modules.hud.gui.AbstractHudEntry;
-import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
-import io.github.axolotlclient.modules.hud.gui.hud.*;
-import io.github.axolotlclient.modules.hud.gui.hud.item.ArmorHud;
-import io.github.axolotlclient.modules.hud.gui.hud.item.ArrowHud;
-import io.github.axolotlclient.modules.hud.gui.hud.item.ItemUpdateHud;
-import io.github.axolotlclient.modules.hud.gui.hud.simple.*;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
+import io.github.axolotlclient.modules.hud.gui.hud.PackDisplayHud;
+import io.github.axolotlclient.modules.hud.gui.hud.PlayerHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
-import io.github.axolotlclient.modules.hud.util.Rectangle;
-import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
-import io.github.axolotlclient.util.GsonHelper;
-import io.github.axolotlclient.util.events.Events;
-import io.github.axolotlclient.util.keybinds.KeyBinds;
-import io.github.axolotlclient.util.options.GenericOption;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.option.KeyBind;
-import net.minecraft.util.Identifier;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
@@ -60,217 +36,35 @@ import net.minecraft.util.Identifier;
  *
  * @license GPL-3.0
  */
+public class HudManager extends HudManagerCommon {
+	@Getter
+	private final static HudManager instance = new HudManager();
 
-public class HudManager extends AbstractModule {
-
-	private final static Path CUSTOM_MODULE_SAVE_PATH = AxolotlClientCommon.resolveConfigFile("custom_hud.json");
-	private final static HudManager INSTANCE = new HudManager();
-	private final OptionCategory hudCategory = OptionCategory.create("hud");
-	private final Map<Identifier, HudEntry> entries;
-	private final MinecraftClient client;
-
-	private HudManager() {
-		this.entries = new LinkedHashMap<>();
-		client = MinecraftClient.getInstance();
-		KeyBinds.getInstance().registerWithSimpleAction(new KeyBind("key.openHud", InputUtil.KEY_RIGHT_SHIFT_CODE, "category.axolotlclient"),
-			() -> client.setScreen(new HudEditScreen()));
+	@Override
+	protected void openScreen() {
+		MinecraftClient.getInstance().setScreen(new HudEditScreen());
 	}
 
-	public static HudManager getInstance() {
-		return INSTANCE;
-	}
-
-	public void init() {
-		//KeyBindingHelper.registerKeyBinding(key);
-
-		AxolotlClient.CONFIG.addCategory(hudCategory);
-
-		add(new PingHud());
-		add(new FPSHud());
-		add(new CPSHud());
-		add(new ArmorHud());
-		add(new PotionsHud());
-		add(new KeystrokeHud());
-		add(new ToggleSprintHud());
-		add(new IPHud());
-		add(new iconHud());
-		add(new SpeedHud());
-		add(new ScoreboardHud());
-		add(new CrosshairHud());
-		add(new CoordsHud());
+	@Override
+	protected void addExtraHud() {
 		add(new ActionBarHud());
 		add(new BossBarHud());
-		add(new ArrowHud());
-		add(new ItemUpdateHud());
-		add(new PackDisplayHud());
-		add(new IRLTimeHud());
-		add(new ReachHud()); // TODO this is broken
-		add(new HotbarHUD());
-		add(new MemoryHud());
-		add(new PlayerCountHud());
-		add(new CompassHud());
-		add(new TPSHud());
-		add(new ComboHud()); // TODO this is broken
-		add(new PlayerHud());
-		add(new MouseMovementHud());
+		add(new CrosshairHud());
 		add(new DebugCountersHud());
-		add(new DayCounterHud());
-		entries.put(BedwarsMod.getInstance().getUpgradesOverlay().getId(), BedwarsMod.getInstance().getUpgradesOverlay());
-		entries.put(BedwarsMod.getInstance().getResourceOverlay().getId(), BedwarsMod.getInstance().getResourceOverlay());
-
-		((ReachHud) get(ReachHud.ID)).getEnabled().setForceOff(true, "feature.broken");
-		((ComboHud) get(ComboHud.ID)).getEnabled().setForceOff(true, "feature.broken");
-
-		entries.values().forEach(HudEntry::init);
-
-		refreshAllBounds();
-
-		Events.GAME_LOAD_EVENT.register(mc -> loadCustomEntries());
-
-		hudCategory.add(new GenericOption("hud.custom_entry", "hud.custom_entry.add", () -> {
-			CustomHudEntry entry = new CustomHudEntry();
-			entry.setEnabled(true);
-			entry.init();
-			entry.onBoundsUpdate();
-			entries.put(entry.getId(), entry);
-			hudCategory.add(entry.getAllOptions(), false);
-			client.currentScreen.resize(client, client.currentScreen.width, client.currentScreen.height);
-			saveCustomEntries();
-		}));
-		ClientLifecycleEvents.CLIENT_STOPPING.register(client -> saveCustomEntries());
+		add(new HotbarHUD());
+		add(new ScoreboardHud());
+		add(new KeystrokeHud());
+		add(new PackDisplayHud());
+		add(new PlayerHud());
 	}
 
-	@SuppressWarnings("unchecked")
-	private void loadCustomEntries() {
-		try {
-			if (Files.exists(CUSTOM_MODULE_SAVE_PATH)) {
-				var obj = (List<Object>) GsonHelper.read(Files.readString(CUSTOM_MODULE_SAVE_PATH));
-				obj.forEach(o -> {
-					CustomHudEntry entry = new CustomHudEntry();
-					var values = (Map<String, Object>) o;
-					entry.getAllOptions().getOptions().forEach(opt -> {
-						if (values.containsKey(opt.getName())) {
-							opt.fromSerializedValue((String) values.get(opt.getName()));
-						}
-					});
-					entries.put(entry.getId(), entry);
-					hudCategory.add(entry.getAllOptions(), false);
-					entry.init();
-					entry.onBoundsUpdate();
-				});
-			}
-		} catch (IOException e) {
-			AxolotlClient.LOGGER.warn("Failed to load custom hud modules!", e);
+	@Override
+	public void render(AxoRenderContext context, float delta) {
+		final var mc = ((MinecraftClient) client);
+		mc.getProfiler().push("Hud render");
+		if(!(mc.currentScreen instanceof HudEditScreen)) {
+			super.render(context, delta);
 		}
-	}
-
-	public void saveCustomEntries() {
-		try {
-			Files.createDirectories(CUSTOM_MODULE_SAVE_PATH.getParent());
-			var writer = Files.newBufferedWriter(CUSTOM_MODULE_SAVE_PATH);
-			var json = GsonHelper.GSON.newJsonWriter(writer);
-			json.beginArray();
-			for (Map.Entry<Identifier, HudEntry> entry : entries.entrySet()) {
-				HudEntry hudEntry = entry.getValue();
-				if (hudEntry instanceof CustomHudEntry hud) {
-					json.beginObject();
-					for (Option<?> opt : hud.getCategory().getOptions()) {
-						var value = opt.toSerializedValue();
-						if (value != null) {
-							json.name(opt.getName());
-							json.value(value);
-						}
-					}
-					json.endObject();
-				}
-			}
-			json.endArray();
-			json.close();
-		} catch (IOException e) {
-			AxolotlClient.LOGGER.warn("Failed to save custom hud modules!", e);
-		}
-	}
-
-	public void tick() {
-		entries.values().stream().filter(hudEntry -> hudEntry.isEnabled() && hudEntry.tickable())
-			.forEach(HudEntry::tick);
-	}
-
-	public HudManager add(AbstractHudEntry entry) {
-		entries.put(entry.getId(), entry);
-		hudCategory.add(entry.getAllOptions());
-		return this;
-	}
-
-	public void refreshAllBounds() {
-		for (HudEntry entry : getEntries()) {
-			entry.onBoundsUpdate();
-		}
-	}
-
-	public List<HudEntry> getEntries() {
-		if (!entries.isEmpty()) {
-			return new ArrayList<>(entries.values());
-		}
-		return new ArrayList<>();
-	}
-
-	public HudEntry get(Identifier identifier) {
-		return entries.get(identifier);
-	}
-
-	public void removeEntry(Identifier identifier) {
-		var removed = entries.remove(identifier);
-		if (removed != null) {
-			hudCategory.getSubCategories().remove(removed.getCategory());
-		}
-	}
-
-	public void render(GuiGraphics graphics, float delta) {
-		client.getProfiler().push("Hud Modules");
-		if (!(client.currentScreen instanceof HudEditScreen)) {
-			for (HudEntry hud : getEntries()) {
-				if (hud.isEnabled() && (!client.options.debugEnabled || hud.overridesF3())) {
-					client.getProfiler().push(hud.getName());
-					hud.render(graphics, delta);
-					client.getProfiler().pop();
-				}
-			}
-		}
-		client.getProfiler().pop();
-	}
-
-	public Optional<HudEntry> getEntryXY(int x, int y) {
-		for (HudEntry entry : getMoveableEntries()) {
-			Rectangle bounds = entry.getTrueBounds();
-			if (bounds.isMouseOver(x, y)) {
-				return Optional.of(entry);
-			}
-		}
-		return Optional.empty();
-	}
-
-	public List<HudEntry> getMoveableEntries() {
-		if (!entries.isEmpty()) {
-			return entries.values().stream().filter((entry) -> entry.isEnabled() && entry.movable())
-				.collect(Collectors.toList());
-		}
-		return new ArrayList<>();
-	}
-
-	public void renderPlaceholder(GuiGraphics graphics, float delta) {
-		for (HudEntry hud : getEntries()) {
-			if (hud.isEnabled()) {
-				hud.renderPlaceholder(graphics, delta);
-			}
-		}
-	}
-
-	public List<Rectangle> getAllBounds() {
-		ArrayList<Rectangle> bounds = new ArrayList<>();
-		for (HudEntry entry : getMoveableEntries()) {
-			bounds.add(entry.getTrueBounds());
-		}
-		return bounds;
+		mc.getProfiler().pop();
 	}
 }

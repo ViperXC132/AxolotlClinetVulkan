@@ -22,8 +22,7 @@
 
 package io.github.axolotlclient.mixin;
 
-import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hud.gui.hud.simple.TPSHud;
+import io.github.axolotlclient.bridge.events.Events;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
 import org.spongepowered.asm.mixin.Mixin;
@@ -36,7 +35,6 @@ public abstract class ClientPlayNetworkHandlerMixin {
 
 	@Inject(method = "handleSetTime", at = @At("HEAD"))
 	private void axolotlclient$onWorldUpdate(ClientboundSetTimePacket packet, CallbackInfo ci) {
-		TPSHud tpsHud = (TPSHud) HudManager.getInstance().get(TPSHud.ID);
-		tpsHud.updateTime(packet.gameTime());
+		Events.UPDATE_TIME.invoker().accept(packet.gameTime());
 	}
 }

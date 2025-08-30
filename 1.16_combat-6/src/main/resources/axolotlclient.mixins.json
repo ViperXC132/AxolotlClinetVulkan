@@ -39,6 +39,7 @@
 		"MinecraftClientAccessor",
 		"MinecraftClientMainMixin",
 		"MinecraftClientMixin",
+		"MinecraftServerAccessor",
 		"MouseMixin",
 		"OverlayTextureAccessor",
 		"OverlayTextureMixin",
@@ -65,5 +66,8 @@
 	],
 	"injectors": {
 		"defaultRequire": 1
+	},
+	"mixinextras": {
+		"minVersion": "0.5.0"
 	}
 }

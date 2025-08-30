@@ -32,14 +32,17 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
-import io.github.axolotlclient.modules.hud.gui.AbstractHudEntry;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
+import io.github.axolotlclient.modules.hud.gui.entry.AbstractHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.RenderUtil;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.Util;
 import lombok.AllArgsConstructor;
 import net.minecraft.block.AbstractChestBlock;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.option.AttackIndicator;
 import net.minecraft.client.render.Camera;
@@ -52,6 +55,8 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Axis;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import static io.github.axolotlclient.modules.hud.gui.hud.vanilla.HotbarHUD.ICONS_TEXTURE;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
@@ -92,6 +97,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		});
+	private final MinecraftClient client = (MinecraftClient) super.client;
 
 	public CrosshairHud() {
 		super(15, 15);
@@ -140,15 +146,16 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, float delta) {
+	public void render(AxoRenderContext context, float delta) {
 		if (!client.options.getPerspective().isFirstPerson() && !showInF5.get()) {
 			return;
 		}
 
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 
-		graphics.getMatrices().push();
-		scale(graphics);
+		context.br$pushMatrix();
+		scale(context);
+		final var graphics = (GuiGraphics) context;
 
 		int x = getPos().x();
 		int y = getPos().y() + 1;
@@ -168,7 +175,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		}
 
 		if (type.get().equals(Crosshair.DOT)) {
-			fillRect(graphics, x + (getWidth() / 2) - 2, y + (getHeight() / 2) - 2, 3, 3, color.toInt());
+			DrawUtil.fillRect(graphics, x + (getWidth() / 2) - 2, y + (getHeight() / 2) - 2, 3, 3, color.toInt());
 		} else if (type.get().equals(Crosshair.CROSS)) {
 			RenderUtil.fillBlend(graphics, x + (getWidth() / 2) - 6, y + (getHeight() / 2) - 1, 6, 1, color);
 			RenderUtil.fillBlend(graphics, x + (getWidth() / 2), y + (getHeight() / 2) - 1, 5, 1, color);
@@ -245,7 +252,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		}
 		RenderSystem.disableBlend();
 		RenderSystem.defaultBlendFunc();
-		graphics.getMatrices().pop();
+		context.br$popMatrix();
 	}
 
 	public Color getColor() {
@@ -266,7 +273,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 	}
 
 	@Override
-	public void renderPlaceholder(GuiGraphics graphics, float delta) {
+	public void renderPlaceholder(AxoRenderContext graphics, float delta) {
 		// Shouldn't need this...
 	}
 

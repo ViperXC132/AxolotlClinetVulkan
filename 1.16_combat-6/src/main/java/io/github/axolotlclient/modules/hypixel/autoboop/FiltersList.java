@@ -66,7 +66,8 @@ public class FiltersList extends ElementListWidget<FiltersList.Entry> {
 		screen.filters.clear();
 		screen.filters.addAll(children().stream().filter(e -> e instanceof FilterEntry)
 			.map(e -> (FilterEntry) e)
-			.map(e -> e.editBox.getText()).toList());
+			.map(e -> e.editBox.getText())
+			.filter(s -> !s.isBlank()).toList());
 	}
 
 	@Environment(EnvType.CLIENT)

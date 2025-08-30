@@ -50,7 +50,8 @@ public class MojangAuth {
 		Result.Builder result = Result.builder();
 		//try (HttpClient client = NetworkUtil.createHttpClient("MojangAuth")) {
 		try { // Can't use try-with-resources because java 17's HttpClient doesn't implement AutoCloseable...
-			HttpClient client = NetworkUtil.createHttpClient("MojangAuth");
+			//noinspection resource
+			HttpClient client = NetworkUtil.createHttpClient();
 
 			HttpRequest.Builder builder = HttpRequest.newBuilder().timeout(Duration.ofSeconds(10));
 			builder.header("Content-Type", "application/json; charset=utf-8");

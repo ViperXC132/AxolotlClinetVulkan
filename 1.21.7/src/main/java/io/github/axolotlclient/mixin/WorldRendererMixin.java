@@ -40,8 +40,8 @@ public abstract class WorldRendererMixin {
 	@WrapOperation(method = "renderBlockOutline", at = @At(value = "INVOKE",
 		target = "Lnet/minecraft/client/renderer/LevelRenderer;renderHitOutline(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/world/entity/Entity;DDDLnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)V", ordinal = 1))
 	private void axolotlclient$customOutlineColor(LevelRenderer instance, PoseStack matrices, VertexConsumer consumer, Entity entity, double offsetX, double offsetY, double offsetZ, BlockPos blockPos, BlockState blockState, int i, Operation<Void> original) {
-		if (AxolotlClient.CONFIG.enableCustomOutlines.get()) {
-			i = AxolotlClient.CONFIG.outlineColor.get().toInt();
+		if (AxolotlClient.config().enableCustomOutlines.get()) {
+			i = AxolotlClient.config().outlineColor.get().toInt();
 		}
 		original.call(instance, matrices, consumer, entity, offsetX, offsetY, offsetZ, blockPos, blockState, i);
 	}

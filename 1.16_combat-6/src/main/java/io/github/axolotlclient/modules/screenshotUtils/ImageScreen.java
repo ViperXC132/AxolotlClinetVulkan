@@ -95,7 +95,7 @@ public class ImageScreen extends Screen {
 			drawCenteredText(graphics, textRenderer, getTitle(), width / 2, 38 / 2 - textRenderer.fontHeight - 2, -1);
 			drawCenteredText(graphics, textRenderer,
 				new TranslatableText("gallery.image.upload_details", uploader.join(),
-					r.sharedAt().atZone(ZoneId.systemDefault()).format(AxolotlClientCommon.getInstance().formatter)),
+					r.sharedAt().atZone(ZoneId.systemDefault()).format(AxolotlClientCommon.getInstance().getConfig().getDateTimeFormatter())),
 				width / 2, 38 / 2 + 2, -1);
 
 		} else {

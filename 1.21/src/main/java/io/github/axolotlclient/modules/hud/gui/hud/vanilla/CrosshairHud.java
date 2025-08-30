@@ -32,14 +32,16 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
-import io.github.axolotlclient.modules.hud.gui.AbstractHudEntry;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
+import io.github.axolotlclient.modules.hud.gui.entry.AbstractHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.RenderUtil;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.Util;
 import lombok.AllArgsConstructor;
 import net.minecraft.block.AbstractChestBlock;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.option.AttackIndicator;
 import net.minecraft.client.render.Camera;
@@ -51,6 +53,8 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.joml.Matrix4fStack;
+
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.fillRect;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
@@ -95,6 +99,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		});
+	private final MinecraftClient client = (MinecraftClient) super.client;
 
 	public CrosshairHud() {
 		super(15, 15);
@@ -143,7 +148,9 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, float delta) {
+	public void render(AxoRenderContext context, float delta) {
+		final var graphics = (GuiGraphics) context;
+
 		if (!client.options.getPerspective().isFirstPerson() && !showInF5.get()) {
 			return;
 		}
@@ -269,7 +276,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 	}
 
 	@Override
-	public void renderPlaceholder(GuiGraphics graphics, float delta) {
+	public void renderPlaceholder(AxoRenderContext graphics, float delta) {
 		// Shouldn't need this...
 	}
 

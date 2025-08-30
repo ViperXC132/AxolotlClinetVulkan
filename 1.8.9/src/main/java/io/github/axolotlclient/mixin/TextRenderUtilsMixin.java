@@ -100,8 +100,12 @@ public class TextRenderUtilsMixin {
 
 	@Unique
 	private static Text format(Text text) {
-		var reformatted = formatFromCodes(text.getContent());
-		reformatted.setStyle(text.getStyle());
+		var reformatted = formatFromCodes(text.getStyle().asString()+text.getContent());
+		var s = text.getStyle();
+		var rS = reformatted.getStyle();
+		rS.setClickEvent(s.getClickEvent());
+		rS.setHoverEvent(s.getHoverEvent());
+		rS.setInsertion(s.getInsertion());
 		for (Text sib : text.getSiblings()) {
 			reformatted.append(format(sib));
 		}
@@ -114,6 +118,7 @@ public class TextRenderUtilsMixin {
 		String[] arr = CODE_PATTERN.split(formattedString);
 
 		List<Formatting> modifiers = new ArrayList<>();
+		Formatting color = null;
 		for (int i = 0, length = arr.length; i < length; i++) {
 			String s = arr[i];
 			if (s.isEmpty()) {
@@ -123,27 +128,39 @@ public class TextRenderUtilsMixin {
 				continue;
 			}
 			Formatting formatting = byCodeOfFirstChar(s);
-
-			if (formatting != null && formatting.isModifier()) {
-				modifiers.add(formatting);
+			if (formatting == null) {
+				text.append(s);
+				continue;
 			}
-			Text part = new LiteralText(formatting != null ? s.substring(1) : s);
-			if (formatting != null) {
-				part.getStyle().setColor(formatting);
 
-				if (!modifiers.isEmpty()) {
-					for (Formatting mod : modifiers) {
-						switch (mod) {
-							case OBFUSCATED -> part.getStyle().setObfuscated(true);
-							case BOLD -> part.getStyle().setBold(true);
-							case ITALIC -> part.getStyle().setItalic(true);
-							case UNDERLINE -> part.getStyle().setUnderlined(true);
-							case STRIKETHROUGH -> part.getStyle().setStrikethrough(true);
-							default -> AxolotlClient.LOGGER.warn("Unexpected modifier: " + mod);
-						}
-					}
-					if (formatting.equals(Formatting.RESET)) {
-						modifiers.clear();
+			Text part;
+			int pL = s.length();
+			if (formatting.equals(Formatting.RESET)) {
+				modifiers.clear();
+				color = null;
+			} else if (formatting.isModifier()) {
+				modifiers.add(formatting);
+			} else {
+				color = formatting;
+			}
+			if (pL == 1) {
+				continue;
+			}
+			part = new LiteralText(s.substring(1));
+
+			if (color != null) {
+				part.getStyle().setColor(color);
+			}
+
+			if (!modifiers.isEmpty()) {
+				for (Formatting mod : modifiers) {
+					switch (mod) {
+						case OBFUSCATED -> part.getStyle().setObfuscated(true);
+						case BOLD -> part.getStyle().setBold(true);
+						case ITALIC -> part.getStyle().setItalic(true);
+						case UNDERLINE -> part.getStyle().setUnderlined(true);
+						case STRIKETHROUGH -> part.getStyle().setStrikethrough(true);
+						default -> AxolotlClient.LOGGER.warn("Unexpected modifier: " + mod);
 					}
 				}
 			}

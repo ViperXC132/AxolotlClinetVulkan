@@ -23,7 +23,6 @@
 package io.github.axolotlclient.modules.hud.gui.hud;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -36,11 +35,11 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.config.profiles.ProfileAware;
 import io.github.axolotlclient.mixin.KeyBindAccessor;
-import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
+import io.github.axolotlclient.modules.hud.ClickInputTracker;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
-import io.github.axolotlclient.modules.hud.gui.hud.simple.CPSHud;
 import io.github.axolotlclient.modules.hud.gui.keystrokes.KeystrokePositioningScreen;
 import io.github.axolotlclient.modules.hud.gui.keystrokes.KeystrokesScreen;
 import io.github.axolotlclient.modules.hud.gui.layout.Justification;
@@ -63,6 +62,8 @@ import net.minecraft.util.Util;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.*;
+
 /**
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
@@ -70,10 +71,11 @@ import org.lwjgl.glfw.GLFW;
  * @license GPL-3.0
  */
 
-public class KeystrokeHud extends TextHudEntry {
+public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 
-	private static final Path KEYSTROKE_SAVE_FILE = AxolotlClientCommon.resolveConfigFile("keystrokes.json");
+	private static final String KEYSTROKE_SAVE_FILE_NAME = "keystrokes.json";
 	public static final Identifier ID = Identifier.of("kronhud", "keystrokehud");
+	private final MinecraftClient client = (MinecraftClient) super.client;
 
 	private final ColorOption pressedTextColor = new ColorOption("heldtextcolor", new Color(0xFF000000));
 	private final ColorOption pressedBackgroundColor = new ColorOption("heldbackgroundcolor", new Color(0x64FFFFFF));
@@ -155,7 +157,9 @@ public class KeystrokeHud extends TextHudEntry {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, float delta) {
+	public void render(AxoRenderContext context, float delta) {
+		final var graphics = (GuiGraphics) context;
+
 		graphics.getMatrices().push();
 		scale(graphics);
 		renderComponent(graphics, delta);
@@ -163,17 +167,17 @@ public class KeystrokeHud extends TextHudEntry {
 	}
 
 	@Override
-	public void renderComponent(GuiGraphics graphics, float delta) {
+	public void renderComponent(AxoRenderContext graphics, float delta) {
 		if (keystrokes == null) {
 			setKeystrokes();
 		}
 		for (Keystroke stroke : keystrokes) {
-			stroke.render(graphics);
+			stroke.render((GuiGraphics) graphics);
 		}
 	}
 
 	@Override
-	public void renderPlaceholderComponent(GuiGraphics graphics, float delta) {
+	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
 		renderComponent(graphics, delta);
 	}
 
@@ -190,10 +194,6 @@ public class KeystrokeHud extends TextHudEntry {
 		}
 		for (Keystroke stroke : keystrokes) {
 			stroke.offset = pos;
-		}
-		HudEntry hud = HudManager.getInstance().get(CPSHud.ID);
-		if (!hud.isEnabled()) {
-			hud.tick();
 		}
 	}
 
@@ -226,6 +226,16 @@ public class KeystrokeHud extends TextHudEntry {
 	@Override
 	public Identifier getId() {
 		return ID;
+	}
+
+	@Override
+	public void reloadConfig() {
+		keystrokes = null;
+	}
+
+	@Override
+	public void saveConfig() {
+		saveKeystrokes();
 	}
 
 	public interface KeystrokeRenderer {
@@ -468,8 +478,9 @@ public class KeystrokeHud extends TextHudEntry {
 
 	public void saveKeystrokes() {
 		try {
-			Files.createDirectories(KEYSTROKE_SAVE_FILE.getParent());
-			Files.writeString(KEYSTROKE_SAVE_FILE, GsonHelper.GSON.toJson(keystrokes.stream().map(Keystroke::serialize).toList()));
+			var path = AxolotlClientCommon.resolveProfileConfigFile(KEYSTROKE_SAVE_FILE_NAME);
+			Files.createDirectories(path.getParent());
+			Files.writeString(path, GsonHelper.GSON.toJson(keystrokes.stream().map(Keystroke::serialize).toList()));
 		} catch (Exception e) {
 			AxolotlClient.LOGGER.warn("Failed to save keystroke configuration!", e);
 		}
@@ -478,8 +489,9 @@ public class KeystrokeHud extends TextHudEntry {
 	@SuppressWarnings("unchecked")
 	public void loadKeystrokes() {
 		try {
-			if (Files.exists(KEYSTROKE_SAVE_FILE)) {
-				List<?> entries = (List<?>) GsonHelper.read(Files.readString(KEYSTROKE_SAVE_FILE));
+			var path = AxolotlClientCommon.resolveProfileConfigFile(KEYSTROKE_SAVE_FILE_NAME);
+			if (Files.exists(path)) {
+				List<?> entries = (List<?>) GsonHelper.read(Files.readString(path));
 				var loaded = entries.stream().map(e -> (Map<String, Object>) e)
 					.map(KeystrokeHud.this::deserializeKey)
 					.toList();
@@ -516,7 +528,7 @@ public class KeystrokeHud extends TextHudEntry {
 			graphics.getMatrices().push();
 			graphics.getMatrices().translate(centerX, cpsY, 0);
 			graphics.getMatrices().scale(0.5f, 0.5f, 1);
-			String cpsText = CPSHud.ClickList.LEFT.clicks() + " CPS";
+			String cpsText = ClickInputTracker.getInstance().leftMouse.clicks() + " CPS";
 			graphics.getMatrices().translate(-hud.client.textRenderer.getWidth(cpsText) / 2f, 0, 0);
 			drawString(graphics, cpsText, 0, 0, stroke.getFGColor(), hud.shadow.get());
 			graphics.getMatrices().pop();
@@ -531,7 +543,7 @@ public class KeystrokeHud extends TextHudEntry {
 			graphics.getMatrices().push();
 			graphics.getMatrices().translate(centerX, cpsY, 0);
 			graphics.getMatrices().scale(0.5f, 0.5f, 1);
-			String cpsText = CPSHud.ClickList.RIGHT.clicks() + " CPS";
+			String cpsText = ClickInputTracker.getInstance().rightMouse.clicks() + " CPS";
 			graphics.getMatrices().translate(-hud.client.textRenderer.getWidth(cpsText) / 2f, 0, 0);
 			drawString(graphics, cpsText, 0, 0, stroke.getFGColor(), hud.shadow.get());
 			graphics.getMatrices().pop();

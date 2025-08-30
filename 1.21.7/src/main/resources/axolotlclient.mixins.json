@@ -36,7 +36,9 @@
 		"LivingEntityMixin",
 		"LivingEntityRendererMixin",
 		"MinecraftClientAccessor",
+		"MinecraftClientMainMixin",
 		"MinecraftClientMixin",
+		"MinecraftServerAccessor",
 		"ModStatusMixin",
 		"MouseMixin",
 		"MultiPackResourceManagerMixin",
@@ -66,5 +68,8 @@
 	],
 	"injectors": {
 		"defaultRequire": 1
+	},
+	"mixinextras": {
+		"minVersion": "0.5.0"
 	}
 }

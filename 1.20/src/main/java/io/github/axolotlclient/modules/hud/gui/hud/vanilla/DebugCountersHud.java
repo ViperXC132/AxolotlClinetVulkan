@@ -27,11 +27,12 @@ import java.util.List;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.util.Identifier;
 
 public class DebugCountersHud extends TextHudEntry implements DynamicallyPositionable {
@@ -41,31 +42,33 @@ public class DebugCountersHud extends TextHudEntry implements DynamicallyPositio
 	private final BooleanOption showCCount = new BooleanOption("debugcounters.ccount", true);
 	private final BooleanOption showECount = new BooleanOption("debugcounters.ecount", false);
 	private final BooleanOption showPCount = new BooleanOption("debugcounters.pcount", false);
+	private final MinecraftClient client = (MinecraftClient) super.client;
 
 	public DebugCountersHud() {
 		super(115, 32, true);
 	}
 
 	@Override
-	public void renderComponent(GuiGraphics graphics, float delta) {
+	public void renderComponent(AxoRenderContext graphics, float delta) {
 		if (client.world == null) {
 			renderPlaceholderComponent(graphics, delta);
 		}
+
 		DrawPosition pos = getPos();
 		int lineY = pos.y() + 2;
 		int lineX = pos.x() + 1;
 
 		int xEnd = lineX + 50;
 		if (showCCount.get()) {
-			xEnd = Math.max(xEnd, graphics.drawText(client.textRenderer, client.worldRenderer.getChunksDebugString(), lineX, lineY, textColor.get().toInt(), shadow.get()));
+			xEnd = Math.max(xEnd, graphics.br$drawString(client.worldRenderer.getChunksDebugString(), lineX, lineY, textColor.get().toInt(), shadow.get()));
 			lineY += 10;
 		}
 		if (showECount.get()) {
-			xEnd = Math.max(xEnd, graphics.drawText(client.textRenderer, client.worldRenderer.getEntitiesDebugString(), lineX, lineY, textColor.get().toInt(), shadow.get()));
+			xEnd = Math.max(xEnd, graphics.br$drawString(client.worldRenderer.getEntitiesDebugString(), lineX, lineY, textColor.get().toInt(), shadow.get()));
 			lineY += 10;
 		}
 		if (showPCount.get()) {
-			xEnd = Math.max(xEnd, graphics.drawText(client.textRenderer, "P: " + client.particleManager.getDebugString(), lineX, lineY, textColor.get().toInt(), shadow.get()));
+			xEnd = Math.max(xEnd, graphics.br$drawString("P: " + client.particleManager.getDebugString(), lineX, lineY, textColor.get().toInt(), shadow.get()));
 			lineY += 10;
 		}
 
@@ -84,22 +87,22 @@ public class DebugCountersHud extends TextHudEntry implements DynamicallyPositio
 	}
 
 	@Override
-	public void renderPlaceholderComponent(GuiGraphics graphics, float delta) {
+	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
 		DrawPosition pos = getPos();
 		int lineY = pos.y() + 2;
 		int lineX = pos.x() + 1;
 
 		int xEnd = lineX + 50;
 		if (showCCount.get()) {
-			xEnd = Math.max(xEnd, graphics.drawText(client.textRenderer, "C: 186/15000 (s) D: 10, pC: 000, pU: 00, aB: 20", lineX, lineY, textColor.get().toInt(), shadow.get()));
+			xEnd = Math.max(xEnd, graphics.br$drawString("C: 186/15000 (s) D: 10, pC: 000, pU: 00, aB: 20", lineX, lineY, textColor.get().toInt(), shadow.get()));
 			lineY += 10;
 		}
 		if (showECount.get()) {
-			xEnd = Math.max(xEnd, graphics.drawText(client.textRenderer, "E: 695/3001, SD: 12", lineX, lineY, textColor.get().toInt(), shadow.get()));
+			xEnd = Math.max(xEnd, graphics.br$drawString("E: 695/3001, SD: 12", lineX, lineY, textColor.get().toInt(), shadow.get()));
 			lineY += 10;
 		}
 		if (showPCount.get()) {
-			xEnd = Math.max(xEnd, graphics.drawText(client.textRenderer, "P: 200", lineX, lineY, textColor.get().toInt(), shadow.get()));
+			xEnd = Math.max(xEnd, graphics.br$drawString("P: 200", lineX, lineY, textColor.get().toInt(), shadow.get()));
 			lineY += 10;
 		}
 

@@ -30,8 +30,8 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tessellator;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.freelook.Perspective;
+import io.github.axolotlclient.modules.hypixel.LevelHead;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
-import io.github.axolotlclient.modules.hypixel.levelhead.LevelHead;
 import io.github.axolotlclient.util.BadgeRenderer;
 import io.github.axolotlclient.util.Util;
 import net.minecraft.client.Minecraft;
@@ -71,7 +71,7 @@ public abstract class EntityRendererMixin<T extends Entity> {
 
 	@WrapOperation(method = "renderNameTag(Lnet/minecraft/entity/Entity;Ljava/lang/String;DDDI)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/TextRenderer;draw(Ljava/lang/String;III)I", ordinal = 1))
 	public int axolotlclient$forceShadows(TextRenderer instance, String string, int x, int y, int color, Operation<Integer> original, Entity entity) {
-		if (AxolotlClient.CONFIG.useShadows.get() && !entity.isSneaking()) {
+		if (AxolotlClient.config().useShadows.get() && !entity.isSneaking()) {
 			return instance.draw(string, x, y, color, true);
 		}
 		return original.call(instance, string, x, y, color);
@@ -105,6 +105,10 @@ public abstract class EntityRendererMixin<T extends Entity> {
 		int y = text.contains("deadmau5") ? -20 : -10;
 
 		if (LevelHead.getInstance().background.get()) {
+			y -= 2;
+		}
+
+		if (LevelHead.getInstance().background.get()) {
 			Tessellator tessellator = Tessellator.getInstance();
 			BufferBuilder bufferBuilder = tessellator.getBuilder();
 			GlStateManager.disableTexture();
@@ -118,12 +122,12 @@ public abstract class EntityRendererMixin<T extends Entity> {
 		}
 
 		textRenderer.draw(text, -x, y, LevelHead.getInstance().textColor.get().toInt(),
-			AxolotlClient.CONFIG.useShadows.get());
+			AxolotlClient.config().useShadows.get());
 	}
 
 	@Redirect(method = "renderNameTag(Lnet/minecraft/entity/Entity;Ljava/lang/String;DDDI)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferBuilder;vertex(DDD)Lcom/mojang/blaze3d/vertex/BufferBuilder;"))
 	public BufferBuilder axolotlclient$noBg(BufferBuilder instance, double d, double e, double f) {
-		if (AxolotlClient.CONFIG.nametagBackground.get()) {
+		if (AxolotlClient.config().nametagBackground.get()) {
 			instance.vertex(d, e, f);
 		}
 		return instance;

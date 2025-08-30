@@ -63,13 +63,13 @@ dependencies {
 	modCompileOnly("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}")
 	modLocalRuntime("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}:all-remapped")
 
-	include(implementation("org.lwjgl", "lwjgl-tinyfd", "3.3.5"))
-	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", "3.3.5", classifier = "natives-linux"))
-	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", "3.3.5", classifier = "natives-windows"))
-	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", "3.3.5", classifier = "natives-macos"))
-	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", "3.3.5", classifier = "natives-linux-arm64"))
-	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", "3.3.5", classifier = "natives-windows-arm64"))
-	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", "3.3.5", classifier = "natives-macos-arm64"))
+	include(implementation("org.lwjgl", "lwjgl-tinyfd", lwjglVersion))
+	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-linux"))
+	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-windows"))
+	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-macos"))
+	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-linux-arm64"))
+	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-windows-arm64"))
+	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-macos-arm64"))
 
 	api("net.hypixel:mod-api:1.0.1")
 	include(modImplementation("io.github.moehreag.hypixel:mod-api-fabric:1.0.1+build.4+mc1.8.9")!!)
@@ -152,7 +152,7 @@ modrinth {
 	versionType = "release"
 	uploadFile = tasks.remapJar.get()
 	gameVersions.set(listOf("${project.property("minecraft_18")}"))
-	loaders.set(listOf("fabric", "quilt"))
+	loaders.set(listOf("ornithe"))
 	additionalFiles.set(listOf(tasks.remapSourcesJar))
 	dependencies {
 		required.project("osl")

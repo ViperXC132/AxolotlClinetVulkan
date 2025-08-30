@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -19,7 +19,6 @@
  *
  * For more information, see the LICENSE file.
  */
-
 package io.github.axolotlclient.modules.hud.gui.layout;
 
 import lombok.AllArgsConstructor;
@@ -32,14 +31,12 @@ import lombok.Getter;
  * @license GPL-3.0
  */
 
+@Getter
 @AllArgsConstructor
 public enum CardinalOrder {
-
 	TOP_DOWN(false, -1), DOWN_TOP(false, 1), LEFT_RIGHT(true, 1), RIGHT_LEFT(true, -1),
 	;
 
-	@Getter
 	private final boolean xAxis;
-	@Getter
 	private final int direction;
 }

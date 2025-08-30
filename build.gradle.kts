@@ -2,13 +2,13 @@ import java.nio.file.FileSystems
 import kotlin.io.path.*
 
 plugins {
-	id("io.freefair.lombok") version "8.13" apply false
+	id("io.freefair.lombok") version "8.14" apply false
 	id("com.modrinth.minotaur") version "2.+" apply false
 	id("com.gradleup.shadow") version "8.+" apply false
 	id("dev.yumi.gradle.licenser") version "2.0.+"
 	id("io.github.p03w.machete") version "2.+" apply false
-	id("fabric-loom") version "1.10.+" apply false
-	id("ploceus") version "1.10.3" apply false
+	id("fabric-loom") version "1.11.+" apply false
+	id("ploceus") version "1.11.+" apply false
 }
 
 version = "${project.version}"
@@ -29,13 +29,9 @@ allprojects {
 		maven("https://moehreag.duckdns.org/maven/releases")
 		maven("https://moehreag.duckdns.org/maven/snapshots")
 		maven("https://maven.parchmentmc.org")
-		// jtracy doesn't want to resolve without this
-		maven("https://libraries.minecraft.net")
-		exclusiveContent {
-			forRepository {
-				maven("https://repo.hypixel.net/repository/Hypixel/")
-			}
-			filter {
+		maven("https://libraries.minecraft.net/")
+		maven("https://repo.hypixel.net/repository/Hypixel/") {
+			content {
 				includeGroup("net.hypixel")
 			}
 		}
@@ -72,7 +68,7 @@ subprojects {
 
 	tasks.getByName("jar", Jar::class) {
 		filesMatching("LICENSE") {
-			rename("^(LICENSE.*?)(\\..*)?$", "\$1_${archiveBaseName}\$2")
+			rename("^(LICENSE.*?)(\\..*)?$", "$1_${archiveBaseName}$2")
 		}
 	}
 

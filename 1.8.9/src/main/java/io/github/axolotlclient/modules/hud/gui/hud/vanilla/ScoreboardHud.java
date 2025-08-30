@@ -38,13 +38,16 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DefaultOptions;
+import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.modules.hud.util.RenderUtil;
 import io.github.axolotlclient.util.Util;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resource.Identifier;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
@@ -88,20 +91,22 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 	private final IntegerOption textAlpha = new IntegerOption("text_alpha", 255, 0, 255);
 	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(AnchorPoint.MIDDLE_RIGHT);
 
+	private final Minecraft client = (Minecraft) super.client;
+
 	public ScoreboardHud() {
 		super(200, 146, true);
 	}
 
 	@Override
-	public void render(float delta) {
+	public void render(AxoRenderContext context, float delta) {
 		GlStateManager.pushMatrix();
-		scale();
-		renderComponent(delta);
+		scale(context);
+		renderComponent(context, delta);
 		GlStateManager.popMatrix();
 	}
 
 	@Override
-	public void renderComponent(float delta) {
+	public void renderComponent(AxoRenderContext context, float delta) {
 		Scoreboard scoreboard = this.client.world.getScoreboard();
 		ScoreboardObjective scoreboardObjective = null;
 		Team team = scoreboard.getTeam(this.client.player.getDisplayName().getString());
@@ -120,7 +125,7 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 	}
 
 	@Override
-	public void renderPlaceholderComponent(float delta) {
+	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
 		renderScoreboardSidebar(placeholder, true);
 	}
 
@@ -211,7 +216,7 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 				client.textRenderer.draw(scoreText, scoreX, relativeY, Colors.WHITE.withAlpha(textAlpha.get()).toInt());
 			}
 			if (this.scores.get()) {
-				drawString(score, (float) (scoreX + maxWidth - client.textRenderer.getWidth(score) - 6),
+				DrawUtil.drawString(score, (float) (scoreX + maxWidth - client.textRenderer.getWidth(score) - 6),
 					(float) relativeY, scoreColor.get().toInt(), shadow.get());
 			}
 			if (num == scoresSize) {

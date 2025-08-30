@@ -31,6 +31,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
@@ -39,6 +40,7 @@ import io.github.axolotlclient.modules.hud.util.Rectangle;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
@@ -87,20 +89,22 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 	private final EnumOption<AnchorPoint> anchor =
 		new EnumOption<>("anchorpoint", AnchorPoint.class, AnchorPoint.MIDDLE_RIGHT);
 
+	private final Minecraft client = (Minecraft) super.client;
+
 	public ScoreboardHud() {
 		super(200, 146, true);
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, float delta) {
-		graphics.pose().pushMatrix();
+	public void render(AxoRenderContext graphics, float delta) {
+		graphics.br$pushMatrix();
 		scale(graphics);
 		renderComponent(graphics, delta);
-		graphics.pose().popMatrix();
+		graphics.br$popMatrix();
 	}
 
 	@Override
-	public void renderComponent(GuiGraphics graphics, float delta) {
+	public void renderComponent(AxoRenderContext graphics, float delta) {
 		Scoreboard scoreboard = this.client.level.getScoreboard();
 		Objective objective = null;
 		PlayerTeam playerTeam = scoreboard.getPlayersTeam(client.player.getScoreboardName());
@@ -114,13 +118,13 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 		Objective objective2 =
 			objective != null ? objective : scoreboard.getDisplayObjective(DisplaySlot.SIDEBAR);
 		if (objective2 != null) {
-			this.displayScoreboardSidebar(graphics, objective2);
+			this.displayScoreboardSidebar((GuiGraphics) graphics, objective2);
 		}
 	}
 
 	@Override
-	public void renderPlaceholderComponent(GuiGraphics graphics, float delta) {
-		displayScoreboardSidebar(graphics, placeholder);
+	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
+		displayScoreboardSidebar((GuiGraphics) graphics, placeholder);
 	}
 
 	// Abusing this could break some stuff/could allow for unfair advantages. The goal is not to do this, so it won't
@@ -156,7 +160,8 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 		int textOffset = font.width(": ");
 
 		for (DisplayEntry lv : entries) {
-			maxWidth = Math.max(maxWidth, font.width(lv.name) + (lv.scoreWidth > 0 && scores.get() ? textOffset + lv.scoreWidth : 0));
+			maxWidth = Math.max(maxWidth, font.width(lv.name) + (lv.scoreWidth > 0 && scores.get() ?
+				textOffset + lv.scoreWidth : 0));
 		}
 
 		maxWidth += 3;
@@ -185,17 +190,20 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 		int xEnd = bounds.x() + bounds.width() - 1;
 		int titleEnd = yEnd - mainHeight;
 		if (background.get()) {
-			guiGraphics.fill(textX - 2, titleEnd - 9 - 1 - topPadding.get() * 2, xEnd, titleEnd - 1, topColor.get().toInt());
+			guiGraphics.fill(textX - 2, titleEnd - 9 - 1 - topPadding.get() * 2, xEnd, titleEnd - 1,
+				topColor.get().toInt());
 			guiGraphics.fill(textX - 2, titleEnd - 1, xEnd, yEnd, backgroundColor.get().toInt());
 		}
-		guiGraphics.drawString(font, title, textX + maxWidth / 2 - titleWidth / 2, titleEnd - 9 - topPadding.get(), ARGB.color(textAlpha.get(), -1), shadow.get());
+		guiGraphics.drawString(font, title, textX + maxWidth / 2 - titleWidth / 2, titleEnd - 9 - topPadding.get(),
+			ARGB.color(textAlpha.get(), -1), shadow.get());
 
 		for (int v = 0; v < m; v++) {
 			DisplayEntry lv2 = entries[v];
 			int w = yEnd - (m - v) * 9;
 			guiGraphics.drawString(font, lv2.name, textX, w, ARGB.color(textAlpha.get(), -1), shadow.get());
 			if (scores.get()) {
-				guiGraphics.drawString(font, lv2.score, xEnd - lv2.scoreWidth, w, scoreColor.get().toInt(), shadow.get());
+				guiGraphics.drawString(font, lv2.score, xEnd - lv2.scoreWidth, w, scoreColor.get().toInt(),
+					shadow.get());
 			}
 		}
 

@@ -1,5 +1,14 @@
 ## Changelog:
 
+### 3.1.5
+
+- fix a few bugs (#154, #155)
+- add Bedwars StatsOverlay (#145)
+- Fix various hypixel issues (#167)
+- add Inventory HUD (#152)
+- big internal refactors (#143)
+- add Config Profiles (#161)
+
 ### 3.1.4
 
 - Add option to hide the main hand item for ArmorHuds

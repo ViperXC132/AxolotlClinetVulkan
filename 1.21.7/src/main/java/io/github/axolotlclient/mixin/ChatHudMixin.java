@@ -24,8 +24,8 @@ package io.github.axolotlclient.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import io.github.axolotlclient.util.events.Events;
-import io.github.axolotlclient.util.events.impl.ReceiveChatMessageEvent;
+import io.github.axolotlclient.bridge.events.Events;
+import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
 import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.network.chat.Component;
@@ -38,11 +38,11 @@ public abstract class ChatHudMixin {
 	@WrapMethod(method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;Lnet/minecraft/client/GuiMessageTag;)V")
 	private void onChatMessage(Component chatComponent, MessageSignature headerSignature, GuiMessageTag tag, Operation<Void> original) {
 		ReceiveChatMessageEvent event = new ReceiveChatMessageEvent(false, chatComponent.getString(), chatComponent);
-		Events.RECEIVE_CHAT_MESSAGE_EVENT.invoker().invoke(event);
+		Events.RECEIVE_CHAT_MESSAGE.invoker().accept(event);
 		if (event.isCancelled()) {
 			return;
 		} else if (event.getNewMessage() != null) {
-			chatComponent = event.getNewMessage();
+			chatComponent = (Component) event.getNewMessage();
 		}
 		original.call(chatComponent, headerSignature, tag);
 	}

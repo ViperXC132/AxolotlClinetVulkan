@@ -31,9 +31,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.mojang.blaze3d.platform.NativeImage;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
+import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import lombok.Getter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -43,28 +46,33 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.IoSupplier;
 
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawString;
+
 public class PackDisplayHud extends TextHudEntry {
 
 	public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("axolotlclient", "packdisplayhud");
 	public final List<PackWidget> widgets = new ArrayList<>();
 	private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
 	private PackWidget placeholder;
+	private final Minecraft client = (Minecraft) super.client;
 
 	public PackDisplayHud() {
 		super(200, 50, true);
 	}
 
 	@Override
-	public void renderComponent(GuiGraphics graphics, float f) {
+	public void renderComponent(AxoRenderContext context, float f) {
+		final var graphics = (GuiGraphics) context;
+
 		DrawPosition pos = getPos();
 
 		if (widgets.isEmpty()) init();
 
 		if (background.get()) {
-			fillRect(graphics, getBounds(), backgroundColor.get());
+			DrawUtil.fillRect(graphics, getBounds(), backgroundColor.get());
 		}
 
-		if (outline.get()) outlineRect(graphics, getBounds(), outlineColor.get());
+		if (outline.get()) DrawUtil.outlineRect(graphics, getBounds(), outlineColor.get());
 
 		int y = pos.y() + 1;
 		for (int i = widgets.size() - 1;
@@ -119,7 +127,7 @@ public class PackDisplayHud extends TextHudEntry {
 	}
 
 	@Override
-	public void renderPlaceholderComponent(GuiGraphics graphics, float f) {
+	public void renderPlaceholderComponent(AxoRenderContext graphics, float f) {
 		boolean updateBounds = false;
 		if (getHeight() < 18) {
 			setHeight(18);
@@ -138,7 +146,7 @@ public class PackDisplayHud extends TextHudEntry {
 			} catch (Exception ignored) {
 			}
 		} else {
-			placeholder.render(graphics, getPos().x() + 1, getPos().y() + 1);
+			placeholder.render((GuiGraphics) graphics, getPos().x() + 1, getPos().y() + 1);
 		}
 	}
 

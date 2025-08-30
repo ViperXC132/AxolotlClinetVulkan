@@ -23,9 +23,18 @@
 package io.github.axolotlclient.modules;
 
 public interface Module {
+	/**
+	 * Initialize this module.
+	 * This method is called exactly once on game startup.
+	 */
 	default void init() {
 	}
 
+	/**
+	 * Run tasks that require the config to be loaded.
+	 * Unlike the <code>init()V</code> method this method may and
+	 * <strong>will</strong> be called multiple times.
+	 */
 	default void lateInit() {
 	}
 

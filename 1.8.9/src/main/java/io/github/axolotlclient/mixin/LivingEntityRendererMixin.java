@@ -28,7 +28,7 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.freelook.Perspective;
 import io.github.axolotlclient.modules.hud.gui.hud.PlayerHud;
-import io.github.axolotlclient.modules.hypixel.nickhider.NickHider;
+import io.github.axolotlclient.modules.hypixel.NickHider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.living.player.ClientPlayerEntity;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
@@ -60,7 +60,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 
 	@Inject(method = "shouldRenderNameTag(Lnet/minecraft/entity/living/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$showOwnNametag(LivingEntity livingEntity, CallbackInfoReturnable<Boolean> cir) {
-		if (AxolotlClient.CONFIG.showOwnNametag.get()
+		if (AxolotlClient.config().showOwnNametag.get()
 			&& livingEntity.getNetworkId() == Minecraft.getInstance().player.getNetworkId()
 			&& !PlayerHud.isCurrentlyRendering()) {
 			cir.setReturnValue(true);
@@ -72,10 +72,10 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 		var orig = original.call(instance);
 		if (instance instanceof ClientPlayerEntity) {
 			if (NickHider.getInstance().hideOwnName.get() && instance.equals(Minecraft.getInstance().player)) {
-				orig = NickHider.getInstance().editComponent(orig, instance.getName(), NickHider.getInstance().hiddenNameSelf.get());
+				orig = (Text) NickHider.getInstance().editComponent(orig, instance.getName(), NickHider.getInstance().hiddenNameSelf.get());
 			} else if (NickHider.getInstance().hideOtherNames.get()
 				&& !instance.equals(Minecraft.getInstance().player)) {
-				orig = NickHider.getInstance().editComponent(orig, instance.getName(), NickHider.getInstance().hiddenNameOthers.get());
+				orig = (Text) NickHider.getInstance().editComponent(orig, instance.getName(), NickHider.getInstance().hiddenNameOthers.get());
 			}
 		}
 		return orig;
@@ -83,21 +83,21 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 
 	@ModifyConstant(method = "setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;FZ)Z", constant = @Constant(floatValue = 1.0f, ordinal = 0))
 	private float axolotlclient$customHitColorRed(float constant) {
-		return AxolotlClient.CONFIG.hitColor.get().getRed() / 255F;
+		return AxolotlClient.config().hitColor.get().getRed() / 255F;
 	}
 
 	@ModifyConstant(method = "setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;FZ)Z", constant = @Constant(floatValue = 0.0f, ordinal = 0))
 	private float axolotlclient$customHitColorGreen(float constant) {
-		return AxolotlClient.CONFIG.hitColor.get().getGreen() / 255F;
+		return AxolotlClient.config().hitColor.get().getGreen() / 255F;
 	}
 
 	@ModifyConstant(method = "setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;FZ)Z", constant = @Constant(floatValue = 0.0f, ordinal = 1))
 	private float axolotlclient$customHitColorBlue(float constant) {
-		return AxolotlClient.CONFIG.hitColor.get().getBlue() / 255F;
+		return AxolotlClient.config().hitColor.get().getBlue() / 255F;
 	}
 
 	@ModifyConstant(method = "setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;FZ)Z", constant = @Constant(floatValue = 0.3f, ordinal = 0))
 	private float axolotlclient$customHitColorAlpha(float constant) {
-		return AxolotlClient.CONFIG.hitColor.get().getAlpha() / 255F;
+		return AxolotlClient.config().hitColor.get().getAlpha() / 255F;
 	}
 }

@@ -67,7 +67,7 @@ public class UnfocusedFpsLimiter extends AbstractModule {
 	public void init() {
 		OptionCategory category = OptionCategory.create("fpsLimiter");
 		category.add(enabled, reduceFPSWhenUnfocused, unfocusedFPS, restoreOnHover, unfocusedVolumeMultiplier, hiddenVolumeMultiplier, runGCOnUnfocus);
-		AxolotlClient.CONFIG.rendering.add(category);
+		AxolotlClient.config().rendering.add(category);
 	}
 
 	public boolean checkForRender() {

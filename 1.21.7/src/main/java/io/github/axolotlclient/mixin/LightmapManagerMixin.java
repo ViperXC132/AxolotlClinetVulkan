@@ -34,7 +34,7 @@ public abstract class LightmapManagerMixin {
 
 	@WrapOperation(method = "updateLightTexture", at = @At(value = "INVOKE", target = "Ljava/lang/Double;floatValue()F", ordinal = 1))
 	public float axolotlclient$fullBright(Double instance, Operation<Float> original) {
-		if (AxolotlClient.CONFIG.fullBright.get())
+		if (AxolotlClient.config().fullBright.get())
 			return 15;
 		return original.call(instance);
 	}

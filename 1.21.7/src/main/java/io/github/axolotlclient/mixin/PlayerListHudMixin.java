@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.mixin;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,15 +32,11 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.api.requests.UserRequest;
-import io.github.axolotlclient.api.util.UUIDHelper;
+import io.github.axolotlclient.modules.hypixel.NickHider;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsGame;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsPlayer;
-import io.github.axolotlclient.modules.hypixel.levelhead.LevelHead;
-import io.github.axolotlclient.modules.hypixel.levelhead.LevelHeadMode;
-import io.github.axolotlclient.modules.hypixel.nickhider.NickHider;
 import io.github.axolotlclient.modules.tablist.Tablist;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -77,10 +74,10 @@ public abstract class PlayerListHudMixin {
 			return orig;
 		}
 		if (playerInfo.getProfile().equals(minecraft.player.getGameProfile()) && NickHider.getInstance().hideOwnName.get()) {
-			return NickHider.getInstance().editComponent(orig, playerInfo.getProfile().getName(), NickHider.getInstance().hiddenNameSelf.get());
+			return (Component) NickHider.getInstance().editComponent(orig, playerInfo.getProfile().getName(), NickHider.getInstance().hiddenNameSelf.get());
 		} else if (!playerInfo.getProfile().equals(minecraft.player.getGameProfile()) &&
 			NickHider.getInstance().hideOtherNames.get()) {
-			return NickHider.getInstance().editComponent(orig, playerInfo.getProfile().getName(), NickHider.getInstance().hiddenNameOthers.get());
+			return (Component) NickHider.getInstance().editComponent(orig, playerInfo.getProfile().getName(), NickHider.getInstance().hiddenNameOthers.get());
 		}
 		return orig;
 	}
@@ -89,7 +86,7 @@ public abstract class PlayerListHudMixin {
 		target = "Lnet/minecraft/client/gui/Font;width(Lnet/minecraft/network/chat/FormattedText;)I", ordinal = 0))
 	private int axolotlclient$moveName(Font instance, FormattedText text, Operation<Integer> original, @Local PlayerInfo info) {
 		int width = original.call(instance, text);
-		if (AxolotlClient.CONFIG.showBadges.get() &&
+		if (AxolotlClient.config().showBadges.get() &&
 			UserRequest.getOnline(info.getProfile().getId().toString())) width += 10;
 		if (Tablist.getInstance().numericalPing.get())
 			width += (instance.width(String.valueOf(info.getLatency())) - 10);
@@ -99,11 +96,9 @@ public abstract class PlayerListHudMixin {
 	@WrapOperation(method = "render", at = @At(value = "INVOKE",
 		target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;III)V"))
 	public void axolotlclient$moveName2(GuiGraphics instance, Font font, Component component, int x, int y, int color, Operation<Integer> original, @Local PlayerInfo info) {
-		if (AxolotlClient.CONFIG.showBadges.get() &&
+		if (AxolotlClient.config().showBadges.get() &&
 			UserRequest.getOnline(info.getProfile().getId().toString())) {
-
 			instance.blit(RenderPipelines.GUI_TEXTURED, AxolotlClient.badgeIcon, x, y, 0, 0, 8, 8, 8, 8);
-
 			x += 9;
 		}
 		original.call(instance, font, component, x, y, color);
@@ -155,35 +150,6 @@ public abstract class PlayerListHudMixin {
 		return drawHat || Tablist.getInstance().alwaysShowHeadLayer.get();
 	}
 
-	@Inject(method = "render", at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/client/gui/components/PlayerTabOverlay;renderPingIcon(Lnet/minecraft/client/gui/GuiGraphics;IIILnet/minecraft/client/multiplayer/PlayerInfo;)V"))
-	public void axolotlclient$renderWithoutObjective(GuiGraphics graphics, int scaledWindowWidth, Scoreboard scoreboard, Objective objective, CallbackInfo ci,
-													 @Local(ordinal = 1) int i,
-													 @Local(ordinal = 7) int n,
-													 @Local(ordinal = 14) int v,
-													 @Local(ordinal = 15) int y,
-													 @Local PlayerInfo playerListEntry2) {
-		if (!BedwarsMod.getInstance().isEnabled() || !BedwarsMod.getInstance().isWaiting()) {
-			return;
-		}
-		int startX = v + i + 1;
-		int endX = startX + n;
-		String render;
-		try {
-			if (playerListEntry2.getProfile().getName().contains(ChatFormatting.OBFUSCATED.toString())) {
-				return;
-			}
-
-			String uuid = UUIDHelper.toUndashed(playerListEntry2.getProfile().getId());
-			render = LevelHead.getDisplayString(LevelHeadMode.BEDWARS, uuid);
-		} catch (Exception e) {
-			return;
-		}
-		graphics.drawString(minecraft.font, render,
-			(endX - this.minecraft.font.width(render)) + 20, y, -1
-		);
-	}
-
 	@Inject(method = "renderTablistScore", at = @At(value = "INVOKE",
 		target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;III)V"),
 		cancellable = true)
@@ -230,16 +196,17 @@ public abstract class PlayerListHudMixin {
 		cir.setReturnValue(Component.literal(player.getTabListDisplay()));
 	}
 
+	@SuppressWarnings("unchecked")
 	@ModifyVariable(method = "render", at = @At(value = "STORE"), ordinal = 0)
 	public List<PlayerInfo> axolotlclient$overrideSortedPlayers(List<PlayerInfo> original) {
 		if (!BedwarsMod.getInstance().inGame()) {
 			return original;
 		}
-		List<PlayerInfo> players = BedwarsMod.getInstance().getGame().get().getTabPlayerList(original);
+		List<?> players = BedwarsMod.getInstance().getGame().orElseThrow().getTabPlayerList(Collections.unmodifiableList(original));
 		if (players == null) {
 			return original;
 		}
-		return players;
+		return (List<PlayerInfo>) players;
 	}
 
 	@Inject(method = "setHeader", at = @At("HEAD"), cancellable = true)
@@ -247,7 +214,7 @@ public abstract class PlayerListHudMixin {
 		if (!BedwarsMod.getInstance().inGame()) {
 			return;
 		}
-		this.header = BedwarsMod.getInstance().getGame().get().getTopBarText();
+		this.header = (Component) BedwarsMod.getInstance().getGame().orElseThrow().getTopBarText();
 		ci.cancel();
 	}
 
@@ -256,7 +223,7 @@ public abstract class PlayerListHudMixin {
 		if (!BedwarsMod.getInstance().inGame()) {
 			return;
 		}
-		this.footer = BedwarsMod.getInstance().getGame().get().getBottomBarText();
+		this.footer = (Component) BedwarsMod.getInstance().getGame().orElseThrow().getBottomBarText();
 		ci.cancel();
 	}
 

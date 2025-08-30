@@ -105,7 +105,7 @@ public class ScreenshotUtils extends AbstractModule {
 		category.add(enabled, autoExec, new GenericOption("imageViewer", "openViewer", () ->
 			client.setScreen(new GalleryScreen(client.currentScreen))));
 
-		AxolotlClient.CONFIG.general.add(category);
+		AxolotlClient.config().general.add(category);
 	}
 
 	public MutableText onScreenshotTaken(MutableText text, File shot) {

@@ -55,7 +55,7 @@ public class Freelook extends AbstractModule {
 	private final BooleanOption invert = new BooleanOption("invert", false);
 	private final EnumOption<Perspective> perspective = new EnumOption<>("perspective", Perspective.class,
 		Perspective.THIRD_PERSON_BACK);
-	private final BooleanOption toggle = new BooleanOption("toggle", false);
+	private final BooleanOption toggle = new BooleanOption("toggle", "freelook.toggle.tooltip", false);
 	private final EnumOption<Perspective> perspectiveAlt = new EnumOption<>("perspective.alt", Perspective.class,
 		Perspective.THIRD_PERSON_FRONT);
 	private final BooleanOption toggleAlt = new BooleanOption("toggle.alt", false);
@@ -75,7 +75,7 @@ public class Freelook extends AbstractModule {
 		});
 		category.add(enabled, mode, invert, perspective, toggle);
 		category.add(perspectiveAlt, toggleAlt);
-		AxolotlClient.CONFIG.addCategory(category);
+		AxolotlClient.config().addCategory(category);
 	}
 
 	@Override

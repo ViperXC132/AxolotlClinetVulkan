@@ -22,17 +22,19 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.expression.Expression;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.bridge.events.Events;
+import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.PotionsHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ActionBarHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.CrosshairHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ScoreboardHud;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
-import io.github.axolotlclient.util.events.Events;
-import io.github.axolotlclient.util.events.impl.ScoreboardRenderEvent;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -58,13 +60,13 @@ public abstract class InGameHudMixin {
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderEffects(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/DeltaTracker;)V"))
 	private void onHudRender(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) {
-		HudManager.getInstance().render(guiGraphics, deltaTracker);
+		HudManager.getInstance().render(guiGraphics, deltaTracker.getGameTimeDeltaTicks());
 	}
 
 	@Inject(method = "renderEffects", at = @At("HEAD"), cancellable = true)
 	public void axolotlclient$renderStatusEffect(GuiGraphics graphics, DeltaTracker tracker, CallbackInfo ci) {
 		PotionsHud hud = (PotionsHud) HudManager.getInstance().get(PotionsHud.ID);
-		if (hud != null && hud.isEnabled()) {
+		if (HudManager.getInstance().hudsEnabled() && hud != null && hud.isEnabled()) {
 			ci.cancel();
 		}
 	}
@@ -72,7 +74,7 @@ public abstract class InGameHudMixin {
 	@Inject(method = "renderCrosshair", at = @At("HEAD"), cancellable = true)
 	public void axolotlclient$renderCrosshair(GuiGraphics graphics, DeltaTracker tracker, CallbackInfo ci) {
 		CrosshairHud hud = (CrosshairHud) HudManager.getInstance().get(CrosshairHud.ID);
-		if (hud != null && hud.isEnabled()) {
+		if (HudManager.getInstance().hudsEnabled() && hud != null && hud.isEnabled()) {
 			if (minecraft.gui.getDebugOverlay().showDebugScreen() && !hud.overridesF3()) {
 				return;
 			}
@@ -85,7 +87,7 @@ public abstract class InGameHudMixin {
 	public void axolotlclient$renderScoreboard(GuiGraphics graphics, Objective objective, CallbackInfo ci) {
 		ScoreboardHud hud = (ScoreboardHud) HudManager.getInstance().get(ScoreboardHud.ID);
 		ScoreboardRenderEvent event = new ScoreboardRenderEvent(objective);
-		Events.SCOREBOARD_RENDER_EVENT.invoker().invoke(event);
+		Events.SCOREBOARD_RENDER_EVENT.invoker().accept(event);
 		if (event.isCancelled() || hud.isEnabled()) {
 			ci.cancel();
 		}
@@ -95,7 +97,7 @@ public abstract class InGameHudMixin {
 		target = "Lnet/minecraft/client/gui/GuiGraphics;drawStringWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V"))
 	public void axolotlclient$getActionBar(GuiGraphics instance, Font font, Component text, int x, int y, int width, int color, Operation<Integer> original) {
 		ActionBarHud hud = (ActionBarHud) HudManager.getInstance().get(ActionBarHud.ID);
-		if (hud != null && hud.isEnabled()) {
+		if (HudManager.getInstance().hudsEnabled() && hud != null && hud.isEnabled()) {
 			instance.pose().popMatrix();
 			hud.render(instance, text, color);
 			instance.pose().pushMatrix();
@@ -113,19 +115,20 @@ public abstract class InGameHudMixin {
 		original.call(instance, graphics, type, x, y, hardcoreMod || hardcore, blinking, half);
 	}
 
-	@WrapOperation(method = "renderPlayerHealth", at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/client/gui/Gui;renderFood(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/world/entity/player/Player;II)V"))
-	public void axolotlclient$dontHunger(Gui instance, GuiGraphics graphics, Player player, int y, int x, Operation<Void> original) {
-		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().inGame() &&
+	@Expression("? == 0")
+	@ModifyExpressionValue(method = "renderPlayerHealth", at = @At(value = "MIXINEXTRAS:EXPRESSION", ordinal = 1))
+	public boolean axolotlclient$dontHunger(boolean original) {
+		if (original && BedwarsMod.getInstance().isEnabled() &&
+			BedwarsMod.getInstance().inGame() &&
 			!BedwarsMod.getInstance().showHunger.get()) {
-			return;
+			return false;
 		}
-		original.call(instance, graphics, player, y, x);
+		return original;
 	}
 
 	@Inject(method = "renderVignette", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$removeVignette(GuiGraphics graphics, Entity entity, CallbackInfo ci) {
-		if (AxolotlClient.CONFIG.removeVignette.get()) {
+		if (AxolotlClient.config().removeVignette.get()) {
 			ci.cancel();
 		}
 	}

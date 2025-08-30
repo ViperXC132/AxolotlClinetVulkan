@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.CommonOptions;
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.APIOptions;
 import io.github.axolotlclient.api.ChatsSidebar;
@@ -69,7 +69,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 					button -> minecraft.setScreen(new ChatsSidebar(this)))
 				.bounds(10, buttonY, 75, 20).build());
 		}
-		if (CommonOptions.gameMenuScreenOptionButtonMode.get().showButton()) {
+		if (AxolotlClientConfigCommon.instance().gameMenuScreenOptionButtonMode.get().showButton()) {
 			addRenderableWidget(new Button(widget.getX() + widget.getWidth(),
 				widget.getY() + 50, 20, 20,
 				Component.empty(),
@@ -87,7 +87,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 	private Button.OnPress axolotlclient$clearFeatureRestrictions(Button.OnPress onPress) {
 		return (buttonWidget) -> {
 			if (Objects.equals(HypixelMods.getInstance().cacheMode.get(),
-				HypixelMods.HypixelCacheMode.ON_CLIENT_DISCONNECT)) {
+				HypixelMods.HypixelApiCacheMode.ON_CLIENT_DISCONNECT)) {
 				HypixelAbstractionLayer.getInstance().clearPlayerData();
 			}
 			onPress.onPress(buttonWidget);

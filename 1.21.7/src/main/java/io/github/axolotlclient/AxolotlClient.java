@@ -22,27 +22,17 @@
 
 package io.github.axolotlclient;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
 
-import com.google.gson.JsonObject;
-import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
-import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
-import io.github.axolotlclient.AxolotlClientConfig.impl.managers.VersionedJsonConfigManager;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.APIOptions;
 import io.github.axolotlclient.api.StatusUpdateProviderImpl;
-import io.github.axolotlclient.config.AxolotlClientConfig;
-import io.github.axolotlclient.modules.Module;
+import io.github.axolotlclient.bridge.impl.Bridge;
 import io.github.axolotlclient.modules.ModuleLoader;
 import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.freelook.Freelook;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hypixel.HypixelMods;
-import io.github.axolotlclient.modules.mcci.MccIslandMods;
 import io.github.axolotlclient.modules.particles.Particles;
 import io.github.axolotlclient.modules.renderOptions.BeaconBeam;
 import io.github.axolotlclient.modules.rpc.DiscordRPC;
@@ -56,133 +46,61 @@ import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.LoggerImpl;
 import io.github.axolotlclient.util.notifications.Notifications;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 
-public class AxolotlClient implements ClientModInitializer {
+public class AxolotlClient extends AxolotlClientCommon implements ClientModInitializer {
 
-	public static final String MODID = "axolotlclient";
 	public static final HashMap<ResourceLocation, Resource> runtimeResources = new HashMap<>();
 	public static final ResourceLocation badgeIcon = ResourceLocation.fromNamespaceAndPath(MODID, "textures/badge.png");
-	public static final OptionCategory config = OptionCategory.create("storedOptions");
-	public static final BooleanOption someNiceBackground = new BooleanOption("defNoSecret", false);
-	public static final List<Module> modules = new ArrayList<>();
 	public static final Logger LOGGER = new LoggerImpl();
-	public static String VERSION;
-	public static AxolotlClientConfig CONFIG;
-	public static ConfigManager configManager;
 
-	public static void getModules() {
-		modules.add(Zoom.getInstance());
-		modules.add(HudManager.getInstance());
-		modules.add(HypixelMods.getInstance());
-		//modules.add(MotionBlur.getInstance()); // TODO fix motion blur, it's broken since 1.21.2's rendering changes
-		modules.add(ScrollableTooltips.getInstance());
-		modules.add(DiscordRPC.getInstance());
-		modules.add(Freelook.getInstance());
-		modules.add(TntTime.getInstance());
-		modules.add(Particles.getInstance());
-		modules.add(ScreenshotUtils.getInstance());
-		modules.add(BeaconBeam.getInstance());
-		modules.add(Tablist.getInstance());
-		modules.add(Auth.getInstance());
-		modules.add(APIOptions.getInstance());
-		modules.add(MccIslandMods.getInstance());
+	private void addBuiltinModules() {
+		registerModule(Zoom.getInstance());
+		registerModule(HudManager.getInstance());
+		registerModule(HypixelMods.getInstance());
+		//registerModule(MotionBlur.getInstance()); // TODO this is broken since 1.21.2
+		registerModule(ScrollableTooltips.getInstance());
+		registerModule(DiscordRPC.getInstance());
+		registerModule(Freelook.getInstance());
+		registerModule(TntTime.getInstance());
+		registerModule(Particles.getInstance());
+		registerModule(ScreenshotUtils.getInstance());
+		registerModule(BeaconBeam.getInstance());
+		registerModule(Tablist.getInstance());
+		registerModule(Auth.getInstance());
+		registerModule(APIOptions.getInstance());
 	}
 
-	private static void addExternalModules() {
-		modules.addAll(ModuleLoader.loadExternalModules());
+	private void addExternalModules() {
+		ModuleLoader.loadExternalModules().forEach(this::registerModule);
 	}
 
 	@Override
 	public void onInitializeClient() {
+		Bridge.init();
 
-		VERSION = FabricLoader.getInstance().getModContainer(MODID).orElseThrow().getMetadata().getVersion()
-			.getFriendlyString();
-
-		CONFIG = new AxolotlClientConfig();
-		config.add(someNiceBackground);
-
-		getModules();
+		addBuiltinModules();
 		addExternalModules();
-		CONFIG.init();
 
-		new AxolotlClientCommon(LOGGER, Notifications.getInstance(), () -> configManager);
-		new API(LOGGER, I18n::get, new StatusUpdateProviderImpl(),
-			APIOptions.getInstance()
-		);
-		ClientLifecycleEvents.CLIENT_STOPPING.register(c -> API.getInstance().shutdown());
+		init(LOGGER, Notifications.getInstance());
+		new API(new StatusUpdateProviderImpl(), APIOptions.getInstance());
 
-		modules.forEach(Module::init);
-
-		CONFIG.getConfig().add(config);
-
-		io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig.getInstance().register(configManager =
-			new VersionedJsonConfigManager(AxolotlClientCommon.getInstance().getMainConfigFile(),
-				CONFIG.getConfig(), 4, (oldVersion, newVersion, config, json) -> {
-				if (oldVersion.getMajor() <= 1) {
-					if (json.has("hud")) {
-						var hud = json.get("hud").getAsJsonObject();
-						if (hud.has("keystrokehud")) {
-							var keystrokes = hud.get("keystrokehud")
-								.getAsJsonObject();
-							var mousemovement = new JsonObject();
-							mousemovement.addProperty("enabled", keystrokes.get("enabled").getAsBoolean() && keystrokes.get("mousemovement").getAsBoolean());
-							mousemovement.addProperty("mouseMovementIndicator", keystrokes.get("mouseMovementIndicator").getAsString());
-							mousemovement.addProperty("mouseMovementIndicatorOuter", keystrokes.get("mouseMovementIndicatorOuter").getAsString());
-							hud.add("mousemovementhud", mousemovement);
-						}
-					}
-				}
-				if (oldVersion.getMajor() <= 2) {
-					if (json.has("hud")) {
-						var hud = json.get("hud").getAsJsonObject();
-						if (hud.has("armorhud")) {
-							var armorhud = hud.get("armorhud").getAsJsonObject();
-							if (armorhud.has("armorhud.main_hand_item_top")) {
-								var mainItemTop = armorhud.get("armorhud.main_hand_item_top").getAsBoolean();
-								if (mainItemTop) {
-									armorhud.addProperty("armorhud.main_hand_item_position", "armorhud.main_hand_item_position.top");
-								}
-							}
-						}
-					}
-				}
-				if (oldVersion.getMajor() <= 3) {
-					if (json.has("storedOptions")) {
-						var hiddenOptions = json.get("storedOptions").getAsJsonObject();
-
-						JsonObject apiOptions;
-						if (json.has("api.category")) {
-							apiOptions = json.get("api.category").getAsJsonObject();
-						} else {
-							apiOptions = new JsonObject();
-							json.add("api.category", apiOptions);
-						}
-
-						apiOptions.addProperty("api.privacy_policy_accepted", "privacy_policy_state." + hiddenOptions.get("privacyPolicyAccepted").getAsString().toLowerCase(Locale.ROOT));
-					}
-				}
-				return json;
-			}
-			));
-		configManager.load();
-		configManager.suppressName("x");
-		configManager.suppressName("y");
-		configManager.suppressName(config.getName());
-
-		modules.forEach(Module::lateInit);
-
-		ClientTickEvents.END_CLIENT_TICK.register(client -> modules.forEach(Module::tick));
-
-		FeatureDisabler.init();
-
-		LOGGER.debug("Debug Output activated, Logs will be more verbose!");
-
+		LOGGER.debug("Debug Output enabled, Logs will be quite verbose!");
 		LOGGER.info("AxolotlClient Initialized");
+	}
+
+	@Override
+	protected void initFeatureDisabler() {
+		FeatureDisabler.init();
+	}
+
+	@Override
+	protected AxolotlClientConfigCommon createConfig() {
+		return new io.github.axolotlclient.config.AxolotlClientConfig();
+	}
+
+	public static io.github.axolotlclient.config.AxolotlClientConfig config() {
+		return (io.github.axolotlclient.config.AxolotlClientConfig) getInstance().getConfig();
 	}
 }

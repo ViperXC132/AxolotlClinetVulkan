@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import io.github.axolotlclient.AxolotlClient;
@@ -206,16 +205,6 @@ public class Util {
 
 	public static double lerp(double start, double end, double percent) {
 		return start + ((end - start) * percent);
-	}
-
-	public static String toRoman(int number) {
-		if (number > 0) {
-			return Strings.repeat("I", number).replace("IIIII", "V").replace("IIII", "IV")
-				.replace("VV", "X").replace("VIV", "IX").replace("XXXXX", "L").replace("XXXX", "XL")
-				.replace("LL", "C").replace("LXL", "XC").replace("CCCCC", "D").replace("CCCC", "CD")
-				.replace("DD", "M").replace("DCD", "CM");
-		}
-		return "";
 	}
 
 	public static class Color {

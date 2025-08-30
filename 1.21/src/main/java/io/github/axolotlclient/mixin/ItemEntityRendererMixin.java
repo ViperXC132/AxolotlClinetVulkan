@@ -63,7 +63,7 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
 
 	@Inject(method = "render(Lnet/minecraft/entity/ItemEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;translate(FFF)V"), cancellable = true)
 	private void minimalItemPhysics(ItemEntity itemEntity, float f, float g, MatrixStack matrixStack, VertexConsumerProvider vertexConsumerProvider, int i, CallbackInfo ci, @Local ItemStack itemStack, @Local BakedModel bakedModel, @Local boolean bl, @Local(argsOnly = true) int k) {
-		if (AxolotlClient.CONFIG.flatItems.get()) {
+		if (AxolotlClient.config().flatItems.get()) {
 			Matrix4f matrix = new Matrix4f();
 			matrixStack.multiply(Axis.Z_POSITIVE.rotationDegrees(itemEntity.getPitch()).get(matrix));
 			matrixStack.multiply(Axis.X_POSITIVE.rotationDegrees(90).get(matrix));
@@ -78,14 +78,14 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
 
 	@WrapOperation(method = "render(Lnet/minecraft/entity/ItemEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;translate(FFF)V"))
 	private void removeTranslationIfPhysicsOn(MatrixStack instance, float x, float y, float z, Operation<Void> original) {
-		if (!AxolotlClient.CONFIG.flatItems.get()) {
+		if (!AxolotlClient.config().flatItems.get()) {
 			original.call(instance, x, y, z);
 		}
 	}
 
 	@WrapOperation(method = "render(Lnet/minecraft/entity/ItemEntity;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;rotate(Lorg/joml/Quaternionf;)V"))
 	private void removeRotationIfPhysicsOn(MatrixStack instance, Quaternionf quaternionf, Operation<Void> original) {
-		if (!AxolotlClient.CONFIG.flatItems.get()) {
+		if (!AxolotlClient.config().flatItems.get()) {
 			original.call(instance, quaternionf);
 		}
 	}

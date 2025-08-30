@@ -33,8 +33,9 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.*;
-import io.github.axolotlclient.CommonOptions;
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.config.screen.CreditsScreen;
+import io.github.axolotlclient.config.screen.ProfilesScreen;
 import io.github.axolotlclient.mixin.OverlayTextureAccessor;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import io.github.axolotlclient.util.options.GenericOption;
@@ -46,7 +47,7 @@ import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 
-public class AxolotlClientConfig {
+public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 
 	public final BooleanOption showOwnNametag = new BooleanOption("showOwnNametag", false);
 	public final BooleanOption useShadows = new BooleanOption("useShadows", false);
@@ -116,21 +117,10 @@ public class AxolotlClientConfig {
 	public final OptionCategory rendering = OptionCategory.create("rendering");
 	public final OptionCategory outlines = OptionCategory.create("blockOutlines");
 	public final OptionCategory timeChanger = OptionCategory.create("timeChanger");
-	public final OptionCategory config = OptionCategory.create("config");
 	@Getter
 	private final List<Option<?>> options = new ArrayList<>();
 
-	public void add(Option<?> option) {
-		options.add(option);
-	}
-
-	public void addCategory(OptionCategory cat) {
-		config.add(cat);
-	}
-
-
-	public void init() {
-
+	public AxolotlClientConfig() {
 		config.add(general);
 		config.add(nametagOptions);
 		config.add(rendering);
@@ -150,9 +140,11 @@ public class AxolotlClientConfig {
 		general.add(customWindowTitle);
 		general.add(openCredits);
 		general.add(debugLogOutput);
-		general.add(CommonOptions.datetimeFormat);
-		general.add(CommonOptions.titleScreenOptionButtonMode);
-		general.add(CommonOptions.gameMenuScreenOptionButtonMode);
+
+		general.add(datetimeFormat);
+		general.add(titleScreenOptionButtonMode);
+		general.add(gameMenuScreenOptionButtonMode);
+
 		ConfigUI.getInstance().runWhenLoaded(() -> {
 			general.getOptions().removeIf(o -> "configStyle".equals(o.getName()));
 			String[] themes = ConfigUI.getInstance().getStyleNames().stream().map(s -> "configStyle." + s)
@@ -165,8 +157,10 @@ public class AxolotlClientConfig {
 					ConfigUI.getInstance().setStyle(s.split("\\.")[1]);
 					MinecraftClient.getInstance().openScreen(null);
 				}));
-				AxolotlClient.configManager.load();
+				AxolotlClient.getInstance().getConfigManager().load();
 				ConfigUI.getInstance().setStyle(configStyle.get().split("\\.")[1]);
+			} else {
+				AxolotlClient.getInstance().getConfigManager().load();
 			}
 		});
 
@@ -192,7 +186,10 @@ public class AxolotlClientConfig {
 
 		rendering.add(noRain);
 
-		AxolotlClient.config.add(creditsBGM);
+		hidden.add(creditsBGM, someNiceBackground);
+
+		general.add(new GenericOption("profiles.title", "profiles.configure", () ->
+			MinecraftClient.getInstance().openScreen(new ProfilesScreen(MinecraftClient.getInstance().currentScreen))), false);
 
 		var toggleFullbright = new KeyBinding("toggle_fullbright", -1, "category.axolotlclient");
 		KeyBindingHelper.registerKeyBinding(toggleFullbright);

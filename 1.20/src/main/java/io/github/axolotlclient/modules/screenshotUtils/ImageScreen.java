@@ -94,7 +94,7 @@ public class ImageScreen extends Screen {
 			graphics.drawCenteredShadowedText(textRenderer, getTitle(), width / 2, 38 / 2 - textRenderer.fontHeight - 2, -1);
 			graphics.drawCenteredShadowedText(textRenderer,
 				Text.translatable("gallery.image.upload_details", uploader.join(),
-					r.sharedAt().atZone(ZoneId.systemDefault()).format(AxolotlClientCommon.getInstance().formatter)),
+					r.sharedAt().atZone(ZoneId.systemDefault()).format(AxolotlClientCommon.getInstance().getConfig().getDateTimeFormatter())),
 				width / 2, 38 / 2 + 2, -1);
 		} else {
 			graphics.drawCenteredShadowedText(textRenderer, getTitle(), width / 2, 33 / 2 - textRenderer.fontHeight / 2, -1);

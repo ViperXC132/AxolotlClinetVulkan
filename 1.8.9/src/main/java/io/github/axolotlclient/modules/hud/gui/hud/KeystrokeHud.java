@@ -23,7 +23,6 @@
 package io.github.axolotlclient.modules.hud.gui.hud;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -36,15 +35,16 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.config.profiles.ProfileAware;
 import io.github.axolotlclient.mixin.KeyBindAccessor;
-import io.github.axolotlclient.modules.hud.HudManager;
-import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
+import io.github.axolotlclient.modules.hud.ClickInputTracker;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
-import io.github.axolotlclient.modules.hud.gui.hud.simple.CPSHud;
 import io.github.axolotlclient.modules.hud.gui.keystrokes.KeystrokePositioningScreen;
 import io.github.axolotlclient.modules.hud.gui.keystrokes.KeystrokesScreen;
 import io.github.axolotlclient.modules.hud.gui.layout.Justification;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
+import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.GsonHelper;
@@ -62,6 +62,9 @@ import net.minecraft.resource.Identifier;
 import net.minecraft.text.Formatting;
 import net.minecraft.util.math.MathHelper;
 
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawCenteredString;
+import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawString;
+
 /**
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
@@ -69,21 +72,22 @@ import net.minecraft.util.math.MathHelper;
  * @license GPL-3.0
  */
 
-public class KeystrokeHud extends TextHudEntry {
+public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 
-	private static final Path KEYSTROKE_SAVE_FILE = AxolotlClientCommon.resolveConfigFile("keystrokes.json");
+	private static final String KEYSTROKE_SAVE_FILE_NAME = "keystrokes.json";
 	public static final Identifier ID = new Identifier("kronhud", "keystrokehud");
 
 	private final ColorOption pressedTextColor = new ColorOption("heldtextcolor", new Color(0xFF000000));
 	private final ColorOption pressedBackgroundColor = new ColorOption("heldbackgroundcolor", new Color(0x64FFFFFF));
 	private final ColorOption pressedOutlineColor = new ColorOption("heldoutlinecolor", ClientColors.BLACK);
 
+	private final Minecraft client = (Minecraft) super.client;
+
 	private final GenericOption keystrokesOption = new GenericOption("keystrokes", "keystrokes.configure", () -> client.openScreen(new KeystrokesScreen(KeystrokeHud.this, client.screen)));
 	private final GenericOption configurePositions = new GenericOption("keystrokes.positions", "keystrokes.positions.configure",
 		() -> client.openScreen(new KeystrokePositioningScreen(client.screen, this)));
 	private final IntegerOption animationTime = new IntegerOption("keystrokes.animation_time", 100, 0, 500);
 	public ArrayList<Keystroke> keystrokes;
-
 
 	public KeystrokeHud() {
 		super(53, 61, true);
@@ -152,15 +156,15 @@ public class KeystrokeHud extends TextHudEntry {
 	}
 
 	@Override
-	public void render(float delta) {
+	public void render(AxoRenderContext context, float delta) {
 		GlStateManager.pushMatrix();
-		scale();
-		renderComponent(delta);
+		scale(context);
+		renderComponent(context, delta);
 		GlStateManager.popMatrix();
 	}
 
 	@Override
-	public void renderComponent(float delta) {
+	public void renderComponent(AxoRenderContext context, float delta) {
 		if (keystrokes == null) {
 			setKeystrokes();
 		}
@@ -170,8 +174,8 @@ public class KeystrokeHud extends TextHudEntry {
 	}
 
 	@Override
-	public void renderPlaceholderComponent(float delta) {
-		renderComponent(delta);
+	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
+		renderComponent(context, delta);
 	}
 
 	@Override
@@ -187,10 +191,6 @@ public class KeystrokeHud extends TextHudEntry {
 		}
 		for (Keystroke stroke : keystrokes) {
 			stroke.offset = pos;
-		}
-		HudEntry hud = HudManager.getInstance().get(CPSHud.ID);
-		if (!hud.isEnabled()) {
-			hud.tick();
 		}
 	}
 
@@ -223,6 +223,16 @@ public class KeystrokeHud extends TextHudEntry {
 	@Override
 	public Identifier getId() {
 		return ID;
+	}
+
+	@Override
+	public void reloadConfig() {
+		keystrokes = null;
+	}
+
+	@Override
+	public void saveConfig() {
+		saveKeystrokes();
 	}
 
 	public interface KeystrokeRenderer {
@@ -281,10 +291,10 @@ public class KeystrokeHud extends TextHudEntry {
 			}
 			Rectangle rect = getRenderPosition();
 			if (background.get()) {
-				fillRect(rect, getColor());
+				DrawUtil.fillRect(rect, getColor());
 			}
 			if (outline.get()) {
-				outlineRect(rect, getOutlineColor());
+				DrawUtil.outlineRect(rect, getOutlineColor());
 			}
 			if ((float) (System.currentTimeMillis() - start) / getAnimTime() >= 1) {
 				start = -1;
@@ -467,8 +477,9 @@ public class KeystrokeHud extends TextHudEntry {
 
 	public void saveKeystrokes() {
 		try {
-			Files.createDirectories(KEYSTROKE_SAVE_FILE.getParent());
-			Files.writeString(KEYSTROKE_SAVE_FILE, GsonHelper.GSON.toJson(keystrokes.stream().map(Keystroke::serialize).toList()));
+			var path = AxolotlClientCommon.resolveProfileConfigFile(KEYSTROKE_SAVE_FILE_NAME);
+			Files.createDirectories(path.getParent());
+			Files.writeString(path, GsonHelper.GSON.toJson(keystrokes.stream().map(Keystroke::serialize).toList()));
 		} catch (Exception e) {
 			AxolotlClient.LOGGER.warn("Failed to save keystroke configuration!", e);
 		}
@@ -477,8 +488,9 @@ public class KeystrokeHud extends TextHudEntry {
 	@SuppressWarnings("unchecked")
 	public void loadKeystrokes() {
 		try {
-			if (Files.exists(KEYSTROKE_SAVE_FILE)) {
-				List<?> entries = (List<?>) GsonHelper.read(Files.readString(KEYSTROKE_SAVE_FILE));
+			var path = AxolotlClientCommon.resolveProfileConfigFile(KEYSTROKE_SAVE_FILE_NAME);
+			if (Files.exists(path)) {
+				List<?> entries = (List<?>) GsonHelper.read(Files.readString(path));
 				var loaded = entries.stream().map(e -> (Map<String, Object>) e)
 					.map(KeystrokeHud.this::deserializeKey)
 					.toList();
@@ -499,9 +511,9 @@ public class KeystrokeHud extends TextHudEntry {
 			Rectangle bounds = stroke.bounds;
 			Rectangle spaceBounds = new Rectangle(bounds.x() + stroke.offset.x() + 4,
 				bounds.y() + stroke.offset.y() + bounds.height() / 2 - 1, bounds.width() - 8, 1);
-			fillRect(spaceBounds, stroke.getFGColor());
+			DrawUtil.fillRect(spaceBounds, stroke.getFGColor());
 			if (hud.shadow.get()) {
-				fillRect(spaceBounds.offset(1, 1), new Color(
+				DrawUtil.fillRect(spaceBounds.offset(1, 1), new Color(
 					(stroke.getFGColor().toInt() & 16579836) >> 2 | stroke.getFGColor().toInt() & -16777216));
 			}
 		}),
@@ -515,7 +527,7 @@ public class KeystrokeHud extends TextHudEntry {
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef(centerX, cpsY, 0);
 			GlStateManager.scalef(0.5f, 0.5f, 1);
-			String cpsText = CPSHud.ClickList.LEFT.clicks() + " CPS";
+			String cpsText = ClickInputTracker.getInstance().leftMouse.clicks() + " CPS";
 			GlStateManager.translatef(-hud.client.textRenderer.getWidth(cpsText) / 2f, 0, 0);
 			drawString(cpsText, 0, 0, stroke.getFGColor(), hud.shadow.get());
 			GlStateManager.popMatrix();
@@ -530,7 +542,7 @@ public class KeystrokeHud extends TextHudEntry {
 			GlStateManager.pushMatrix();
 			GlStateManager.translatef(centerX, cpsY, 0);
 			GlStateManager.scalef(0.5f, 0.5f, 1);
-			String cpsText = CPSHud.ClickList.RIGHT.clicks() + " CPS";
+			String cpsText = ClickInputTracker.getInstance().rightMouse.clicks() + " CPS";
 			GlStateManager.translatef(-hud.client.textRenderer.getWidth(cpsText) / 2f, 0, 0);
 			drawString(cpsText, 0, 0, stroke.getFGColor(), hud.shadow.get());
 			GlStateManager.popMatrix();

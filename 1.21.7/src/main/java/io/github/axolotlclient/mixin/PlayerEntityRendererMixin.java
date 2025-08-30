@@ -27,7 +27,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.modules.hypixel.nickhider.NickHider;
+import io.github.axolotlclient.modules.hypixel.NickHider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
@@ -45,14 +45,14 @@ public abstract class PlayerEntityRendererMixin {
 	@WrapOperation(method = "renderNameTag(Lnet/minecraft/client/renderer/entity/state/PlayerRenderState;Lnet/minecraft/network/chat/Component;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/LivingEntityRenderer;renderNameTag(Lnet/minecraft/client/renderer/entity/state/EntityRenderState;Lnet/minecraft/network/chat/Component;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V"))
 	private void axolotlclient$modifiyName(PlayerRenderer instance, EntityRenderState entityRenderState, Component component, PoseStack poseStack, MultiBufferSource source, int i, Operation<Void> original, @Local(argsOnly = true) PlayerRenderState state) {
-		Level level = Minecraft.getInstance().level;
-		Entity player = level.getEntity(state.id);
-		if (AxolotlClient.CONFIG != null && player != null) {
+		if (AxolotlClient.config() != null) {
+			Level level = Minecraft.getInstance().level;
+			Entity player = level.getEntity(state.id);
 			boolean self = player.getUUID() == Minecraft.getInstance().player.getUUID();
 			if (self && NickHider.getInstance().hideOwnName.get()) {
-				component = NickHider.getInstance().editComponent(component, player.getName().getString(), NickHider.getInstance().hiddenNameSelf.get());
+				component = (Component) NickHider.getInstance().editComponent(component, player.getName().getString(), NickHider.getInstance().hiddenNameSelf.get());
 			} else if (!self && NickHider.getInstance().hideOtherNames.get()) {
-				component = NickHider.getInstance().editComponent(component, player.getName().getString(), NickHider.getInstance().hiddenNameOthers.get());
+				component = (Component) NickHider.getInstance().editComponent(component, player.getName().getString(), NickHider.getInstance().hiddenNameOthers.get());
 			}
 		}
 		original.call(instance, entityRenderState, component, poseStack, source, i);
