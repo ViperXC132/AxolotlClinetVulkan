@@ -59,7 +59,7 @@ public class SkinManager {
 				slim = (ClientColors.ARGB.alpha(img.getPixel(47, 63)) == 0);
 			}
 			return new Skin.Local(!slim, Hashing.sha512().hashUnencodedChars(p.toString()).toString(), p, sha256);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			AxolotlClientCommon.getInstance().getLogger().warn("Failed to probe skin: ", e);
 		}
 		return null;
@@ -72,7 +72,7 @@ public class SkinManager {
 			return CompletableFuture.completedFuture(rl);
 		}
 
-		return skin.getImage().thenApplyAsync(bytes -> {
+		return skin.image().thenApplyAsync(bytes -> {
 			try {
 				var tex = new DynamicTexture(rl::toString, NativeImage.read(bytes));
 				Minecraft.getInstance().getTextureManager().register((ResourceLocation) rl, tex);
@@ -95,7 +95,7 @@ public class SkinManager {
 			return rl;
 		}
 
-		return cape.getImage().thenApplyAsync(bytes -> {
+		return cape.image().thenApplyAsync(bytes -> {
 			try {
 				var tex = new DynamicTexture(rl::toString, NativeImage.read(bytes));
 				Minecraft.getInstance().getTextureManager().register((ResourceLocation) rl, tex);
@@ -119,11 +119,11 @@ public class SkinManager {
 	}
 
 	private @NotNull AxoIdentifier getRl(Skin skin) {
-		return AxoIdentifier.of(AxolotlClientCommon.MODID, "skins/" + Hashing.sha256().hashUnencodedChars(skin.id()));
+		return AxoIdentifier.of(AxolotlClientCommon.MODID, "skins/" + skin.textureKey());
 	}
 
 	private @NotNull AxoIdentifier getRl(Cape cape) {
-		return AxoIdentifier.of(AxolotlClientCommon.MODID, "capes/" + Hashing.sha256().hashUnencodedChars(cape.id()));
+		return AxoIdentifier.of(AxolotlClientCommon.MODID, "capes/" + cape.textureKey());
 	}
 
 	public String getDefaultSkinHash(Account account) {

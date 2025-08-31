@@ -28,7 +28,6 @@ import java.util.concurrent.CompletableFuture;
 import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.yggdrasil.ProfileResult;
 import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.util.UUIDHelper;
@@ -60,6 +59,7 @@ public class Auth extends Accounts implements Module {
 	@Getter
 	private final static Auth Instance = new Auth();
 	public final BooleanOption showButton = new BooleanOption("auth.showButton", false);
+	public final BooleanOption skinManagerAnimations = new BooleanOption("skins.manage.animations", true);
 	private final Minecraft mc = Minecraft.getInstance();
 	private final GenericOption viewAccounts = new GenericOption("viewAccounts", "clickToOpen", () -> mc.setScreen(new AccountsScreen(mc.screen)));
 	private final Set<String> loadingTexture = new HashSet<>();
@@ -80,8 +80,7 @@ public class Auth extends Accounts implements Module {
 			current = new Account(mc.getUser().getName(), UUIDHelper.toUndashed(mc.getUser().getProfileId()), mc.getUser().getAccessToken());
 		}
 
-		OptionCategory category = OptionCategory.create("auth");
-		category.add(showButton, viewAccounts);
+		category.add(showButton, viewAccounts, skinManagerAnimations);
 		AxolotlClient.config().general.add(category);
 	}
 

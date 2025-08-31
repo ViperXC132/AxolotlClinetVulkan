@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -98,6 +99,7 @@ public class SkinManagementScreen extends Screen {
 			haF.addToFooter(Button.builder(CommonComponents.GUI_BACK, btn -> onClose()).build());
 		}
 		haF.arrangeElements();
+		haF.visitWidgets(this::addRenderableWidget);
 		var loadingPlaceholder = new LoadingDotsWidget(getFont(), Component.translatable("skins.loading"));
 		loadingPlaceholder.setRectangle(width, haF.getContentHeight(), 0,
 			haF.getHeaderHeight());
@@ -140,6 +142,7 @@ public class SkinManagementScreen extends Screen {
 		skinsTab.active = this.capesTab;
 		capesTab.active = !this.capesTab;
 		Runnable addWidgets = () -> {
+			haF.visitWidgets(this::removeWidget);
 			removeWidget(loadingPlaceholder);
 			addRenderableWidget(current);
 			addRenderableWidget(skinsTab);
@@ -169,7 +172,6 @@ public class SkinManagementScreen extends Screen {
 				var error = Component.translatable("skins.error.failed_to_load");
 				var errorDesc = Component.translatable("skins.error.failed_to_load_desc");
 				removeWidget(loadingPlaceholder);
-				haF.visitWidgets(this::addRenderableWidget);
 				addRenderableWidget(new StringWidget(width / 2 - getFont().width(error) / 2, height / 2 - getFont().lineHeight - 2, getFont().width(error), getFont().lineHeight, error, getFont()));
 				addRenderableWidget(new StringWidget(width / 2 - getFont().width(errorDesc) / 2, height / 2 + 1, getFont().width(errorDesc), getFont().lineHeight, errorDesc, getFont()));
 				return null;
@@ -199,7 +201,7 @@ public class SkinManagementScreen extends Screen {
 		int columns = Math.max(2, (width / 2 - 25) / LIST_SKIN_WIDTH);
 		var capes = profile.capes();
 		var deselectCape = createWidgetForCape(current.getSkin(), null);
-		var activeCape = capes.stream().filter(Cape::isActive).findFirst();
+		var activeCape = capes.stream().filter(Cape::active).findFirst();
 		current.setCape(activeCape.orElse(null));
 		deselectCape.noCape(activeCape.isEmpty());
 		for (int i = 0; i < capes.size() + 1; i += columns) {
@@ -231,7 +233,17 @@ public class SkinManagementScreen extends Screen {
 		var hashes = skins.stream().map(Asset::textureKey).collect(Collectors.toSet());
 		var defaultSkinHash = Auth.getInstance().getSkinManager().getDefaultSkinHash(account);
 		var local = new ArrayList<>(loadLocalSkins());
-		local.removeIf(s -> hashes.contains(s.textureKey()));
+		var localHashes = local.stream().collect(Collectors.toMap(Asset::textureKey, Function.identity()));
+		skins.replaceAll(s -> {
+			if (s instanceof MSApi.MCProfile.OnlineSkin online) {
+				if (localHashes.containsKey(s.textureKey()) && localHashes.get(s.textureKey()) instanceof Skin.Local file) {
+					local.remove(localHashes.remove(s.textureKey()));
+					return new Skin.Shared(file, online);
+				}
+			}
+			return s;
+		});
+		//local.removeIf(s -> hashes.contains(s.textureKey()));
 		skins.addAll(local);
 		if (!hashes.contains(defaultSkinHash)) {
 			skins.add(null);
@@ -261,7 +273,7 @@ public class SkinManagementScreen extends Screen {
 		int entryHeight = skinList.getEntryContentsHeight();
 		for (int i = 0; i < skins.size(); i += columns) {
 			var s = skins.get(i);
-			if (s != null && s.isActive()) {
+			if (s != null && s.active()) {
 				current.setSkin(s);
 			}
 			var widget = createEntryForSkin(s, entryHeight);
@@ -270,7 +282,7 @@ public class SkinManagementScreen extends Screen {
 			for (int c = 1; c < columns; c++) {
 				if (!(i < skins.size() - c)) continue;
 				var s2 = skins.get(i + c);
-				if (s2 != null && s2.isActive()) {
+				if (s2 != null && s2.active()) {
 					current.setSkin(s2);
 				}
 				var widget2 = createEntryForSkin(s2, entryHeight);
@@ -429,7 +441,7 @@ public class SkinManagementScreen extends Screen {
 	private class Entry extends AbstractContainerWidget {
 		private final SkinWidget skinWidget;
 		private final @Nullable AbstractWidget label;
-		private final @Nullable AbstractWidget trashButton;
+		private final List<AbstractWidget> actionButtons = new ArrayList<>();
 		private final AbstractWidget equipButton;
 		private boolean equipping;
 		private long equippingStart;
@@ -437,25 +449,47 @@ public class SkinManagementScreen extends Screen {
 		public Entry(int height, SkinWidget widget, @Nullable Component label) {
 			super(0, 0, widget.getWidth(), height, Component.empty());
 			widget.setWidth(getWidth() - 4);
-			if (widget.getSkin() instanceof Skin.Local local) {
-				this.trashButton = SpriteIconButton.builder(Component.translatable("skins.manage.delete"), btn -> {
-					btn.active = false;
-					minecraft.setScreen(new ConfirmScreen(confirmed -> {
-						minecraft.setScreen(SkinManagementScreen.this);
-						if (confirmed) {
+			var asset = widget.getFocusedAsset();
+			if (asset != null) {
+				if (asset.isLocal()) {
+					var delete = SpriteIconButton.builder(Component.translatable("skins.manage.delete"), btn -> {
+							btn.active = false;
+							minecraft.setScreen(new ConfirmScreen(confirmed -> {
+								minecraft.setScreen(SkinManagementScreen.this);
+								if (confirmed) {
+									try {
+										Files.delete(asset.file());
+										refreshCurrentList();
+									} catch (IOException e) {
+										AxolotlClientCommon.getInstance().getLogger().warn("Failed to delete: ", e);
+									}
+								}
+								btn.active = true;
+							}, Component.translatable("skins.manage.delete.confirm"), Component.translatable("skins.manage.delete.confirm.desc")
+								.withColor(Colors.RED.toInt())));
+						}, true).sprite(ResourceLocation.fromNamespaceAndPath("axolotlclient", "delete"), 7, 7).size(11, 11)
+						.build();
+					delete.setTooltip(Tooltip.create(delete.getMessage()));
+					this.actionButtons.add(delete);
+				}
+				if (asset.supportsDownload() && !asset.isLocal()) {
+					var download = SpriteIconButton.builder(Component.translatable("skins.manage.download"), btn -> {
+						btn.active = false;
+						asset.image().thenAcceptAsync(b -> {
 							try {
-								Files.delete(local.file());
-								refreshCurrentList();
+								var out = SKINS_DIR.resolve(asset.textureKey());
+								Files.createDirectories(out.getParent());
+								Files.write(out, b);
 							} catch (IOException e) {
-								AxolotlClientCommon.getInstance().getLogger().warn("Failed to delete skin: ", e);
+								AxolotlClientCommon.getInstance().getLogger().warn("Failed to download: ", e);
 							}
-						}
-						btn.active = true;
-					}, Component.translatable("skins.manage.delete.confirm"), Component.translatable("skins.manage.delete.confirm.desc")
-						.withColor(Colors.RED.toInt())));
-				}, true).sprite(ResourceLocation.fromNamespaceAndPath("axolotlclient", "delete"), 7, 7).size(11, 11).build();
-			} else {
-				trashButton = null;
+							refreshCurrentList();
+							btn.active = true;
+						});
+					}, true).sprite(ResourceLocation.fromNamespaceAndPath("axolotlclient", "download"), 7, 7).size(11, 11).build();
+					download.setTooltip(Tooltip.create(download.getMessage()));
+					this.actionButtons.add(download);
+				}
 			}
 			if (label != null) {
 				this.label = new AbstractStringWidget(0, 0, widget.getWidth(), 16, label, Minecraft.getInstance().font) {
@@ -489,7 +523,7 @@ public class SkinManagementScreen extends Screen {
 
 		@Override
 		public @NotNull List<? extends GuiEventListener> children() {
-			return Stream.of(trashButton, skinWidget, label, equipButton).filter(Objects::nonNull).toList();
+			return Stream.concat(actionButtons.stream(), Stream.of(skinWidget, label, equipButton)).filter(Objects::nonNull).toList();
 		}
 
 		@Override
@@ -502,23 +536,26 @@ public class SkinManagementScreen extends Screen {
 			return 0;
 		}
 
+		private float applyEasing(float x) {
+			return x * x * x;
+		}
+
 		@Override
 		protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 			int y = getY() + 4;
 			int x = getX() + 2;
 			if (skinWidget.isEquipped() || equipping) {
 				long prog;
-				if (equipping) {
-					prog = (Util.getMillis() - equippingStart) / 20 % 100;
-				} else {
-					prog = Math.abs((Util.getMillis() / 50 % 100) - 50);
-				}
-				var percent = prog / 100f;
+				if (Auth.getInstance().skinManagerAnimations.get()) {
+					if (equipping) prog = (Util.getMillis() - equippingStart) / 20 % 100;
+					else prog = Math.abs((Util.getMillis() / 30 % 200) - 100);
+				} else prog = 100;
+				var percent = (prog / 100f);
 				float gradientWidth;
 				if (equipping) {
 					gradientWidth = percent * Math.min(getWidth() / 3f, getHeight() / 3f);
 				} else {
-					gradientWidth = Math.min(getWidth() / 15f, getHeight() / 6f) + percent * Math.min(getWidth() * 2 / 15f, getHeight() / 6f);
+					gradientWidth = Math.min(getWidth() / 15f, getHeight() / 6f) + applyEasing(percent) * Math.min(getWidth() * 2 / 15f, getHeight() / 6f);
 				}
 				GradientHoleRectangleRenderState.create(guiGraphics, getX() + 2, getY() + 2, getRight() - 2,
 					skinWidget.getBottom() + 2,
@@ -528,11 +565,13 @@ public class SkinManagementScreen extends Screen {
 			skinWidget.setPosition(x, y);
 			skinWidget.setWidth(getWidth() - 4);
 			skinWidget.render(guiGraphics, mouseX, mouseY, partialTick);
-			if (trashButton != null) {
-				trashButton.setPosition(skinWidget.getRight() - trashButton.getWidth(), getY() + 2);
-				if (isHovered() || trashButton.isHoveredOrFocused()) {
-					trashButton.render(guiGraphics, mouseX, mouseY, partialTick);
+			int actionButtonY = getY() + 2;
+			for (var button : actionButtons) {
+				button.setPosition(skinWidget.getRight() - button.getWidth(), actionButtonY);
+				if (isHovered() || button.isHoveredOrFocused()) {
+					button.render(guiGraphics, mouseX, mouseY, partialTick);
 				}
+				actionButtonY += button.getHeight() + 2;
 			}
 			if (label != null) {
 				label.setPosition(x, skinWidget.getBottom() + 6);
@@ -553,9 +592,7 @@ public class SkinManagementScreen extends Screen {
 		@Override
 		protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
 			skinWidget.updateNarration(narrationElementOutput);
-			if (trashButton != null) {
-				trashButton.updateNarration(narrationElementOutput);
-			}
+			actionButtons.forEach(w -> w.updateNarration(narrationElementOutput));
 			if (label != null) {
 				label.updateNarration(narrationElementOutput);
 			}

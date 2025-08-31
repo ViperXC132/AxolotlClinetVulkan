@@ -136,7 +136,7 @@ public class SkinWidget extends AbstractWidget {
 	}
 
 	public boolean isEquipped() {
-		return noCape ? noCapeActive : (cape != null ? cape.isActive() : skin != null && skin.isActive());
+		return noCape ? noCapeActive : (cape != null ? cape.active() : skin != null && skin.active());
 	}
 
 	public CompletableFuture<MSApi.MCProfile> equip() {
@@ -151,5 +151,9 @@ public class SkinWidget extends AbstractWidget {
 			return skin.equip(msApi, owner);
 		}
 		return msApi.resetSkin(owner);
+	}
+
+	public Asset getFocusedAsset() {
+		return noCape ? null : cape != null ? cape : skin;
 	}
 }

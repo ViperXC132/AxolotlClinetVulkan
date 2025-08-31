@@ -42,7 +42,7 @@ public interface Skin extends Asset {
 		}
 
 		@Override
-		public CompletableFuture<byte[]> getImage() {
+		public CompletableFuture<byte[]> image() {
 			return CompletableFuture.supplyAsync(() -> {
 				try {
 					return Files.readAllBytes(file);
@@ -53,13 +53,76 @@ public interface Skin extends Asset {
 		}
 
 		@Override
-		public boolean isActive() {
+		public boolean active() {
 			return false;
 		}
 
 		@Override
 		public CompletableFuture<MSApi.MCProfile> equip(MSApi api, Account account) {
 			return api.uploadAndSetSkin(account, this);
+		}
+
+		@Override
+		public boolean isLocal() {
+			return true;
+		}
+	}
+
+	record Shared(Local local, MSApi.MCProfile.OnlineSkin online) implements Skin {
+
+		@Override
+		public boolean isClassicVariant() {
+			return online.isClassicVariant();
+		}
+
+		@Override
+		public String id() {
+			return online.id();
+		}
+
+		@Override
+		public CompletableFuture<byte[]> image() {
+			return local.image();
+		}
+
+		@Override
+		public boolean active() {
+			return online.active();
+		}
+
+		@Override
+		public CompletableFuture<MSApi.MCProfile> equip(MSApi api, Account account) {
+			return online.equip(api, account);
+		}
+
+		@Override
+		public String textureKey() {
+			return local.textureKey();
+		}
+
+		@Override
+		public boolean isOnline() {
+			return true;
+		}
+
+		@Override
+		public boolean isLocal() {
+			return true;
+		}
+
+		@Override
+		public Path file() {
+			return local.file();
+		}
+
+		@Override
+		public String url() {
+			return online().url();
+		}
+
+		@Override
+		public boolean supportsDownload() {
+			return true;
 		}
 	}
 }

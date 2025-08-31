@@ -201,7 +201,12 @@ public class MSApi {
 					url.substring(url.lastIndexOf("/")+1));
 			}
 
-			public CompletableFuture<byte[]> getImage() {
+			@Override
+			public boolean isOnline() {
+				return true;
+			}
+
+			public CompletableFuture<byte[]> image() {
 				return INSTANCE.client.sendAsync(HttpRequest.newBuilder(URI.create(url())).GET().build(), HttpResponse.BodyHandlers.ofByteArray())
 					.thenApplyAsync(res -> {
 						if (res.statusCode() == 200) {
@@ -219,13 +224,18 @@ public class MSApi {
 				return VARIANT_SLIM.equals(variant());
 			}
 
-			public boolean isActive() {
+			public boolean active() {
 				return STATE_ACTIVE.equals(state());
 			}
 
 			@Override
 			public CompletableFuture<MCProfile> equip(MSApi api, Account account) {
 				return api.setSkin(account, this);
+			}
+
+			@Override
+			public boolean supportsDownload() {
+				return true;
 			}
 		}
 
@@ -238,7 +248,7 @@ public class MSApi {
 					url, object.get("alias").getAsString(), url.substring(url.lastIndexOf("/")+1));
 			}
 
-			public CompletableFuture<byte[]> getImage() {
+			public CompletableFuture<byte[]> image() {
 				return INSTANCE.client.sendAsync(HttpRequest.newBuilder(URI.create(url())).GET().build(), HttpResponse.BodyHandlers.ofByteArray())
 					.thenApplyAsync(res -> {
 						if (res.statusCode() == 200) {
@@ -248,7 +258,12 @@ public class MSApi {
 					});
 			}
 
-			public boolean isActive() {
+			@Override
+			public boolean isOnline() {
+				return true;
+			}
+
+			public boolean active() {
 				return STATE_ACTIVE.equals(state());
 			}
 
@@ -257,7 +272,6 @@ public class MSApi {
 				return api.showCape(account, this);
 			}
 		}
-
 	}
 
 	private CompletableFuture<XblData> authXbl(String code) {

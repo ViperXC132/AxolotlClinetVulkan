@@ -31,12 +31,15 @@ import java.util.List;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.axolotlclient.AxolotlClientCommon;
+import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.util.GsonHelper;
 import io.github.axolotlclient.util.Logger;
 import lombok.Getter;
 
 @Getter
 public abstract class Accounts {
+
+	public final OptionCategory category = OptionCategory.create("auth");
 
 	private final List<Account> accounts = new ArrayList<>();
 	protected Account current;

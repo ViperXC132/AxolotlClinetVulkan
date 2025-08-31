@@ -824,5 +824,7 @@
 	"skins.manage.equipping": "Equipping...",
 	"skins.manage.delete": "Delete Skin",
 	"skins.manage.delete.confirm": "Confirm Deletion",
-	"skins.manage.delete.confirm.desc": "This Skin's file will be deleted permanently!\n Are you sure?"
+	"skins.manage.delete.confirm.desc": "This Skin's file will be deleted permanently!\n Are you sure? The skin will not be un-equipped.",
+	"skins.manage.animations": "Skin Manger Animations",
+	"skins.manage.download": "Download Skin"
 }

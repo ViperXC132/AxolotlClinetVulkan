@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.auth.skin;
 
+import java.nio.file.Path;
 import java.util.concurrent.CompletableFuture;
 
 import io.github.axolotlclient.modules.auth.Account;
@@ -29,9 +30,30 @@ import io.github.axolotlclient.modules.auth.MSApi;
 
 public interface Asset {
 	String id();
-	CompletableFuture<byte[]> getImage();
 
-	boolean isActive();
+	default boolean isOnline() {
+		return false;
+	}
+
+	default boolean isLocal() {
+		return false;
+	}
+
+	default Path file() {
+		return null;
+	}
+
+	default String url() {
+		return null;
+	}
+
+	default boolean supportsDownload() {
+		return false;
+	}
+
+	CompletableFuture<byte[]> image();
+
+	boolean active();
 
 	CompletableFuture<MSApi.MCProfile> equip(MSApi api, Account account);
 
