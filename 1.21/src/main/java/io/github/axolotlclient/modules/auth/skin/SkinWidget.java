@@ -26,27 +26,26 @@ import java.util.concurrent.CompletableFuture;
 
 import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
-import io.github.axolotlclient.mixin.GuiGraphicsAccessor;
 import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.auth.MSApi;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.ComponentPath;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.ElementPath;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.gui.navigation.FocusNavigationEvent;
-import net.minecraft.client.resources.DefaultPlayerSkin;
-import net.minecraft.client.resources.PlayerSkin;
-import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
+import net.minecraft.client.gui.navigation.GuiNavigationEvent;
+import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
+import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.sound.SoundManager;
+import net.minecraft.client.texture.PlayerSkin;
+import net.minecraft.client.util.DefaultSkinHelper;
+import net.minecraft.text.CommonTexts;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 
-public class SkinWidget extends AbstractWidget {
+public class SkinWidget extends ClickableWidget {
 	private static final float MODEL_HEIGHT = 2.125F;
 	private static final float FIT_SCALE = 0.97F;
 	private static final float ROTATION_SENSITIVITY = 2.5F;
@@ -66,7 +65,7 @@ public class SkinWidget extends AbstractWidget {
 	private boolean noCape, noCapeActive;
 
 	public SkinWidget(int width, int height, Skin skin, @Nullable Cape cape, Account owner) {
-		super(0, 0, width, height, CommonComponents.EMPTY);
+		super(0, 0, width, height, CommonTexts.EMPTY);
 		this.skin = skin;
 		this.cape = cape;
 		this.owner = owner;
@@ -82,8 +81,8 @@ public class SkinWidget extends AbstractWidget {
 	}
 
 	@Override
-	protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-		var minecraft = Minecraft.getInstance();
+	protected void drawWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+		var minecraft = MinecraftClient.getInstance();
 
 		float scale = FIT_SCALE * this.getHeight() / MODEL_HEIGHT;
 		float pivotY = -1.0625F;
@@ -96,7 +95,7 @@ public class SkinWidget extends AbstractWidget {
 			skinRl = loader.join();
 			classic = skin.isClassicVariant();
 		} else {
-			var skin = DefaultPlayerSkin.get(UUIDHelper.fromUndashed(owner.getUuid()));
+			var skin = DefaultSkinHelper.getSkin(UUIDHelper.fromUndashed(owner.getUuid()));
 			classic = skin.model() == PlayerSkin.Model.WIDE;
 			skinRl = skin.texture();
 		}
@@ -104,15 +103,14 @@ public class SkinWidget extends AbstractWidget {
 
 		// You might say that using `hashCode()` like this isn't ideal, but in reality it doesn't matter. These objects get freed
 		// correctly by the screen so we mostly only need unique identifiers per widget which `hashCode()` provides.
-		var renderer = SkinRenderer.getOrCreate(minecraft.renderBuffers().bufferSource(), minecraft, "" + hashCode());
-		((GuiGraphicsAccessor) guiGraphics).getGuiRenderState()
-			.submitPicturesInPictureState(
-				new SkinRenderState(classic, (ResourceLocation) skinRl, (ResourceLocation) capeRl, this.rotationX, this.rotationY, pivotY, this.getX(), this.getY(), this.getRight(), this.getBottom(), scale, guiGraphics.scissorStack.peek(), renderer));
+		var renderer = SkinRenderer.getOrCreate(minecraft, "" + hashCode());
+
+		renderer.render(guiGraphics, classic, (Identifier) skinRl, (Identifier) capeRl, this.rotationX, this.rotationY, pivotY, this.getX(), this.getY(), this.getXEnd(), this.getYEnd(), scale);
 	}
 
 	@Override
 	protected void onDrag(double mouseX, double mouseY, double dragX, double dragY) {
-		this.rotationX = Mth.clamp(this.rotationX - (float) dragY * ROTATION_SENSITIVITY, -ROTATION_X_LIMIT, ROTATION_X_LIMIT);
+		this.rotationX = MathHelper.clamp(this.rotationX - (float) dragY * ROTATION_SENSITIVITY, -ROTATION_X_LIMIT, ROTATION_X_LIMIT);
 		this.rotationY += (float) dragX * ROTATION_SENSITIVITY;
 	}
 
@@ -121,17 +119,12 @@ public class SkinWidget extends AbstractWidget {
 	}
 
 	@Override
-	protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+	protected void updateNarration(NarrationMessageBuilder builder) {
+
 	}
 
 	@Override
-	public boolean isActive() {
-		return false;
-	}
-
-	@Nullable
-	@Override
-	public ComponentPath nextFocusPath(FocusNavigationEvent event) {
+	public @Nullable ElementPath nextFocusPath(GuiNavigationEvent event) {
 		return null;
 	}
 

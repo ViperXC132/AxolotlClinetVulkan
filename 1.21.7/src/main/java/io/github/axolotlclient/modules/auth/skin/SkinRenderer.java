@@ -87,13 +87,14 @@ public class SkinRenderer extends PictureInPictureRenderer<SkinRenderState> {
 		poseStack.translate(0.0F, -1.6010001F, 0.0F);
 		var model = renderState.classicVariant() ? classicModel : slimModel;
 		RenderType renderType = model.renderType(renderState.skinTexture());
-		model.renderToBuffer(poseStack, this.bufferSource.getBuffer(renderType), 15728880, OverlayTexture.NO_OVERLAY, renderState.color());
+		model.renderToBuffer(poseStack, this.bufferSource.getBuffer(renderType), 15728880, OverlayTexture.NO_OVERLAY);
 		if (renderState.cape() != null) {
 			if (capeModel == null) {
 				capeModel = new PlayerCapeModel<>(minecraft.getEntityModels().bakeLayer(ModelLayers.PLAYER_CAPE));
 			}
 			var type = capeModel.renderType(renderState.cape());
-			capeModel.renderToBuffer(poseStack, bufferSource.getBuffer(type), 15728880, OverlayTexture.NO_OVERLAY, renderState.color());
+			poseStack.mulPose(Axis.XP.rotationDegrees(6.0F));
+			capeModel.renderToBuffer(poseStack, bufferSource.getBuffer(type), 15728880, OverlayTexture.NO_OVERLAY);
 		}
 		this.bufferSource.endBatch();
 		matrix4fStack.popMatrix();

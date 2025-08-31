@@ -32,17 +32,17 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import com.google.common.hash.Hashing;
-import com.mojang.blaze3d.platform.NativeImage;
+import com.mojang.blaze3d.texture.NativeImage;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.util.ClientColors;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.resources.DefaultPlayerSkin;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.texture.NativeImageBackedTexture;
+import net.minecraft.client.util.DefaultSkinHelper;
+import net.minecraft.util.Identifier;
 
 public class SkinManager {
 
@@ -55,7 +55,7 @@ public class SkinManager {
 			var in = Files.readAllBytes(p);
 			sha256 = Hashing.sha256().hashBytes(in).toString();
 			try (var img = NativeImage.read(in)) {
-				slim = (ClientColors.ARGB.alpha(img.getPixel(47, 63)) == 0);
+				slim = (ClientColors.ARGB.alpha(img.getPixelColor(47, 63)) == 0);
 			}
 			return new Skin.Local(!slim, Hashing.sha512().hashUnencodedChars(p.toString()).toString(), p, sha256);
 		} catch (Exception e) {
@@ -73,8 +73,8 @@ public class SkinManager {
 
 		return skin.image().thenApplyAsync(bytes -> {
 			try {
-				var tex = new DynamicTexture(rl::toString, NativeImage.read(bytes));
-				Minecraft.getInstance().getTextureManager().register((ResourceLocation) rl, tex);
+				var tex = new NativeImageBackedTexture(NativeImage.read(bytes));
+				MinecraftClient.getInstance().getTextureManager().registerTexture((Identifier) rl, tex);
 			} catch (IOException e) {
 				throw new UncheckedIOException(e);
 			}
@@ -96,8 +96,8 @@ public class SkinManager {
 
 		return cape.image().thenApplyAsync(bytes -> {
 			try {
-				var tex = new DynamicTexture(rl::toString, NativeImage.read(bytes));
-				Minecraft.getInstance().getTextureManager().register((ResourceLocation) rl, tex);
+				var tex = new NativeImageBackedTexture(NativeImage.read(bytes));
+				MinecraftClient.getInstance().getTextureManager().registerTexture((Identifier) rl, tex);
 			} catch (IOException e) {
 				throw new UncheckedIOException(e);
 			}
@@ -113,13 +113,13 @@ public class SkinManager {
 	}
 
 	public void releaseAll() {
-		loadedTextures.forEach(id -> Minecraft.getInstance().getTextureManager().release((ResourceLocation) id));
+		loadedTextures.forEach(id -> MinecraftClient.getInstance().getTextureManager().destroyTexture((Identifier) id));
 		loadedTextures.clear();
 	}
 
 	public String getDefaultSkinHash(Account account) {
-		var skin = DefaultPlayerSkin.get(UUIDHelper.fromUndashed(account.getUuid()));
-		var mc = Minecraft.getInstance();
+		var skin = DefaultSkinHelper.getSkin(UUIDHelper.fromUndashed(account.getUuid()));
+		var mc = MinecraftClient.getInstance();
 		var resourceManager = mc.getResourceManager();
 		try {
 			var res = resourceManager.getResourceOrThrow(skin.texture());

@@ -58,11 +58,11 @@ public record HorizontalGradientRectangleRenderState(RenderPipeline pipeline,
 	}
 
 	@Override
-	public void buildVertices(VertexConsumer vertexConsumer, float f) {
-		vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0(), f).setColor(this.col1());
-		vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y1(), f).setColor(this.col1());
-		vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y1(), f).setColor(this.col2());
-		vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y0(), f).setColor(this.col2());
+	public void buildVertices(VertexConsumer vertexConsumer, float z) {
+		vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0(), z).setColor(this.col1());
+		vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y1(), z).setColor(this.col1());
+		vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y1(), z).setColor(this.col2());
+		vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y0(), z).setColor(this.col2());
 	}
 
 	@Nullable

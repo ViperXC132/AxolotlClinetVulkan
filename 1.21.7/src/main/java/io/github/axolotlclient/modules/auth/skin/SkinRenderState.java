@@ -41,8 +41,7 @@ public record SkinRenderState(boolean classicVariant,
 							  float scale,
 							  @Nullable ScreenRectangle scissorArea,
 							  @Nullable ScreenRectangle bounds,
-							  SkinRenderer renderer,
-							  int color) implements PictureInPictureRenderState, IdentifiablePiPRenderState<SkinRenderer> {
+							  SkinRenderer renderer) implements PictureInPictureRenderState, IdentifiablePiPRenderState<SkinRenderer> {
 
 	public SkinRenderState(boolean classicVariant,
 						   ResourceLocation skinTexture,
@@ -56,8 +55,7 @@ public record SkinRenderState(boolean classicVariant,
 						   int y1,
 						   float scale,
 						   @Nullable ScreenRectangle scissorArea,
-						   SkinRenderer renderer,
-						   int color) {
-		this(classicVariant, skinTexture, cape, rotationX, rotationY, pivotY, x0, y0, x1, y1, scale, scissorArea, PictureInPictureRenderState.getBounds(x0, y0, x1, y1, scissorArea), renderer, color);
+						   SkinRenderer renderer) {
+		this(classicVariant, skinTexture, cape, rotationX, rotationY, pivotY, x0, y0, x1, y1, scale, scissorArea, PictureInPictureRenderState.getBounds(x0, y0, x1, y1, scissorArea), renderer);
 	}
 }
