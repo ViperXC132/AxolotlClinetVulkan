@@ -31,8 +31,8 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
 import com.github.mizosoft.methanol.FormBodyPublisher;
@@ -75,7 +75,7 @@ public class MSApi {
 		INSTANCE = this;
 	}
 
-	public CompletableFuture<?> startDeviceAuth() {
+	public CompletableFuture<Account> startDeviceAuth() {
 
 		String[] lang = languageSupplier.get().replace("_", "-").split("-");
 		logger.debug("starting ms device auth flow");
@@ -87,7 +87,7 @@ public class MSApi {
 			.header("content-type", "application/x-www-form-urlencoded")
 			.uri(URI.create(MS_DEVICE_CODE_LOGIN_URL + lang[0] + "-" + lang[1].toUpperCase(Locale.ROOT)));
 		return requestJson(builder.build())
-			.thenApply(object -> {
+			.thenApplyAsync(object -> {
 				int expiresIn = object.get("expires_in").getAsInt();
 				String deviceCode = object.get("device_code").getAsString();
 				String userCode = object.get("user_code").getAsString();
@@ -98,8 +98,7 @@ public class MSApi {
 				DeviceFlowData data = new DeviceFlowData(message, verificationUri, deviceCode, userCode, expiresIn, interval);
 				accounts.displayDeviceCode(data);
 				return data;
-			})
-			.thenApply(data -> {
+			}).thenComposeAsync(data -> {
 				logger.debug("waiting for user authorization...");
 				long start = System.currentTimeMillis();
 				while (System.currentTimeMillis() - start < data.getExpiresIn() * 1000L && !data.isCancelled()) {
@@ -117,19 +116,26 @@ public class MSApi {
 							data.setStatus("auth.working");
 							return authenticateFromMSTokens(response.get("access_token").getAsString(),
 								response.get("refresh_token").getAsString())
-								.thenAccept(o -> {
-									o.ifPresent(a -> {
-										int index = accounts.getAccounts().indexOf(a);
-										if (index == -1) {
-											accounts.getAccounts().add(a);
-										} else {
-											accounts.getAccounts().set(index, a);
-										}
-										accounts.login(a);
-										accounts.save();
-										data.setStatus("auth.finished");
-									});
-								}).join();
+								.thenApply(a -> {
+									int index = accounts.getAccounts().indexOf(a);
+									Account loginAccount;
+									if (index == -1) {
+										accounts.getAccounts().add(a);
+										loginAccount = a;
+									} else {
+										var prev = accounts.getAccounts().get(index);
+										prev.setAuthToken(a.getAuthToken());
+										prev.setExpiration(a.getExpiration());
+										prev.setMsaToken(a.getMsaToken());
+										prev.setName(a.getName());
+										prev.setRefreshToken(a.getRefreshToken());
+										loginAccount = prev;
+									}
+									accounts.login(loginAccount);
+									accounts.save();
+									data.setStatus("auth.finished");
+									return loginAccount;
+								});
 						}
 
 						if (response.has("error")) {
@@ -147,11 +153,11 @@ public class MSApi {
 						}
 					}
 				}
-				return null;
+				return CompletableFuture.failedStage(new TimeoutException());
 			});
 	}
 
-	private CompletableFuture<Optional<Account>> authenticateFromMSTokens(String accessToken, String refreshToken) {
+	private CompletableFuture<Account> authenticateFromMSTokens(String accessToken, String refreshToken) {
 		return CompletableFuture.supplyAsync(() -> {
 			logger.debug("getting xbl token... ");
 			XblData xbl = authXbl(accessToken).join();
@@ -163,17 +169,17 @@ public class MSApi {
 			JsonObject profileJson = getMCProfile(mc.accessToken()).join();
 			if (profileJson.has("error") && "NOT_FOUND".equals(profileJson.get("error").getAsString())) {
 				AxolotlClientCommon.getInstance().getNotificationProvider().addStatus("auth.notif.login.failed", "auth.notif.login.failed.no_profile");
-				return Optional.empty();
+				throw new IllegalStateException();
 			}
 			logger.debug("retrieving entitlements...");
 			if (!checkOwnership(mc.accessToken()).join()) {
 				AxolotlClientCommon.getInstance().getNotificationProvider().addStatus("auth.notif.login.failed", "auth.notif.login.failed.no_entitlement");
 				logger.warn("Failed to check for game ownership!");
-				return Optional.empty();
+				throw new IllegalStateException();
 			}
 			logger.debug("getting profile...");
 			MCProfile profile = MCProfile.get(profileJson);
-			return Optional.of(new Account(profile.name(), profile.id(), mc.accessToken(), mc.expiration(), refreshToken, accessToken));
+			return new Account(profile.name(), profile.id(), mc.accessToken(), mc.expiration(), refreshToken, accessToken);
 		});
 	}
 
@@ -187,7 +193,8 @@ public class MSApi {
 				.toList());
 		}
 
-		public record OnlineSkin(String id, String state, String url, String variant, String textureKey) implements Skin {
+		public record OnlineSkin(String id, String state, String url, String variant,
+								 String textureKey) implements Skin {
 			public static final String VARIANT_CLASSIC = "CLASSIC";
 			public static final String VARIANT_SLIM = "SLIM";
 			public static final String STATE_ACTIVE = "ACTIVE";
@@ -198,7 +205,7 @@ public class MSApi {
 					object.get("state").getAsString(),
 					url,
 					object.get("variant").getAsString(),
-					url.substring(url.lastIndexOf("/")+1));
+					url.substring(url.lastIndexOf("/") + 1));
 			}
 
 			@Override
@@ -245,7 +252,7 @@ public class MSApi {
 			public static OnlineCape get(JsonObject object) {
 				String url = object.get("url").getAsString();
 				return new OnlineCape(object.get("id").getAsString(), object.get("state").getAsString(),
-					url, object.get("alias").getAsString(), url.substring(url.lastIndexOf("/")+1));
+					url, object.get("alias").getAsString(), url.substring(url.lastIndexOf("/") + 1));
 			}
 
 			public CompletableFuture<byte[]> image() {
@@ -340,44 +347,39 @@ public class MSApi {
 			.header("Authorization", "Bearer " + accessToken).build());
 	}
 
-	public CompletableFuture<Optional<Account>> refreshToken(String token, Account account) {
-		return CompletableFuture.supplyAsync(() -> {
-			logger.debug("refreshing auth code... ");
-			HttpRequest.Builder requestBuilder = HttpRequest
-				.newBuilder(URI.create(MS_TOKEN_LOGIN_URL))
-				.POST(FormBodyPublisher.newBuilder()
-					.query("client_id", CLIENT_ID)
-					.query("refresh_token", token)
-					.query("scope", SCOPES)
-					.query("grant_type", "refresh_token").build())
-				.header("Accept", "application/json");
-
-			JsonObject response = requestJson(requestBuilder.build()).join();
-
-			if (response.has("error_codes")) {
-				int errorCode = response.get("error_codes").getAsJsonArray().get(0).getAsInt();
-				if (errorCode == 70000 || errorCode == 70012) {
-					accounts.showAccountsExpiredScreen(account);
-				} else {
-					logger.warn("Login error, unexpected response: " + response);
-					AxolotlClientCommon.getInstance().getNotificationProvider().addStatus("auth.notif.refresh.error", "auth.notif.refresh.error.unexpected_response");
+	public CompletableFuture<Account> refresh(Account account) {
+		logger.debug("refreshing auth code...");
+		return requestJson(HttpRequest
+			.newBuilder(URI.create(MS_TOKEN_LOGIN_URL))
+			.POST(FormBodyPublisher.newBuilder()
+				.query("client_id", CLIENT_ID)
+				.query("refresh_token", account.getRefreshToken())
+				.query("scope", SCOPES)
+				.query("grant_type", "refresh_token").build())
+			.header("Accept", "application/json").build())
+			.thenCompose(response -> {
+				if (response.has("error_codes")) {
+					int errorCode = response.get("error_codes").getAsJsonArray().get(0).getAsInt();
+					if (errorCode == 70000 || errorCode == 70012) {
+						return accounts.showAccountsExpiredScreen(account);
+					} else {
+						logger.warn("Login error, unexpected response: " + response);
+						AxolotlClientCommon.getInstance().getNotificationProvider().addStatus("auth.notif.refresh.error", "auth.notif.refresh.error.unexpected_response");
+						throw new IllegalArgumentException();
+					}
 				}
-				return Optional.empty();
-			}
-
-			logger.debug("authenticating...");
-			Optional<Account> opt = authenticateFromMSTokens(response.get("access_token").getAsString(),
-				response.get("refresh_token").getAsString()).join();
-			opt.ifPresent(refreshed -> {
-				account.setRefreshToken(refreshed.getRefreshToken());
-				account.setAuthToken(refreshed.getAuthToken());
-				account.setName(refreshed.getName());
-				account.setMsaToken(refreshed.getMsaToken());
-				account.setExpiration(refreshed.getExpiration());
-				accounts.save();
+				logger.debug("authenticating...");
+				return authenticateFromMSTokens(response.get("access_token").getAsString(),
+					response.get("refresh_token").getAsString()).thenApply(refreshed -> {
+					account.setRefreshToken(refreshed.getRefreshToken());
+					account.setAuthToken(refreshed.getAuthToken());
+					account.setName(refreshed.getName());
+					account.setMsaToken(refreshed.getMsaToken());
+					account.setExpiration(refreshed.getExpiration());
+					accounts.save();
+					return account;
+				});
 			});
-			return opt;
-		});
 	}
 
 	private CompletableFuture<JsonObject> requestJson(HttpRequest request) {

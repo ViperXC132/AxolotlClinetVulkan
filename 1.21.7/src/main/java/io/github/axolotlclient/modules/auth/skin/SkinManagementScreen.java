@@ -78,6 +78,7 @@ public class SkinManagementScreen extends Screen {
 	private boolean capesTab;
 	private SkinWidget current;
 	private final Watcher skinDirWatcher;
+	private boolean triedAccountRefresh;
 
 	public SkinManagementScreen(Screen parent, Account account) {
 		super(Component.translatable("skins.manage"));
@@ -91,14 +92,20 @@ public class SkinManagementScreen extends Screen {
 		int headerHeight = 33;
 		int contentHeight = height - headerHeight * 2;
 
-		addRenderableWidget(new StringWidget(0, headerHeight/2-font.lineHeight/2, width, font.lineHeight, getTitle(), getFont()));
-		var back = addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, btn -> onClose())
-			.bounds(width / 2 - 75, height - headerHeight / 2 - 10, 150, 20).build());
+		StringWidget titleWidget = new StringWidget(0, headerHeight / 2 - font.lineHeight / 2, width, font.lineHeight, getTitle(), getFont());
+		if (!triedAccountRefresh) {
+			addRenderableWidget(titleWidget);
+		}
+		var back = Button.builder(CommonComponents.GUI_BACK, btn -> onClose())
+			.bounds(width / 2 - 75, height - headerHeight / 2 - 10, 150, 20).build();
 
 		var loadingPlaceholder = new LoadingDotsWidget(getFont(), Component.translatable("skins.loading"));
 		loadingPlaceholder.setRectangle(width, contentHeight, 0,
 			headerHeight);
-		addRenderableWidget(loadingPlaceholder);
+		if (!triedAccountRefresh) {
+			addRenderableWidget(loadingPlaceholder);
+			addRenderableWidget(back);
+		}
 		skinList = new SkinListWidget(minecraft, width / 2, contentHeight - 24, headerHeight + 24, LIST_SKIN_HEIGHT + 34);
 		capesList = new SkinListWidget(minecraft, width / 2, contentHeight - 24, headerHeight + 24, skinList.getEntryContentsHeight() + 24);
 		skinList.setX(width / 2);
@@ -137,8 +144,8 @@ public class SkinManagementScreen extends Screen {
 		skinsTab.active = this.capesTab;
 		capesTab.active = !this.capesTab;
 		Runnable addWidgets = () -> {
-			removeWidget(back);
-			removeWidget(loadingPlaceholder);
+			clearWidgets();
+			addRenderableWidget(titleWidget);
 			addRenderableWidget(current);
 			addRenderableWidget(skinsTab);
 			addRenderableWidget(capesTab);
@@ -153,7 +160,14 @@ public class SkinManagementScreen extends Screen {
 		}
 		CompletableFuture<?> fut;
 		if (account.needsRefresh()) {
-			fut = account.refresh(Auth.getInstance().getMsApi());
+			if (triedAccountRefresh) {
+				fut = CompletableFuture.failedFuture(new Throwable(null, null, false, false) {
+				});
+			} else {
+				triedAccountRefresh = true;
+				account.refresh(Auth.getInstance().getMsApi());
+				return;
+			}
 		} else {
 			fut = CompletableFuture.completedFuture(null);
 		}
@@ -163,12 +177,16 @@ public class SkinManagementScreen extends Screen {
 				initDisplay();
 				addWidgets.run();
 			}).exceptionally(t -> {
-				AxolotlClientCommon.getInstance().getLogger().error("Failed to load skins!", t);
+				if (!triedAccountRefresh) {
+					AxolotlClientCommon.getInstance().getLogger().error("Failed to load skins!", t);
+				}
 				var error = Component.translatable("skins.error.failed_to_load");
-				var errorDesc = Component.translatable("skins.error.failed_to_load_desc");
-				removeWidget(loadingPlaceholder);
+				var errorDesc = Component.translatable(triedAccountRefresh ? "skins.error.failed_to_load_not_refreshed" : "skins.error.failed_to_load_desc");
+				clearWidgets();
+				addRenderableWidget(titleWidget);
 				addRenderableWidget(new StringWidget(width / 2 - getFont().width(error) / 2, height / 2 - getFont().lineHeight - 2, getFont().width(error), getFont().lineHeight, error, getFont()));
 				addRenderableWidget(new StringWidget(width / 2 - getFont().width(errorDesc) / 2, height / 2 + 1, getFont().width(errorDesc), getFont().lineHeight, errorDesc, getFont()));
+				addRenderableWidget(back);
 				return null;
 			});
 	}
@@ -460,9 +478,9 @@ public class SkinManagementScreen extends Screen {
 									}
 								}
 								btn.active = true;
-							}, Component.translatable("skins.manage.delete.confirm"), asset.active() ?
+							}, Component.translatable("skins.manage.delete.confirm"), (asset.active() ?
 								Component.translatable("skins.manage.delete.confirm.desc_active") :
-								Component.translatable("skins.manage.delete.confirm.desc")
+								Component.translatable("skins.manage.delete.confirm.desc"))
 								.withColor(Colors.RED.toInt())));
 						}, true).sprite(ResourceLocation.fromNamespaceAndPath("axolotlclient", "delete"), 7, 7).size(11, 11)
 						.build();

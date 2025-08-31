@@ -28,31 +28,37 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.auth.MSApi;
+import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.Watcher;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.gui.*;
-import net.minecraft.client.gui.navigation.GuiNavigationEvent;
+import net.minecraft.client.gui.Drawable;
+import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.ParentElement;
 import net.minecraft.client.gui.screen.ConfirmScreen;
-import net.minecraft.client.gui.screen.LoadingDisplay;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
-import net.minecraft.client.gui.tooltip.Tooltip;
-import net.minecraft.client.gui.widget.*;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.text.CommonTexts;
+import net.minecraft.client.gui.screen.ScreenTexts;
+import net.minecraft.client.gui.widget.AbstractButtonWidget;
+import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.ElementListWidget;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
 import org.jetbrains.annotations.NotNull;
@@ -62,7 +68,7 @@ public class SkinManagementScreen extends Screen {
 	private static final Path SKINS_DIR = FabricLoader.getInstance().getGameDir().resolve("skins");
 	private static final int LIST_SKIN_WIDTH = 75;
 	private static final int LIST_SKIN_HEIGHT = 110;
-	private static final Text TEXT_EQUIPPING = Text.translatable("skins.manage.equipping");
+	private static final Text TEXT_EQUIPPING = new TranslatableText("skins.manage.equipping");
 	private final Screen parent;
 	private final Account account;
 	private MSApi.MCProfile cachedProfile;
@@ -71,41 +77,41 @@ public class SkinManagementScreen extends Screen {
 	private boolean capesTab;
 	private SkinWidget current;
 	private final Watcher skinDirWatcher;
+	private final List<Drawable> drawables = new ArrayList<>();
 	private boolean triedAccountRefresh;
 
 	public SkinManagementScreen(Screen parent, Account account) {
-		super(Text.translatable("skins.manage"));
+		super(new TranslatableText("skins.manage"));
 		this.parent = parent;
 		this.account = account;
 		skinDirWatcher = Watcher.createSelfTicking(SKINS_DIR, this::loadSkinsList);
 	}
 
 	@Override
-	protected void init() {
+	public void init() {
 		int headerHeight = 33;
 		int contentHeight = height - headerHeight * 2;
 
-		var titleWidget = new TextWidget(0, headerHeight / 2 - textRenderer.fontHeight / 2, width, textRenderer.fontHeight, getTitle(), textRenderer);
-		if (!triedAccountRefresh) {
-			addDrawableChild(titleWidget);
-		}
-		var back = addDrawableChild(ButtonWidget.builder(CommonTexts.BACK, btn -> closeScreen())
-			.positionAndSize(width / 2 - 75, height - headerHeight / 2 - 10, 150, 20).build());
+		var back = addDrawableChild(new ButtonWidget(width / 2 - 75, height - headerHeight / 2 - 10, 150, 20, ScreenTexts.BACK, btn -> onClose()));
 
-		var loadingPlaceholder = new ClickableWidget(0, headerHeight, width, contentHeight, Text.translatable("skins.loading")) {
+		var loadingPlaceholder = new AbstractButtonWidget(0, headerHeight, width, contentHeight, new TranslatableText("skins.loading")) {
 			@Override
-			protected void drawWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-				int centerX = this.getX() + this.getWidth() / 2;
-				int centerY = this.getY() + this.getHeight() / 2;
+			public void renderButton(MatrixStack graphics, int mouseX, int mouseY, float delta) {
+				int centerX = this.x + this.getWidth() / 2;
+				int centerY = this.y + this.getHeight() / 2;
 				Text text = this.getMessage();
-				graphics.drawText(textRenderer, text, centerX - textRenderer.getWidth(text) / 2, centerY - 9, -1, false);
-				String string = LoadingDisplay.get(Util.getMeasuringTimeMs());
-				graphics.drawText(textRenderer, string, centerX - textRenderer.getWidth(string) / 2, centerY + 9, 0xFF808080, false);
+				textRenderer.draw(graphics, text, centerX - textRenderer.getWidth(text) / 2f, centerY - 9, -1);
+				String string = switch ((int) (Util.getMeasuringTimeMs() / 300L % 4L)) {
+					case 1, 3 -> "o O o";
+					case 2 -> "o o O";
+					default -> "O o o";
+				};
+				textRenderer.draw(graphics, string, centerX - textRenderer.getWidth(string) / 2f, centerY + 9, 0xFF808080);
 			}
 
 			@Override
-			protected void updateNarration(NarrationMessageBuilder builder) {
-
+			protected MutableText getNarrationMessage() {
+				return LiteralText.EMPTY.copy();
 			}
 		};
 		loadingPlaceholder.active = false;
@@ -127,8 +133,8 @@ public class SkinManagementScreen extends Screen {
 		} else {
 			skinList.visible = skinList.active = false;
 		}
-		List<ClickableWidget> navBar = new ArrayList<>();
-		var skinsTab = ButtonWidget.builder(Text.translatable("skins.nav.skins"), btn -> {
+		List<AbstractButtonWidget> navBar = new ArrayList<>();
+		var skinsTab = new ButtonWidget(width * 3 / 4 - 102, headerHeight, 100, 20, new TranslatableText("skins.nav.skins"), btn -> {
 			navBar.forEach(w -> {
 				if (w != btn) w.active = true;
 			});
@@ -136,9 +142,9 @@ public class SkinManagementScreen extends Screen {
 			skinList.visible = skinList.active = true;
 			capesList.visible = capesList.active = false;
 			capesTab = false;
-		}).position(width * 3 / 4 - 102, headerHeight).width(100).build();
+		});
 		navBar.add(skinsTab);
-		var capesTab = ButtonWidget.builder(Text.translatable("skins.nav.capes"), btn -> {
+		var capesTab = new ButtonWidget(width * 3 / 4 + 2, headerHeight, 100, 20, new TranslatableText("skins.nav.capes"), btn -> {
 			navBar.forEach(w -> {
 				if (w != btn) w.active = true;
 			});
@@ -146,13 +152,12 @@ public class SkinManagementScreen extends Screen {
 			skinList.visible = skinList.active = false;
 			capesList.visible = capesList.active = true;
 			this.capesTab = true;
-		}).position(width * 3 / 4 + 2, headerHeight).width(100).build();
+		});
 		navBar.add(capesTab);
 		skinsTab.active = this.capesTab;
 		capesTab.active = !this.capesTab;
 		Runnable addWidgets = () -> {
-			clearChildren();
-			addDrawableChild(titleWidget);
+			clear();
 			addDrawableChild(current);
 			addDrawableChild(skinList);
 			addDrawableChild(capesList);
@@ -187,21 +192,43 @@ public class SkinManagementScreen extends Screen {
 				if (!triedAccountRefresh) {
 					AxolotlClientCommon.getInstance().getLogger().error("Failed to load skins!", t);
 				}
-				var error = Text.translatable("skins.error.failed_to_load");
-				var errorDesc = Text.translatable(triedAccountRefresh ? "skins.error.failed_to_load_not_refreshed" : "skins.error.failed_to_load_desc");
-				clearChildren();
-				addDrawableChild(titleWidget);
+				var error = new TranslatableText("skins.error.failed_to_load");
+				var errorDesc = new TranslatableText(triedAccountRefresh ? "skins.error.failed_to_load_not_refreshed" : "skins.error.failed_to_load_desc");
+				clear();
+				addDrawableChild(back);
+				class TextWidget extends AbstractButtonWidget {
+
+					public TextWidget(int x, int y, int width, int height, Text message, TextRenderer textRenderer) {
+						super(x, y, width, height, message);
+					}
+
+					@Override
+					public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+						textRenderer.draw(matrices, getMessage(), x, y, -1);
+					}
+				}
 				addDrawableChild(new TextWidget(width / 2 - textRenderer.getWidth(error) / 2, height / 2 - textRenderer.fontHeight - 2, textRenderer.getWidth(error), textRenderer.fontHeight, error, textRenderer));
 				addDrawableChild(new TextWidget(width / 2 - textRenderer.getWidth(errorDesc) / 2, height / 2 + 1, textRenderer.getWidth(errorDesc), textRenderer.fontHeight, errorDesc, textRenderer));
-				addDrawableChild(back);
 				return null;
 			});
 	}
 
+	private <T extends Drawable & Element> T addDrawableChild(T child) {
+		drawables.add(child);
+		return addChild(child);
+	}
+
+	private void clear() {
+		children.clear();
+		buttons.clear();
+		drawables.clear();
+	}
+
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+	public void render(MatrixStack graphics, int mouseX, int mouseY, float delta) {
 		renderBackground(graphics);
-		super.render(graphics, mouseX, mouseY, delta);
+		drawables.forEach(d -> d.render(graphics, mouseX, mouseY, delta));
+		drawCenteredText(graphics, textRenderer, getTitle(), width / 2, 33 / 2 - textRenderer.fontHeight / 2, -1);
 	}
 
 	private void initDisplay() {
@@ -222,7 +249,7 @@ public class SkinManagementScreen extends Screen {
 	}
 
 	private void loadCapesList() {
-		capesList.clearEntries();
+		capesList.clearEntries0();
 		var profile = cachedProfile;
 		int columns = Math.max(2, (width / 2 - 25) / LIST_SKIN_WIDTH);
 		var capes = profile.capes();
@@ -233,12 +260,12 @@ public class SkinManagementScreen extends Screen {
 		for (int i = 0; i < capes.size() + 1; i += columns) {
 			Entry widget;
 			if (i == 0) {
-				widget = createEntry(capesList.getEntryContentsHeight(), deselectCape, Text.translatable("skins.capes.no_cape"));
+				widget = createEntry(capesList.getEntryContentsHeight(), deselectCape, new TranslatableText("skins.capes.no_cape"));
 			} else {
 				var cape = capes.get(i - 1);
 				widget = createEntryForCape(current.getSkin(), cape, capesList.getEntryContentsHeight());
 			}
-			List<ClickableWidget> widgets = new ArrayList<>();
+			List<AbstractButtonWidget> widgets = new ArrayList<>();
 			widgets.add(widget);
 			for (int c = 1; c < columns; c++) {
 				if (!(i < capes.size() + 1 - c)) continue;
@@ -252,7 +279,7 @@ public class SkinManagementScreen extends Screen {
 	}
 
 	private void loadSkinsList() {
-		skinList.clearEntries();
+		skinList.clearEntries0();
 		var profile = cachedProfile;
 		int columns = Math.max(2, (width / 2 - 25) / LIST_SKIN_WIDTH);
 		List<Skin> skins = new ArrayList<>(profile.skins());
@@ -302,7 +329,7 @@ public class SkinManagementScreen extends Screen {
 				current.setSkin(s);
 			}
 			var widget = createEntryForSkin(s, entryHeight);
-			List<ClickableWidget> widgets = new ArrayList<>();
+			List<AbstractButtonWidget> widgets = new ArrayList<>();
 			widgets.add(widget);
 			for (int c = 1; c < columns; c++) {
 				if (!(i < skins.size() - c)) continue;
@@ -334,7 +361,7 @@ public class SkinManagementScreen extends Screen {
 	}
 
 	private @NotNull Entry createEntryForCape(Skin currentSkin, Cape cape, int entryHeight) {
-		return createEntry(entryHeight, createWidgetForCape(currentSkin, cape), Text.literal(cape.alias()));
+		return createEntry(entryHeight, createWidgetForCape(currentSkin, cape), new LiteralText(cape.alias()));
 	}
 
 	private SkinWidget createWidgetForCape(Skin currentSkin, Cape cape) {
@@ -344,9 +371,9 @@ public class SkinManagementScreen extends Screen {
 	}
 
 	@Override
-	protected void clearAndInit() {
+	public void resize(MinecraftClient client, int width, int height) {
 		Auth.getInstance().getSkinManager().releaseAll();
-		super.clearAndInit();
+		super.resize(client, width, height);
 	}
 
 	@Override
@@ -356,8 +383,8 @@ public class SkinManagementScreen extends Screen {
 	}
 
 	@Override
-	public void closeScreen() {
-		client.setScreen(parent);
+	public void onClose() {
+		client.openScreen(parent);
 	}
 
 	private SkinListWidget getCurrentList() {
@@ -370,7 +397,7 @@ public class SkinManagementScreen extends Screen {
 		public SkinListWidget(MinecraftClient minecraft, int width, int height, int y, int entryHeight) {
 			super(minecraft, width, SkinManagementScreen.this.height, y, y + height, entryHeight);
 			setRenderHeader(false, 0);
-			setRenderBackground(false);
+			//setRenderBackground(false);
 		}
 
 		@Override
@@ -396,18 +423,15 @@ public class SkinManagementScreen extends Screen {
 			return width - 14;
 		}
 
+		private int getMaxScroll() {
+			return Math.max(0, this.getMaxPosition() - (this.bottom - this.top - 4));
+		}
+
 		public int getEntryContentsHeight() {
 			return itemHeight - 4;
 		}
 
-		@Override
-		public @Nullable ElementPath nextFocusPath(GuiNavigationEvent event) {
-			if (!active || !visible) return null;
-			return super.nextFocusPath(event);
-		}
-
-		@Override
-		public void clearEntries() {
+		public void clearEntries0() {
 			super.clearEntries();
 		}
 
@@ -428,32 +452,28 @@ public class SkinManagementScreen extends Screen {
 		}
 
 		@Override
-		public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+		public void render(MatrixStack graphics, int mouseX, int mouseY, float delta) {
 			if (!visible) return;
 			super.render(graphics, mouseX, mouseY, delta);
 		}
 	}
 
 	private class Row extends ElementListWidget.Entry<Row> {
-		private final List<ClickableWidget> widgets;
+		private final List<AbstractButtonWidget> widgets;
 
-		public Row(List<ClickableWidget> entries) {
+		public Row(List<AbstractButtonWidget> entries) {
 			this.widgets = entries;
 		}
 
 		@Override
-		public @NotNull List<? extends Selectable> selectableChildren() {
-			return widgets;
-		}
-
-		@Override
-		public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
+		public void render(MatrixStack guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
 			int x = left;
 			if (widgets.isEmpty()) return;
 			int count = widgets.size();
 			int padding = ((width - 5 * (count - 1)) / count);
 			for (var w : widgets) {
-				w.setPosition(x, top);
+				w.x = x;
+				w.y = top;
 				w.setWidth(padding);
 				w.render(guiGraphics, mouseX, mouseY, partialTick);
 				x += w.getWidth() + 5;
@@ -466,8 +486,8 @@ public class SkinManagementScreen extends Screen {
 		}
 
 		@Override
-		public void setFocusedChild(@Nullable Element focused) {
-			super.setFocusedChild(focused);
+		public void setFocused(@Nullable Element focused) {
+			super.setFocused(focused);
 			if (focused != null) {
 				getCurrentList().centerScrollOn(this);
 			}
@@ -482,11 +502,11 @@ public class SkinManagementScreen extends Screen {
 		return new Entry(height, widget, label);
 	}
 
-	private class Entry extends ClickableWidget implements ParentElement {
+	private class Entry extends AbstractButtonWidget implements ParentElement {
 		private final SkinWidget skinWidget;
-		private final @Nullable ClickableWidget label;
-		private final List<ClickableWidget> actionButtons = new ArrayList<>();
-		private final ClickableWidget equipButton;
+		private final @Nullable AbstractButtonWidget label;
+		private final List<AbstractButtonWidget> actionButtons = new ArrayList<>();
+		private final AbstractButtonWidget equipButton;
 		private boolean equipping;
 		private long equippingStart;
 		@Nullable
@@ -494,15 +514,15 @@ public class SkinManagementScreen extends Screen {
 		private boolean dragging;
 
 		public Entry(int height, SkinWidget widget, @Nullable Text label) {
-			super(0, 0, widget.getWidth(), height, Text.empty());
+			super(0, 0, widget.getWidth(), height, LiteralText.EMPTY);
 			widget.setWidth(getWidth() - 4);
 			var asset = widget.getFocusedAsset();
 			if (asset != null) {
 				if (asset.isLocal()) {
-					var delete = new ButtonWidget(0, 0, 11, 11, Text.translatable("skins.manage.delete"), btn -> {
+					var delete = new ButtonWidget(0, 0, 11, 11, LiteralText.EMPTY, btn -> {
 						btn.active = false;
-						client.setScreen(new ConfirmScreen(confirmed -> {
-							client.setScreen(SkinManagementScreen.this);
+						client.openScreen(new ConfirmScreen(confirmed -> {
+							client.openScreen(SkinManagementScreen.this);
 							if (confirmed) {
 								try {
 									Files.delete(asset.file());
@@ -512,29 +532,31 @@ public class SkinManagementScreen extends Screen {
 								}
 							}
 							btn.active = true;
-						}, Text.translatable("skins.manage.delete.confirm"), (Text) (asset.active() ?
-							Text.translatable("skins.manage.delete.confirm.desc_active") :
-							Text.translatable("skins.manage.delete.confirm.desc")
+						}, new TranslatableText("skins.manage.delete.confirm"), (Text) (asset.active() ?
+							new TranslatableText("skins.manage.delete.confirm.desc_active") :
+							new TranslatableText("skins.manage.delete.confirm.desc")
 						).br$color(Colors.RED.toInt())));
-					}, Supplier::get) {
-						private final Identifier SPRITE = new Identifier("axolotlclient", "textures/gui/sprites/delete.png");
+					}) {
+
+						private final Text tooltip = new TranslatableText("skins.manage.delete");
+						private final Identifier sprite = new Identifier("axolotlclient", "textures/gui/sprites/delete.png");
 
 						@Override
-						protected void drawWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-							super.drawWidget(graphics, mouseX, mouseY, delta);
-							graphics.drawTexture(SPRITE, getX() + 2, getY() + 2, 0, 0, 7, 7, 7, 7);
+						public void renderButton(MatrixStack graphics, int mouseX, int mouseY, float delta) {
+							super.renderButton(graphics, mouseX, mouseY, delta);
+							client.getTextureManager().bindTexture(sprite);
+							drawTexture(graphics, x + 2, y + 2, 0, 0, 7, 7, 7, 7);
 						}
 
 						@Override
-						public void drawScrollableText(GuiGraphics graphics, TextRenderer renderer, int color) {
-
+						public void renderToolTip(MatrixStack matrices, int mouseX, int mouseY) {
+							renderTooltip(matrices, tooltip, mouseX, mouseY);
 						}
 					};
-					delete.setTooltip(Tooltip.create(delete.getMessage()));
 					this.actionButtons.add(delete);
 				}
 				if (asset.supportsDownload() && !asset.isLocal()) {
-					var download = new ButtonWidget(0, 0, 11, 11, Text.translatable("skins.manage.download"), btn -> {
+					var download = new ButtonWidget(0, 0, 11, 11, LiteralText.EMPTY, btn -> {
 						btn.active = false;
 						asset.image().thenAcceptAsync(b -> {
 							try {
@@ -547,37 +569,38 @@ public class SkinManagementScreen extends Screen {
 							refreshCurrentList();
 							btn.active = true;
 						});
-					}, Supplier::get) {
-						private final Identifier SPRITE = new Identifier("axolotlclient", "textures/gui/sprites/download.png");
+					}) {
+						private final Text tooltip = new TranslatableText("skins.manage.download");
+						private final Identifier sprite = new Identifier("axolotlclient", "textures/gui/sprites/download.png");
 
 						@Override
-						protected void drawWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-							super.drawWidget(graphics, mouseX, mouseY, delta);
-							graphics.drawTexture(SPRITE, getX() + 2, getY() + 2, 0, 0, 7, 7, 7, 7);
+						public void renderButton(MatrixStack graphics, int mouseX, int mouseY, float delta) {
+							super.renderButton(graphics, mouseX, mouseY, delta);
+							client.getTextureManager().bindTexture(sprite);
+							drawTexture(graphics, x + 2, y + 2, 0, 0, 7, 7, 7, 7);
 						}
 
 						@Override
-						public void drawScrollableText(GuiGraphics graphics, TextRenderer renderer, int color) {
-
+						public void renderToolTip(MatrixStack matrices, int mouseX, int mouseY) {
+							renderTooltip(matrices, tooltip, mouseX, mouseY);
 						}
 					};
-					download.setTooltip(Tooltip.create(download.getMessage()));
 					this.actionButtons.add(download);
 				}
 			}
 			if (label != null) {
-				this.label = new AbstractTextWidget(0, 0, widget.getWidth(), 16, label, textRenderer) {
+				this.label = new AbstractButtonWidget(0, 0, widget.getWidth(), 16, label) {
 					@Override
-					protected void drawWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-						drawScrollingText(guiGraphics, textRenderer, 2, -1);
+					public void renderButton(MatrixStack guiGraphics, int mouseX, int mouseY, float partialTick) {
+						DrawUtil.drawScrollableText(guiGraphics, textRenderer, getMessage(), x + 2, y, x + width - 2, y + height, -1);
 					}
 				};
 				this.label.active = false;
 			} else {
 				this.label = null;
 			}
-			this.equipButton = ButtonWidget.builder(Text.translatable(
-					widget.isEquipped() ? "skins.manage.equipped" : "skins.manage.equip"),
+			this.equipButton = new ButtonWidget(0, 0, widget.getWidth(), 20, new TranslatableText(
+				widget.isEquipped() ? "skins.manage.equipped" : "skins.manage.equip"),
 				btn -> {
 					equippingStart = Util.getMeasuringTimeMs();
 					equipping = true;
@@ -590,7 +613,7 @@ public class SkinManagementScreen extends Screen {
 						AxolotlClientCommon.getInstance().getLogger().warn("Failed to equip asset!", t);
 						return null;
 					});
-				}).width(widget.getWidth()).build();
+				});
 			this.equipButton.active = !widget.isEquipped();
 			this.skinWidget = widget;
 		}
@@ -612,22 +635,16 @@ public class SkinManagementScreen extends Screen {
 		}
 
 		@Override
-		public void setFocusedChild(@Nullable Element child) {
-			if (this.focused != null) {
+		public void setFocused(@Nullable Element child) {
+			/*if (this.focused != null) {
 				this.focused.setFocused(false);
 			}
 
 			if (child != null) {
 				child.setFocused(true);
-			}
+			}*/
 
 			this.focused = child;
-		}
-
-		@Nullable
-		@Override
-		public ElementPath nextFocusPath(GuiNavigationEvent event) {
-			return ParentElement.super.nextFocusPath(event);
 		}
 
 		@Override
@@ -647,12 +664,12 @@ public class SkinManagementScreen extends Screen {
 
 		@Override
 		public boolean isFocused() {
-			return ParentElement.super.isFocused();
+			return getFocused() != null;
 		}
 
 		@Override
 		public void setFocused(boolean focused) {
-			ParentElement.super.setFocused(focused);
+
 		}
 
 		@Override
@@ -665,9 +682,9 @@ public class SkinManagementScreen extends Screen {
 		}
 
 		@Override
-		protected void drawWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-			int y = getY() + 4;
-			int x = getX() + 2;
+		public void renderButton(MatrixStack guiGraphics, int mouseX, int mouseY, float partialTick) {
+			int y = this.y + 4;
+			int x = this.x + 2;
 			if (skinWidget.isEquipped() || equipping) {
 				long prog;
 				if (Auth.getInstance().skinManagerAnimations.get()) {
@@ -681,7 +698,7 @@ public class SkinManagementScreen extends Screen {
 				} else {
 					gradientWidth = Math.min(getWidth() / 15f, getHeight() / 6f) + applyEasing(percent) * Math.min(getWidth() * 2 / 15f, getHeight() / 6f);
 				}
-				GradientHoleRectangleRenderState.render(guiGraphics, getX() + 2, getY() + 2, getX() + getWidth() - 2,
+				GradientHoleRectangleRenderState.render(guiGraphics, this.x + 2, this.y + 2, this.x + getWidth() - 2,
 					skinWidget.getY() + skinWidget.getHeight() + 2,
 					gradientWidth,
 					equipping ? 0xFFFF0088 : ClientColors.SELECTOR_GREEN.toInt(), 0);
@@ -689,31 +706,35 @@ public class SkinManagementScreen extends Screen {
 			skinWidget.setPosition(x, y);
 			skinWidget.setWidth(getWidth() - 4);
 			skinWidget.render(guiGraphics, mouseX, mouseY, partialTick);
-			int actionButtonY = getY() + 2;
+			int actionButtonY = this.y + 2;
 			for (var button : actionButtons) {
-				button.setPosition(skinWidget.getX() + skinWidget.getWidth() - button.getWidth(), actionButtonY);
-				if (isHovered() || button.isHoveredOrFocused()) {
+				button.x = skinWidget.getX() + skinWidget.getWidth() - button.getWidth();
+				button.y = actionButtonY;
+				if (isHovered() || button.isHovered()) {
 					button.render(guiGraphics, mouseX, mouseY, partialTick);
 				}
 				actionButtonY += button.getHeight() + 2;
 			}
 			if (label != null) {
-				label.setPosition(x, skinWidget.getY() + skinWidget.getHeight() + 6);
+				label.x = x;
+				label.y = skinWidget.getY() + skinWidget.getHeight() + 6;
 				label.render(guiGraphics, mouseX, mouseY, partialTick);
 				label.setWidth(getWidth() - 4);
-				equipButton.setPosition(x, label.getY() + label.getHeight() + 2);
+				equipButton.x = x;
+				equipButton.y = label.y + label.getHeight() + 2;
 			} else {
-				equipButton.setPosition(x, skinWidget.getY() + skinWidget.getHeight() + 4);
+				equipButton.x = x;
+				equipButton.y = skinWidget.getY() + skinWidget.getHeight() + 4;
 			}
 			equipButton.setWidth(getWidth() - 4);
 			equipButton.render(guiGraphics, mouseX, mouseY, partialTick);
 
 			if (isHovered()) {
-				guiGraphics.br$outlineRect(getX(), getY(), getWidth(), getHeight(), -1);
+				guiGraphics.br$outlineRect(this.x, this.y, getWidth(), getHeight(), -1);
 			}
 		}
 
-		@Override
+		/*@Override
 		protected void updateNarration(NarrationMessageBuilder narrationElementOutput) {
 			skinWidget.appendNarrations(narrationElementOutput);
 			actionButtons.forEach(w -> w.appendNarrations(narrationElementOutput));
@@ -721,34 +742,46 @@ public class SkinManagementScreen extends Screen {
 				label.appendNarrations(narrationElementOutput);
 			}
 			equipButton.appendNarrations(narrationElementOutput);
-		}
+		}*/
 
 		private static class GradientHoleRectangleRenderState {
 
-			public static void render(GuiGraphics graphics, int x0, int y0, int x1, int y1, float gradientWidth, int col1, int col2) {
-				var vertexConsumer = graphics.getVertexConsumers().getBuffer(RenderLayer.getGui());
+			public static void render(MatrixStack graphics, int x0, int y0, int x1, int y1, float gradientWidth, int col1, int col2) {
+				RenderSystem.disableTexture();
+				RenderSystem.enableBlend();
+				RenderSystem.disableAlphaTest();
+				RenderSystem.defaultBlendFunc();
+				RenderSystem.shadeModel(7425);
+				var tessellator = Tessellator.getInstance();
+				var vertexConsumer = tessellator.getBuffer();
 				float z = 0;
 				//top
-				var pose = graphics.getMatrices().peek().getModel();
-				vertexConsumer.vertex(pose, x0, y0, z).color(col1).next();
-				vertexConsumer.vertex(pose, x0 + gradientWidth, y0 + gradientWidth, z).color(col2).next();
-				vertexConsumer.vertex(pose, x1 - gradientWidth, y0 + gradientWidth, z).color(col2).next();
-				vertexConsumer.vertex(pose, x1, y0, z).color(col1).next();
+				var pose = graphics.peek().getModel();
+				vertexConsumer.begin(7, VertexFormats.POSITION_COLOR);
+				vertexConsumer.vertex(pose, x0, y0, z).color(col1 >> 16 & 255, col1 >> 8 & 255, col1 & 255, col1 >> 24 & 255).next();
+				vertexConsumer.vertex(pose, x0 + gradientWidth, y0 + gradientWidth, z).color(col2 >> 16 & 255, col2 >> 8 & 255, col2 & 255, col2 >> 24 & 255).next();
+				vertexConsumer.vertex(pose, x1 - gradientWidth, y0 + gradientWidth, z).color(col2 >> 16 & 255, col2 >> 8 & 255, col2 & 255, col2 >> 24 & 255).next();
+				vertexConsumer.vertex(pose, x1, y0, z).color(col1 >> 16 & 255, col1 >> 8 & 255, col1 & 255, col1 >> 24 & 255).next();
 				//left
-				vertexConsumer.vertex(pose, x0, y1, z).color(col1).next();
-				vertexConsumer.vertex(pose, x0 + gradientWidth, y1 - gradientWidth, z).color(col2).next();
-				vertexConsumer.vertex(pose, x0 + gradientWidth, y0 + gradientWidth, z).color(col2).next();
-				vertexConsumer.vertex(pose, x0, y0, z).color(col1).next();
+				vertexConsumer.vertex(pose, x0, y1, z).color(col1 >> 16 & 255, col1 >> 8 & 255, col1 & 255, col1 >> 24 & 255).next();
+				vertexConsumer.vertex(pose, x0 + gradientWidth, y1 - gradientWidth, z).color(col2 >> 16 & 255, col2 >> 8 & 255, col2 & 255, col2 >> 24 & 255).next();
+				vertexConsumer.vertex(pose, x0 + gradientWidth, y0 + gradientWidth, z).color(col2 >> 16 & 255, col2 >> 8 & 255, col2 & 255, col2 >> 24 & 255).next();
+				vertexConsumer.vertex(pose, x0, y0, z).color(col1 >> 16 & 255, col1 >> 8 & 255, col1 & 255, col1 >> 24 & 255).next();
 				//bottom
-				vertexConsumer.vertex(pose, x1, y1, z).color(col1).next();
-				vertexConsumer.vertex(pose, x1 - gradientWidth, y1 - gradientWidth, z).color(col2).next();
-				vertexConsumer.vertex(pose, x0 + gradientWidth, y1 - gradientWidth, z).color(col2).next();
-				vertexConsumer.vertex(pose, x0, y1, z).color(col1).next();
+				vertexConsumer.vertex(pose, x1, y1, z).color(col1 >> 16 & 255, col1 >> 8 & 255, col1 & 255, col1 >> 24 & 255).next();
+				vertexConsumer.vertex(pose, x1 - gradientWidth, y1 - gradientWidth, z).color(col2 >> 16 & 255, col2 >> 8 & 255, col2 & 255, col2 >> 24 & 255).next();
+				vertexConsumer.vertex(pose, x0 + gradientWidth, y1 - gradientWidth, z).color(col2 >> 16 & 255, col2 >> 8 & 255, col2 & 255, col2 >> 24 & 255).next();
+				vertexConsumer.vertex(pose, x0, y1, z).color(col1 >> 16 & 255, col1 >> 8 & 255, col1 & 255, col1 >> 24 & 255).next();
 				//right
-				vertexConsumer.vertex(pose, x1, y0, z).color(col1).next();
-				vertexConsumer.vertex(pose, x1 - gradientWidth, y0 + gradientWidth, z).color(col2).next();
-				vertexConsumer.vertex(pose, x1 - gradientWidth, y1 - gradientWidth, z).color(col2).next();
-				vertexConsumer.vertex(pose, x1, y1, z).color(col1).next();
+				vertexConsumer.vertex(pose, x1, y0, z).color(col1 >> 16 & 255, col1 >> 8 & 255, col1 & 255, col1 >> 24 & 255).next();
+				vertexConsumer.vertex(pose, x1 - gradientWidth, y0 + gradientWidth, z).color(col2 >> 16 & 255, col2 >> 8 & 255, col2 & 255, col2 >> 24 & 255).next();
+				vertexConsumer.vertex(pose, x1 - gradientWidth, y1 - gradientWidth, z).color(col2 >> 16 & 255, col2 >> 8 & 255, col2 & 255, col2 >> 24 & 255).next();
+				vertexConsumer.vertex(pose, x1, y1, z).color(col1 >> 16 & 255, col1 >> 8 & 255, col1 & 255, col1 >> 24 & 255).next();
+				tessellator.draw();
+				RenderSystem.shadeModel(7424);
+				RenderSystem.disableBlend();
+				RenderSystem.enableAlphaTest();
+				RenderSystem.enableTexture();
 			}
 		}
 	}

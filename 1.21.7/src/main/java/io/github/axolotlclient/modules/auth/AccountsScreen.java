@@ -130,10 +130,7 @@ public class AccountsScreen extends Screen {
 		refreshButton.active = false;
 		AccountsListWidget.Entry entry = accountsListWidget.getSelected();
 		if (entry != null) {
-			entry.getAccount().refresh(Auth.getInstance().getMsApi()).thenRun(() -> minecraft.execute(() -> {
-				Auth.getInstance().save();
-				refresh();
-			}));
+			entry.getAccount().refresh(Auth.getInstance().getMsApi());
 		}
 	}
 

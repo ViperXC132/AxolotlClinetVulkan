@@ -78,6 +78,7 @@ public class SkinManagementScreen extends Screen {
 	private boolean capesTab;
 	private SkinWidget current;
 	private final Watcher skinDirWatcher;
+	private boolean triedAccountRefresh;
 
 	public SkinManagementScreen(Screen parent, Account account) {
 		super(Text.translatable("skins.manage"));
@@ -91,14 +92,19 @@ public class SkinManagementScreen extends Screen {
 		int headerHeight = 33;
 		int contentHeight = height - headerHeight * 2;
 
-		addDrawableSelectableElement(new TextWidget(0, headerHeight / 2 - textRenderer.fontHeight/2, width, textRenderer.fontHeight, getTitle(), textRenderer));
-		var back = addDrawableSelectableElement(ButtonWidget.builder(CommonTexts.BACK, btn -> closeScreen())
-			.positionAndSize(width / 2 - 75, height - headerHeight / 2 - 10, 150, 20).build());
+		var titleWidget = new TextWidget(0, headerHeight / 2 - textRenderer.fontHeight/2, width, textRenderer.fontHeight, getTitle(), textRenderer);
+		if (!triedAccountRefresh) {
+			addDrawableSelectableElement(titleWidget);
+		}
+		var back = ButtonWidget.builder(CommonTexts.BACK, btn -> closeScreen())
+			.positionAndSize(width / 2 - 75, height - headerHeight / 2 - 10, 150, 20).build();
 
 		var loadingPlaceholder = new LoadingTextWidget(textRenderer, Text.translatable("skins.loading"));
 		loadingPlaceholder.setDimensionsAndPosition(width, contentHeight, 0, headerHeight);
-		addDrawableSelectableElement(loadingPlaceholder);
-		addDrawableSelectableElement(back);
+		if (!triedAccountRefresh) {
+			addDrawableSelectableElement(loadingPlaceholder);
+			addDrawableSelectableElement(back);
+		}
 		skinList = new SkinListWidget(client, width / 2, contentHeight - 24, headerHeight + 24, LIST_SKIN_HEIGHT + 34);
 		capesList = new SkinListWidget(client, width / 2, contentHeight - 24, headerHeight + 24, skinList.getEntryContentsHeight() + 24);
 		skinList.setX(width / 2);
@@ -137,8 +143,8 @@ public class SkinManagementScreen extends Screen {
 		skinsTab.active = this.capesTab;
 		capesTab.active = !this.capesTab;
 		Runnable addWidgets = () -> {
-			remove(back);
-			remove(loadingPlaceholder);
+			clearChildren();
+			addDrawableSelectableElement(titleWidget);
 			addDrawableSelectableElement(current);
 			addDrawableSelectableElement(skinsTab);
 			addDrawableSelectableElement(capesTab);
@@ -153,7 +159,14 @@ public class SkinManagementScreen extends Screen {
 		}
 		CompletableFuture<?> fut;
 		if (account.needsRefresh()) {
-			fut = account.refresh(Auth.getInstance().getMsApi());
+			if (triedAccountRefresh) {
+				fut = CompletableFuture.failedFuture(new Throwable(null, null, false, false) {
+				});
+			} else {
+				triedAccountRefresh = true;
+				account.refresh(Auth.getInstance().getMsApi());
+				return;
+			}
 		} else {
 			fut = CompletableFuture.completedFuture(null);
 		}
@@ -163,12 +176,16 @@ public class SkinManagementScreen extends Screen {
 				initDisplay();
 				addWidgets.run();
 			}).exceptionally(t -> {
-				AxolotlClientCommon.getInstance().getLogger().error("Failed to load skins!", t);
+				if (!triedAccountRefresh) {
+					AxolotlClientCommon.getInstance().getLogger().error("Failed to load skins!", t);
+				}
 				var error = Text.translatable("skins.error.failed_to_load");
-				var errorDesc = Text.translatable("skins.error.failed_to_load_desc");
-				remove(loadingPlaceholder);
+				var errorDesc = Text.translatable(triedAccountRefresh ? "skins.error.failed_to_load_not_refreshed" : "skins.error.failed_to_load_desc");
+				clearChildren();
+				addDrawableSelectableElement(titleWidget);
 				addDrawableSelectableElement(new TextWidget(width / 2 - textRenderer.getWidth(error) / 2, height / 2 - textRenderer.fontHeight - 2, textRenderer.getWidth(error), textRenderer.fontHeight, error, textRenderer));
 				addDrawableSelectableElement(new TextWidget(width / 2 - textRenderer.getWidth(errorDesc) / 2, height / 2 + 1, textRenderer.getWidth(errorDesc), textRenderer.fontHeight, errorDesc, textRenderer));
+				addDrawableSelectableElement(back);
 				return null;
 			});
 	}
@@ -469,9 +486,9 @@ public class SkinManagementScreen extends Screen {
 									}
 								}
 								btn.active = true;
-							}, Text.translatable("skins.manage.delete.confirm"), asset.active() ?
+							}, Text.translatable("skins.manage.delete.confirm"), (asset.active() ?
 								Text.translatable("skins.manage.delete.confirm.desc_active") :
-								Text.translatable("skins.manage.delete.confirm.desc")
+								Text.translatable("skins.manage.delete.confirm.desc"))
 								.setColor(Colors.RED.toInt())));
 						}, true).sprite(Identifier.of("axolotlclient", "delete"), 7, 7).dimensions(11, 11)
 						.build();

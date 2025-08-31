@@ -23,6 +23,7 @@
 package io.github.axolotlclient.modules.auth;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.yggdrasil.ProfileResult;
@@ -93,11 +94,11 @@ public class Auth extends Accounts implements Module {
 			if (account.isExpired()) {
 				Notifications.getInstance().addStatus(Text.translatable("auth.notif.title"), Text.translatable("auth.notif.refreshing", account.getName()));
 			}
-			account.refresh(msApi).thenAccept(res -> res.ifPresent(a -> {
+			account.refresh(msApi).thenAccept(a -> {
 				if (!a.isExpired()) {
 					login(a);
 				}
-			})).thenRun(this::save);
+			}).thenRun(this::save);
 		} else {
 			try {
 				API.getInstance().shutdown();
@@ -126,14 +127,18 @@ public class Auth extends Accounts implements Module {
 	}
 
 	@Override
-	void showAccountsExpiredScreen(Account account) {
+	CompletableFuture<Account> showAccountsExpiredScreen(Account account) {
 		Screen current = client.currentScreen;
+		var fut = new CompletableFuture<Account>();
 		client.execute(() -> client.setScreen(new ConfirmScreen((bl) -> {
-			client.setScreen(current);
 			if (bl) {
-				msApi.startDeviceAuth();
+				msApi.startDeviceAuth().thenRun(() -> fut.complete(account));
+			} else {
+				fut.cancel(true);
 			}
+			client.setScreen(current);
 		}, Text.translatable("auth"), Text.translatable("auth.accountExpiredNotice", account.getName()))));
+		return fut;
 	}
 
 	@Override

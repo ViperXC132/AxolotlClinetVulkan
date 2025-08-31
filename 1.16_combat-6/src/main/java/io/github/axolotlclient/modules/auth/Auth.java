@@ -23,6 +23,7 @@
 package io.github.axolotlclient.modules.auth;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
@@ -33,13 +34,13 @@ import io.github.axolotlclient.api.types.User;
 import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
 import io.github.axolotlclient.modules.Module;
+import io.github.axolotlclient.modules.auth.skin.SkinManager;
 import io.github.axolotlclient.util.ThreadExecuter;
 import io.github.axolotlclient.util.notifications.Notifications;
 import io.github.axolotlclient.util.options.GenericOption;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConfirmScreen;
-import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.Session;
 import net.minecraft.text.TranslatableText;
@@ -50,12 +51,15 @@ public class Auth extends Accounts implements Module {
 	@Getter
 	private final static Auth Instance = new Auth();
 	public final BooleanOption showButton = new BooleanOption("auth.showButton", false);
+	public final BooleanOption skinManagerAnimations = new BooleanOption("skins.manage.animations", true);
 	private final MinecraftClient client = MinecraftClient.getInstance();
 	private final GenericOption viewAccounts = new GenericOption("viewAccounts", "clickToOpen", () -> client.openScreen(new AccountsScreen(client.currentScreen)));
 
 	private final Map<String, Identifier> textures = new HashMap<>();
 	private final Set<String> loadingTexture = new HashSet<>();
 	private final Map<String, GameProfile> profileCache = new WeakHashMap<>();
+	@Getter
+	private final SkinManager skinManager = new SkinManager();
 
 	@Override
 	public void init() {
@@ -86,12 +90,10 @@ public class Auth extends Accounts implements Module {
 			if (account.isExpired()) {
 				Notifications.getInstance().addStatus(new TranslatableText("auth.notif.title"), new TranslatableText("auth.notif.refreshing", account.getName()));
 			}
-			account.refresh(msApi).thenAccept(res -> {
-				res.ifPresent(a -> {
-					if (!a.isExpired()) {
-						login(a);
-					}
-				});
+			account.refresh(msApi).thenAccept(a -> {
+				if (!a.isExpired()) {
+					login(a);
+				}
 			}).thenRun(this::save);
 		} else {
 			try {
@@ -136,14 +138,18 @@ public class Auth extends Accounts implements Module {
 	}
 
 	@Override
-	void showAccountsExpiredScreen(Account account) {
-		Screen current = client.currentScreen;
+	CompletableFuture<Account> showAccountsExpiredScreen(Account account) {
+		var screen = client.currentScreen;
+		var fut = new CompletableFuture<Account>();
 		client.execute(() -> client.openScreen(new ConfirmScreen((bl) -> {
-			client.openScreen(current);
 			if (bl) {
-				msApi.startDeviceAuth();
+				msApi.startDeviceAuth().thenRun(() -> fut.complete(account));
+			} else {
+				fut.cancel(true);
 			}
+			client.openScreen(screen);
 		}, new TranslatableText("auth"), new TranslatableText("auth.accountExpiredNotice", account.getName()))));
+		return fut;
 	}
 
 	@Override

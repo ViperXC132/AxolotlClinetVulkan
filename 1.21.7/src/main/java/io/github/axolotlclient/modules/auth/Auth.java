@@ -94,11 +94,11 @@ public class Auth extends Accounts implements Module {
 			if (account.isExpired()) {
 				Notifications.getInstance().addStatus(Component.translatable("auth.notif.title"), Component.translatable("auth.notif.refreshing", account.getName()));
 			}
-			account.refresh(msApi).thenAccept(res -> res.ifPresent(a -> {
+			account.refresh(msApi).thenAccept(a -> {
 				if (!a.isExpired()) {
 					login(a);
 				}
-			})).thenRun(this::save);
+			}).thenRun(this::save);
 		} else {
 			try {
 				API.getInstance().shutdown();
@@ -131,14 +131,18 @@ public class Auth extends Accounts implements Module {
 	}
 
 	@Override
-	void showAccountsExpiredScreen(Account account) {
+	CompletableFuture<Account> showAccountsExpiredScreen(Account account) {
 		Screen current = mc.screen;
+		var fut = new CompletableFuture<Account>();
 		mc.execute(() -> mc.setScreen(new ConfirmScreen((bl) -> {
-			mc.setScreen(current);
 			if (bl) {
-				msApi.startDeviceAuth();
+				msApi.startDeviceAuth().thenRun(() -> fut.complete(account));
+			} else {
+				fut.cancel(true);
 			}
+			mc.setScreen(current);
 		}, Component.translatable("auth"), Component.translatable("auth.accountExpiredNotice", account.getName()))));
+		return fut;
 	}
 
 	@Override

@@ -27,6 +27,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -120,7 +121,7 @@ public abstract class Accounts {
 		return !accounts.isEmpty() && !accounts.stream().allMatch(Account::isOffline);
 	}
 
-	abstract void showAccountsExpiredScreen(Account account);
+	abstract CompletableFuture<Account> showAccountsExpiredScreen(Account account);
 
 	abstract void displayDeviceCode(DeviceFlowData data);
 }

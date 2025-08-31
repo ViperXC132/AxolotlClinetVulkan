@@ -817,6 +817,7 @@
 	"skins.nav.capes": "Capes",
 	"skins.error.failed_to_load": "Failed to load skins",
 	"skins.error.failed_to_load_desc": "Your log file may include more information.",
+	"skins.error.failed_to_load_not_refreshed": "Could not refresh the selected account.",
 	"skins.capes.no_cape": "No Cape",
 	"skins.manage.equipped": "Equipped",
 	"skins.manage.equip": "Equip",
