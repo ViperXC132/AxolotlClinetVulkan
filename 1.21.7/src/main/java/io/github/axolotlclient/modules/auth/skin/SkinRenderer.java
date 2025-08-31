@@ -71,10 +71,10 @@ public class SkinRenderer extends PictureInPictureRenderer<SkinRenderState> {
 
 	@Override
 	protected void renderToTexture(SkinRenderState renderState, PoseStack poseStack) {
-		if (classicModel == null) {
+		if (classicModel == null && renderState.classicVariant()) {
 			classicModel = new PlayerModel(minecraft.getEntityModels().bakeLayer(ModelLayers.PLAYER), false);
 		}
-		if (slimModel == null) {
+		if (slimModel == null && !renderState.classicVariant()) {
 			slimModel = new PlayerModel(minecraft.getEntityModels().bakeLayer(ModelLayers.PLAYER_SLIM), true);
 		}
 		Minecraft.getInstance().gameRenderer.getLighting().setupFor(Lighting.Entry.PLAYER_SKIN);

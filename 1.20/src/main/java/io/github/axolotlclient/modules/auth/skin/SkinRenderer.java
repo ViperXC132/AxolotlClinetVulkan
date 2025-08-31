@@ -25,6 +25,7 @@ package io.github.axolotlclient.modules.auth.skin;
 import com.mojang.blaze3d.lighting.DiffuseLighting;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
@@ -41,16 +42,16 @@ public class SkinRenderer {
 	}
 
 	public static void render(GuiGraphics graphics, boolean classicVariant,
-							  Identifier skinTexture,
-							  @Nullable Identifier cape,
-							  float rotationX,
-							  float rotationY,
-							  float pivotY,
-							  int x0,
-							  int y0,
-							  int x1,
-							  int y1,
-							  float scale) {
+					   Identifier skinTexture,
+					   @Nullable Identifier cape,
+					   float rotationX,
+					   float rotationY,
+					   float pivotY,
+					   int x0,
+					   int y0,
+					   int x1,
+					   int y1,
+					   float scale) {
 		if (classicModel == null && classicVariant) {
 			classicModel = new PlayerEntityModel<>(minecraft.getEntityModelLoader().getModelPart(EntityModelLayers.PLAYER), false);
 			classicModel.child = false;
@@ -61,29 +62,29 @@ public class SkinRenderer {
 		}
 
 		int width = x1 - x0;
+		DiffuseLighting.setupInventoryEntityLighting();
 		graphics.getMatrices().push();
 		graphics.getMatrices().translate(x0 + width / 2.0F, (float) (y1), 100.0F);
 		graphics.getMatrices().scale(scale, scale, scale);
 		graphics.getMatrices().translate(0.0F, -0.0625F, 0.0F);
 		graphics.getMatrices().rotateAround(Axis.X_POSITIVE.rotationDegrees(rotationX), 0.0F, pivotY, 0.0F);
-		graphics.getMatrices().rotate(Axis.Y_POSITIVE.rotationDegrees(rotationY));
+		graphics.getMatrices().multiply(Axis.Y_POSITIVE.rotationDegrees(rotationY));
 		graphics.draw();
-		DiffuseLighting.setupInventoryShaderLighting(Axis.X_POSITIVE.rotationDegrees(rotationX));
 		graphics.getMatrices().push();
 		graphics.getMatrices().scale(1.0F, 1.0F, -1.0F);
 		graphics.getMatrices().translate(0.0F, -1.5F, 0.0F);
 		var model = classicVariant ? classicModel : slimModel;
 		RenderLayer renderLayer = model.getLayer(skinTexture);
-		model.method_60879(graphics.getMatrices(), graphics.getVertexConsumers().getBuffer(renderLayer), 15728880, OverlayTexture.DEFAULT_UV);
+		model.render(graphics.getMatrices(), graphics.getVertexConsumers().getBuffer(renderLayer), LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
 		if (cape != null) {
 			graphics.getMatrices().translate(0.0F, 0.0F, 0.125F);
-			graphics.getMatrices().rotate(Axis.X_POSITIVE.rotationDegrees(6.0F));
-			graphics.getMatrices().rotate(Axis.Y_POSITIVE.rotationDegrees(180.0F));
-			model.renderCape(graphics.getMatrices(), graphics.getVertexConsumers().getBuffer(RenderLayer.getEntitySolid(cape)), 15728880, OverlayTexture.DEFAULT_UV);
+			graphics.getMatrices().multiply(Axis.X_POSITIVE.rotationDegrees(6.0F));
+			graphics.getMatrices().multiply(Axis.Y_POSITIVE.rotationDegrees(180.0F));
+			model.renderCape(graphics.getMatrices(), graphics.getVertexConsumers().getBuffer(RenderLayer.getEntitySolid(cape)), LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
 		}
 		graphics.getMatrices().pop();
 		graphics.draw();
-		DiffuseLighting.setup3DGuiLighting();
 		graphics.getMatrices().pop();
+		DiffuseLighting.setup3DGuiLighting();
 	}
 }

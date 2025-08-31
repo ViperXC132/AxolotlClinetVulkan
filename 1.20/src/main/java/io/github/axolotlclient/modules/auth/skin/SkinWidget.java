@@ -38,7 +38,6 @@ import net.minecraft.client.gui.navigation.GuiNavigationEvent;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.sound.SoundManager;
-import net.minecraft.client.texture.PlayerSkin;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.text.CommonTexts;
 import net.minecraft.util.Identifier;
@@ -95,13 +94,13 @@ public class SkinWidget extends ClickableWidget {
 			skinRl = loader.join();
 			classic = skin.isClassicVariant();
 		} else {
-			var skin = DefaultSkinHelper.getSkin(UUIDHelper.fromUndashed(owner.getUuid()));
-			classic = skin.model() == PlayerSkin.Model.WIDE;
-			skinRl = skin.texture();
+			var uuid = UUIDHelper.fromUndashed(owner.getUuid());
+			classic = DefaultSkinHelper.getModel(uuid).equals("default");
+			skinRl = DefaultSkinHelper.getTexture(uuid);
 		}
 		var capeRl = cape == null ? null : skinManager.loadCape(cape);
 
-		SkinRenderer.render(guiGraphics, classic, (Identifier) skinRl, (Identifier) capeRl, this.rotationX, this.rotationY, pivotY, this.getX(), this.getY(), this.getXEnd(), this.getYEnd(), scale);
+		SkinRenderer.render(guiGraphics, classic, (Identifier) skinRl, (Identifier) capeRl, this.rotationX, this.rotationY, pivotY, this.getX(), this.getY(), this.getX() + getWidth(), this.getY() + getHeight(), scale);
 	}
 
 	@Override
