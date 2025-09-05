@@ -62,7 +62,6 @@ public class HotbarHUD extends TextHudEntry {
 			? (PlayerEntity) MinecraftClient.getInstance().cameraEntity
 			: null;
 		if (playerEntity != null) {
-			//scale(matrices);
 			DrawPosition pos = getPos();
 
 			RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -72,7 +71,6 @@ public class HotbarHUD extends TextHudEntry {
 			Arm arm = playerEntity.getMainArm().getOpposite();
 
 			matrices.br$pushMatrix();
-			matrices.br$translateMatrix(0, -90, 0);
 			drawTexture(matrices, pos.x, pos.y, 0, 0, 182, 22, 256, 256);
 			drawTexture(matrices, pos.x - 1 + playerEntity.inventory.selectedSlot * 20, pos.y - 1, 0, 22, 24,
 				22, 256, 256);

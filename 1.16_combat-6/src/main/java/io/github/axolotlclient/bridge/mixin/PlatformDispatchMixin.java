@@ -124,7 +124,7 @@ public class PlatformDispatchMixin {
 		final var minecraft = MinecraftClient.getInstance();
 		final var serverEntry = minecraft.getCurrentServerEntry();
 
-		final var img = NativeImage.read(Objects.requireNonNull(serverEntry == null ? minecraft.getServer().getServerMetadata().getFavicon() : serverEntry.getIcon()));
+		final var img = NativeImage.read(Objects.requireNonNull(serverEntry == null ? minecraft.getServer().getServerMetadata().getFavicon().substring("data:image/png;base64,".length()) : serverEntry.getIcon()));
 		final var icon = new NativeImageBackedTexture(img);
 		final var iconId = new Identifier("axolotlclient",
 			serverEntry == null ? "worlds/" + Hashing.sha1().hashUnencodedChars(((MinecraftServerAccessor) minecraft.getServer()).getStorageSource().getDirectoryName()) + "/icon" :
