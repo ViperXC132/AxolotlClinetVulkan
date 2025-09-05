@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -71,13 +72,18 @@ public class SkinManagementScreen extends Screen {
 	private boolean capesTab;
 	private SkinWidget current;
 	private final Watcher skinDirWatcher;
-	private boolean triedAccountRefresh;
+	private final CompletableFuture<?> refreshFuture;
 
 	public SkinManagementScreen(Screen parent, Account account) {
 		super(Text.translatable("skins.manage"));
 		this.parent = parent;
 		this.account = account;
 		skinDirWatcher = Watcher.createSelfTicking(SKINS_DIR, this::loadSkinsList);
+		if (account.needsRefresh()) {
+			refreshFuture = account.refresh(Auth.getInstance().getMsApi());
+		} else {
+			refreshFuture = CompletableFuture.completedFuture(null);
+		}
 	}
 
 	@Override
@@ -86,9 +92,8 @@ public class SkinManagementScreen extends Screen {
 		int contentHeight = height - headerHeight * 2;
 
 		var titleWidget = new TextWidget(0, headerHeight / 2 - textRenderer.fontHeight / 2, width, textRenderer.fontHeight, getTitle(), textRenderer);
-		if (!triedAccountRefresh) {
-			addDrawableChild(titleWidget);
-		}
+		addDrawableChild(titleWidget);
+
 		var back = addDrawableChild(ButtonWidget.builder(CommonTexts.BACK, btn -> closeScreen())
 			.positionAndSize(width / 2 - 75, height - headerHeight / 2 - 10, 150, 20).build());
 
@@ -109,10 +114,9 @@ public class SkinManagementScreen extends Screen {
 			}
 		};
 		loadingPlaceholder.active = false;
-		if (!triedAccountRefresh) {
-			addDrawableChild(loadingPlaceholder);
-			addDrawableChild(back);
-		}
+		addDrawableChild(loadingPlaceholder);
+		addDrawableChild(back);
+
 		skinList = new SkinListWidget(client, width / 2, contentHeight - 24, headerHeight + 24, LIST_SKIN_HEIGHT + 34);
 		capesList = new SkinListWidget(client, width / 2, contentHeight - 24, headerHeight + 24, skinList.getEntryContentsHeight() + 24);
 		skinList.setLeftPos(width / 2);
@@ -165,30 +169,18 @@ public class SkinManagementScreen extends Screen {
 			addWidgets.run();
 			return;
 		}
-		CompletableFuture<?> fut;
-		if (account.needsRefresh()) {
-			if (triedAccountRefresh) {
-				fut = CompletableFuture.failedFuture(new Throwable(null, null, false, false) {
-				});
-			} else {
-				triedAccountRefresh = true;
-				account.refresh(Auth.getInstance().getMsApi());
-				return;
-			}
-		} else {
-			fut = CompletableFuture.completedFuture(null);
-		}
-		fut.thenComposeAsync(unused -> Auth.getInstance().getMsApi().getProfile(account))
+		refreshFuture.thenComposeAsync(unused -> Auth.getInstance().getMsApi().getProfile(account))
 			.thenAcceptAsync(profile -> {
 				cachedProfile = profile;
 				initDisplay();
 				addWidgets.run();
 			}).exceptionally(t -> {
-				if (!triedAccountRefresh) {
-					AxolotlClientCommon.getInstance().getLogger().error("Failed to load skins!", t);
+				if (t.getCause() instanceof CancellationException) {
+					client.setScreen(parent);
+					return null;
 				}
 				var error = Text.translatable("skins.error.failed_to_load");
-				var errorDesc = Text.translatable(triedAccountRefresh ? "skins.error.failed_to_load_not_refreshed" : "skins.error.failed_to_load_desc");
+				var errorDesc = Text.translatable("skins.error.failed_to_load_desc");
 				clearChildren();
 				addDrawableChild(titleWidget);
 				addDrawableChild(new TextWidget(width / 2 - textRenderer.getWidth(error) / 2, height / 2 - textRenderer.fontHeight - 2, textRenderer.getWidth(error), textRenderer.fontHeight, error, textRenderer));
@@ -588,6 +580,7 @@ public class SkinManagementScreen extends Screen {
 						refreshCurrentList();
 					}).exceptionally(t -> {
 						AxolotlClientCommon.getInstance().getLogger().warn("Failed to equip asset!", t);
+						equipping = false;
 						return null;
 					});
 				}).width(widget.getWidth()).build();

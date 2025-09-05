@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.modules.auth.skin;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -69,19 +71,29 @@ public class SkinRenderer {
 		graphics.scale(1.0F, 1.0F, -1.0F);
 		graphics.translate(0.0F, -1.5F, 0.0F);
 		var model = classicVariant ? classicModel : slimModel;
-		RenderLayer renderLayer = model.getLayer(skinTexture);
 		var tessellator = Tessellator.getInstance();
-		var buf = VertexConsumerProvider.immediate(tessellator.getBuffer());
-		model.render(graphics, buf.getBuffer(renderLayer), 15728880, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
+		RenderSystem.enableDepthTest();
+		RenderSystem.enableCull();
+		RenderSystem.enableBlend();
 		if (cape != null) {
+			graphics.push();
+			MinecraftClient.getInstance().getTextureManager().bindTexture(cape);
 			graphics.translate(0.0F, 0.0F, 0.125F);
 			graphics.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(6.0F));
 			graphics.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
-			model.renderCape(graphics, buf.getBuffer(RenderLayer.getEntitySolid(cape)), 15728880, OverlayTexture.DEFAULT_UV);
+			model.renderCape(graphics, VertexConsumerProvider.immediate(tessellator.getBuffer()).getBuffer(RenderLayer.getEntitySolid(cape)), 15728880, OverlayTexture.DEFAULT_UV);
+			tessellator.draw();
+			graphics.pop();
 		}
-		graphics.pop();
+		MinecraftClient.getInstance().getTextureManager().bindTexture(skinTexture);
+		model.render(graphics, VertexConsumerProvider.immediate(tessellator.getBuffer()).getBuffer(model.getLayer(skinTexture)), 15728880, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
 		tessellator.draw();
 		graphics.pop();
+
+		graphics.pop();
+		RenderSystem.disableBlend();
+		RenderSystem.disableDepthTest();
+		RenderSystem.disableCull();
 		DiffuseLighting.enableGuiDepthLighting();
 	}
 }

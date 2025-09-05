@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -78,13 +79,18 @@ public class SkinManagementScreen extends Screen {
 	private boolean capesTab;
 	private SkinWidget current;
 	private final Watcher skinDirWatcher;
-	private boolean triedAccountRefresh;
+	private final CompletableFuture<?> refreshFuture;
 
 	public SkinManagementScreen(Screen parent, Account account) {
 		super(Component.translatable("skins.manage"));
 		this.parent = parent;
 		this.account = account;
 		skinDirWatcher = Watcher.createSelfTicking(SKINS_DIR, this::loadSkinsList);
+		if (account.needsRefresh()) {
+			refreshFuture = account.refresh(Auth.getInstance().getMsApi());
+		} else {
+			refreshFuture = CompletableFuture.completedFuture(null);
+		}
 	}
 
 	@Override
@@ -93,19 +99,17 @@ public class SkinManagementScreen extends Screen {
 		int contentHeight = height - headerHeight * 2;
 
 		StringWidget titleWidget = new StringWidget(0, headerHeight / 2 - font.lineHeight / 2, width, font.lineHeight, getTitle(), getFont());
-		if (!triedAccountRefresh) {
-			addRenderableWidget(titleWidget);
-		}
+		addRenderableWidget(titleWidget);
+
 		var back = Button.builder(CommonComponents.GUI_BACK, btn -> onClose())
 			.bounds(width / 2 - 75, height - headerHeight / 2 - 10, 150, 20).build();
 
 		var loadingPlaceholder = new LoadingDotsWidget(getFont(), Component.translatable("skins.loading"));
 		loadingPlaceholder.setRectangle(width, contentHeight, 0,
 			headerHeight);
-		if (!triedAccountRefresh) {
-			addRenderableWidget(loadingPlaceholder);
-			addRenderableWidget(back);
-		}
+		addRenderableWidget(loadingPlaceholder);
+		addRenderableWidget(back);
+
 		skinList = new SkinListWidget(minecraft, width / 2, contentHeight - 24, headerHeight + 24, LIST_SKIN_HEIGHT + 34);
 		capesList = new SkinListWidget(minecraft, width / 2, contentHeight - 24, headerHeight + 24, skinList.getEntryContentsHeight() + 24);
 		skinList.setX(width / 2);
@@ -158,30 +162,20 @@ public class SkinManagementScreen extends Screen {
 			addWidgets.run();
 			return;
 		}
-		CompletableFuture<?> fut;
-		if (account.needsRefresh()) {
-			if (triedAccountRefresh) {
-				fut = CompletableFuture.failedFuture(new Throwable(null, null, false, false) {
-				});
-			} else {
-				triedAccountRefresh = true;
-				account.refresh(Auth.getInstance().getMsApi());
-				return;
-			}
-		} else {
-			fut = CompletableFuture.completedFuture(null);
-		}
-		fut.thenComposeAsync(unused -> Auth.getInstance().getMsApi().getProfile(account))
+
+		refreshFuture.thenComposeAsync(unused -> Auth.getInstance().getMsApi().getProfile(account))
 			.thenAcceptAsync(profile -> {
 				cachedProfile = profile;
 				initDisplay();
 				addWidgets.run();
 			}).exceptionally(t -> {
-				if (!triedAccountRefresh) {
-					AxolotlClientCommon.getInstance().getLogger().error("Failed to load skins!", t);
+				if (t.getCause() instanceof CancellationException) {
+					minecraft.setScreen(parent);
+					return null;
 				}
+				AxolotlClientCommon.getInstance().getLogger().error("Failed to load skins!", t);
 				var error = Component.translatable("skins.error.failed_to_load");
-				var errorDesc = Component.translatable(triedAccountRefresh ? "skins.error.failed_to_load_not_refreshed" : "skins.error.failed_to_load_desc");
+				var errorDesc = Component.translatable("skins.error.failed_to_load_desc");
 				clearWidgets();
 				addRenderableWidget(titleWidget);
 				addRenderableWidget(new StringWidget(width / 2 - getFont().width(error) / 2, height / 2 - getFont().lineHeight - 2, getFont().width(error), getFont().lineHeight, error, getFont()));
@@ -529,6 +523,7 @@ public class SkinManagementScreen extends Screen {
 						refreshCurrentList();
 					}).exceptionally(t -> {
 						AxolotlClientCommon.getInstance().getLogger().warn("Failed to equip asset!", t);
+						equipping = false;
 						return null;
 					});
 				}).width(widget.getWidth()).build();
