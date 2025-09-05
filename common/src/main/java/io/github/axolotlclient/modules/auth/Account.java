@@ -24,7 +24,6 @@ package io.github.axolotlclient.modules.auth;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import com.google.gson.JsonObject;

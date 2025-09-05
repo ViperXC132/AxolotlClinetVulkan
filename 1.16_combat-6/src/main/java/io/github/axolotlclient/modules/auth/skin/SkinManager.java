@@ -50,6 +50,7 @@ public class SkinManager {
 
 	private final Set<AxoIdentifier> loadedTextures = new ConcurrentSkipListSet<>(Comparator.comparing(Object::toString));
 
+	@SuppressWarnings("UnstableApiUsage")
 	public Skin read(Path p) {
 		boolean slim;
 		String sha256;
@@ -125,6 +126,7 @@ public class SkinManager {
 		loadedTextures.clear();
 	}
 
+	@SuppressWarnings("UnstableApiUsage")
 	public String getDefaultSkinHash(Account account) {
 		var skin = DefaultSkinHelper.getTexture(UUIDHelper.fromUndashed(account.getUuid()));
 		var mc = MinecraftClient.getInstance();

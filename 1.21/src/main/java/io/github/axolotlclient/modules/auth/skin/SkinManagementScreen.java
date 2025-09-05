@@ -171,6 +171,7 @@ public class SkinManagementScreen extends Screen {
 					client.setScreen(parent);
 					return null;
 				}
+				AxolotlClientCommon.getInstance().getLogger().error("Failed to load skins!", t);
 				var error = Text.translatable("skins.error.failed_to_load");
 				var errorDesc = Text.translatable("skins.error.failed_to_load_desc");
 				clearChildren();

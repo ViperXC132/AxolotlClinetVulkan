@@ -185,6 +185,7 @@ public class SkinManagementScreen extends Screen {
 					client.openScreen(parent);
 					return null;
 				}
+				AxolotlClientCommon.getInstance().getLogger().error("Failed to load skins!", t);
 				var error = new TranslatableText("skins.error.failed_to_load");
 				var errorDesc = new TranslatableText("skins.error.failed_to_load_desc");
 				clear();
@@ -193,11 +194,12 @@ public class SkinManagementScreen extends Screen {
 
 					public TextWidget(int x, int y, int width, int height, Text message, TextRenderer textRenderer) {
 						super(x, y, width, height, message);
+						active = false;
 					}
 
 					@Override
 					public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-						textRenderer.draw(matrices, getMessage(), x, y, -1);
+						drawCenteredText(matrices, textRenderer, getMessage(), x+getWidth()/2, y+getHeight()/2-textRenderer.fontHeight/2, -1);
 					}
 				}
 				addDrawableChild(new TextWidget(width / 2 - textRenderer.getWidth(error) / 2, height / 2 - textRenderer.fontHeight - 2, textRenderer.getWidth(error), textRenderer.fontHeight, error, textRenderer));
@@ -630,14 +632,6 @@ public class SkinManagementScreen extends Screen {
 
 		@Override
 		public void setFocused(@Nullable Element child) {
-			/*if (this.focused != null) {
-				this.focused.setFocused(false);
-			}
-
-			if (child != null) {
-				child.setFocused(true);
-			}*/
-
 			this.focused = child;
 		}
 
@@ -727,16 +721,6 @@ public class SkinManagementScreen extends Screen {
 				guiGraphics.br$outlineRect(this.x, this.y, getWidth(), getHeight(), -1);
 			}
 		}
-
-		/*@Override
-		protected void updateNarration(NarrationMessageBuilder narrationElementOutput) {
-			skinWidget.appendNarrations(narrationElementOutput);
-			actionButtons.forEach(w -> w.appendNarrations(narrationElementOutput));
-			if (label != null) {
-				label.appendNarrations(narrationElementOutput);
-			}
-			equipButton.appendNarrations(narrationElementOutput);
-		}*/
 
 		private static class GradientHoleRectangleRenderState {
 

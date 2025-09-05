@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.modules.auth.skin;
 
+import javax.imageio.ImageIO;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -32,7 +34,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import com.google.common.hash.Hashing;
-import com.mojang.blaze3d.platform.NativeImage;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
@@ -40,22 +41,24 @@ import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.util.ClientColors;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.client.resources.DefaultPlayerSkin;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.render.texture.DynamicTexture;
+import net.minecraft.client.resource.skin.DefaultSkinUtils;
+import net.minecraft.resource.Identifier;
 
 public class SkinManager {
 
 	private final Set<AxoIdentifier> loadedTextures = new ConcurrentSkipListSet<>(Comparator.comparing(Object::toString));
 
+	@SuppressWarnings("UnstableApiUsage")
 	public Skin read(Path p) {
 		boolean slim;
 		String sha256;
 		try {
 			var in = Files.readAllBytes(p);
 			sha256 = Hashing.sha256().hashBytes(in).toString();
-			try (var img = NativeImage.read(in)) {
-				slim = ClientColors.ARGB.alpha(img.getPixel(47, 63)) == 0;
+			try (var bs = new ByteArrayInputStream(in)) {
+				var img = ImageIO.read(bs);
+				slim = (ClientColors.ARGB.alpha(img.getRGB(47, 63)) == 0);
 			}
 			return new Skin.Local(!slim, Hashing.sha512().hashUnencodedChars(p.toString()).toString(), p, sha256);
 		} catch (Exception e) {
@@ -72,9 +75,12 @@ public class SkinManager {
 		}
 
 		return skin.image().thenApplyAsync(bytes -> {
-			try {
-				var tex = new DynamicTexture(rl::toString, NativeImage.read(bytes));
-				Minecraft.getInstance().getTextureManager().register((ResourceLocation) rl, tex);
+			try (var bs = new ByteArrayInputStream(bytes)) {
+				var img = ImageIO.read(bs);
+				var tex = new DynamicTexture(img.getWidth(), img.getHeight());
+				img.getRGB(0, 0, img.getWidth(), img.getHeight(), tex.getPixels(), 0, img.getWidth());
+				tex.upload();
+				Minecraft.getInstance().getTextureManager().register((Identifier) rl, tex);
 			} catch (IOException e) {
 				throw new UncheckedIOException(e);
 			}
@@ -95,9 +101,12 @@ public class SkinManager {
 		}
 
 		return cape.image().thenApplyAsync(bytes -> {
-			try {
-				var tex = new DynamicTexture(rl::toString, NativeImage.read(bytes));
-				Minecraft.getInstance().getTextureManager().register((ResourceLocation) rl, tex);
+			try (var bs = new ByteArrayInputStream(bytes)) {
+				var img = ImageIO.read(bs);
+				var tex = new DynamicTexture(img.getWidth(), img.getHeight());
+				img.getRGB(0, 0, img.getWidth(), img.getHeight(), tex.getPixels(), 0, img.getWidth());
+				tex.upload();
+				Minecraft.getInstance().getTextureManager().register((Identifier) rl, tex);
 			} catch (IOException e) {
 				throw new UncheckedIOException(e);
 			}
@@ -113,18 +122,19 @@ public class SkinManager {
 	}
 
 	public void releaseAll() {
-		loadedTextures.forEach(id -> Minecraft.getInstance().getTextureManager().release((ResourceLocation) id));
+		loadedTextures.forEach(id -> Minecraft.getInstance().getTextureManager().close((Identifier) id));
 		loadedTextures.clear();
 	}
 
+	@SuppressWarnings("UnstableApiUsage")
 	public String getDefaultSkinHash(Account account) {
-		var skin = DefaultPlayerSkin.get(UUIDHelper.fromUndashed(account.getUuid()));
+		var skin = DefaultSkinUtils.getDefaultSkin(UUIDHelper.fromUndashed(account.getUuid()));
 		var mc = Minecraft.getInstance();
 		var resourceManager = mc.getResourceManager();
 		try {
-			var res = resourceManager.getResourceOrThrow(skin.texture());
+			var res = resourceManager.getResource(skin);
 			try (
-				var in = res.open()) {
+				var in = res.asStream()) {
 				return Hashing.sha256().hashBytes(in.readAllBytes()).toString();
 			}
 		} catch (IOException ignored) {

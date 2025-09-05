@@ -194,7 +194,7 @@ public class MSApi {
 		public record OnlineSkin(String id, String state, String url, String variant,
 								 String textureKey) implements Skin {
 			public static final String VARIANT_CLASSIC = "CLASSIC";
-			public static final String VARIANT_SLIM = "SLIM";
+			//public static final String VARIANT_SLIM = "SLIM";
 			public static final String STATE_ACTIVE = "ACTIVE";
 
 			public static OnlineSkin get(JsonObject object) {
@@ -223,10 +223,6 @@ public class MSApi {
 
 			public boolean isClassicVariant() {
 				return VARIANT_CLASSIC.equals(variant());
-			}
-
-			public boolean isSlimVariant() {
-				return VARIANT_SLIM.equals(variant());
 			}
 
 			public boolean active() {
@@ -304,8 +300,8 @@ public class MSApi {
 	private CompletableFuture<XblData> authXstsMC(String xblToken) {
 		var body = JsonBuilders.JsonObject.create()
 			.field("Properties", JsonBuilders.JsonObject.create()
-				.field("SandboxId", "RETAIL"))
-			.field("UserTokens", JsonBuilders.JsonArray.create().field(xblToken))
+				.field("SandboxId", "RETAIL")
+				.field("UserTokens", JsonBuilders.JsonArray.create().field(xblToken)))
 			.field("RelyingParty", "rp://api.minecraftservices.com/")
 			.field("TokenType", "JWT");
 		return requestJson(HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(body.asString())).uri(URI.create(XBL_XSTS_AUTH_URL)).build())

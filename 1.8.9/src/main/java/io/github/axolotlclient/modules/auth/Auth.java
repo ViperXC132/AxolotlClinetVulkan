@@ -34,6 +34,7 @@ import io.github.axolotlclient.api.types.User;
 import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
 import io.github.axolotlclient.modules.Module;
+import io.github.axolotlclient.modules.auth.skin.SkinManager;
 import io.github.axolotlclient.util.ThreadExecuter;
 import io.github.axolotlclient.util.notifications.Notifications;
 import io.github.axolotlclient.util.options.GenericOption;
@@ -50,14 +51,15 @@ public class Auth extends Accounts implements Module {
 
 	@Getter
 	private static final Auth Instance = new Auth();
-
 	public final BooleanOption showButton = new BooleanOption("auth.showButton", false);
+	public final BooleanOption skinManagerAnimations = new BooleanOption("skins.manage.animations", true);
 	private final Minecraft client = Minecraft.getInstance();
 	private final GenericOption viewAccounts = new GenericOption("viewAccounts", "clickToOpen", () -> client.openScreen(new AccountsScreen(client.screen)));
-
 	private final Map<String, Identifier> textures = new HashMap<>();
 	private final Set<String> loadingTexture = new HashSet<>();
 	private final Map<String, GameProfile> profileCache = new WeakHashMap<>();
+	@Getter
+	private final SkinManager skinManager = new SkinManager();
 
 	@Override
 	public void init() {
