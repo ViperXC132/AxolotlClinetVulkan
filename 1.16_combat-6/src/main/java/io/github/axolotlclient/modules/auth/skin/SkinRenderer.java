@@ -73,7 +73,6 @@ public class SkinRenderer {
 		var model = classicVariant ? classicModel : slimModel;
 		var tessellator = Tessellator.getInstance();
 		RenderSystem.enableDepthTest();
-		RenderSystem.enableCull();
 		RenderSystem.enableBlend();
 		if (cape != null) {
 			graphics.push();
@@ -93,7 +92,6 @@ public class SkinRenderer {
 		graphics.pop();
 		RenderSystem.disableBlend();
 		RenderSystem.disableDepthTest();
-		RenderSystem.disableCull();
 		DiffuseLighting.enableGuiDepthLighting();
 	}
 }

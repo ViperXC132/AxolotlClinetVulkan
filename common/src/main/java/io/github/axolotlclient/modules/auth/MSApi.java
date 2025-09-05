@@ -38,13 +38,12 @@ import java.util.function.Supplier;
 import com.github.mizosoft.methanol.FormBodyPublisher;
 import com.github.mizosoft.methanol.MediaType;
 import com.github.mizosoft.methanol.MultipartBodyPublisher;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.modules.auth.skin.Cape;
 import io.github.axolotlclient.modules.auth.skin.Skin;
 import io.github.axolotlclient.util.GsonHelper;
+import io.github.axolotlclient.util.JsonBuilders;
 import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.NetworkUtil;
 
@@ -63,7 +62,6 @@ public class MSApi {
 	private final Logger logger;
 	private final Accounts accounts;
 	private final HttpClient client;
-	private final Gson gson = new GsonBuilder().create();
 
 	public static MSApi INSTANCE;
 
@@ -282,17 +280,15 @@ public class MSApi {
 	}
 
 	private CompletableFuture<XblData> authXbl(String code) {
-		JsonObject object = new JsonObject();
-		JsonObject properties = new JsonObject();
-		properties.addProperty("AuthMethod", "RPS");
-		properties.addProperty("SiteName", "user.auth.xboxlive.com");
-		properties.addProperty("RpsTicket", "d=" + code);
-		object.add("Properties", properties);
-		object.addProperty("RelyingParty", "http://auth.xboxlive.com");
-		object.addProperty("TokenType", "JWT");
 		HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
 			.uri(URI.create(XBL_AUTH_URL))
-			.POST(HttpRequest.BodyPublishers.ofString(object.toString()))
+			.POST(HttpRequest.BodyPublishers.ofString(JsonBuilders.JsonObject.create()
+				.field("Properties", JsonBuilders.JsonObject.create()
+					.field("AuthMethod", "RPS")
+					.field("SiteName", "user.auth.xboxlive.com")
+					.field("RpsTicket", "d=" + code))
+				.field("RelyingParty", "http://auth.xboxlive.com")
+				.field("TokenType", "JWT").asString()))
 			.header("content-type", "application/json")
 			.header("accept", "application/json");
 
@@ -306,24 +302,20 @@ public class MSApi {
 	}
 
 	private CompletableFuture<XblData> authXstsMC(String xblToken) {
-		String body = "{" +
-			"    \"Properties\": {" +
-			"        \"SandboxId\": \"RETAIL\"," +
-			"        \"UserTokens\": [" +
-			"            \"" + xblToken + "\"" +
-			"        ]" +
-			"    }," +
-			"    \"RelyingParty\": \"rp://api.minecraftservices.com/\"," +
-			"    \"TokenType\": \"JWT\"" +
-			" }";
-		return requestJson(HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(body)).uri(URI.create(XBL_XSTS_AUTH_URL)).build())
+		var body = JsonBuilders.JsonObject.create()
+			.field("Properties", JsonBuilders.JsonObject.create()
+				.field("SandboxId", "RETAIL"))
+			.field("UserTokens", JsonBuilders.JsonArray.create().field(xblToken))
+			.field("RelyingParty", "rp://api.minecraftservices.com/")
+			.field("TokenType", "JWT");
+		return requestJson(HttpRequest.newBuilder().POST(HttpRequest.BodyPublishers.ofString(body.asString())).uri(URI.create(XBL_XSTS_AUTH_URL)).build())
 			.thenApply(response -> new XblData(Instant.parse(response.get("IssueInstant").getAsString()), Instant.parse(response.get("NotAfter").getAsString()),
 				response.get("Token").getAsString(), new XblData.DisplayClaims(response.get("DisplayClaims").getAsJsonObject().get("xui").getAsJsonArray().get(0).getAsJsonObject().get("uhs").getAsString())));
 	}
 
 	private CompletableFuture<MCXblData> authMC(String userhash, String xsts) {
-		String body = "{\"identityToken\": \"XBL3.0 x=" + userhash + ";" + xsts + "\"\n}";
-		return requestJson(HttpRequest.newBuilder(URI.create(MC_LOGIN_WITH_XBOX_URL)).POST(HttpRequest.BodyPublishers.ofString(body)).build())
+		var body = JsonBuilders.JsonObject.create().field("identityToken", "XBL3.0 x=" + userhash + ";" + xsts);
+		return requestJson(HttpRequest.newBuilder(URI.create(MC_LOGIN_WITH_XBOX_URL)).POST(HttpRequest.BodyPublishers.ofString(body.asString())).build())
 			.thenApply(response -> new MCXblData(response.get("username").getAsString(),
 				response.get("access_token").getAsString(),
 				Instant.now().plus(response.get("expires_in").getAsLong(), ChronoUnit.SECONDS)));
@@ -403,12 +395,11 @@ public class MSApi {
 	}
 
 	public CompletableFuture<MCProfile> setSkin(Account account, MCProfile.OnlineSkin skin) {
-		record Body(String variant, String url) {
-		}
 		return requestJson(HttpRequest.newBuilder()
 			.uri(URI.create("https://api.minecraftservices.com/minecraft/profile/skins"))
 			.header("Authorization", "Bearer " + account.getAuthToken())
-			.POST(HttpRequest.BodyPublishers.ofString(gson.toJson(new Body(skin.variant(), skin.url())))).build())
+			.POST(HttpRequest.BodyPublishers.ofString(JsonBuilders.JsonObject.create()
+				.field("variant", skin.variant()).field("url", skin.url()).asString())).build())
 			.thenApply(this::extractProfile);
 	}
 
@@ -443,12 +434,10 @@ public class MSApi {
 	}
 
 	public CompletableFuture<MCProfile> showCape(Account account, MCProfile.OnlineCape cape) {
-		record Body(String capeId) {
-		}
 		return requestJson(HttpRequest.newBuilder()
 			.uri(URI.create("https://api.minecraftservices.com/minecraft/profile/capes/active"))
 			.header("Authorization", "Bearer " + account.getAuthToken())
-			.PUT(HttpRequest.BodyPublishers.ofString(gson.toJson(new Body(cape.id())))).build())
+			.PUT(HttpRequest.BodyPublishers.ofString(JsonBuilders.JsonObject.create().field("capeId", cape.id()).asString())).build())
 			.thenApply(this::extractProfile);
 	}
 }
