@@ -27,6 +27,8 @@ import java.util.List;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.bridge.Platform;
+import io.github.axolotlclient.bridge.events.Events;
+import io.github.axolotlclient.bridge.events.types.PlayerDirectionChangeEvent;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
@@ -64,39 +66,25 @@ public class MouseMovementHud extends BoxHudEntry {
 	private float lastMouseX = 0;
 	private float lastMouseY = 0;
 
-	private boolean hasPreviousPitchYaw = false;
-	private float prevPitch = 0;
-	private float prevYaw = 0;
-
 	public MouseMovementHud() {
 		super(53, 35, true);
+		Events.PLAYER_DIRECTION_CHANGE.register(this::onPlayerDirectionChange);
 	}
 
-	// Implementation credit goes to TheKodeToad
-	// This project has the author's approval to use this
-	// https://github.com/Sol-Client/Client/blob/main/game/src/main/java/io/github/solclient/client/mod/impl/hud/keystrokes/KeystrokesMod.java
-	// Port to Bridge: removed event and poll pitch/yaw in renderComponent
+	public void onPlayerDirectionChange(PlayerDirectionChangeEvent event) {
+		// Implementation credit goes to TheKodeToad
+		// This project has the author's approval to use this
+		// https://github.com/Sol-Client/Client/blob/main/game/src/main/java/io/github/solclient/client/mod/impl/hud/keystrokes/KeystrokesMod.java
+		mouseX += (event.yaw() - event.prevYaw()) / 7F;
+		mouseY += (event.pitch() - event.prevPitch()) / 7F;
+		// 0, 0 will be the center of the HUD element
+		float halfWidth = getWidth() / 2f;
+		mouseX = MathUtil.clamp(mouseX, -halfWidth + 4, halfWidth - 4);
+		mouseY = MathUtil.clamp(mouseY, -13, 13);
+	}
+
 	@Override
 	public void renderComponent(AxoRenderContext context, float delta) {
-		final var player = client.br$getPlayer();
-
-		if(player != null) {
-			if (hasPreviousPitchYaw) {
-				mouseX = (player.br$getYaw() - prevYaw);
-				mouseY = (player.br$getPitch() - prevPitch);
-				prevPitch = player.br$getPitch();
-				prevYaw = player.br$getYaw();
-
-				float halfWidth = getWidth() / 2f;
-				mouseX = MathUtil.clamp(mouseX, -halfWidth + 4, halfWidth - 4);
-				mouseY = MathUtil.clamp(mouseY, -13, 13);
-			} else {
-				hasPreviousPitchYaw = true;
-				prevPitch = player.br$getPitch();
-				prevYaw = player.br$getYaw();
-			}
-		}
-
 		context.br$glColor4(1, 1, 1, 1);
 		context.br$glEnableBlend();
 		int spaceY = getRawY();

@@ -22,10 +22,10 @@
 
 package io.github.axolotlclient.mixin;
 
+import io.github.axolotlclient.bridge.events.Events;
+import io.github.axolotlclient.bridge.events.types.PlayerDirectionChangeEvent;
 import io.github.axolotlclient.modules.freelook.Freelook;
 import io.github.axolotlclient.modules.hypixel.Skyblock;
-import io.github.axolotlclient.util.events.Events;
-import io.github.axolotlclient.util.events.impl.PlayerDirectionChangeEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -62,6 +62,6 @@ public abstract class EntityMixin {
 		float pitch = prevPitch + (float) (mouseDeltaY * .15);
 		float yaw = prevYaw + (float) (mouseDeltaX * .15);
 		pitch = Mth.clamp(pitch, -90.0F, 90.0F);
-		Events.PLAYER_DIRECTION_CHANGE.invoker().invoke(new PlayerDirectionChangeEvent(prevPitch, prevYaw, pitch, yaw));
+		Events.PLAYER_DIRECTION_CHANGE.invoker().accept(new PlayerDirectionChangeEvent(prevPitch, prevYaw, pitch, yaw));
 	}
 }

@@ -28,6 +28,7 @@ import java.util.function.Consumer;
 import io.github.axolotlclient.bridge.commands.Commands;
 import io.github.axolotlclient.bridge.entity.AxoEntity;
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
+import io.github.axolotlclient.bridge.events.types.PlayerDirectionChangeEvent;
 import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
 import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
 import io.github.axolotlclient.bridge.events.types.WorldLoadEvent;
@@ -40,6 +41,7 @@ import org.jetbrains.annotations.Nullable;
 public class Events {
 	public static final EventBus<BiConsumer<AxoPlayer, AxoEntity>> PLAYER_ATTACK = EventBus.broadcast2();
 	public static final EventBus<BiConsumer<AxoPlayer, @Nullable AxoEntity>> PLAYER_HURT = EventBus.broadcast2();
+	public static final EventBus<Consumer<PlayerDirectionChangeEvent>> PLAYER_DIRECTION_CHANGE = EventBus.broadcast1();
 
 	public static final EventBus<Consumer<Long>> UPDATE_TIME = EventBus.broadcast1();
 	public static final EventBus<Consumer<AxoKey>> KEY_INPUT = EventBus.broadcast1();

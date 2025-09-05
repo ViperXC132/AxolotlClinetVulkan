@@ -25,9 +25,9 @@ package io.github.axolotlclient.modules.hud.gui.hud;
 import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
+import io.github.axolotlclient.bridge.events.Events;
+import io.github.axolotlclient.bridge.events.types.PlayerDirectionChangeEvent;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.util.events.Events;
-import io.github.axolotlclient.util.events.impl.PlayerDirectionChangeEvent;
 import lombok.Getter;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -54,7 +54,7 @@ public class PlayerHud extends PlayerHudCommon {
 	}
 
 	public void onPlayerDirectionChange(PlayerDirectionChangeEvent event) {
-		yawOffset += (event.getYaw() - event.getPrevYaw()) / 2;
+		yawOffset += (event.yaw() - event.prevYaw()) / 2;
 	}
 
 	@Override

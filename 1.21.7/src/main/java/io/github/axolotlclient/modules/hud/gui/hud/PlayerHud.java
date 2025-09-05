@@ -22,11 +22,11 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud;
 
+import io.github.axolotlclient.bridge.events.Events;
+import io.github.axolotlclient.bridge.events.types.PlayerDirectionChangeEvent;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.mixin.GuiGraphicsAccessor;
 import io.github.axolotlclient.modules.hud.util.PlayerHudEntityRenderState;
-import io.github.axolotlclient.util.events.Events;
-import io.github.axolotlclient.util.events.impl.PlayerDirectionChangeEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
@@ -56,7 +56,7 @@ public class PlayerHud extends PlayerHudCommon {
 	}
 
 	public void onPlayerDirectionChange(PlayerDirectionChangeEvent event) {
-		yawOffset += (event.getYaw() - event.getPrevYaw()) / 2;
+		yawOffset += (event.yaw() - event.prevYaw()) / 2;
 	}
 
 	@Override

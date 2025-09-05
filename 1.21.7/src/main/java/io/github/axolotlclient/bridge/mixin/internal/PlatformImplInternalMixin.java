@@ -247,14 +247,12 @@ public class PlatformImplInternalMixin {
 	 */
 	@Overwrite
 	public static AxoSprite createTexture(GraphicsOption option) {
-		return (AxoSpriteImpl) (client, stack, sX, sY, sW, sH) -> {
-			// TODO: specify the correct pipeline for rendering, need to hoist this
+		return (AxoSpriteImpl) (client, stack, sX, sY, sW, sH) ->
 			stack.blit(
-				RenderPipelines.GUI_TEXTURED,
-				io.github.axolotlclient.util.Util.getTexture(option), sX, sY, 0, 0,
-				sW, sH, option.get().getWidth(), option.get().getHeight(), 0xffffff
-			);
-		};
+			RenderPipelines.GUI_TEXTURED,
+			io.github.axolotlclient.util.Util.getTexture(option), sX, sY, 0, 0,
+			sW, sH, option.get().getWidth(), option.get().getHeight()
+		);
 	}
 
 	/**

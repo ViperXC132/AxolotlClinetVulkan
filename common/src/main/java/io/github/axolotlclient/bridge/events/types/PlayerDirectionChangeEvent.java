@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2023 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -20,13 +20,8 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.util.events.impl;
+package io.github.axolotlclient.bridge.events.types;
 
-import lombok.Data;
-
-@Data
-public class PlayerDirectionChangeEvent {
-
-	private final float prevPitch, prevYaw, pitch, yaw;
+public record PlayerDirectionChangeEvent(float prevPitch, float prevYaw, float pitch, float yaw) {
 
 }

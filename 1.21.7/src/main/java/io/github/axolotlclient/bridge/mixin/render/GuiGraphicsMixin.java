@@ -89,7 +89,7 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 
 	@Override
 	public void br$translateMatrix(float x, float y, float z) {
-		pose.scale(x, y);
+		pose.translate(x, y);
 	}
 
 	// scissor
