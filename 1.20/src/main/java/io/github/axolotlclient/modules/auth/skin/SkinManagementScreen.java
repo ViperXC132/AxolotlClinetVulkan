@@ -152,6 +152,24 @@ public class SkinManagementScreen extends Screen {
 			this.capesTab = true;
 		}).position(width * 3 / 4 + 2, headerHeight).width(100).build();
 		navBar.add(capesTab);
+		var importButton = new ButtonWidget(capesTab.getX()+capesTab.getWidth()-11, capesTab.getY()-13, 11, 11, Text.translatable("skins.manage.import"), btn -> {
+			btn.active = false;
+			SkinImportUtil.openImportSkinDialog().thenAccept(this::filesDragged).thenRun(() -> btn.active = true);
+		}, Supplier::get) {
+			private final Identifier SPRITE = new Identifier("axolotlclient", "textures/gui/sprites/download.png");
+
+			@Override
+			protected void drawWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+				super.drawWidget(graphics, mouseX, mouseY, delta);
+				graphics.drawTexture(SPRITE, getX() + 2, getY() + 2, 0, 0, 7, 7, 7, 7);
+			}
+
+			@Override
+			public void drawScrollableText(GuiGraphics graphics, TextRenderer renderer, int color) {
+
+			}
+		};
+		importButton.setTooltip(Tooltip.create(importButton.getMessage()));
 		skinsTab.active = this.capesTab;
 		capesTab.active = !this.capesTab;
 		Runnable addWidgets = () -> {
@@ -162,6 +180,7 @@ public class SkinManagementScreen extends Screen {
 			addDrawableChild(capesList);
 			addDrawableChild(skinsTab);
 			addDrawableChild(capesTab);
+			addDrawableChild(importButton);
 			addDrawableChild(back);
 		};
 		if (cachedProfile != null) {
@@ -312,6 +331,7 @@ public class SkinManagementScreen extends Screen {
 
 	@Override
 	public void filesDragged(List<Path> packs) {
+		if (packs.isEmpty()) return;
 		packs.forEach(p -> {
 			try {
 				Files.copy(p, SKINS_DIR.resolve(p.getFileName()));

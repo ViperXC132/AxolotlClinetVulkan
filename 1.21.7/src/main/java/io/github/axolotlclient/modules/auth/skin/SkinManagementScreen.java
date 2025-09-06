@@ -145,6 +145,12 @@ public class SkinManagementScreen extends Screen {
 			this.capesTab = true;
 		}).pos(width * 3 / 4 + 2, headerHeight).width(100).build();
 		navBar.add(capesTab);
+		var importButton = SpriteIconButton.builder(Component.translatable("skins.manage.import"), btn -> {
+			btn.active = false;
+			SkinImportUtil.openImportSkinDialog().thenAccept(this::onFilesDrop).thenRun(() -> btn.active = true);
+		}, true).sprite(ResourceLocation.fromNamespaceAndPath("axolotlclient", "download"), 7, 7).size(11, 11).build();
+		importButton.setTooltip(Tooltip.create(importButton.getMessage()));
+		importButton.setPosition(capesTab.getX()+capesTab.getWidth()-11, capesTab.getY()-13);
 		skinsTab.active = this.capesTab;
 		capesTab.active = !this.capesTab;
 		Runnable addWidgets = () -> {
@@ -155,6 +161,7 @@ public class SkinManagementScreen extends Screen {
 			addRenderableWidget(capesTab);
 			addRenderableWidget(skinList);
 			addRenderableWidget(capesList);
+			addRenderableWidget(importButton);
 			addRenderableWidget(back);
 		};
 		if (cachedProfile != null) {
@@ -250,7 +257,7 @@ public class SkinManagementScreen extends Screen {
 			}
 			return s;
 		});
-		//local.removeIf(s -> hashes.contains(s.textureKey()));
+
 		skins.addAll(local);
 		if (!hashes.contains(defaultSkinHash)) {
 			skins.add(null);
@@ -301,6 +308,7 @@ public class SkinManagementScreen extends Screen {
 
 	@Override
 	public void onFilesDrop(List<Path> packs) {
+		if (packs.isEmpty()) return;
 		packs.forEach(p -> {
 			try {
 				Files.copy(p, SKINS_DIR.resolve(p.getFileName()));

@@ -25,6 +25,7 @@ dependencies {
 	testRuntimeOnly(compileOnly("org.apache.commons:commons-lang3:3.3.2")!!)
 	testRuntimeOnly(compileOnly("it.unimi.dsi:fastutil:8.2.1")!!)
 	testRuntimeOnly(compileOnly("org.lwjgl:lwjgl-glfw:3.3.2")!!)
+	testRuntimeOnly(compileOnly("org.lwjgl:lwjgl-tinyfd:3.2.2")!!)
 
 	shadow(implementation("io.github.CDAGaming:DiscordIPC:0.10.2") {
 		isTransitive = false

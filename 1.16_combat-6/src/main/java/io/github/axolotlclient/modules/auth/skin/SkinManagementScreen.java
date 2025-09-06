@@ -159,6 +159,25 @@ public class SkinManagementScreen extends Screen {
 			this.capesTab = true;
 		});
 		navBar.add(capesTab);
+		var importButton = new ButtonWidget(capesTab.x+capesTab.getWidth()-11, capesTab.y-13, 11, 11, LiteralText.EMPTY, btn -> {
+			btn.active = false;
+			SkinImportUtil.openImportSkinDialog().thenAccept(this::filesDragged).thenRun(() -> btn.active = true);
+		}) {
+			private final Text tooltip = new TranslatableText("skins.manage.import");
+			private final Identifier sprite = new Identifier("axolotlclient", "textures/gui/sprites/download.png");
+
+			@Override
+			public void renderButton(MatrixStack graphics, int mouseX, int mouseY, float delta) {
+				super.renderButton(graphics, mouseX, mouseY, delta);
+				client.getTextureManager().bindTexture(sprite);
+				drawTexture(graphics, x + 2, y + 2, 0, 0, 7, 7, 7, 7);
+			}
+
+			@Override
+			public void renderToolTip(MatrixStack matrices, int mouseX, int mouseY) {
+				renderTooltip(matrices, tooltip, mouseX, mouseY);
+			}
+		};
 		skinsTab.active = this.capesTab;
 		capesTab.active = !this.capesTab;
 		Runnable addWidgets = () -> {
@@ -168,6 +187,7 @@ public class SkinManagementScreen extends Screen {
 			addDrawableChild(capesList);
 			addDrawableChild(skinsTab);
 			addDrawableChild(capesTab);
+			addDrawableChild(importButton);
 			addDrawableChild(back);
 		};
 		if (cachedProfile != null) {
@@ -199,7 +219,7 @@ public class SkinManagementScreen extends Screen {
 
 					@Override
 					public void renderButton(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-						drawCenteredText(matrices, textRenderer, getMessage(), x+getWidth()/2, y+getHeight()/2-textRenderer.fontHeight/2, -1);
+						drawCenteredText(matrices, textRenderer, getMessage(), x + getWidth() / 2, y + getHeight() / 2 - textRenderer.fontHeight / 2, -1);
 					}
 				}
 				addDrawableChild(new TextWidget(width / 2 - textRenderer.getWidth(error) / 2, height / 2 - textRenderer.fontHeight - 2, textRenderer.getWidth(error), textRenderer.fontHeight, error, textRenderer));
@@ -341,6 +361,7 @@ public class SkinManagementScreen extends Screen {
 
 	@Override
 	public void filesDragged(List<Path> packs) {
+		if (packs.isEmpty()) return;
 		packs.forEach(p -> {
 			try {
 				Files.copy(p, SKINS_DIR.resolve(p.getFileName()));

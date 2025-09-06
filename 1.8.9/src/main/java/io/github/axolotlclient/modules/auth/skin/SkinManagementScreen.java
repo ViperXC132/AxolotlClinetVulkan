@@ -62,6 +62,7 @@ import net.minecraft.resource.Identifier;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientConfig.impl.ui.Screen {
 	private static final Path SKINS_DIR = FabricLoader.getInstance().getGameDir().resolve("skins");
@@ -177,6 +178,33 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 			this.capesTab = true;
 		});
 		navBar.add(capesTab);
+		var importButton = new VanillaButtonWidget(capesTab.getX()+capesTab.getWidth()-11, capesTab.getY()-13, 11, 11, I18n.translate("skins.manage.import"), btn -> {
+			btn.active = false;
+			SkinImportUtil.openImportSkinDialog().thenAccept(this::filesDragged).thenRun(() -> btn.active = true);
+		}) {
+			private final Identifier SPRITE = new Identifier("axolotlclient", "textures/gui/sprites/download.png");
+
+			@Override
+			protected void drawWidget(int mouseX, int mouseY, float delta) {
+				int i = 1;
+				if (!this.active) {
+					i = 0;
+				} else if (hovered) {
+					tooltip = getMessage();
+					i = 2;
+				}
+
+				Identifier tex = ButtonWidgetTextures.get(i);
+				DrawUtil.blitSprite(tex, getX(), getY(), getWidth(), getHeight(), new DrawUtil.NineSlice(200, 20, 3));
+				minecraft.getTextureManager().bind(SPRITE);
+				DrawUtil.drawTexture(getX() + 2, getY() + 2, 0, 0, 7, 7, 7, 7);
+			}
+
+			@Override
+			protected void drawScrollingText(TextRenderer renderer, int offset, Color color) {
+
+			}
+		};
 		skinsTab.active = this.capesTab;
 		capesTab.active = !this.capesTab;
 		Runnable addWidgets = () -> {
@@ -187,6 +215,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 			addDrawableChild(capesList);
 			addDrawableChild(skinsTab);
 			addDrawableChild(capesTab);
+			addDrawableChild(importButton);
 			addDrawableChild(back);
 		};
 		if (cachedProfile != null) {
@@ -330,8 +359,9 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 		}
 	}
 
-	/*@Override
+	//@Override
 	public void filesDragged(List<Path> packs) {
+		if (packs.isEmpty()) return;
 		packs.forEach(p -> {
 			try {
 				Files.copy(p, SKINS_DIR.resolve(p.getFileName()));
@@ -340,7 +370,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 			}
 		});
 		loadSkinsList();
-	}*/
+	}
 
 	private @NotNull Entry createEntryForSkin(Skin skin, int entryHeight) {
 		return createEntry(entryHeight, new SkinWidget(LIST_SKIN_WIDTH, LIST_SKIN_HEIGHT, skin, account));

@@ -827,5 +827,6 @@
 	"skins.manage.delete.confirm.desc": "This Skin's file will be deleted permanently!\n Are you sure?",
 	"skins.manage.delete.confirm.desc_active": "This Skin's file will be deleted permanently!\n Are you sure? The skin will not be un-equipped.",
 	"skins.manage.animations": "Skin Manger Animations",
-	"skins.manage.download": "Download Skin"
+	"skins.manage.download": "Download Skin",
+	"skins.manage.import": "Import Skin"
 }
