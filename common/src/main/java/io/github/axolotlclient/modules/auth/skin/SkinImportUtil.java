@@ -36,10 +36,11 @@ public class SkinImportUtil {
 		return CompletableFuture.supplyAsync(() -> {
 			try (MemoryStack stack = MemoryStack.stackPush()) {
 				var pointers = stack.pointers(stack.UTF8("*.png"));
-				var result = TinyFileDialogs.tinyfd_openFileDialog("Import Skins", FabricLoader.getInstance().getGameDir().toString(), pointers, null, true);
+				@SuppressWarnings("DataFlowIssue") var result = TinyFileDialogs.tinyfd_openFileDialog("Import Skins",
+					FabricLoader.getInstance().getGameDir().toString(), pointers, null, true);
 				if (result != null) {
 					return Arrays.stream(result.split("\\|"))
-						.map(Path::of).peek(System.out::println).toList();
+						.map(Path::of).toList();
 				}
 				return List.of();
 			}

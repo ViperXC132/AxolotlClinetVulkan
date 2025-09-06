@@ -96,7 +96,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 		tooltip = null;
 		super.render(mouseX, mouseY, delta);
 		if (tooltip != null) {
-			renderTooltip(tooltip, mouseX, mouseY+20);
+			renderTooltip(tooltip, mouseX, mouseY + 20);
 			Lighting.turnOff();
 		}
 	}
@@ -177,7 +177,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 			this.capesTab = true;
 		});
 		navBar.add(capesTab);
-		var importButton = new VanillaButtonWidget(capesTab.getX()+capesTab.getWidth()-11, capesTab.getY()-13, 11, 11, I18n.translate("skins.manage.import"), btn -> {
+		var importButton = new VanillaButtonWidget(capesTab.getX() + capesTab.getWidth() - 11, capesTab.getY() - 13, 11, 11, I18n.translate("skins.manage.import"), btn -> {
 			btn.active = false;
 			SkinImportUtil.openImportSkinDialog().thenAccept(this::filesDragged).thenRun(() -> btn.active = true);
 		}) {

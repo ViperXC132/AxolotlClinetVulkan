@@ -58,6 +58,7 @@ public class SkinManager {
 			sha256 = Hashing.sha256().hashBytes(in).toString();
 			try (var bs = new ByteArrayInputStream(in)) {
 				var img = ImageIO.read(bs);
+				if (img.getWidth() != 64 || img.getHeight() != 64) return null;
 				slim = (ClientColors.ARGB.alpha(img.getRGB(47, 63)) == 0);
 			}
 			return new Skin.Local(!slim, Hashing.sha512().hashUnencodedChars(p.toString()).toString(), p, sha256);

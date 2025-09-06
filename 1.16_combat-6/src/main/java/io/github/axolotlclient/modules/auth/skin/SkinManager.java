@@ -62,6 +62,7 @@ public class SkinManager {
 				byteBuffer.put(in);
 				byteBuffer.rewind();
 				try (var img = NativeImage.read(byteBuffer)) {
+					if (img.getWidth() != 64 || img.getHeight() != 64) return null;
 					slim = (ClientColors.ARGB.alpha(img.getPixelColor(47, 63)) == 0);
 				}
 			}
