@@ -100,16 +100,29 @@ public class TextRenderUtilsMixin {
 
 	@Unique
 	private static Text format(Text text) {
-		var reformatted = formatFromCodes(text.getStyle().asString()+text.getContent());
-		var s = text.getStyle();
-		var rS = reformatted.getStyle();
-		rS.setClickEvent(s.getClickEvent());
-		rS.setHoverEvent(s.getHoverEvent());
-		rS.setInsertion(s.getInsertion());
-		for (Text sib : text.getSiblings()) {
-			reformatted.append(format(sib));
+		Text n = null;
+		for (var t : text) {
+			if (!t.getContent().contains("§")) {
+				var r = new LiteralText(t.getContent());
+				r.setStyle(t.getStyle());
+				if (n == null) {
+					n = r;
+				} else {
+					n.append(r);
+					t.getStyle().setParent(n.getStyle());
+				}
+			} else {
+				var formatted = formatFromCodes(t.getContent());
+				formatted.setStyle(t.getStyle());
+				if (n == null) {
+					n = formatted;
+				} else {
+					n.append(formatted);
+					formatted.getStyle().setParent(n.getStyle());
+				}
+			}
 		}
-		return reformatted;
+		return n;
 	}
 
 	@Unique
