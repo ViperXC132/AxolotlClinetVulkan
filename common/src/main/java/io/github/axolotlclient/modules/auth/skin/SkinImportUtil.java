@@ -39,7 +39,7 @@ public class SkinImportUtil {
 				var result = TinyFileDialogs.tinyfd_openFileDialog("Import Skins", FabricLoader.getInstance().getGameDir().toString(), pointers, null, true);
 				if (result != null) {
 					return Arrays.stream(result.split("\\|"))
-						.map(Path::of).toList();
+						.map(Path::of).peek(System.out::println).toList();
 				}
 				return List.of();
 			}

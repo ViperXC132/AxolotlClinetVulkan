@@ -62,7 +62,6 @@ import net.minecraft.resource.Identifier;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientConfig.impl.ui.Screen {
 	private static final Path SKINS_DIR = FabricLoader.getInstance().getGameDir().resolve("skins");

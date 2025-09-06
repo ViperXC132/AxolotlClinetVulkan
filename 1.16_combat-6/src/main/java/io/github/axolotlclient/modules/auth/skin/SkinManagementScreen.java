@@ -39,6 +39,7 @@ import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.auth.MSApi;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import io.github.axolotlclient.util.ButtonWidgetTextures;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.Watcher;
 import net.fabricmc.loader.api.FabricLoader;
@@ -80,6 +81,7 @@ public class SkinManagementScreen extends Screen {
 	private final Watcher skinDirWatcher;
 	private final List<Drawable> drawables = new ArrayList<>();
 	private final CompletableFuture<?> refreshFuture;
+	private Text tooltip;
 
 	public SkinManagementScreen(Screen parent, Account account) {
 		super(new TranslatableText("skins.manage"));
@@ -159,23 +161,21 @@ public class SkinManagementScreen extends Screen {
 			this.capesTab = true;
 		});
 		navBar.add(capesTab);
-		var importButton = new ButtonWidget(capesTab.x+capesTab.getWidth()-11, capesTab.y-13, 11, 11, LiteralText.EMPTY, btn -> {
+		var importButton = new ButtonWidget(capesTab.x+capesTab.getWidth()-11, capesTab.y-13, 11, 11, new TranslatableText("skins.manage.import"), btn -> {
 			btn.active = false;
 			SkinImportUtil.openImportSkinDialog().thenAccept(this::filesDragged).thenRun(() -> btn.active = true);
 		}) {
-			private final Text tooltip = new TranslatableText("skins.manage.import");
 			private final Identifier sprite = new Identifier("axolotlclient", "textures/gui/sprites/download.png");
 
 			@Override
 			public void renderButton(MatrixStack graphics, int mouseX, int mouseY, float delta) {
-				super.renderButton(graphics, mouseX, mouseY, delta);
+				Identifier tex = ButtonWidgetTextures.get(getYImage(hovered));
+				DrawUtil.blitSprite(tex, x, y, width, height, new DrawUtil.NineSlice(200, 20, 3));
 				client.getTextureManager().bindTexture(sprite);
 				drawTexture(graphics, x + 2, y + 2, 0, 0, 7, 7, 7, 7);
-			}
-
-			@Override
-			public void renderToolTip(MatrixStack matrices, int mouseX, int mouseY) {
-				renderTooltip(matrices, tooltip, mouseX, mouseY);
+				if (this.isHovered()) {
+					tooltip = getMessage();
+				}
 			}
 		};
 		skinsTab.active = this.capesTab;
@@ -241,9 +241,13 @@ public class SkinManagementScreen extends Screen {
 
 	@Override
 	public void render(MatrixStack graphics, int mouseX, int mouseY, float delta) {
+		tooltip = null;
 		renderBackground(graphics);
 		drawables.forEach(d -> d.render(graphics, mouseX, mouseY, delta));
 		drawCenteredText(graphics, textRenderer, getTitle(), width / 2, 33 / 2 - textRenderer.fontHeight / 2, -1);
+		if (tooltip != null) {
+			renderTooltip(graphics, tooltip, mouseX, mouseY+20);
+		}
 	}
 
 	private void initDisplay() {
@@ -535,7 +539,7 @@ public class SkinManagementScreen extends Screen {
 			var asset = widget.getFocusedAsset();
 			if (asset != null) {
 				if (asset.isLocal()) {
-					var delete = new ButtonWidget(0, 0, 11, 11, LiteralText.EMPTY, btn -> {
+					var delete = new ButtonWidget(0, 0, 11, 11, new TranslatableText("skins.manage.delete"), btn -> {
 						btn.active = false;
 						client.openScreen(new ConfirmScreen(confirmed -> {
 							client.openScreen(SkinManagementScreen.this);
@@ -554,25 +558,23 @@ public class SkinManagementScreen extends Screen {
 						).br$color(Colors.RED.toInt())));
 					}) {
 
-						private final Text tooltip = new TranslatableText("skins.manage.delete");
 						private final Identifier sprite = new Identifier("axolotlclient", "textures/gui/sprites/delete.png");
 
 						@Override
 						public void renderButton(MatrixStack graphics, int mouseX, int mouseY, float delta) {
-							super.renderButton(graphics, mouseX, mouseY, delta);
+							Identifier tex = ButtonWidgetTextures.get(getYImage(hovered));
+							DrawUtil.blitSprite(tex, x, y, width, height, new DrawUtil.NineSlice(200, 20, 3));
 							client.getTextureManager().bindTexture(sprite);
 							drawTexture(graphics, x + 2, y + 2, 0, 0, 7, 7, 7, 7);
-						}
-
-						@Override
-						public void renderToolTip(MatrixStack matrices, int mouseX, int mouseY) {
-							renderTooltip(matrices, tooltip, mouseX, mouseY);
+							if (this.isHovered()) {
+								tooltip = getMessage();
+							}
 						}
 					};
 					this.actionButtons.add(delete);
 				}
 				if (asset.supportsDownload() && !asset.isLocal()) {
-					var download = new ButtonWidget(0, 0, 11, 11, LiteralText.EMPTY, btn -> {
+					var download = new ButtonWidget(0, 0, 11, 11, new TranslatableText("skins.manage.download"), btn -> {
 						btn.active = false;
 						asset.image().thenAcceptAsync(b -> {
 							try {
@@ -586,19 +588,17 @@ public class SkinManagementScreen extends Screen {
 							btn.active = true;
 						});
 					}) {
-						private final Text tooltip = new TranslatableText("skins.manage.download");
 						private final Identifier sprite = new Identifier("axolotlclient", "textures/gui/sprites/download.png");
 
 						@Override
 						public void renderButton(MatrixStack graphics, int mouseX, int mouseY, float delta) {
-							super.renderButton(graphics, mouseX, mouseY, delta);
+							Identifier tex = ButtonWidgetTextures.get(getYImage(hovered));
+							DrawUtil.blitSprite(tex, x, y, width, height, new DrawUtil.NineSlice(200, 20, 3));
 							client.getTextureManager().bindTexture(sprite);
 							drawTexture(graphics, x + 2, y + 2, 0, 0, 7, 7, 7, 7);
-						}
-
-						@Override
-						public void renderToolTip(MatrixStack matrices, int mouseX, int mouseY) {
-							renderTooltip(matrices, tooltip, mouseX, mouseY);
+							if (this.isHovered()) {
+								tooltip = getMessage();
+							}
 						}
 					};
 					this.actionButtons.add(download);

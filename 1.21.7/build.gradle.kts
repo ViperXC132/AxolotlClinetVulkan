@@ -25,11 +25,6 @@ loom {
 			sourceSet("test")
 		}
 	}
-	/*runs {
-		getByName("client") {
-			vmArg("-XX:+AllowEnhancedClassRedefinition -XX:+IgnoreUnrecognizedVMOptions")
-		}
-	}*/
 }
 
 repositories {

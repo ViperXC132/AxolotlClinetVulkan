@@ -42,16 +42,16 @@ public class SkinRenderer {
 	}
 
 	public static void render(GuiGraphics graphics, boolean classicVariant,
-					   Identifier skinTexture,
-					   @Nullable Identifier cape,
-					   float rotationX,
-					   float rotationY,
-					   float pivotY,
-					   int x0,
-					   int y0,
-					   int x1,
-					   int y1,
-					   float scale) {
+							  Identifier skinTexture,
+							  @Nullable Identifier cape,
+							  float rotationX,
+							  float rotationY,
+							  float pivotY,
+							  int x0,
+							  int y0,
+							  int x1,
+							  int y1,
+							  float scale) {
 		if (classicModel == null && classicVariant) {
 			classicModel = new PlayerEntityModel<>(minecraft.getEntityModelLoader().getModelPart(EntityModelLayers.PLAYER), false);
 			classicModel.child = false;
@@ -74,13 +74,13 @@ public class SkinRenderer {
 		graphics.getMatrices().scale(1.0F, 1.0F, -1.0F);
 		graphics.getMatrices().translate(0.0F, -1.5F, 0.0F);
 		var model = classicVariant ? classicModel : slimModel;
-		RenderLayer renderLayer = model.getLayer(skinTexture);
+		RenderLayer renderLayer = RenderLayer.getEntityAlpha(skinTexture);
 		model.render(graphics.getMatrices(), graphics.getVertexConsumers().getBuffer(renderLayer), LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
 		if (cape != null) {
 			graphics.getMatrices().translate(0.0F, 0.0F, 0.125F);
 			graphics.getMatrices().multiply(Axis.X_POSITIVE.rotationDegrees(6.0F));
 			graphics.getMatrices().multiply(Axis.Y_POSITIVE.rotationDegrees(180.0F));
-			model.renderCape(graphics.getMatrices(), graphics.getVertexConsumers().getBuffer(RenderLayer.getEntitySolid(cape)), LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
+			model.renderCape(graphics.getMatrices(), graphics.getVertexConsumers().getBuffer(RenderLayer.getEntityAlpha(cape)), LightmapTextureManager.MAX_LIGHT_COORDINATE, OverlayTexture.DEFAULT_UV);
 		}
 		graphics.getMatrices().pop();
 		graphics.draw();

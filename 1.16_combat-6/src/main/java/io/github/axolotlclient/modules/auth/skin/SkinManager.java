@@ -57,8 +57,13 @@ public class SkinManager {
 		try {
 			var in = Files.readAllBytes(p);
 			sha256 = Hashing.sha256().hashBytes(in).toString();
-			try (var img = NativeImage.read(ByteBuffer.wrap(in))) {
-				slim = (ClientColors.ARGB.alpha(img.getPixelColor(47, 63)) == 0);
+			try (MemoryStack memoryStack = MemoryStack.stackPush()) {
+				ByteBuffer byteBuffer = memoryStack.malloc(in.length);
+				byteBuffer.put(in);
+				byteBuffer.rewind();
+				try (var img = NativeImage.read(byteBuffer)) {
+					slim = (ClientColors.ARGB.alpha(img.getPixelColor(47, 63)) == 0);
+				}
 			}
 			return new Skin.Local(!slim, Hashing.sha512().hashUnencodedChars(p.toString()).toString(), p, sha256);
 		} catch (Exception e) {

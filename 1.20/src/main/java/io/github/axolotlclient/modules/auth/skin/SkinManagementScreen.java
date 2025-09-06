@@ -383,7 +383,6 @@ public class SkinManagementScreen extends Screen {
 		public SkinListWidget(MinecraftClient minecraft, int width, int height, int y, int entryHeight) {
 			super(minecraft, width, SkinManagementScreen.this.height, y, y + height, entryHeight);
 			setRenderHeader(false, 0);
-			setRenderBackground(false);
 		}
 
 		@Override
