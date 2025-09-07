@@ -31,6 +31,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
@@ -46,6 +47,7 @@ import io.github.axolotlclient.util.GsonHelper;
 import io.github.axolotlclient.util.JsonBuilders;
 import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.NetworkUtil;
+import lombok.ToString;
 
 // Partly oriented on In-Game-Account-Switcher by The-Fireplace, VidTu
 public class MSApi {
@@ -191,11 +193,25 @@ public class MSApi {
 				.toList());
 		}
 
-		public record OnlineSkin(String id, String state, String url, String variant,
-								 String textureKey) implements Skin {
+		@ToString
+		public static final class OnlineSkin implements Skin {
 			public static final String VARIANT_CLASSIC = "CLASSIC";
-			//public static final String VARIANT_SLIM = "SLIM";
+			public static final String VARIANT_SLIM = "SLIM";
 			public static final String STATE_ACTIVE = "ACTIVE";
+			private final String id;
+			private final String state;
+			private final String url;
+			private boolean classicVariant;
+			private final String textureKey;
+
+			public OnlineSkin(String id, String state, String url, String variant,
+							  String textureKey) {
+				this.id = id;
+				this.state = state;
+				this.url = url;
+				this.classicVariant = VARIANT_CLASSIC.equals(variant);
+				this.textureKey = textureKey;
+			}
 
 			public static OnlineSkin get(JsonObject object) {
 				String url = object.get("url").getAsString();
@@ -221,8 +237,13 @@ public class MSApi {
 					});
 			}
 
-			public boolean isClassicVariant() {
-				return VARIANT_CLASSIC.equals(variant());
+			public boolean classicVariant() {
+				return classicVariant;
+			}
+
+			@Override
+			public void classicVariant(boolean classic) {
+				this.classicVariant = classic;
 			}
 
 			public boolean active() {
@@ -237,6 +258,45 @@ public class MSApi {
 			@Override
 			public boolean supportsDownload() {
 				return true;
+			}
+
+			public String id() {
+				return id;
+			}
+
+			public String state() {
+				return state;
+			}
+
+			@Override
+			public String url() {
+				return url;
+			}
+
+			public String variant() {
+				return classicVariant ? VARIANT_CLASSIC : VARIANT_SLIM;
+			}
+
+			@Override
+			public String textureKey() {
+				return textureKey;
+			}
+
+			@Override
+			public boolean equals(Object obj) {
+				if (obj == this) return true;
+				if (obj == null || obj.getClass() != this.getClass()) return false;
+				var that = (OnlineSkin) obj;
+				return Objects.equals(this.id, that.id) &&
+					Objects.equals(this.state, that.state) &&
+					Objects.equals(this.url, that.url) &&
+					Objects.equals(this.classicVariant, that.classicVariant) &&
+					Objects.equals(this.textureKey, that.textureKey);
+			}
+
+			@Override
+			public int hashCode() {
+				return Objects.hash(id, state, url, classicVariant, textureKey);
 			}
 		}
 
@@ -405,7 +465,7 @@ public class MSApi {
 				.uri(URI.create("https://api.minecraftservices.com/minecraft/profile/skins"))
 				.header("Authorization", "Bearer " + account.getAuthToken())
 				.POST(MultipartBodyPublisher.newBuilder()
-					.textPart("variant", skin.isClassicVariant() ? "classic" : "slim")
+					.textPart("variant", skin.classicVariant() ? "classic" : "slim")
 					.filePart("file", skin.file(), MediaType.IMAGE_PNG).build()).build())
 				.thenApply(this::extractProfile);
 		} catch (FileNotFoundException e) {

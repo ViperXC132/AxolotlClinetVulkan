@@ -90,7 +90,7 @@ public class SkinWidget extends AbstractButtonWidget {
 		CompletableFuture<AxoIdentifier> loader = skin == null ? null : skinManager.loadSkin(skin);
 		if (loader != null && loader.isDone()) {
 			skinRl = loader.join();
-			classic = skin.isClassicVariant();
+			classic = skin.classicVariant();
 		} else {
 			var uuid = UUIDHelper.fromUndashed(owner.getUuid());
 			classic = DefaultSkinHelper.getModel(uuid).equals("default");

@@ -50,6 +50,10 @@ public class SkinManager {
 	private final Set<AxoIdentifier> loadedTextures = new ConcurrentSkipListSet<>(Comparator.comparing(Object::toString));
 
 	public Skin read(Path p) {
+		return read(p, true);
+	}
+
+	public Skin read(Path p, boolean fix) {
 		boolean slim;
 		String sha256;
 		try {
@@ -60,13 +64,16 @@ public class SkinManager {
 				int height = img.getHeight();
 				if (width != 64) return null;
 				if (height == 32) {
-					var img2 = SkinTextureDownloaderAccessor.invokeProcessLegacySkin(img, "local");
-					img2.writeToFile(p);
-					slim = ClientColors.ARGB.alpha(img2.getPixel(47, 63)) == 0;
+					if (fix) {
+						try (var img2 = SkinTextureDownloaderAccessor.invokeProcessLegacySkin(img, "local")) {
+							img2.writeToFile(p);
+						}
+					}
+					slim = false;
 				} else if (height != 64) {
 					return null;
 				} else {
-					slim = ClientColors.ARGB.alpha(img.getPixel(47, 63)) == 0;
+					slim = ClientColors.ARGB.alpha(img.getPixel(63, 63)) == 0;
 				}
 			}
 			return new Skin.Local(!slim, p, sha256);

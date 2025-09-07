@@ -93,7 +93,7 @@ public class SkinWidget extends ClickableWidget {
 		CompletableFuture<AxoIdentifier> loader = skin == null ? null : skinManager.loadSkin(skin);
 		if (loader != null && loader.isDone()) {
 			skinRl = loader.join();
-			classic = skin.isClassicVariant();
+			classic = skin.classicVariant();
 		} else {
 			var skin = DefaultSkinHelper.getSkin(UUIDHelper.fromUndashed(owner.getUuid()));
 			classic = skin.model() == PlayerSkin.Model.WIDE;

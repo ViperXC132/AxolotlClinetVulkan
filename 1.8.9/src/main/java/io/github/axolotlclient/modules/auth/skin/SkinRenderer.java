@@ -89,7 +89,9 @@ public class SkinRenderer {
 		model.rightPants.render(k);
 		model.jacket.render(k);
 		model.renderLeftArm();
-		model.renderRightArm();
+		model.rightArm.render(0.0625F);
+		GlStateManager.translatef(0, 0, -0.62F); // why?
+		model.rightSleeve.render(0.0625F);
 		GlStateManager.popMatrix();
 		if (cape != null) {
 			GlStateManager.pushMatrix();

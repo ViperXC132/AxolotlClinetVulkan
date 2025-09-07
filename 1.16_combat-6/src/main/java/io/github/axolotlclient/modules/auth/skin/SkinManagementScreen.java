@@ -41,7 +41,9 @@ import io.github.axolotlclient.modules.auth.MSApi;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.util.ButtonWidgetTextures;
 import io.github.axolotlclient.util.ClientColors;
+import io.github.axolotlclient.util.ThreadExecuter;
 import io.github.axolotlclient.util.Watcher;
+import io.github.axolotlclient.util.notifications.Notifications;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
@@ -56,6 +58,7 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
+import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -87,7 +90,10 @@ public class SkinManagementScreen extends Screen {
 		super(new TranslatableText("skins.manage"));
 		this.parent = parent;
 		this.account = account;
-		skinDirWatcher = Watcher.createSelfTicking(SKINS_DIR, this::loadSkinsList);
+		skinDirWatcher = Watcher.createSelfTicking(SKINS_DIR, () -> {
+			AxolotlClientCommon.getInstance().getLogger().info("Reloading screen as local files changed!");
+			loadSkinsList();
+		});
 		if (account.needsRefresh()) {
 			refreshFuture = account.refresh(Auth.getInstance().getMsApi());
 		} else {
@@ -367,14 +373,33 @@ public class SkinManagementScreen extends Screen {
 	@Override
 	public void filesDragged(List<Path> packs) {
 		if (packs.isEmpty()) return;
-		packs.forEach(p -> {
-			try {
-				Files.copy(p, SKINS_DIR.resolve(p.getFileName()));
-			} catch (IOException e) {
-				AxolotlClientCommon.getInstance().getLogger().warn("Failed to copy skin file: ", e);
-			}
-		});
-		loadSkinsList();
+
+		CompletableFuture<?>[] futs = new CompletableFuture[packs.size()];
+		for (int i = 0; i < packs.size(); i++) {
+			Path p = packs.get(i);
+			futs[i] = CompletableFuture.runAsync(() -> {
+				try {
+					var target = SKINS_DIR.resolve(p.getFileName());
+					if (Files.exists(target)) {
+						int counter = 0;
+						do {
+							counter++;
+							target = target.resolveSibling(target.getFileName().toString()+"_"+counter);
+						} while (Files.exists(target));
+					}
+					var skin = Auth.getInstance().getSkinManager().read(p, false);
+					if (skin != null) {
+						Files.write(target, skin.image().join());
+					} else {
+						AxolotlClientCommon.getInstance().getLogger().info("Skipping dragged file {} because it does not seem to be a valid skin!", p);
+						Notifications.getInstance().addStatus("skins.notification.title", "skins.notification.not_copied", p.getFileName());
+					}
+				} catch (IOException e) {
+					AxolotlClientCommon.getInstance().getLogger().warn("Failed to copy skin file: ", e);
+				}
+			}, ThreadExecuter.service());
+		}
+		CompletableFuture.allOf(futs).thenRun(this::loadSkinsList);
 	}
 
 	private @NotNull Entry createEntryForSkin(Skin skin, int entryHeight) {
@@ -538,9 +563,40 @@ public class SkinManagementScreen extends Screen {
 			super(0, 0, widget.getWidth(), height, LiteralText.EMPTY);
 			widget.setWidth(getWidth() - 4);
 			var asset = widget.getFocusedAsset();
+			class SpriteButton extends ButtonWidget {
+				private Identifier sprite;
+
+				public SpriteButton(Text message, PressAction onPress, Identifier sprite) {
+					super(0, 0, 11, 11, message, onPress);
+					this.sprite = sprite;
+				}
+
+				@Override
+				public void renderButton(MatrixStack graphics, int mouseX, int mouseY, float delta) {
+					Identifier tex = ButtonWidgetTextures.get(getYImage(hovered));
+					DrawUtil.blitSprite(tex, x, y, width, height, new DrawUtil.NineSlice(200, 20, 3));
+					client.getTextureManager().bindTexture(sprite);
+					drawTexture(graphics, x + 2, y + 2, 0, 0, 7, 7, 7, 7);
+					if (this.isHovered()) {
+						tooltip = getMessage();
+					}
+				}
+			}
+			if (asset instanceof Skin skin) {
+				var wideSprite = new Identifier("axolotlclient", "textures/gui/sprites/wide.png");
+				var slimSprite = new Identifier("axolotlclient", "textures/gui/sprites/slim.png");
+				var slimText = new TranslatableText("skins.manage.variant.classic");
+				var wideText = new TranslatableText("skins.manage.variant.slim");
+				actionButtons.add(new SpriteButton(skin.classicVariant() ? wideText : slimText, btn -> {
+					var self = (SpriteButton) btn;
+					skin.classicVariant(!skin.classicVariant());
+					self.sprite = skin.classicVariant() ? slimSprite : wideSprite;
+					self.setMessage(skin.classicVariant() ? wideText : slimText);
+				}, skin.classicVariant() ? slimSprite : wideSprite));
+			}
 			if (asset != null) {
 				if (asset.isLocal()) {
-					var delete = new ButtonWidget(0, 0, 11, 11, new TranslatableText("skins.manage.delete"), btn -> {
+					this.actionButtons.add(new SpriteButton(new TranslatableText("skins.manage.delete"), btn -> {
 						btn.active = false;
 						client.openScreen(new ConfirmScreen(confirmed -> {
 							client.openScreen(SkinManagementScreen.this);
@@ -557,25 +613,10 @@ public class SkinManagementScreen extends Screen {
 							new TranslatableText("skins.manage.delete.confirm.desc_active") :
 							new TranslatableText("skins.manage.delete.confirm.desc")
 						).br$color(Colors.RED.toInt())));
-					}) {
-
-						private final Identifier sprite = new Identifier("axolotlclient", "textures/gui/sprites/delete.png");
-
-						@Override
-						public void renderButton(MatrixStack graphics, int mouseX, int mouseY, float delta) {
-							Identifier tex = ButtonWidgetTextures.get(getYImage(hovered));
-							DrawUtil.blitSprite(tex, x, y, width, height, new DrawUtil.NineSlice(200, 20, 3));
-							client.getTextureManager().bindTexture(sprite);
-							drawTexture(graphics, x + 2, y + 2, 0, 0, 7, 7, 7, 7);
-							if (this.isHovered()) {
-								tooltip = getMessage();
-							}
-						}
-					};
-					this.actionButtons.add(delete);
+					}, new Identifier("axolotlclient", "textures/gui/sprites/delete.png")));
 				}
 				if (asset.supportsDownload() && !asset.isLocal()) {
-					var download = new ButtonWidget(0, 0, 11, 11, new TranslatableText("skins.manage.download"), btn -> {
+					this.actionButtons.add(new SpriteButton(new TranslatableText("skins.manage.download"), btn -> {
 						btn.active = false;
 						asset.image().thenAcceptAsync(b -> {
 							try {
@@ -588,21 +629,7 @@ public class SkinManagementScreen extends Screen {
 							refreshCurrentList();
 							btn.active = true;
 						});
-					}) {
-						private final Identifier sprite = new Identifier("axolotlclient", "textures/gui/sprites/download.png");
-
-						@Override
-						public void renderButton(MatrixStack graphics, int mouseX, int mouseY, float delta) {
-							Identifier tex = ButtonWidgetTextures.get(getYImage(hovered));
-							DrawUtil.blitSprite(tex, x, y, width, height, new DrawUtil.NineSlice(200, 20, 3));
-							client.getTextureManager().bindTexture(sprite);
-							drawTexture(graphics, x + 2, y + 2, 0, 0, 7, 7, 7, 7);
-							if (this.isHovered()) {
-								tooltip = getMessage();
-							}
-						}
-					};
-					this.actionButtons.add(download);
+					}, new Identifier("axolotlclient", "textures/gui/sprites/download.png")));
 				}
 			}
 			if (label != null) {

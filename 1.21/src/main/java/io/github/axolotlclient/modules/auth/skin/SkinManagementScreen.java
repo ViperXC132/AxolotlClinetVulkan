@@ -38,9 +38,12 @@ import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.auth.MSApi;
 import io.github.axolotlclient.util.ClientColors;
+import io.github.axolotlclient.util.ThreadExecuter;
 import io.github.axolotlclient.util.Watcher;
+import io.github.axolotlclient.util.notifications.Notifications;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.ElementPath;
 import net.minecraft.client.gui.GuiGraphics;
@@ -85,7 +88,10 @@ public class SkinManagementScreen extends Screen {
 		super(Text.translatable("skins.manage"));
 		this.parent = parent;
 		this.account = account;
-		skinDirWatcher = Watcher.createSelfTicking(SKINS_DIR, this::loadSkinsList);
+		skinDirWatcher = Watcher.createSelfTicking(SKINS_DIR, () -> {
+			AxolotlClientCommon.getInstance().getLogger().info("Reloading screen as local files changed!");
+			loadSkinsList();
+		});
 		if (account.needsRefresh()) {
 			refreshFuture = account.refresh(Auth.getInstance().getMsApi());
 		} else {
@@ -149,7 +155,7 @@ public class SkinManagementScreen extends Screen {
 			SkinImportUtil.openImportSkinDialog().thenAccept(this::filesDragged).thenRun(() -> btn.active = true);
 		}, true).sprite(Identifier.of("axolotlclient", "download"), 7, 7).dimensions(11, 11).build();
 		importButton.setTooltip(Tooltip.create(importButton.getMessage()));
-		importButton.setPosition(capesTab.getX()+capesTab.getWidth()-11, capesTab.getY()-13);
+		importButton.setPosition(capesTab.getX() + capesTab.getWidth() - 11, capesTab.getY() - 13);
 		skinsTab.active = this.capesTab;
 		capesTab.active = !this.capesTab;
 		Runnable addWidgets = () -> {
@@ -308,14 +314,33 @@ public class SkinManagementScreen extends Screen {
 	@Override
 	public void filesDragged(List<Path> packs) {
 		if (packs.isEmpty()) return;
-		packs.forEach(p -> {
-			try {
-				Files.copy(p, SKINS_DIR.resolve(p.getFileName()));
-			} catch (IOException e) {
-				AxolotlClientCommon.getInstance().getLogger().warn("Failed to copy skin file: ", e);
-			}
-		});
-		loadSkinsList();
+
+		CompletableFuture<?>[] futs = new CompletableFuture[packs.size()];
+		for (int i = 0; i < packs.size(); i++) {
+			Path p = packs.get(i);
+			futs[i] = CompletableFuture.runAsync(() -> {
+				try {
+					var target = SKINS_DIR.resolve(p.getFileName());
+					if (Files.exists(target)) {
+						int counter = 0;
+						do {
+							counter++;
+							target = target.resolveSibling(target.getFileName().toString() + "_" + counter);
+						} while (Files.exists(target));
+					}
+					var skin = Auth.getInstance().getSkinManager().read(p, false);
+					if (skin != null) {
+						Files.write(target, skin.image().join());
+					} else {
+						AxolotlClientCommon.getInstance().getLogger().info("Skipping dragged file {} because it does not seem to be a valid skin!", p);
+						Notifications.getInstance().addStatus("skins.notification.title", "skins.notification.not_copied", p.getFileName());
+					}
+				} catch (IOException e) {
+					AxolotlClientCommon.getInstance().getLogger().warn("Failed to copy skin file: ", e);
+				}
+			}, ThreadExecuter.service());
+		}
+		CompletableFuture.allOf(futs).thenRun(this::loadSkinsList);
 	}
 
 	private @NotNull Entry createEntryForSkin(Skin skin, int entryHeight) {
@@ -474,31 +499,66 @@ public class SkinManagementScreen extends Screen {
 			widget.setWidth(getWidth() - 4);
 			var asset = widget.getFocusedAsset();
 			if (asset != null) {
+				class SpriteButton extends ButtonWidget {
+					private Identifier sprite;
+
+					public SpriteButton(Text message, PressAction onPress, Identifier sprite) {
+						super(0, 0, 11, 11, message, onPress, DEFAULT_NARRATION);
+						this.sprite = sprite;
+						setTooltip(Tooltip.create(message, Text.empty()));
+					}
+
+					@Override
+					public void setMessage(Text message) {
+						super.setMessage(message);
+						setTooltip(Tooltip.create(message, Text.empty()));
+					}
+
+					@Override
+					protected void drawWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+						super.drawWidget(graphics, mouseX, mouseY, delta);
+						graphics.drawGuiTexture(sprite, this.getX() + 2, this.getY() + 2, 7, 7);
+					}
+
+					@Override
+					public void drawScrollableText(GuiGraphics graphics, TextRenderer renderer, int color) {
+
+					}
+				}
+				if (asset instanceof Skin skin) {
+					var wideSprite = Identifier.of("axolotlclient", "wide");
+					var slimSprite = Identifier.of("axolotlclient", "slim");
+					var slimText = Text.translatable("skins.manage.variant.classic");
+					var wideText = Text.translatable("skins.manage.variant.slim");
+					actionButtons.add(new SpriteButton(skin.classicVariant() ? wideText : slimText, btn -> {
+						var self = (SpriteButton) btn;
+						skin.classicVariant(!skin.classicVariant());
+						self.sprite = skin.classicVariant() ? slimSprite : wideSprite;
+						self.setMessage(skin.classicVariant() ? wideText : slimText);
+					}, skin.classicVariant() ? slimSprite : wideSprite));
+				}
 				if (asset.isLocal()) {
-					var delete = SpriteButtonWidget.builder(Text.translatable("skins.manage.delete"), btn -> {
-							btn.active = false;
-							client.setScreen(new ConfirmScreen(confirmed -> {
-								client.setScreen(SkinManagementScreen.this);
-								if (confirmed) {
-									try {
-										Files.delete(asset.file());
-										refreshCurrentList();
-									} catch (IOException e) {
-										AxolotlClientCommon.getInstance().getLogger().warn("Failed to delete: ", e);
-									}
+					this.actionButtons.add(new SpriteButton(Text.translatable("skins.manage.delete"), btn -> {
+						btn.active = false;
+						client.setScreen(new ConfirmScreen(confirmed -> {
+							client.setScreen(SkinManagementScreen.this);
+							if (confirmed) {
+								try {
+									Files.delete(asset.file());
+									refreshCurrentList();
+								} catch (IOException e) {
+									AxolotlClientCommon.getInstance().getLogger().warn("Failed to delete: ", e);
 								}
-								btn.active = true;
-							}, Text.translatable("skins.manage.delete.confirm"), (asset.active() ?
-								Text.translatable("skins.manage.delete.confirm.desc_active") :
-								Text.translatable("skins.manage.delete.confirm.desc"))
-								.setColor(Colors.RED.toInt())));
-						}, true).sprite(Identifier.of("axolotlclient", "delete"), 7, 7).dimensions(11, 11)
-						.build();
-					delete.setTooltip(Tooltip.create(delete.getMessage()));
-					this.actionButtons.add(delete);
+							}
+							btn.active = true;
+						}, Text.translatable("skins.manage.delete.confirm"), (Text) (asset.active() ?
+							Text.translatable("skins.manage.delete.confirm.desc_active") :
+							Text.translatable("skins.manage.delete.confirm.desc")
+						).br$color(Colors.RED.toInt())));
+					}, Identifier.of("axolotlclient", "delete")));
 				}
 				if (asset.supportsDownload() && !asset.isLocal()) {
-					var download = SpriteButtonWidget.builder(Text.translatable("skins.manage.download"), btn -> {
+					this.actionButtons.add(new SpriteButton(Text.translatable("skins.manage.download"), btn -> {
 						btn.active = false;
 						asset.image().thenAcceptAsync(b -> {
 							try {
@@ -511,9 +571,7 @@ public class SkinManagementScreen extends Screen {
 							refreshCurrentList();
 							btn.active = true;
 						});
-					}, true).sprite(Identifier.of("axolotlclient", "download"), 7, 7).dimensions(11, 11).build();
-					download.setTooltip(Tooltip.create(download.getMessage()));
-					this.actionButtons.add(download);
+					}, Identifier.of("axolotlclient", "download")));
 				}
 			}
 			if (label != null) {

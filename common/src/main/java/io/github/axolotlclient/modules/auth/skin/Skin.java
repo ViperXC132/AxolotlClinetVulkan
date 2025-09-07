@@ -32,13 +32,32 @@ import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.modules.auth.MSApi;
 
 public interface Skin extends Asset {
-	boolean isClassicVariant();
+	boolean classicVariant();
+	void classicVariant(boolean classic);
 
-	record Local(boolean classic, Path file, String textureKey) implements Skin {
+	final class Local implements Skin {
+		public static final String METADATA_SUFFIX = ".meta";
+		private boolean classic;
+		private final Path file;
+		private final String textureKey;
+
+		public Local(boolean classic, Path file, String textureKey) {
+			this.classic = classic;
+			this.file = file;
+			this.textureKey = textureKey;
+		}
 
 		@Override
-		public boolean isClassicVariant() {
+		public boolean classicVariant() {
 			return classic;
+		}
+
+		@Override
+		public void classicVariant(boolean classic) {
+			if (classic != this.classic) {
+
+			}
+			this.classic = classic;
 		}
 
 		@Override
@@ -66,13 +85,28 @@ public interface Skin extends Asset {
 		public boolean isLocal() {
 			return true;
 		}
+
+		@Override
+		public Path file() {
+			return file;
+		}
+
+		@Override
+		public String textureKey() {
+			return textureKey;
+		}
 	}
 
 	record Shared(Local local, MSApi.MCProfile.OnlineSkin online) implements Skin {
 
 		@Override
-		public boolean isClassicVariant() {
-			return online.isClassicVariant();
+		public boolean classicVariant() {
+			return local.classicVariant();
+		}
+
+		@Override
+		public void classicVariant(boolean classic) {
+			local.classicVariant(classic);
 		}
 
 		@Override
@@ -112,7 +146,7 @@ public interface Skin extends Asset {
 
 		@Override
 		public String url() {
-			return online().url();
+			return online.url();
 		}
 
 		@Override
