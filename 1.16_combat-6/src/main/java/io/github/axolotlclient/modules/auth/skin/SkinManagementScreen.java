@@ -58,7 +58,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.render.Tessellator;
 import net.minecraft.client.render.VertexFormats;
-import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -90,7 +89,7 @@ public class SkinManagementScreen extends Screen {
 		super(new TranslatableText("skins.manage"));
 		this.parent = parent;
 		this.account = account;
-		skinDirWatcher = Watcher.createSelfTicking(SKINS_DIR, () -> {
+		skinDirWatcher = Watcher.createSelfTicking(SKINS_DIR, s -> !s.endsWith(Skin.Local.METADATA_SUFFIX), () -> {
 			AxolotlClientCommon.getInstance().getLogger().info("Reloading screen as local files changed!");
 			loadSkinsList();
 		});
@@ -167,23 +166,18 @@ public class SkinManagementScreen extends Screen {
 			this.capesTab = true;
 		});
 		navBar.add(capesTab);
-		var importButton = new ButtonWidget(capesTab.x+capesTab.getWidth()-11, capesTab.y-13, 11, 11, new TranslatableText("skins.manage.import"), btn -> {
+		var importButton = new SpriteButton(new TranslatableText("skins.manage.import.local"), btn -> {
 			btn.active = false;
 			SkinImportUtil.openImportSkinDialog().thenAccept(this::filesDragged).thenRun(() -> btn.active = true);
-		}) {
-			private final Identifier sprite = new Identifier("axolotlclient", "textures/gui/sprites/download.png");
-
-			@Override
-			public void renderButton(MatrixStack graphics, int mouseX, int mouseY, float delta) {
-				Identifier tex = ButtonWidgetTextures.get(getYImage(hovered));
-				DrawUtil.blitSprite(tex, x, y, width, height, new DrawUtil.NineSlice(200, 20, 3));
-				client.getTextureManager().bindTexture(sprite);
-				drawTexture(graphics, x + 2, y + 2, 0, 0, 7, 7, 7, 7);
-				if (this.isHovered()) {
-					tooltip = getMessage();
-				}
-			}
-		};
+		}, new Identifier("axolotlclient", "textures/gui/sprites/folder.png"));
+		importButton.x = capesTab.x + capesTab.getWidth() - 11;
+		importButton.y = capesTab.y - 13;
+		var downloadButton = new SpriteButton(new TranslatableText("skins.manage.import.online"), btn -> {
+			btn.active = false;
+			// TODO
+		}, new Identifier("axolotlclient", "textures/gui/sprites/download.png"));
+		downloadButton.x = importButton.x - 2 - 11;
+		downloadButton.y = capesTab.y - 13;
 		skinsTab.active = this.capesTab;
 		capesTab.active = !this.capesTab;
 		Runnable addWidgets = () -> {
@@ -193,6 +187,7 @@ public class SkinManagementScreen extends Screen {
 			addDrawableChild(capesList);
 			addDrawableChild(skinsTab);
 			addDrawableChild(capesTab);
+			addDrawableChild(downloadButton);
 			addDrawableChild(importButton);
 			addDrawableChild(back);
 		};
@@ -252,7 +247,7 @@ public class SkinManagementScreen extends Screen {
 		drawables.forEach(d -> d.render(graphics, mouseX, mouseY, delta));
 		drawCenteredText(graphics, textRenderer, getTitle(), width / 2, 33 / 2 - textRenderer.fontHeight / 2, -1);
 		if (tooltip != null) {
-			renderTooltip(graphics, tooltip, mouseX, mouseY+20);
+			renderTooltip(graphics, tooltip, mouseX, mouseY + 20);
 		}
 	}
 
@@ -384,7 +379,7 @@ public class SkinManagementScreen extends Screen {
 						int counter = 0;
 						do {
 							counter++;
-							target = target.resolveSibling(target.getFileName().toString()+"_"+counter);
+							target = target.resolveSibling(target.getFileName().toString() + "_" + counter);
 						} while (Files.exists(target));
 					}
 					var skin = Auth.getInstance().getSkinManager().read(p, false);
@@ -563,25 +558,6 @@ public class SkinManagementScreen extends Screen {
 			super(0, 0, widget.getWidth(), height, LiteralText.EMPTY);
 			widget.setWidth(getWidth() - 4);
 			var asset = widget.getFocusedAsset();
-			class SpriteButton extends ButtonWidget {
-				private Identifier sprite;
-
-				public SpriteButton(Text message, PressAction onPress, Identifier sprite) {
-					super(0, 0, 11, 11, message, onPress);
-					this.sprite = sprite;
-				}
-
-				@Override
-				public void renderButton(MatrixStack graphics, int mouseX, int mouseY, float delta) {
-					Identifier tex = ButtonWidgetTextures.get(getYImage(hovered));
-					DrawUtil.blitSprite(tex, x, y, width, height, new DrawUtil.NineSlice(200, 20, 3));
-					client.getTextureManager().bindTexture(sprite);
-					drawTexture(graphics, x + 2, y + 2, 0, 0, 7, 7, 7, 7);
-					if (this.isHovered()) {
-						tooltip = getMessage();
-					}
-				}
-			}
 			if (asset instanceof Skin skin) {
 				var wideSprite = new Identifier("axolotlclient", "textures/gui/sprites/wide.png");
 				var slimSprite = new Identifier("axolotlclient", "textures/gui/sprites/slim.png");
@@ -623,6 +599,9 @@ public class SkinManagementScreen extends Screen {
 								var out = SKINS_DIR.resolve(asset.textureKey());
 								Files.createDirectories(out.getParent());
 								Files.write(out, b);
+								if (asset instanceof Skin skin) {
+									Skin.Local.writeMetadata(out, Map.of(Skin.Local.CLASSIC_METADATA_KEY, skin.classicVariant()));
+								}
 							} catch (IOException e) {
 								AxolotlClientCommon.getInstance().getLogger().warn("Failed to download: ", e);
 							}
@@ -809,6 +788,26 @@ public class SkinManagementScreen extends Screen {
 				RenderSystem.disableBlend();
 				RenderSystem.enableAlphaTest();
 				RenderSystem.enableTexture();
+			}
+		}
+	}
+
+	private class SpriteButton extends ButtonWidget {
+		private Identifier sprite;
+
+		public SpriteButton(Text message, PressAction onPress, Identifier sprite) {
+			super(0, 0, 11, 11, message, onPress);
+			this.sprite = sprite;
+		}
+
+		@Override
+		public void renderButton(MatrixStack graphics, int mouseX, int mouseY, float delta) {
+			Identifier tex = ButtonWidgetTextures.get(getYImage(hovered));
+			DrawUtil.blitSprite(tex, x, y, width, height, new DrawUtil.NineSlice(200, 20, 3));
+			client.getTextureManager().bindTexture(sprite);
+			drawTexture(graphics, x + 2, y + 2, 0, 0, 7, 7, 7, 7);
+			if (this.isHovered()) {
+				tooltip = getMessage();
 			}
 		}
 	}

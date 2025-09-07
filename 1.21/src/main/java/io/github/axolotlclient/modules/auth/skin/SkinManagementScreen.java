@@ -88,7 +88,7 @@ public class SkinManagementScreen extends Screen {
 		super(Text.translatable("skins.manage"));
 		this.parent = parent;
 		this.account = account;
-		skinDirWatcher = Watcher.createSelfTicking(SKINS_DIR, () -> {
+		skinDirWatcher = Watcher.createSelfTicking(SKINS_DIR, s -> !s.endsWith(Skin.Local.METADATA_SUFFIX), () -> {
 			AxolotlClientCommon.getInstance().getLogger().info("Reloading screen as local files changed!");
 			loadSkinsList();
 		});
@@ -150,12 +150,18 @@ public class SkinManagementScreen extends Screen {
 			this.capesTab = true;
 		}).position(width * 3 / 4 + 2, headerHeight).width(100).build();
 		navBar.add(capesTab);
-		var importButton = SpriteButtonWidget.builder(Text.translatable("skins.manage.import"), btn -> {
+		var importButton = SpriteButtonWidget.builder(Text.translatable("skins.manage.import.local"), btn -> {
 			btn.active = false;
 			SkinImportUtil.openImportSkinDialog().thenAccept(this::filesDragged).thenRun(() -> btn.active = true);
-		}, true).sprite(Identifier.of("axolotlclient", "download"), 7, 7).dimensions(11, 11).build();
+		}, true).sprite(Identifier.of("axolotlclient", "folder"), 7, 7).dimensions(11, 11).build();
 		importButton.setTooltip(Tooltip.create(importButton.getMessage()));
 		importButton.setPosition(capesTab.getX() + capesTab.getWidth() - 11, capesTab.getY() - 13);
+		var downloadButton = SpriteButtonWidget.builder(Text.translatable("skins.manage.import.online"), btn -> {
+			btn.active = false;
+			// TODO
+		}, true).sprite(Identifier.of("axolotlclient", "download"), 7, 7).dimensions(11, 11).build();
+		downloadButton.setTooltip(Tooltip.create(downloadButton.getMessage()));
+		downloadButton.setPosition(importButton.getX() - 2 - 11, capesTab.getY() - 13);
 		skinsTab.active = this.capesTab;
 		capesTab.active = !this.capesTab;
 		Runnable addWidgets = () -> {
@@ -166,6 +172,7 @@ public class SkinManagementScreen extends Screen {
 			addDrawableSelectableElement(capesTab);
 			addDrawableSelectableElement(skinList);
 			addDrawableSelectableElement(capesList);
+			addDrawableSelectableElement(downloadButton);
 			addDrawableSelectableElement(importButton);
 			addDrawableSelectableElement(back);
 		};
@@ -565,6 +572,9 @@ public class SkinManagementScreen extends Screen {
 								var out = SKINS_DIR.resolve(asset.textureKey());
 								Files.createDirectories(out.getParent());
 								Files.write(out, b);
+								if (asset instanceof Skin skin) {
+									Skin.Local.writeMetadata(out, Map.of(Skin.Local.CLASSIC_METADATA_KEY, skin.classicVariant()));
+								}
 							} catch (IOException e) {
 								AxolotlClientCommon.getInstance().getLogger().warn("Failed to download: ", e);
 							}

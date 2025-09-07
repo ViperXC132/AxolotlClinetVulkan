@@ -27,6 +27,7 @@ import java.nio.file.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
 
 import io.github.axolotlclient.AxolotlClientCommon;
 import org.jetbrains.annotations.Nullable;
@@ -36,9 +37,11 @@ public class Watcher implements AutoCloseable {
 	private static final ScheduledExecutorService thread = Executors.newSingleThreadScheduledExecutor();
 	private final WatchService watcher;
 	private final Path path;
+	private final Predicate<String> fileFilter;
 
-	public Watcher(Path root) throws IOException {
+	public Watcher(Path root, Predicate<String> fileFilter) throws IOException {
 		this.path = root;
+		this.fileFilter = fileFilter;
 		this.watcher = path.getFileSystem().newWatchService();
 
 		try {
@@ -58,10 +61,10 @@ public class Watcher implements AutoCloseable {
 	}
 
 	@Nullable
-	public static Watcher create(Path path) {
+	public static Watcher create(Path path, Predicate<String> fileFilter) {
 		try {
 			Files.createDirectories(path);
-			return new Watcher(path);
+			return new Watcher(path, fileFilter);
 		} catch (IOException var2) {
 			AxolotlClientCommon.getInstance().getLogger().warn("Failed to initialize directory {} monitoring", path, var2);
 			return null;
@@ -69,7 +72,11 @@ public class Watcher implements AutoCloseable {
 	}
 
 	public static Watcher createSelfTicking(Path path, Runnable onUpdate) {
-		var watcher = create(path);
+		return createSelfTicking(path, s -> true, onUpdate);
+	}
+
+	public static Watcher createSelfTicking(Path path, Predicate<String> fileFilter, Runnable onUpdate) {
+		var watcher = create(path, fileFilter);
 		if (watcher != null) {
 			thread.scheduleAtFixedRate(() -> {
 				try {
@@ -97,12 +104,8 @@ public class Watcher implements AutoCloseable {
 		WatchKey watchKey;
 		while ((watchKey = this.watcher.poll()) != null) {
 			for (WatchEvent<?> watchEvent : watchKey.pollEvents()) {
-				bl = true;
 				if (watchKey.watchable() == this.path && watchEvent.context() != null) {
-					Path path = this.path.resolve((Path) watchEvent.context());
-					if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
-						this.watchDir(path);
-					}
+					bl |= this.fileFilter.test(((Path)watchEvent.context()).toString());
 				}
 			}
 

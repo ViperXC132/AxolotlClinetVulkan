@@ -57,6 +57,7 @@ public class SkinManager {
 
 	@SuppressWarnings("UnstableApiUsage")
 	public Skin read(Path p, boolean fix) {
+		if (p.getFileName().toString().endsWith(Skin.Local.METADATA_SUFFIX)) return null;
 		boolean slim;
 		String sha256;
 		try {
@@ -80,7 +81,11 @@ public class SkinManager {
 					} else if (height != 64) {
 						return null;
 					} else {
-						slim = ClientColors.ARGB.alpha(img.getPixelColor(63, 63)) == 0;
+						slim = ClientColors.ARGB.alpha(img.getPixelColor(50, 16)) == 0;
+					}
+					var metadata = Skin.Local.readMetadata(p);
+					if (metadata != null && metadata.containsKey(Skin.Local.CLASSIC_METADATA_KEY)) {
+						slim = !(boolean) metadata.get(Skin.Local.CLASSIC_METADATA_KEY);
 					}
 				}
 			}

@@ -29,7 +29,6 @@ import java.util.*;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -80,7 +79,7 @@ public class SkinManagementScreen extends Screen {
 		super(Text.translatable("skins.manage"));
 		this.parent = parent;
 		this.account = account;
-		skinDirWatcher = Watcher.createSelfTicking(SKINS_DIR, () -> {
+		skinDirWatcher = Watcher.createSelfTicking(SKINS_DIR, s -> !s.endsWith(Skin.Local.METADATA_SUFFIX), () -> {
 			AxolotlClientCommon.getInstance().getLogger().info("Reloading screen as local files changed!");
 			loadSkinsList();
 		});
@@ -157,24 +156,16 @@ public class SkinManagementScreen extends Screen {
 			this.capesTab = true;
 		}).position(width * 3 / 4 + 2, headerHeight).width(100).build();
 		navBar.add(capesTab);
-		var importButton = new ButtonWidget(capesTab.getX()+capesTab.getWidth()-11, capesTab.getY()-13, 11, 11, Text.translatable("skins.manage.import"), btn -> {
+		var importButton = new SpriteButton(Text.translatable("skins.manage.import.local"), btn -> {
 			btn.active = false;
 			SkinImportUtil.openImportSkinDialog().thenAccept(this::filesDragged).thenRun(() -> btn.active = true);
-		}, Supplier::get) {
-			private final Identifier SPRITE = new Identifier("axolotlclient", "textures/gui/sprites/download.png");
-
-			@Override
-			protected void drawWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-				super.drawWidget(graphics, mouseX, mouseY, delta);
-				graphics.drawTexture(SPRITE, getX() + 2, getY() + 2, 0, 0, 7, 7, 7, 7);
-			}
-
-			@Override
-			public void drawScrollableText(GuiGraphics graphics, TextRenderer renderer, int color) {
-
-			}
-		};
-		importButton.setTooltip(Tooltip.create(importButton.getMessage()));
+		}, new Identifier("axolotlclient", "textures/gui/sprites/folder.png"));
+		importButton.setPosition(capesTab.getX() + capesTab.getWidth() - 11, capesTab.getY() - 13);
+		var downloadButton = new SpriteButton(Text.translatable("skins.manage.import.online"), btn -> {
+			btn.active = false;
+			// TODO
+		}, new Identifier("axolotlclient", "textures/gui/sprites/download.png"));
+		downloadButton.setPosition(importButton.getX() - 2 - 11, capesTab.getY() - 13);
 		skinsTab.active = this.capesTab;
 		capesTab.active = !this.capesTab;
 		Runnable addWidgets = () -> {
@@ -185,6 +176,7 @@ public class SkinManagementScreen extends Screen {
 			addDrawableChild(capesList);
 			addDrawableChild(skinsTab);
 			addDrawableChild(capesTab);
+			addDrawableChild(downloadButton);
 			addDrawableChild(importButton);
 			addDrawableChild(back);
 		};
@@ -349,7 +341,7 @@ public class SkinManagementScreen extends Screen {
 						int counter = 0;
 						do {
 							counter++;
-							target = target.resolveSibling(target.getFileName().toString()+"_"+counter);
+							target = target.resolveSibling(target.getFileName().toString() + "_" + counter);
 						} while (Files.exists(target));
 					}
 					var skin = Auth.getInstance().getSkinManager().read(p, false);
@@ -535,32 +527,6 @@ public class SkinManagementScreen extends Screen {
 			widget.setWidth(getWidth() - 4);
 			var asset = widget.getFocusedAsset();
 			if (asset != null) {
-				class SpriteButton extends ButtonWidget {
-					private Identifier sprite;
-
-					public SpriteButton(Text message, PressAction onPress, Identifier sprite) {
-						super(0, 0, 11, 11, message, onPress, DEFAULT_NARRATION);
-						this.sprite = sprite;
-						setTooltip(Tooltip.create(message, Text.empty()));
-					}
-
-					@Override
-					public void setMessage(Text message) {
-						super.setMessage(message);
-						setTooltip(Tooltip.create(message, Text.empty()));
-					}
-
-					@Override
-					protected void drawWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-						super.drawWidget(graphics, mouseX, mouseY, delta);
-						graphics.drawTexture(sprite, getX() + 2, getY() + 2, 0, 0, 7, 7, 7, 7);
-					}
-
-					@Override
-					public void drawScrollableText(GuiGraphics graphics, TextRenderer renderer, int color) {
-
-					}
-				}
 				if (asset instanceof Skin skin) {
 					var wideSprite = new Identifier("axolotlclient", "textures/gui/sprites/wide.png");
 					var slimSprite = new Identifier("axolotlclient", "textures/gui/sprites/slim.png");
@@ -601,6 +567,9 @@ public class SkinManagementScreen extends Screen {
 								var out = SKINS_DIR.resolve(asset.textureKey());
 								Files.createDirectories(out.getParent());
 								Files.write(out, b);
+								if (asset instanceof Skin skin) {
+									Skin.Local.writeMetadata(out, Map.of(Skin.Local.CLASSIC_METADATA_KEY, skin.classicVariant()));
+								}
 							} catch (IOException e) {
 								AxolotlClientCommon.getInstance().getLogger().warn("Failed to download: ", e);
 							}
@@ -796,6 +765,34 @@ public class SkinManagementScreen extends Screen {
 				vertexConsumer.vertex(pose, x1 - gradientWidth, y1 - gradientWidth, z).color(col2).next();
 				vertexConsumer.vertex(pose, x1, y1, z).color(col1).next();
 			}
+		}
+
+	}
+
+	private static class SpriteButton extends ButtonWidget {
+		private Identifier sprite;
+
+		public SpriteButton(Text message, PressAction onPress, Identifier sprite) {
+			super(0, 0, 11, 11, message, onPress, DEFAULT_NARRATION);
+			this.sprite = sprite;
+			setTooltip(Tooltip.create(message, Text.empty()));
+		}
+
+		@Override
+		public void setMessage(Text message) {
+			super.setMessage(message);
+			setTooltip(Tooltip.create(message, Text.empty()));
+		}
+
+		@Override
+		protected void drawWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+			super.drawWidget(graphics, mouseX, mouseY, delta);
+			graphics.drawTexture(sprite, getX() + 2, getY() + 2, 0, 0, 7, 7, 7, 7);
+		}
+
+		@Override
+		public void drawScrollableText(GuiGraphics graphics, TextRenderer renderer, int color) {
+
 		}
 	}
 }

@@ -22,8 +22,11 @@
 
 package io.github.axolotlclient.modules.auth.skin;
 
+import java.util.function.Consumer;
+
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
@@ -85,7 +88,22 @@ public class SkinRenderer {
 			graphics.pop();
 		}
 		MinecraftClient.getInstance().getTextureManager().bindTexture(skinTexture);
-		model.render(graphics, VertexConsumerProvider.immediate(tessellator.getBuffer()).getBuffer(model.getLayer(skinTexture)), 15728880, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
+		var consumer = VertexConsumerProvider.immediate(tessellator.getBuffer()).getBuffer(model.getLayer(skinTexture));
+		Consumer<ModelPart> renderModelPart = m -> m.render(graphics, consumer, 15728880, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
+		renderModelPart.accept(model.head);
+		renderModelPart.accept(model.torso);
+		renderModelPart.accept(model.rightArm);
+		renderModelPart.accept(model.leftArm);
+		renderModelPart.accept(model.rightLeg);
+		renderModelPart.accept(model.leftLeg);
+		renderModelPart.accept(model.helmet);
+		renderModelPart.accept(model.leftPantLeg);
+		renderModelPart.accept(model.rightPantLeg);
+		renderModelPart.accept(model.leftSleeve);
+		graphics.translate(0, 0, -0.62f);
+		renderModelPart.accept(model.rightSleeve);
+		graphics.translate(0, 0, 0.62f);
+		renderModelPart.accept(model.jacket);
 		tessellator.draw();
 		graphics.pop();
 

@@ -37,7 +37,6 @@ import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
-import io.github.axolotlclient.mixin.skins.PlayerSkinTextureAccessor;
 import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.util.ClientColors;
 import net.minecraft.client.MinecraftClient;
@@ -54,6 +53,7 @@ public class SkinManager {
 	}
 
 	public Skin read(Path p, boolean fix) {
+		if (p.getFileName().toString().endsWith(Skin.Local.METADATA_SUFFIX)) return null;
 		boolean slim;
 		String sha256;
 		try {
@@ -65,7 +65,7 @@ public class SkinManager {
 				if (width != 64) return null;
 				if (height == 32) {
 					if (fix) {
-						try (var img2 = PlayerSkinTextureAccessor.invokeRemapTexture(img)) {
+						try (var img2 = remapTexture(img)) {
 							img2.writeFile(p);
 						}
 					}
@@ -73,16 +73,77 @@ public class SkinManager {
 				} else if (height != 64) {
 					return null;
 				} else {
-					slim = ClientColors.ARGB.alpha(img.getPixelColor(63, 63)) == 0;
+					slim = ClientColors.ARGB.alpha(img.getPixelColor(50, 16)) == 0;
+				}
+				var metadata = Skin.Local.readMetadata(p);
+				if (metadata != null && metadata.containsKey(Skin.Local.CLASSIC_METADATA_KEY)) {
+					slim = !(boolean) metadata.get(Skin.Local.CLASSIC_METADATA_KEY);
 				}
 			}
 			return new Skin.Local(!slim, p, sha256);
 		} catch (Exception e) {
-			AxolotlClientCommon.getInstance().getLogger().warn("Failed to probe skin: ", e);
+			AxolotlClientCommon.getInstance().getLogger().warn("Failed to probe skin: {}", p, e);
 		}
 		return null;
 	}
 
+	private static NativeImage remapTexture(NativeImage skinImage) {
+		boolean legacySkin = skinImage.getHeight() == 32;
+		if (legacySkin) {
+			NativeImage nativeImage = new NativeImage(64, 64, true);
+			nativeImage.copyFrom(skinImage);
+			skinImage.close();
+			skinImage = nativeImage;
+			nativeImage.fillRect(0, 32, 64, 32, 0);
+			nativeImage.copyRectangle(4, 16, 16, 32, 4, 4, true, false);
+			nativeImage.copyRectangle(8, 16, 16, 32, 4, 4, true, false);
+			nativeImage.copyRectangle(0, 20, 24, 32, 4, 12, true, false);
+			nativeImage.copyRectangle(4, 20, 16, 32, 4, 12, true, false);
+			nativeImage.copyRectangle(8, 20, 8, 32, 4, 12, true, false);
+			nativeImage.copyRectangle(12, 20, 16, 32, 4, 12, true, false);
+			nativeImage.copyRectangle(44, 16, -8, 32, 4, 4, true, false);
+			nativeImage.copyRectangle(48, 16, -8, 32, 4, 4, true, false);
+			nativeImage.copyRectangle(40, 20, 0, 32, 4, 12, true, false);
+			nativeImage.copyRectangle(44, 20, -8, 32, 4, 12, true, false);
+			nativeImage.copyRectangle(48, 20, -16, 32, 4, 12, true, false);
+			nativeImage.copyRectangle(52, 20, -8, 32, 4, 12, true, false);
+		}
+
+		stripAlpha(skinImage, 0, 0, 32, 16);
+		if (legacySkin) {
+			stripColor(skinImage, 32, 0, 64, 32);
+		}
+
+		stripAlpha(skinImage, 0, 16, 64, 32);
+		stripAlpha(skinImage, 16, 48, 48, 64);
+		return skinImage;
+	}
+
+	@SuppressWarnings("SameParameterValue")
+	private static void stripColor(NativeImage image, int x1, int y1, int x2, int y2) {
+		for (int x = x1; x < x2; x++) {
+			for (int y = y1; y < y2; y++) {
+				int k = image.getPixelColor(x, y);
+				if ((k >> 24 & 0xFF) < 128) {
+					return;
+				}
+			}
+		}
+
+		for (int x = x1; x < x2; x++) {
+			for (int y = y1; y < y2; y++) {
+				image.setPixelColor(x, y, image.getPixelColor(x, y) & 16777215);
+			}
+		}
+	}
+
+	private static void stripAlpha(NativeImage image, int x1, int y1, int x2, int y2) {
+		for (int x = x1; x < x2; x++) {
+			for (int y = y1; y < y2; y++) {
+				image.setPixelColor(x, y, image.getPixelColor(x, y) | 0xFF000000);
+			}
+		}
+	}
 
 	public CompletableFuture<AxoIdentifier> loadSkin(Skin skin) {
 		var rl = AxoIdentifier.of(AxolotlClientCommon.MODID, "skins/" + skin.textureKey());

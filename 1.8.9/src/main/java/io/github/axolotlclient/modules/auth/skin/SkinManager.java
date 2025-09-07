@@ -56,6 +56,7 @@ public class SkinManager {
 
 	@SuppressWarnings("UnstableApiUsage")
 	public Skin read(Path p, boolean fix) {
+		if (p.getFileName().toString().endsWith(Skin.Local.METADATA_SUFFIX)) return null;
 		boolean slim;
 		String sha256;
 		try {
@@ -67,16 +68,20 @@ public class SkinManager {
 				int width = img.getWidth();
 				if (width != 64) return null;
 				if (height == 32) {
-					slim = false;
 					if (fix) {
 						try (var out = Files.newOutputStream(p)) {
 							ImageIO.write(new SkinImageProcessor().process(img), "png", out);
 						}
 					}
+					slim = false;
 				} else if (height != 64) {
 					return null;
 				} else {
-					slim = ClientColors.ARGB.alpha(img.getRGB(63, 63)) == 0;
+					slim = ClientColors.ARGB.alpha(img.getRGB(50, 16)) == 0;
+				}
+				var metadata = Skin.Local.readMetadata(p);
+				if (metadata != null && metadata.containsKey(Skin.Local.CLASSIC_METADATA_KEY)) {
+					slim = !(boolean) metadata.get(Skin.Local.CLASSIC_METADATA_KEY);
 				}
 			}
 			return new Skin.Local(!slim, p, sha256);

@@ -39,7 +39,6 @@ import com.mojang.blaze3d.vertex.Tessellator;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
-import io.github.axolotlclient.AxolotlClientConfig.impl.ui.ButtonWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.ClickableWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.Element;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.ParentElement;
@@ -86,7 +85,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 		super(I18n.translate("skins.manage"));
 		this.parent = parent;
 		this.account = account;
-		skinDirWatcher = Watcher.createSelfTicking(SKINS_DIR, () -> {
+		skinDirWatcher = Watcher.createSelfTicking(SKINS_DIR, s -> !s.endsWith(Skin.Local.METADATA_SUFFIX), () -> {
 			AxolotlClientCommon.getInstance().getLogger().info("Reloading screen as local files changed!");
 			loadSkinsList();
 		});
@@ -183,33 +182,18 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 			this.capesTab = true;
 		});
 		navBar.add(capesTab);
-		var importButton = new VanillaButtonWidget(capesTab.getX() + capesTab.getWidth() - 11, capesTab.getY() - 13, 11, 11, I18n.translate("skins.manage.import"), btn -> {
+		var importButton = new SpriteButton(I18n.translate("skins.manage.import.local"), btn -> {
 			btn.active = false;
 			SkinImportUtil.openImportSkinDialog().thenAccept(this::onFileDrop).thenRun(() -> btn.active = true);
-		}) {
-			private final Identifier SPRITE = new Identifier("axolotlclient", "textures/gui/sprites/download.png");
-
-			@Override
-			protected void drawWidget(int mouseX, int mouseY, float delta) {
-				int i = 1;
-				if (!this.active) {
-					i = 0;
-				} else if (hovered) {
-					tooltip = getMessage();
-					i = 2;
-				}
-
-				Identifier tex = ButtonWidgetTextures.get(i);
-				DrawUtil.blitSprite(tex, getX(), getY(), getWidth(), getHeight(), new DrawUtil.NineSlice(200, 20, 3));
-				minecraft.getTextureManager().bind(SPRITE);
-				DrawUtil.drawTexture(getX() + 2, getY() + 2, 0, 0, 7, 7, 7, 7);
-			}
-
-			@Override
-			protected void drawScrollingText(TextRenderer renderer, int offset, Color color) {
-
-			}
-		};
+		}, new Identifier("axolotlclient", "textures/gui/sprites/folder.png"));
+		importButton.setX(capesTab.getX() + capesTab.getWidth() - 11);
+		importButton.setY(capesTab.getY() - 13);
+		var downloadButton = new SpriteButton(I18n.translate("skins.manage.import.online"), btn -> {
+			btn.active = false;
+			// TODO
+		}, new Identifier("axolotlclient", "textures/gui/sprites/download.png"));
+		downloadButton.setX(importButton.getX() - 2 - 11);
+		downloadButton.setY(capesTab.getY() - 13);
 		skinsTab.active = this.capesTab;
 		capesTab.active = !this.capesTab;
 		Runnable addWidgets = () -> {
@@ -220,6 +204,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 			addDrawableChild(capesList);
 			addDrawableChild(skinsTab);
 			addDrawableChild(capesTab);
+			addDrawableChild(downloadButton);
 			addDrawableChild(importButton);
 			addDrawableChild(back);
 		};
@@ -582,34 +567,6 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 			widget.setWidth(getWidth() - 4);
 			var asset = widget.getFocusedAsset();
 			if (asset != null) {
-				final class SpriteButton extends VanillaButtonWidget {
-					private Identifier sprite;
-
-					SpriteButton(String message, ButtonWidget.PressAction action, Identifier sprite) {
-						super(0, 0, 11, 11, message, action);
-						this.sprite = sprite;
-					}
-
-					@Override
-					protected void drawWidget(int mouseX, int mouseY, float delta) {
-						int i = 1;
-						if (!this.active) {
-							i = 0;
-						} else if (hovered) {
-							i = 2;
-						}
-
-						Identifier tex = ButtonWidgetTextures.get(i);
-						DrawUtil.blitSprite(tex, getX(), getY(), getWidth(), getHeight(), new DrawUtil.NineSlice(200, 20, 3));
-						minecraft.getTextureManager().bind(sprite);
-						DrawUtil.drawTexture(getX() + 2, getY() + 2, 0, 0, 7, 7, 7, 7);
-					}
-
-					@Override
-					protected void drawScrollingText(TextRenderer renderer, int offset, Color color) {
-
-					}
-				}
 				if (asset instanceof Skin skin) {
 					var wideSprite = new Identifier("axolotlclient", "textures/gui/sprites/wide.png");
 					var slimSprite = new Identifier("axolotlclient", "textures/gui/sprites/slim.png");
@@ -650,6 +607,9 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 								var out = SKINS_DIR.resolve(asset.textureKey());
 								Files.createDirectories(out.getParent());
 								Files.write(out, b);
+								if (asset instanceof Skin skin) {
+									Skin.Local.writeMetadata(out, Map.of(Skin.Local.CLASSIC_METADATA_KEY, skin.classicVariant()));
+								}
 							} catch (IOException e) {
 								AxolotlClientCommon.getInstance().getLogger().warn("Failed to download: ", e);
 							}
@@ -851,6 +811,35 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 				GlStateManager.enableAlphaTest();
 				GlStateManager.enableTexture();
 			}
+		}
+	}
+
+	private class SpriteButton extends VanillaButtonWidget {
+		private Identifier sprite;
+
+		SpriteButton(String message, PressAction action, Identifier sprite) {
+			super(0, 0, 11, 11, message, action);
+			this.sprite = sprite;
+		}
+
+		@Override
+		protected void drawWidget(int mouseX, int mouseY, float delta) {
+			int i = 1;
+			if (!this.active) {
+				i = 0;
+			} else if (hovered) {
+				i = 2;
+			}
+
+			Identifier tex = ButtonWidgetTextures.get(i);
+			DrawUtil.blitSprite(tex, getX(), getY(), getWidth(), getHeight(), new DrawUtil.NineSlice(200, 20, 3));
+			minecraft.getTextureManager().bind(sprite);
+			DrawUtil.drawTexture(getX() + 2, getY() + 2, 0, 0, 7, 7, 7, 7);
+		}
+
+		@Override
+		protected void drawScrollingText(TextRenderer renderer, int offset, Color color) {
+
 		}
 	}
 }
