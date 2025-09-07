@@ -37,6 +37,7 @@ import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.mixin.skins.SkinTextureDownloaderAccessor;
 import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.util.ClientColors;
 import net.minecraft.client.Minecraft;
@@ -55,10 +56,20 @@ public class SkinManager {
 			var in = Files.readAllBytes(p);
 			sha256 = Hashing.sha256().hashBytes(in).toString();
 			try (var img = NativeImage.read(in)) {
-				if (img.getWidth() != 64 || img.getHeight() != 64) return null;
-				slim = ClientColors.ARGB.alpha(img.getPixel(47, 63)) == 0;
+				int width = img.getWidth();
+				int height = img.getHeight();
+				if (width != 64) return null;
+				if (height == 32) {
+					var img2 = SkinTextureDownloaderAccessor.invokeProcessLegacySkin(img, "local");
+					img2.writeToFile(p);
+					slim = ClientColors.ARGB.alpha(img2.getPixel(47, 63)) == 0;
+				} else if (height != 64) {
+					return null;
+				} else {
+					slim = ClientColors.ARGB.alpha(img.getPixel(47, 63)) == 0;
+				}
 			}
-			return new Skin.Local(!slim, Hashing.sha512().hashUnencodedChars(p.toString()).toString(), p, sha256);
+			return new Skin.Local(!slim, p, sha256);
 		} catch (Exception e) {
 			AxolotlClientCommon.getInstance().getLogger().warn("Failed to probe skin: ", e);
 		}

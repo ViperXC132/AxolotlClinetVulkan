@@ -34,7 +34,7 @@ import io.github.axolotlclient.modules.auth.MSApi;
 public interface Skin extends Asset {
 	boolean isClassicVariant();
 
-	record Local(boolean classic, String id, Path file, String textureKey) implements Skin {
+	record Local(boolean classic, Path file, String textureKey) implements Skin {
 
 		@Override
 		public boolean isClassicVariant() {
@@ -73,11 +73,6 @@ public interface Skin extends Asset {
 		@Override
 		public boolean isClassicVariant() {
 			return online.isClassicVariant();
-		}
-
-		@Override
-		public String id() {
-			return online.id();
 		}
 
 		@Override

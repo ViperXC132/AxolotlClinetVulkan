@@ -98,7 +98,7 @@ public class Watcher implements AutoCloseable {
 		while ((watchKey = this.watcher.poll()) != null) {
 			for (WatchEvent<?> watchEvent : watchKey.pollEvents()) {
 				bl = true;
-				if (watchKey.watchable() == this.path && watchEvent.kind() == StandardWatchEventKinds.ENTRY_CREATE) {
+				if (watchKey.watchable() == this.path && watchEvent.context() != null) {
 					Path path = this.path.resolve((Path) watchEvent.context());
 					if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
 						this.watchDir(path);

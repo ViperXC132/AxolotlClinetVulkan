@@ -42,6 +42,7 @@ import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.util.ClientColors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.texture.DynamicTexture;
+import net.minecraft.client.render.texture.SkinImageProcessor;
 import net.minecraft.client.resource.skin.DefaultSkinUtils;
 import net.minecraft.resource.Identifier;
 
@@ -58,16 +59,23 @@ public class SkinManager {
 			sha256 = Hashing.sha256().hashBytes(in).toString();
 			try (var bs = new ByteArrayInputStream(in)) {
 				var img = ImageIO.read(bs);
-				if (img.getWidth() != 64 || img.getHeight() != 64) return null;
-				slim = (ClientColors.ARGB.alpha(img.getRGB(47, 63)) == 0);
+				int height = img.getHeight();
+				int width = img.getWidth();
+				if (width != 64) return null;
+				if (height == 32) {
+					img = new SkinImageProcessor().process(img);
+					try (var out = Files.newOutputStream(p)) {
+						ImageIO.write(img, "png", out);
+					}
+				} else if (height != 64) return null;
+				slim = ClientColors.ARGB.alpha(img.getRGB(47, 63)) == 0;
 			}
-			return new Skin.Local(!slim, Hashing.sha512().hashUnencodedChars(p.toString()).toString(), p, sha256);
+			return new Skin.Local(!slim, p, sha256);
 		} catch (Exception e) {
 			AxolotlClientCommon.getInstance().getLogger().warn("Failed to probe skin: ", e);
 		}
 		return null;
 	}
-
 
 	public CompletableFuture<AxoIdentifier> loadSkin(Skin skin) {
 		var rl = AxoIdentifier.of(AxolotlClientCommon.MODID, "skins/" + skin.textureKey());

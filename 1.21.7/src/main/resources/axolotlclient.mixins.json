@@ -65,6 +65,7 @@
 		"WorldListWidgetEntryMixin",
 		"WorldRendererMixin",
 		"api.JoinMulitplayerScreenMixin",
+		"skins.SkinTextureDownloaderAccessor",
 		"translation.TranslationStorageMixin"
 	],
 	"injectors": {

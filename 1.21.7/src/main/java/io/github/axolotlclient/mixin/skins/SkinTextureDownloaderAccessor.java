@@ -20,41 +20,17 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.auth.skin;
+package io.github.axolotlclient.mixin.skins;
 
-import java.nio.file.Path;
-import java.util.concurrent.CompletableFuture;
+import com.mojang.blaze3d.platform.NativeImage;
+import net.minecraft.client.renderer.texture.SkinTextureDownloader;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
-import io.github.axolotlclient.modules.auth.Account;
-import io.github.axolotlclient.modules.auth.MSApi;
-
-public interface Asset {
-
-	default boolean isOnline() {
-		return false;
+@Mixin(SkinTextureDownloader.class)
+public interface SkinTextureDownloaderAccessor {
+	@Invoker("processLegacySkin")
+	static NativeImage invokeProcessLegacySkin(NativeImage img, String url) {
+		throw new UnsupportedOperationException();
 	}
-
-	default boolean isLocal() {
-		return false;
-	}
-
-	default Path file() {
-		return null;
-	}
-
-	default String url() {
-		return null;
-	}
-
-	default boolean supportsDownload() {
-		return false;
-	}
-
-	CompletableFuture<byte[]> image();
-
-	boolean active();
-
-	CompletableFuture<MSApi.MCProfile> equip(MSApi api, Account account);
-
-	String textureKey();
 }

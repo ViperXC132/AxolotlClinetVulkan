@@ -62,6 +62,7 @@
 		"WorldRendererAccessor",
 		"WorldRendererMixin",
 		"api.JoinMulitplayerScreenMixin",
+		"skins.PlayerSkinTextureAccessor",
 		"translation.LanguageMixin"
 	],
 	"injectors": {
