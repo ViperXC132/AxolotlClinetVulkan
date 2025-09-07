@@ -159,7 +159,7 @@ public class AutoGG implements AbstractHypixelMod {
 
 	private void onMessage(ReceiveChatMessageEvent event) {
 		String message = event.getOriginalMessage();
-		if (client.br$isLocalServer()) {
+		if (!client.br$isLocalServer()) {
 			serverMap.keySet().forEach(s -> {
 				if (serverMap.get(s).get() && client.br$getServerAddress().contains(s)) {
 					if (gf.get()) {
