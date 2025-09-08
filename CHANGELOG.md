@@ -3,6 +3,7 @@
 ### 3.1.6
 
 - Implement more options for the Inventory HUD (#173)
+- Add Skin Manager (#176)
 
 ### 3.1.5
 
