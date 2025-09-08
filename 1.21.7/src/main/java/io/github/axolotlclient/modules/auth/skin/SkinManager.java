@@ -54,7 +54,6 @@ public class SkinManager {
 	}
 
 	public Skin read(Path p, boolean fix) {
-		if (p.getFileName().toString().endsWith(Skin.Local.METADATA_SUFFIX)) return null;
 		boolean slim;
 		String sha256;
 		try {

@@ -46,14 +46,6 @@ public class Watcher implements AutoCloseable {
 
 		try {
 			this.watchDir(path);
-			try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(path)) {
-
-				for (Path path : directoryStream) {
-					if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
-						this.watchDir(path);
-					}
-				}
-			}
 		} catch (Exception e) {
 			this.watcher.close();
 			throw e;

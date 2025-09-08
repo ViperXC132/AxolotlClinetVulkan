@@ -25,6 +25,7 @@ package io.github.axolotlclient.modules.auth.skin;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -89,7 +90,7 @@ public class SkinManagementScreen extends Screen {
 		super(Text.translatable("skins.manage"));
 		this.parent = parent;
 		this.account = account;
-		skinDirWatcher = Watcher.createSelfTicking(SKINS_DIR, s -> !s.endsWith(Skin.Local.METADATA_SUFFIX), () -> {
+		skinDirWatcher = Watcher.createSelfTicking(SKINS_DIR, () -> {
 			AxolotlClientCommon.getInstance().getLogger().info("Reloading screen as local files changed!");
 			loadSkinsList();
 		});
@@ -180,10 +181,10 @@ public class SkinManagementScreen extends Screen {
 			addDrawableSelectableElement(current);
 			addDrawableSelectableElement(skinsTab);
 			addDrawableSelectableElement(capesTab);
-			addDrawableSelectableElement(skinList);
-			addDrawableSelectableElement(capesList);
 			addDrawableSelectableElement(downloadButton);
 			addDrawableSelectableElement(importButton);
+			addDrawableSelectableElement(skinList);
+			addDrawableSelectableElement(capesList);
 			addDrawableSelectableElement(back);
 		};
 		if (cachedProfile != null) {
@@ -230,7 +231,7 @@ public class SkinManagementScreen extends Screen {
 							try {
 								var bytes = t.skin().join();
 								var out = ensureNonexistent(SKINS_DIR.resolve(t.skinKey()));
-								Skin.Local.writeMetadata(out, Map.of(Skin.Local.CLASSIC_METADATA_KEY, t.classicModel(), "name", t.name(), "uuid", t.id()));
+								Skin.Local.writeMetadata(out, Map.of(Skin.Local.CLASSIC_METADATA_KEY, t.classicModel(), "name", t.name(), "uuid", t.id(), "download_time", Instant.now()));
 								Files.write(out, bytes);
 								client.execute(this::loadSkinsList);
 								Notifications.getInstance().addStatus("skins.notification.title", "skins.notification.import.online.downloaded", t.name());
@@ -599,7 +600,7 @@ public class SkinManagementScreen extends Screen {
 							if (confirmed) {
 								try {
 									Files.delete(asset.file());
-									Files.deleteIfExists(asset.file().resolveSibling(asset.file().getFileName() + Skin.Local.METADATA_SUFFIX));
+									Skin.Local.deleteMetadata(asset.file());
 									refreshCurrentList();
 								} catch (IOException e) {
 									AxolotlClientCommon.getInstance().getLogger().warn("Failed to delete: ", e);

@@ -34,6 +34,7 @@ import java.util.concurrent.CompletableFuture;
 import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.modules.auth.MSApi;
 import io.github.axolotlclient.util.GsonHelper;
+import org.jetbrains.annotations.NotNull;
 
 public interface Skin extends Asset {
 	boolean classicVariant();
@@ -41,6 +42,7 @@ public interface Skin extends Asset {
 	void classicVariant(boolean classic);
 
 	final class Local implements Skin {
+		public static final String META_DIR = ".meta";
 		public static final String METADATA_SUFFIX = ".meta";
 		public static final String CLASSIC_METADATA_KEY = "variant_classic";
 		private boolean classic;
@@ -54,26 +56,28 @@ public interface Skin extends Asset {
 		}
 
 		@SuppressWarnings("unchecked")
-		public static Map<String, Object> readMetadata(Path skinFile) {
-			var metadataFile = skinFile.resolveSibling(skinFile.getFileName().toString() + METADATA_SUFFIX);
+		public static Map<String, Object> readMetadata(Path skinFile) throws IOException {
+			var metadataFile = getMetadataFile(skinFile);
 			if (!Files.exists(metadataFile)) return null;
 
 			try (var in = Files.newInputStream(metadataFile)) {
 				return (Map<String, Object>) GsonHelper.read(in);
-			} catch (IOException ignored) {
-
 			}
-			return null;
 		}
 
-		public static void writeMetadata(Path skinFile, Object metadata) {
-			var metadataFile = skinFile.resolveSibling(skinFile.getFileName().toString() + METADATA_SUFFIX);
-			try (var out = Files.newOutputStream(metadataFile);
+		public static void writeMetadata(Path skinFile, Map<String, Object> metadata) throws IOException {
+			try (var out = Files.newOutputStream(getMetadataFile(skinFile));
 				 var writer = new OutputStreamWriter(out)) {
 				GsonHelper.GSON.toJson(metadata, writer);
-			} catch (IOException ignored) {
-
 			}
+		}
+
+		public static void deleteMetadata(Path skinFile) throws IOException {
+			Files.deleteIfExists(getMetadataFile(skinFile));
+		}
+
+		private static @NotNull Path getMetadataFile(Path skinFile) {
+			return skinFile.resolveSibling(META_DIR).resolve(skinFile.getFileName().toString() + METADATA_SUFFIX);
 		}
 
 		@Override
@@ -84,10 +88,13 @@ public interface Skin extends Asset {
 		@Override
 		public void classicVariant(boolean classic) {
 			if (classic != this.classic) {
-				var metadata = readMetadata(file());
-				if (metadata == null) metadata = new HashMap<>();
-				metadata.put(CLASSIC_METADATA_KEY, classic);
-				writeMetadata(file(), metadata);
+				try {
+					var metadata = readMetadata(file());
+					if (metadata == null) metadata = new HashMap<>();
+					metadata.put(CLASSIC_METADATA_KEY, classic);
+					writeMetadata(file(), metadata);
+				} catch (IOException ignored) {
+				}
 			}
 			this.classic = classic;
 		}
