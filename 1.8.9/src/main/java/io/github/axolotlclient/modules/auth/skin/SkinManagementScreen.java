@@ -44,6 +44,8 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.Element;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.ParentElement;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.ElementListWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.VanillaButtonWidget;
+import io.github.axolotlclient.api.SimpleTextInputScreen;
+import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.modules.auth.Auth;
@@ -51,7 +53,6 @@ import io.github.axolotlclient.modules.auth.MSApi;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.util.ButtonWidgetTextures;
 import io.github.axolotlclient.util.ClientColors;
-import io.github.axolotlclient.util.ThreadExecuter;
 import io.github.axolotlclient.util.Watcher;
 import io.github.axolotlclient.util.notifications.Notifications;
 import net.fabricmc.loader.api.FabricLoader;
@@ -162,7 +163,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 			skinList.visible = skinList.active = false;
 		}
 		List<ClickableWidget> navBar = new ArrayList<>();
-		var skinsTab = new VanillaButtonWidget(width * 3 / 4 - 102, headerHeight, 100, 20, I18n.translate("skins.nav.skins"), btn -> {
+		var skinsTab = new VanillaButtonWidget(Math.max(width * 3 / 4 - 102, width / 2 + 2), headerHeight, Math.min(100, width / 4 - 2), 20, I18n.translate("skins.nav.skins"), btn -> {
 			navBar.forEach(w -> {
 				if (w != btn) w.active = true;
 			});
@@ -172,7 +173,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 			capesTab = false;
 		});
 		navBar.add(skinsTab);
-		var capesTab = new VanillaButtonWidget(width * 3 / 4 + 2, headerHeight, 100, 20, I18n.translate("skins.nav.capes"), btn -> {
+		var capesTab = new VanillaButtonWidget(width * 3 / 4 + 2, headerHeight, Math.min(100, width / 4 - 2), 20, I18n.translate("skins.nav.capes"), btn -> {
 			navBar.forEach(w -> {
 				if (w != btn) w.active = true;
 			});
@@ -186,14 +187,21 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 			btn.active = false;
 			SkinImportUtil.openImportSkinDialog().thenAccept(this::onFileDrop).thenRun(() -> btn.active = true);
 		}, new Identifier("axolotlclient", "textures/gui/sprites/folder.png"));
-		importButton.setX(capesTab.getX() + capesTab.getWidth() - 11);
-		importButton.setY(capesTab.getY() - 13);
 		var downloadButton = new SpriteButton(I18n.translate("skins.manage.import.online"), btn -> {
 			btn.active = false;
-			// TODO
+			promptForSkinDownload();
 		}, new Identifier("axolotlclient", "textures/gui/sprites/download.png"));
-		downloadButton.setX(importButton.getX() - 2 - 11);
-		downloadButton.setY(capesTab.getY() - 13);
+		if (width - (capesTab.getX() + capesTab.getWidth()) > 28) {
+			importButton.setX(width - importButton.getWidth() - 2);
+			downloadButton.setX(importButton.getX() - downloadButton.getWidth() - 2);
+			importButton.setY(capesTab.getY() + capesTab.getHeight() - 11);
+			downloadButton.setY(importButton.getY());
+		} else {
+			importButton.setX(capesTab.getX() + capesTab.getWidth() - 11);
+			importButton.setY(capesTab.getY() - 13);
+			downloadButton.setX(importButton.getX() - 2 - 11);
+			downloadButton.setY(importButton.getY());
+		}
 		skinsTab.active = this.capesTab;
 		capesTab.active = !this.capesTab;
 		Runnable addWidgets = () -> {
@@ -234,6 +242,39 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 				addDrawableChild(back);
 				return null;
 			});
+	}
+
+	private void promptForSkinDownload() {
+		minecraft.openScreen(new SimpleTextInputScreen(this, I18n.translate("skins.manage.import.online"), I18n.translate("skins.manage.import.online.input"), s ->
+			UUIDHelper.ensureUuidOpt(s).thenAccept(o -> {
+				if (o.isPresent()) {
+					AxolotlClientCommon.getInstance().getLogger().info("Downloading skin of {} ({})", s, o.get());
+					Auth.getInstance().getMsApi().getTextures(o.get())
+						.exceptionally(th -> {
+							AxolotlClientCommon.getInstance().getLogger().info("Failed to download skin of {} ({})", s, o.get(), th);
+							return null;
+						}).thenAccept(t -> {
+							if (t == null) {
+								Notifications.getInstance().addStatus("skins.notification.title", "skins.notification.import.online.failed_to_download", s);
+								return;
+							}
+							try {
+								var bytes = t.skin().join();
+								var out = ensureNonexistent(SKINS_DIR.resolve(t.skinKey()));
+								Skin.Local.writeMetadata(out, Map.of(Skin.Local.CLASSIC_METADATA_KEY, t.classicModel(), "name", t.name(), "uuid", t.id()));
+								Files.write(out, bytes);
+								minecraft.submit(this::loadSkinsList);
+								Notifications.getInstance().addStatus("skins.notification.title", "skins.notification.import.online.downloaded", t.name());
+								AxolotlClientCommon.getInstance().getLogger().info("Downloaded skin of {} ({})", t.name(), o.get());
+							} catch (IOException e) {
+								AxolotlClientCommon.getInstance().getLogger().warn("Failed to write skin file", e);
+								Notifications.getInstance().addStatus("skins.notification.title", "skins.notification.import.online.failed_to_save", t.name());
+							}
+						});
+				} else {
+					Notifications.getInstance().addStatus("skins.notification.title", "skins.notification.import.online.not_found", s);
+				}
+			})));
 	}
 
 	private void initDisplay() {
@@ -350,6 +391,17 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 		}
 	}
 
+	private Path ensureNonexistent(Path p) {
+		if (Files.exists(p)) {
+			int counter = 0;
+			do {
+				counter++;
+				p = p.resolveSibling(p.getFileName().toString() + "_" + counter);
+			} while (Files.exists(p));
+		}
+		return p;
+	}
+
 	@Override
 	public void onFileDrop(List<Path> packs) {
 		if (packs.isEmpty()) return;
@@ -359,14 +411,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 			Path p = packs.get(i);
 			futs[i] = CompletableFuture.runAsync(() -> {
 				try {
-					var target = SKINS_DIR.resolve(p.getFileName());
-					if (Files.exists(target)) {
-						int counter = 0;
-						do {
-							counter++;
-							target = target.resolveSibling(target.getFileName().toString() + "_" + counter);
-						} while (Files.exists(target));
-					}
+					var target = ensureNonexistent(SKINS_DIR.resolve(p.getFileName()));
 					var skin = Auth.getInstance().getSkinManager().read(p, false);
 					if (skin != null) {
 						Files.write(target, skin.image().join());
@@ -377,7 +422,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 				} catch (IOException e) {
 					AxolotlClientCommon.getInstance().getLogger().warn("Failed to copy skin file: ", e);
 				}
-			}, ThreadExecuter.service());
+			}, minecraft);
 		}
 		CompletableFuture.allOf(futs).thenRun(this::loadSkinsList);
 	}
@@ -587,6 +632,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 							if (confirmed) {
 								try {
 									Files.delete(asset.file());
+									Files.deleteIfExists(asset.file().resolveSibling(asset.file().getFileName() + Skin.Local.METADATA_SUFFIX));
 									refreshCurrentList();
 								} catch (IOException e) {
 									AxolotlClientCommon.getInstance().getLogger().warn("Failed to delete: ", e);
@@ -717,6 +763,8 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 		protected void drawWidget(int mouseX, int mouseY, float partialTick) {
 			int y = getY() + 4;
 			int x = getX() + 2;
+			skinWidget.setPosition(x, y);
+			skinWidget.setWidth(getWidth() - 4);
 			if (skinWidget.isEquipped() || equipping) {
 				long prog;
 				if (Auth.getInstance().skinManagerAnimations.get()) {
@@ -735,17 +783,12 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 					gradientWidth,
 					equipping ? 0xFFFF0088 : ClientColors.SELECTOR_GREEN.toInt(), 0);
 			}
-			skinWidget.setPosition(x, y);
-			skinWidget.setWidth(getWidth() - 4);
 			skinWidget.render(mouseX, mouseY, partialTick);
 			int actionButtonY = getY() + 2;
 			for (var button : actionButtons) {
 				button.setPosition(skinWidget.getX() + skinWidget.getWidth() - button.getWidth(), actionButtonY);
 				if (isHovered() || button.isHovered()) {
 					button.render(mouseX, mouseY, partialTick);
-				}
-				if (button.isHovered()) {
-					tooltip = button.getMessage();
 				}
 				actionButtonY += button.getHeight() + 2;
 			}
@@ -829,6 +872,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 				i = 0;
 			} else if (hovered) {
 				i = 2;
+				tooltip = getMessage();
 			}
 
 			Identifier tex = ButtonWidgetTextures.get(i);

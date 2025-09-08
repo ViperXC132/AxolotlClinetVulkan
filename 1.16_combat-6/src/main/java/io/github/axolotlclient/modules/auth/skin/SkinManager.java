@@ -22,9 +22,9 @@
 
 package io.github.axolotlclient.modules.auth.skin;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
@@ -45,7 +45,6 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.util.Identifier;
-import org.lwjgl.system.MemoryStack;
 
 public class SkinManager {
 
@@ -63,11 +62,8 @@ public class SkinManager {
 		try {
 			var in = Files.readAllBytes(p);
 			sha256 = Hashing.sha256().hashBytes(in).toString();
-			try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-				ByteBuffer byteBuffer = memoryStack.malloc(in.length);
-				byteBuffer.put(in);
-				byteBuffer.rewind();
-				try (var img = NativeImage.read(byteBuffer)) {
+			try (var stream = new ByteArrayInputStream(in)) {
+				try (var img = NativeImage.read(stream)) {
 					int width = img.getWidth();
 					int height = img.getHeight();
 					if (width != 64) return null;
@@ -103,11 +99,9 @@ public class SkinManager {
 		}
 
 		return skin.image().thenApplyAsync(bytes -> {
-			try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-				ByteBuffer byteBuffer = memoryStack.malloc(bytes.length);
-				byteBuffer.put(bytes);
-				byteBuffer.rewind();
-				var tex = new NativeImageBackedTexture(NativeImage.read(byteBuffer));
+			try (var stream = new ByteArrayInputStream(bytes)) {
+				var tex = new NativeImageBackedTexture(NativeImage.read(stream));
+				tex.upload();
 				MinecraftClient.getInstance().getTextureManager().registerTexture((Identifier) rl, tex);
 			} catch (IOException e) {
 				throw new UncheckedIOException(e);
@@ -129,11 +123,8 @@ public class SkinManager {
 		}
 
 		return cape.image().thenApplyAsync(bytes -> {
-			try (MemoryStack memoryStack = MemoryStack.stackPush()) {
-				ByteBuffer byteBuffer = memoryStack.malloc(bytes.length);
-				byteBuffer.put(bytes);
-				byteBuffer.rewind();
-				var tex = new NativeImageBackedTexture(NativeImage.read(byteBuffer));
+			try (var stream = new ByteArrayInputStream(bytes)) {
+				var tex = new NativeImageBackedTexture(NativeImage.read(stream));
 				MinecraftClient.getInstance().getTextureManager().registerTexture((Identifier) rl, tex);
 			} catch (IOException e) {
 				throw new UncheckedIOException(e);

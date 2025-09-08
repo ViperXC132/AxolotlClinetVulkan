@@ -36,13 +36,14 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
+import io.github.axolotlclient.api.SimpleTextInputScreen;
+import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.mixin.GameRendererAccessor;
 import io.github.axolotlclient.mixin.GuiGraphicsAccessor;
 import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.auth.MSApi;
 import io.github.axolotlclient.util.ClientColors;
-import io.github.axolotlclient.util.ThreadExecuter;
 import io.github.axolotlclient.util.Watcher;
 import io.github.axolotlclient.util.notifications.Notifications;
 import net.fabricmc.loader.api.FabricLoader;
@@ -139,7 +140,7 @@ public class SkinManagementScreen extends Screen {
 			skinList.visible = skinList.active = true;
 			capesList.visible = capesList.active = false;
 			capesTab = false;
-		}).pos(width * 3 / 4 - 102, headerHeight).width(100).build();
+		}).pos(Math.max(width * 3 / 4 - 102, width / 2 + 2), headerHeight).width(Math.min(100, width / 4 - 2)).build();
 		navBar.add(skinsTab);
 		var capesTab = Button.builder(Component.translatable("skins.nav.capes"), btn -> {
 			navBar.forEach(w -> {
@@ -149,20 +150,29 @@ public class SkinManagementScreen extends Screen {
 			skinList.visible = skinList.active = false;
 			capesList.visible = capesList.active = true;
 			this.capesTab = true;
-		}).pos(width * 3 / 4 + 2, headerHeight).width(100).build();
+		}).pos(width * 3 / 4 + 2, headerHeight).width(Math.min(100, width / 4 - 2)).build();
 		navBar.add(capesTab);
 		var importButton = SpriteIconButton.builder(Component.translatable("skins.manage.import.local"), btn -> {
 			btn.active = false;
 			SkinImportUtil.openImportSkinDialog().thenAccept(this::onFilesDrop).thenRun(() -> btn.active = true);
 		}, true).sprite(ResourceLocation.fromNamespaceAndPath("axolotlclient", "folder"), 7, 7).size(11, 11).build();
 		importButton.setTooltip(Tooltip.create(importButton.getMessage()));
-		importButton.setPosition(capesTab.getX() + capesTab.getWidth() - 11, capesTab.getY() - 13);
 		var downloadButton = SpriteIconButton.builder(Component.translatable("skins.manage.import.online"), btn -> {
 			btn.active = false;
-			// TODO
+			promptForSkinDownload();
 		}, true).sprite(ResourceLocation.fromNamespaceAndPath("axolotlclient", "download"), 7, 7).size(11, 11).build();
 		downloadButton.setTooltip(Tooltip.create(downloadButton.getMessage()));
-		downloadButton.setPosition(importButton.getX() - 2 - 11, capesTab.getY() - 13);
+		if (width - (capesTab.getX() + capesTab.getWidth()) > 28) {
+			importButton.setX(width - importButton.getWidth() - 2);
+			downloadButton.setX(importButton.getX() - downloadButton.getWidth() - 2);
+			importButton.setY(capesTab.getY() + capesTab.getHeight() - 11);
+			downloadButton.setY(importButton.getY());
+		} else {
+			importButton.setX(capesTab.getX() + capesTab.getWidth() - 11);
+			importButton.setY(capesTab.getY() - 13);
+			downloadButton.setX(importButton.getX() - 2 - 11);
+			downloadButton.setY(importButton.getY());
+		}
 		skinsTab.active = this.capesTab;
 		capesTab.active = !this.capesTab;
 		Runnable addWidgets = () -> {
@@ -203,6 +213,39 @@ public class SkinManagementScreen extends Screen {
 				addRenderableWidget(back);
 				return null;
 			});
+	}
+
+	private void promptForSkinDownload() {
+		minecraft.setScreen(new SimpleTextInputScreen(this, Component.translatable("skins.manage.import.online"), Component.translatable("skins.manage.import.online.input"), s ->
+			UUIDHelper.ensureUuidOpt(s).thenAcceptAsync(o -> {
+				if (o.isPresent()) {
+					AxolotlClientCommon.getInstance().getLogger().info("Downloading skin of {} ({})", s, o.get());
+					Auth.getInstance().getMsApi().getTextures(o.get())
+						.exceptionally(th -> {
+							AxolotlClientCommon.getInstance().getLogger().info("Failed to download skin of {} ({})", s, o.get(), th);
+							return null;
+						}).thenAcceptAsync(t -> {
+							if (t == null) {
+								Notifications.getInstance().addStatus("skins.notification.title", "skins.notification.import.online.failed_to_download", s);
+								return;
+							}
+							try {
+								var bytes = t.skin().join();
+								var out = ensureNonexistent(SKINS_DIR.resolve(t.skinKey()));
+								Skin.Local.writeMetadata(out, Map.of(Skin.Local.CLASSIC_METADATA_KEY, t.classicModel(), "name", t.name(), "uuid", t.id()));
+								Files.write(out, bytes);
+								minecraft.execute(this::loadSkinsList);
+								Notifications.getInstance().addStatus("skins.notification.title", "skins.notification.import.online.downloaded", t.name());
+								AxolotlClientCommon.getInstance().getLogger().info("Downloaded skin of {} ({})", t.name(), o.get());
+							} catch (IOException e) {
+								AxolotlClientCommon.getInstance().getLogger().warn("Failed to write skin file", e);
+								Notifications.getInstance().addStatus("skins.notification.title", "skins.notification.import.online.failed_to_save", t.name());
+							}
+						});
+				} else {
+					Notifications.getInstance().addStatus("skins.notification.title", "skins.notification.import.online.not_found", s);
+				}
+			})));
 	}
 
 	private void initDisplay() {
@@ -320,6 +363,17 @@ public class SkinManagementScreen extends Screen {
 		}
 	}
 
+	private Path ensureNonexistent(Path p) {
+		if (Files.exists(p)) {
+			int counter = 0;
+			do {
+				counter++;
+				p = p.resolveSibling(p.getFileName().toString() + "_" + counter);
+			} while (Files.exists(p));
+		}
+		return p;
+	}
+
 	@Override
 	public void onFilesDrop(List<Path> packs) {
 		if (packs.isEmpty()) return;
@@ -329,14 +383,7 @@ public class SkinManagementScreen extends Screen {
 			Path p = packs.get(i);
 			futs[i] = CompletableFuture.runAsync(() -> {
 				try {
-					var target = SKINS_DIR.resolve(p.getFileName());
-					if (Files.exists(target)) {
-						int counter = 0;
-						do {
-							counter++;
-							target = target.resolveSibling(target.getFileName().toString() + "_" + counter);
-						} while (Files.exists(target));
-					}
+					var target = ensureNonexistent(SKINS_DIR.resolve(p.getFileName()));
 					var skin = Auth.getInstance().getSkinManager().read(p, false);
 					if (skin != null) {
 						Files.write(target, skin.image().join());
@@ -347,7 +394,7 @@ public class SkinManagementScreen extends Screen {
 				} catch (IOException e) {
 					AxolotlClientCommon.getInstance().getLogger().warn("Failed to copy skin file: ", e);
 				}
-			}, ThreadExecuter.service());
+			}, minecraft);
 		}
 		CompletableFuture.allOf(futs).thenRun(this::loadSkinsList);
 	}
@@ -545,6 +592,7 @@ public class SkinManagementScreen extends Screen {
 							if (confirmed) {
 								try {
 									Files.delete(asset.file());
+									Files.deleteIfExists(asset.file().resolveSibling(asset.file().getFileName() + Skin.Local.METADATA_SUFFIX));
 									refreshCurrentList();
 								} catch (IOException e) {
 									AxolotlClientCommon.getInstance().getLogger().warn("Failed to delete: ", e);
@@ -631,6 +679,8 @@ public class SkinManagementScreen extends Screen {
 		protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 			int y = getY() + 4;
 			int x = getX() + 2;
+			skinWidget.setPosition(x, y);
+			skinWidget.setWidth(getWidth() - 4);
 			if (skinWidget.isEquipped() || equipping) {
 				long prog;
 				if (Auth.getInstance().skinManagerAnimations.get()) {
@@ -649,8 +699,6 @@ public class SkinManagementScreen extends Screen {
 					gradientWidth,
 					equipping ? 0xFFFF0088 : ClientColors.SELECTOR_GREEN.toInt(), 0).submit();
 			}
-			skinWidget.setPosition(x, y);
-			skinWidget.setWidth(getWidth() - 4);
 			skinWidget.render(guiGraphics, mouseX, mouseY, partialTick);
 			int actionButtonY = getY() + 2;
 			for (var button : actionButtons) {

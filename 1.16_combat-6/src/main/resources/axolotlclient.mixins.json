@@ -17,6 +17,7 @@
 		"ClientPlayerEntityMixin",
 		"ClientPlayNetworkHandlerMixin",
 		"ClientWorldMixin",
+		"ConfigVanillaButtonWidgetMixin",
 		"DebugHudMixin",
 		"DownloadingTerrainScreenMixin",
 		"EmitterParticleMixin",

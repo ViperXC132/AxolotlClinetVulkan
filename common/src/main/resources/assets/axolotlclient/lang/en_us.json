@@ -833,5 +833,10 @@
 	"skins.notification.title": "Skin Management",
 	"skins.notification.not_copied": "Skipped file %s because it does not seem like a valid skin file!",
 	"skins.manage.variant.classic": "Use Classic (Wide) Variant",
-	"skins.manage.variant.slim": "Use Slim Variant"
+	"skins.manage.variant.slim": "Use Slim Variant",
+	"skins.manage.import.online.input": "Enter Name or UUID:",
+	"skins.notification.import.online.failed_to_download": "Failed to download Skin of %s!",
+	"skins.notification.import.online.downloaded": "Downloaded Skin of %s!",
+	"skins.notification.import.online.failed_to_save": "Failed to save Skin of %s!",
+	"skins.notification.import.online.not_found": "Could not find user %s!"
 }

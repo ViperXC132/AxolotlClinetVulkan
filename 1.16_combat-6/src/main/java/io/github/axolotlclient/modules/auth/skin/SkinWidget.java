@@ -31,7 +31,6 @@ import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.auth.MSApi;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.sound.SoundManager;
 import net.minecraft.client.util.DefaultSkinHelper;
@@ -79,8 +78,6 @@ public class SkinWidget extends AbstractButtonWidget {
 
 	@Override
 	public void renderButton(MatrixStack guiGraphics, int mouseX, int mouseY, float partialTick) {
-		var minecraft = MinecraftClient.getInstance();
-
 		float scale = FIT_SCALE * this.getHeight() / MODEL_HEIGHT;
 		float pivotY = -1.0625F;
 

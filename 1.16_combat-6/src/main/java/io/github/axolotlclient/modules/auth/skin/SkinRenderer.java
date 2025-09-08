@@ -77,16 +77,7 @@ public class SkinRenderer {
 		var tessellator = Tessellator.getInstance();
 		RenderSystem.enableDepthTest();
 		RenderSystem.enableBlend();
-		if (cape != null) {
-			graphics.push();
-			MinecraftClient.getInstance().getTextureManager().bindTexture(cape);
-			graphics.translate(0.0F, 0.0F, 0.125F);
-			graphics.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(6.0F));
-			graphics.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
-			model.renderCape(graphics, VertexConsumerProvider.immediate(tessellator.getBuffer()).getBuffer(RenderLayer.getEntitySolid(cape)), 15728880, OverlayTexture.DEFAULT_UV);
-			tessellator.draw();
-			graphics.pop();
-		}
+		RenderSystem.enableTexture();
 		MinecraftClient.getInstance().getTextureManager().bindTexture(skinTexture);
 		var consumer = VertexConsumerProvider.immediate(tessellator.getBuffer()).getBuffer(model.getLayer(skinTexture));
 		Consumer<ModelPart> renderModelPart = m -> m.render(graphics, consumer, 15728880, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1);
@@ -105,6 +96,16 @@ public class SkinRenderer {
 		graphics.translate(0, 0, 0.62f);
 		renderModelPart.accept(model.jacket);
 		tessellator.draw();
+		if (cape != null) {
+			graphics.push();
+			MinecraftClient.getInstance().getTextureManager().bindTexture(cape);
+			graphics.translate(0.0F, 0.0F, 0.125F);
+			graphics.multiply(Vector3f.POSITIVE_X.getDegreesQuaternion(6.0F));
+			graphics.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(180.0F));
+			model.renderCape(graphics, VertexConsumerProvider.immediate(tessellator.getBuffer()).getBuffer(RenderLayer.getEntitySolid(cape)), 15728880, OverlayTexture.DEFAULT_UV);
+			tessellator.draw();
+			graphics.pop();
+		}
 		graphics.pop();
 
 		graphics.pop();

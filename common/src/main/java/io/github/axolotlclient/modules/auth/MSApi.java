@@ -27,8 +27,10 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -39,6 +41,7 @@ import java.util.function.Supplier;
 import com.github.mizosoft.methanol.FormBodyPublisher;
 import com.github.mizosoft.methanol.MediaType;
 import com.github.mizosoft.methanol.MultipartBodyPublisher;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.modules.auth.skin.Cape;
@@ -437,6 +440,45 @@ public class MSApi {
 
 	public CompletableFuture<MCProfile> getProfile(Account account) {
 		return getMCProfile(account.getAuthToken()).thenApply(this::extractProfile);
+	}
+
+	public record SkinBundle(String name, String id, CompletableFuture<byte[]> skin, String skinKey,
+							 boolean classicModel) {
+	}
+
+	public CompletableFuture<SkinBundle> getTextures(String uuid) {
+		return requestJson(HttpRequest.newBuilder().GET()
+			.uri(URI.create("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid))
+			.build()).thenApply(json -> {
+			var name = json.get("name").getAsString();
+			var id = json.get("id").getAsString();
+			var properties = json.get("properties").getAsJsonArray();
+			for (JsonElement e : properties) {
+				if (e.isJsonObject()) {
+					var obj = e.getAsJsonObject();
+					if (obj.has("name") && "textures".equals(obj.get("name").getAsString())) {
+						var b64 = obj.get("value").getAsString();
+						var props = GsonHelper.fromJson(new String(Base64.getDecoder().decode(b64), StandardCharsets.UTF_8));
+						var textures = props.get("textures").getAsJsonObject();
+						if (textures.has("SKIN")) {
+							var skinObj = textures.get("SKIN").getAsJsonObject();
+							var skinUrl = skinObj.get("url").getAsString();
+							var skin = client.sendAsync(HttpRequest.newBuilder().uri(URI.create(skinUrl)).GET().build(), HttpResponse.BodyHandlers.ofByteArray())
+								.thenApply(HttpResponse::body);
+							var skinKey = skinUrl.substring(skinUrl.lastIndexOf("/") + 1);
+							var classicModel = true;
+							if (skinObj.has("metadata")) {
+								var metadata = skinObj.get("metadata").getAsJsonObject();
+								var model = metadata.get("model").getAsString();
+								classicModel = MCProfile.OnlineSkin.VARIANT_CLASSIC.toLowerCase(Locale.ROOT).equals(model.toLowerCase(Locale.ROOT));
+							}
+							return new SkinBundle(name, id, skin, skinKey, classicModel);
+						}
+					}
+				}
+			}
+			return null;
+		});
 	}
 
 	private MCProfile extractProfile(JsonObject profileJson) {
