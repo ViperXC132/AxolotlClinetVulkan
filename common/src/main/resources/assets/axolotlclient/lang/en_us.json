@@ -838,5 +838,18 @@
 	"skins.notification.import.online.failed_to_download": "Failed to download Skin of %s!",
 	"skins.notification.import.online.downloaded": "Downloaded Skin of %s!",
 	"skins.notification.import.online.failed_to_save": "Failed to save Skin of %s!",
-	"skins.notification.import.online.not_found": "Could not find user %s!"
+	"skins.notification.import.online.not_found": "Could not find user %s!",
+	"profiles.profile.import": "Import Profiles",
+	"profiles.profile.export": "Export",
+	"profiles.profile.export.notification.failed": "Export Failed",
+	"profiles.profile.export.notification.malformed_profile": "Malformed profile: %s. See the log for more information.",
+	"profiles.profile.export.notification.failed.invalid_destination": "Invalid export destination file.",
+	"profiles.profile.export.notification.failed.generic": "See the log for more information.",
+	"profiles.profile.export.notification.success": "Export Complete",
+	"profiles.profile.export.notification.success.desc": "Exported profile %s to %s.",
+	"profiles.profile.import.notification.failed": "Import Failed",
+	"profiles.profile.import.notification.failed.generic": "See the log for more information.",
+	"profiles.profile.import.notification.success": "Import Complete",
+	"profiles.profile.import.notification.success.desc.one": "Imported 1 profile",
+	"profiles.profile.import.notification.success.desc.more": "Imported %s profiles"
 }

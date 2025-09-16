@@ -143,14 +143,13 @@ public class ProfilesScreen extends Screen {
 
 		@Environment(EnvType.CLIENT)
 		public class ProfileEntry extends Entry {
+			private static final Component EXPORT_BUTTON_TITLE = Component.translatable("profiles.profile.export");
 			private static final Component CURRENT_TEXT = Component.translatable("profiles.profile.current");
 			private static final Component LOAD_BUTTON_TITLE = Component.translatable("profiles.profile.load");
 			private static final Component DUPLICATE_BUTTON_TITLE = Component.translatable("profiles.profile.duplicate");
 			private static final Component REMOVE_BUTTON_TITLE = Component.translatable("profiles.profile.remove");
 			private final EditBox profileName;
-			private final Button loadButton;
-			private final Button duplicateButton;
-			private final Button removeButton;
+			private final Button exportButton, loadButton, duplicateButton, removeButton;
 			private final Profiles.Profile profile;
 
 			ProfileEntry(Profiles.Profile profile) {
@@ -158,6 +157,8 @@ public class ProfilesScreen extends Screen {
 				profileName = new EditBox(getFont(), 0, 0, 150, 20, Component.empty());
 				profileName.setValue(profile.name());
 				profileName.setResponder(profile::setName);
+				exportButton = Button.builder(EXPORT_BUTTON_TITLE, btn -> Profiles.getInstance().exportProfile(profile))
+					.bounds(0, 0, 50, 20).build();
 				loadButton = Button.builder(LOAD_BUTTON_TITLE, btn ->
 					Profiles.getInstance().switchTo(profile)).bounds(0, 0, 50, 20).build();
 				duplicateButton = Button.builder(DUPLICATE_BUTTON_TITLE, b -> {
@@ -192,6 +193,9 @@ public class ProfilesScreen extends Screen {
 				i -= loadButton.getWidth();
 				this.loadButton.setPosition(i, j);
 				this.loadButton.render(guiGraphics, mouseX, mouseY, partialTick);
+				i -= exportButton.getWidth();
+				exportButton.setPosition(i, j);
+				exportButton.render(guiGraphics, mouseX, mouseY, partialTick);
 				profileName.setWidth(i - left - 4);
 				profileName.setPosition(left, j);
 				profileName.render(guiGraphics, mouseX, mouseY, partialTick);
@@ -199,18 +203,18 @@ public class ProfilesScreen extends Screen {
 
 			@Override
 			public List<? extends GuiEventListener> children() {
-				return List.of(profileName, this.loadButton, duplicateButton, removeButton);
+				return List.of(profileName, exportButton, this.loadButton, duplicateButton, removeButton);
 			}
 
 			@Override
 			public List<? extends NarratableEntry> narratables() {
-				return List.of(profileName, this.loadButton, duplicateButton, removeButton);
+				return List.of(profileName, exportButton, this.loadButton, duplicateButton, removeButton);
 			}
 		}
 
 		public class NewEntry extends Entry {
 
-			private final Button addButton;
+			private final Button addButton, importButton;
 
 			public NewEntry() {
 				this.addButton = Button.builder(Component.translatable("profiles.profile.add"), button -> {
@@ -220,6 +224,8 @@ public class ProfilesScreen extends Screen {
 						setScrollAmount(maxScrollAmount());
 					}).bounds(0, 0, 150, 20)
 					.build();
+				this.importButton = Button.builder(Component.translatable("profiles.profile.import"), btn ->
+					Profiles.getInstance().importProfiles().thenRun(ProfilesList.this::reload)).build();
 			}
 
 			@Override
@@ -229,15 +235,17 @@ public class ProfilesScreen extends Screen {
 
 			@Override
 			public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
-				int i = scrollBarX() - width / 2 - 10 - addButton.getWidth() / 2;
+				int i = scrollBarX() - width / 2 - 10 - addButton.getWidth() + 2;
 				int j = top - 2;
 				this.addButton.setPosition(i, j);
 				this.addButton.render(guiGraphics, mouseX, mouseY, partialTick);
+				this.importButton.setPosition(addButton.getRight() + 2, j);
+				this.importButton.render(guiGraphics, mouseX, mouseY, partialTick);
 			}
 
 			@Override
 			public List<? extends GuiEventListener> children() {
-				return List.of(addButton);
+				return List.of(addButton, importButton);
 			}
 		}
 	}

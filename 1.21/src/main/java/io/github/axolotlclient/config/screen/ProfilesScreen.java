@@ -134,14 +134,13 @@ public class ProfilesScreen extends Screen {
 
 		@Environment(EnvType.CLIENT)
 		public class ProfileEntry extends Entry {
+			private static final Text EXPORT_BUTTON_TITLE = Text.translatable("profiles.profile.export");
 			private static final Text CURRENT_TEXT = Text.translatable("profiles.profile.current");
 			private static final Text LOAD_BUTTON_TITLE = Text.translatable("profiles.profile.load");
 			private static final Text DUPLICATE_BUTTON_TITLE = Text.translatable("profiles.profile.duplicate");
 			private static final Text REMOVE_BUTTON_TITLE = Text.translatable("profiles.profile.remove");
 			private final TextFieldWidget profileName;
-			private final ButtonWidget loadButton;
-			private final ButtonWidget duplicateButton;
-			private final ButtonWidget removeButton;
+			private final ButtonWidget exportButton, loadButton, duplicateButton, removeButton;
 			private final Profiles.Profile profile;
 
 			ProfileEntry(Profiles.Profile profile) {
@@ -149,6 +148,8 @@ public class ProfilesScreen extends Screen {
 				profileName = new TextFieldWidget(textRenderer, 0, 0, 150, 20, Text.empty());
 				profileName.setText(profile.name());
 				profileName.setChangedListener(profile::setName);
+				exportButton = ButtonWidget.builder(EXPORT_BUTTON_TITLE, btn -> Profiles.getInstance().exportProfile(profile))
+					.positionAndSize(0, 0, 50, 20).build();
 				loadButton = ButtonWidget.builder(LOAD_BUTTON_TITLE, btn ->
 					Profiles.getInstance().switchTo(profile)).positionAndSize(0, 0, 50, 20).build();
 				duplicateButton = ButtonWidget.builder(DUPLICATE_BUTTON_TITLE, b -> {
@@ -183,6 +184,9 @@ public class ProfilesScreen extends Screen {
 				i -= loadButton.getWidth();
 				this.loadButton.setPosition(i, j);
 				this.loadButton.render(guiGraphics, mouseX, mouseY, partialTick);
+				i -= exportButton.getWidth();
+				exportButton.setPosition(i, j);
+				exportButton.render(guiGraphics, mouseX, mouseY, partialTick);
 				profileName.setWidth(i - left - 4);
 				profileName.setPosition(left, j);
 				profileName.render(guiGraphics, mouseX, mouseY, partialTick);
@@ -190,18 +194,18 @@ public class ProfilesScreen extends Screen {
 
 			@Override
 			public List<? extends Element> children() {
-				return List.of(profileName, this.loadButton, duplicateButton, removeButton);
+				return List.of(profileName, exportButton, this.loadButton, duplicateButton, removeButton);
 			}
 
 			@Override
 			public List<? extends Selectable> selectableChildren() {
-				return List.of(profileName, this.loadButton, duplicateButton, removeButton);
+				return List.of(profileName, exportButton, this.loadButton, duplicateButton, removeButton);
 			}
 		}
 
 		public class NewEntry extends Entry {
 
-			private final ButtonWidget addButton;
+			private final ButtonWidget addButton, importButton;
 
 			public NewEntry() {
 				this.addButton = ButtonWidget.builder(Text.translatable("profiles.profile.add"), button -> {
@@ -211,6 +215,8 @@ public class ProfilesScreen extends Screen {
 						setScrollAmount(getMaxScroll());
 					}).positionAndSize(0, 0, 150, 20)
 					.build();
+				this.importButton = ButtonWidget.builder(Text.translatable("profiles.profile.import"), btn ->
+					Profiles.getInstance().importProfiles().thenRun(ProfilesList.this::reload)).build();
 			}
 
 			@Override
@@ -220,15 +226,17 @@ public class ProfilesScreen extends Screen {
 
 			@Override
 			public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
-				int i = getScrollbarPositionX() - width / 2 - 10 - addButton.getWidth() / 2;
+				int i = getScrollbarPositionX() - width / 2 - 10 - addButton.getWidth() + 2;
 				int j = top - 2;
 				this.addButton.setPosition(i, j);
 				this.addButton.render(guiGraphics, mouseX, mouseY, partialTick);
+				this.importButton.setPosition(addButton.getXEnd() + 2, j);
+				this.importButton.render(guiGraphics, mouseX, mouseY, partialTick);
 			}
 
 			@Override
 			public List<? extends Element> children() {
-				return List.of(addButton);
+				return List.of(addButton, importButton);
 			}
 		}
 	}
