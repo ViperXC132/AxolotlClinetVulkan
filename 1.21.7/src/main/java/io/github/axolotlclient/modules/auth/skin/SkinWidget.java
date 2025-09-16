@@ -124,11 +124,6 @@ public class SkinWidget extends AbstractWidget {
 	protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
 	}
 
-	@Override
-	public boolean isActive() {
-		return false;
-	}
-
 	@Nullable
 	@Override
 	public ComponentPath nextFocusPath(FocusNavigationEvent event) {
