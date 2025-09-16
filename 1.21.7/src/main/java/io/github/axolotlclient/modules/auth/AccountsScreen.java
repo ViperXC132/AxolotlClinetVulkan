@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.auth;
 
+import io.github.axolotlclient.modules.auth.skin.SkinManagementScreen;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.ConfirmScreen;
@@ -35,6 +36,7 @@ public class AccountsScreen extends Screen {
 	private Button loginButton;
 	private Button deleteButton;
 	private Button refreshButton;
+	private Button skinsButton;
 
 	public AccountsScreen(Screen currentScreen) {
 		super(Component.translatable("accounts"));
@@ -75,7 +77,12 @@ public class AccountsScreen extends Screen {
 		accountsListWidget.setAccounts(Auth.getInstance().getAccounts());
 
 		addRenderableWidget(loginButton = Button.builder(Component.translatable("auth.login"), buttonWidget -> login())
-			.bounds(this.width / 2 - 154, this.height - 52, 150, 20).build());
+			.bounds(this.width / 2 - 154, this.height - 52, 100, 20).build());
+
+		addRenderableWidget(skinsButton = Button.builder(Component.translatable("skins.manage"),
+				btn -> minecraft.setScreen(new SkinManagementScreen(
+					this, accountsListWidget.getSelected().getAccount())))
+			.bounds(this.width / 2 - 50, this.height - 52, 100, 20).build());
 
 		this.addRenderableWidget(Button.builder(Component.translatable("auth.add"), button -> {
 			if (!Auth.getInstance().allowOfflineAccounts()) {
@@ -93,7 +100,7 @@ public class AccountsScreen extends Screen {
 					Component.translatable("auth.add.ms")
 				));
 			}
-		}).bounds(this.width / 2 + 4, this.height - 52, 150, 20).build());
+		}).bounds(this.width / 2 + 4 + 50, this.height - 52, 100, 20).build());
 
 		this.deleteButton =
 			this.addRenderableWidget(Button.builder(Component.translatable("selectServer.delete"), button -> {
@@ -116,17 +123,14 @@ public class AccountsScreen extends Screen {
 	}
 
 	private void initMSAuth() {
-		Auth.getInstance().getAuth().startDeviceAuth().thenRun(() -> minecraft.execute(this::refresh));
+		Auth.getInstance().getMsApi().startDeviceAuth().thenRun(() -> minecraft.execute(this::refresh));
 	}
 
 	private void refreshAccount() {
 		refreshButton.active = false;
 		AccountsListWidget.Entry entry = accountsListWidget.getSelected();
 		if (entry != null) {
-			entry.getAccount().refresh(Auth.getInstance().getAuth()).thenRun(() -> minecraft.execute(() -> {
-				Auth.getInstance().save();
-				refresh();
-			}));
+			entry.getAccount().refresh(Auth.getInstance().getMsApi());
 		}
 	}
 
@@ -134,9 +138,10 @@ public class AccountsScreen extends Screen {
 		AccountsListWidget.Entry entry = accountsListWidget.getSelected();
 		if (minecraft.level == null && entry != null) {
 			loginButton.active = entry.getAccount().isExpired() || !entry.getAccount().equals(Auth.getInstance().getCurrent());
-			deleteButton.active = refreshButton.active = true;
+			refreshButton.active = skinsButton.active = !entry.getAccount().isOffline();
+			deleteButton.active = true;
 		} else {
-			loginButton.active = deleteButton.active = refreshButton.active = false;
+			loginButton.active = deleteButton.active = refreshButton.active = skinsButton.active = false;
 		}
 	}
 

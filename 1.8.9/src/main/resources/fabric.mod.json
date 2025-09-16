@@ -122,7 +122,8 @@
 			"osl-keybinds": "*",
 			"osl-entrypoints": "*",
 			"axolotlclientconfig": "*",
-			"axolotlclient-common": "*"
+			"axolotlclient-common": "*",
+			"legacy-lwjgl3": ">1.2.8"
 		}
 	}
 }

@@ -25,6 +25,8 @@ dependencies {
 	testRuntimeOnly(compileOnly("org.apache.commons:commons-lang3:3.3.2")!!)
 	testRuntimeOnly(compileOnly("it.unimi.dsi:fastutil:8.2.1")!!)
 	testRuntimeOnly(compileOnly("org.lwjgl:lwjgl-glfw:3.3.2")!!)
+	testRuntimeOnly(compileOnly("org.lwjgl:lwjgl-tinyfd:3.2.2")!!)
+	testRuntimeOnly(compileOnly("org.lwjgl:lwjgl-sdl:3.4.0-SNAPSHOT")!!)
 
 	shadow(implementation("io.github.CDAGaming:DiscordIPC:0.10.2") {
 		isTransitive = false
@@ -32,7 +34,7 @@ dependencies {
 	shadow(implementation("com.kohlschutter.junixsocket:junixsocket-common:2.10.1")!!)
 	shadow(implementation("com.kohlschutter.junixsocket:junixsocket-native-common:2.10.1")!!)
 
-	shadow(implementation("com.github.mizosoft.methanol:methanol:1.8.0")!!)
+	shadow(implementation("com.github.mizosoft.methanol:methanol:1.8.3")!!)
 	shadow(implementation("io.nayuki:qrcodegen:1.8.0")!!)
 
 	compileOnly("net.hypixel:mod-api:1.0.1")

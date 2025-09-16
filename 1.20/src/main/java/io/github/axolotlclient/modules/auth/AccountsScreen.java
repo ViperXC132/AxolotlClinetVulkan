@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.auth;
 
+import io.github.axolotlclient.modules.auth.skin.SkinManagementScreen;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.ConfirmScreen;
@@ -36,6 +37,7 @@ public class AccountsScreen extends Screen {
 	private ButtonWidget loginButton;
 	private ButtonWidget deleteButton;
 	private ButtonWidget refreshButton;
+	private ButtonWidget skinsButton;
 
 	public AccountsScreen(Screen currentScreen) {
 		super(Text.translatable("accounts"));
@@ -82,7 +84,12 @@ public class AccountsScreen extends Screen {
 		accountsListWidget.setAccounts(Auth.getInstance().getAccounts());
 
 		addDrawableChild(loginButton = new ButtonWidget.Builder(Text.translatable("auth.login"),
-			buttonWidget -> login()).positionAndSize(this.width / 2 - 154, this.height - 52, 150, 20).build());
+			buttonWidget -> login()).positionAndSize(this.width / 2 - 154, this.height - 52, 100, 20).build());
+
+		addDrawableChild(skinsButton = ButtonWidget.builder(Text.translatable("skins.manage"),
+				btn -> client.setScreen(new SkinManagementScreen(
+					this, accountsListWidget.getSelectedOrNull().getAccount())))
+			.positionAndSize(this.width / 2 - 50, this.height - 52, 100, 20).build());
 
 		this.addDrawableChild(ButtonWidget.builder(Text.translatable("auth.add"),
 				button -> {
@@ -99,7 +106,7 @@ public class AccountsScreen extends Screen {
 						}, Text.translatable("auth.add.choose"), Text.empty(), Text.translatable("auth.add.offline"), Text.translatable("auth.add.ms")));
 					}
 				})
-			.positionAndSize(this.width / 2 + 4, this.height - 52, 150, 20).build());
+			.positionAndSize(this.width / 2 + 4 + 50, this.height - 52, 100, 20).build());
 
 		this.deleteButton = this.addDrawableChild(ButtonWidget.builder(Text.translatable("selectServer.delete"), button -> {
 			AccountsListWidget.Entry entry = this.accountsListWidget.getSelectedOrNull();
@@ -125,17 +132,14 @@ public class AccountsScreen extends Screen {
 	}
 
 	private void initMSAuth() {
-		Auth.getInstance().getAuth().startDeviceAuth().thenRun(() -> client.execute(this::refresh));
+		Auth.getInstance().getMsApi().startDeviceAuth().thenRun(() -> client.execute(this::refresh));
 	}
 
 	private void refreshAccount() {
 		refreshButton.active = false;
 		AccountsListWidget.Entry entry = accountsListWidget.getSelectedOrNull();
 		if (entry != null) {
-			entry.getAccount().refresh(Auth.getInstance().getAuth()).thenRun(() -> client.execute(() -> {
-				Auth.getInstance().save();
-				refresh();
-			}));
+			entry.getAccount().refresh(Auth.getInstance().getMsApi());
 		}
 	}
 
@@ -143,9 +147,10 @@ public class AccountsScreen extends Screen {
 		AccountsListWidget.Entry entry = accountsListWidget.getSelectedOrNull();
 		if (client.world == null && entry != null) {
 			loginButton.active = entry.getAccount().isExpired() || !entry.getAccount().equals(Auth.getInstance().getCurrent());
-			deleteButton.active = refreshButton.active = true;
+			refreshButton.active = skinsButton.active = !entry.getAccount().isOffline();
+			deleteButton.active = true;
 		} else {
-			loginButton.active = deleteButton.active = refreshButton.active = false;
+			loginButton.active = deleteButton.active = refreshButton.active = skinsButton.active = false;
 		}
 	}
 

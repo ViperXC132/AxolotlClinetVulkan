@@ -24,7 +24,6 @@ package io.github.axolotlclient.modules.auth;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import com.google.gson.JsonObject;
@@ -83,8 +82,9 @@ public class Account {
 		return new Account(uuid, name, authToken, msaToken, refreshToken, expiration);
 	}
 
-	public CompletableFuture<Optional<Account>> refresh(MSAuth auth) {
-		return auth.refreshToken(refreshToken, this);
+	public CompletableFuture<Account> refresh(MSApi auth) {
+		if (isOffline()) return CompletableFuture.failedFuture(new UnsupportedOperationException());
+		return auth.refresh(this);
 	}
 
 	public boolean isOffline() {

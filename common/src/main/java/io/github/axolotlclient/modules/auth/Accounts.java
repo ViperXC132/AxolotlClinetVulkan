@@ -27,10 +27,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.axolotlclient.AxolotlClientCommon;
+import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.util.GsonHelper;
 import io.github.axolotlclient.util.Logger;
 import lombok.Getter;
@@ -38,9 +40,11 @@ import lombok.Getter;
 @Getter
 public abstract class Accounts {
 
+	public final OptionCategory category = OptionCategory.create("auth");
+
 	private final List<Account> accounts = new ArrayList<>();
 	protected Account current;
-	protected MSAuth auth;
+	protected MSApi msApi;
 
 	public void load() {
 		Path legacy = AxolotlClientCommon.resolveConfigFile("../accounts.json");
@@ -117,7 +121,7 @@ public abstract class Accounts {
 		return !accounts.isEmpty() && !accounts.stream().allMatch(Account::isOffline);
 	}
 
-	abstract void showAccountsExpiredScreen(Account account);
+	abstract CompletableFuture<Account> showAccountsExpiredScreen(Account account);
 
 	abstract void displayDeviceCode(DeviceFlowData data);
 }

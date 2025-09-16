@@ -43,12 +43,11 @@ public class AddOfflineScreen extends Screen {
 
 	@Override
 	public void render(GuiGraphics graphics, int i, int j, float f) {
-		renderBackground(graphics, i, j, f);
 		super.render(graphics, i, j, f);
 		graphics.drawString(font, Component.translatable("auth.add.offline.name"), (int) (width / 2F - 100),
 			(int) (height / 2f - 20), -1
 		);
-		graphics.drawString(this.font, this.title, this.width / 2, 20, -1);
+		graphics.drawCenteredString(this.font, this.title, this.width / 2, 20, -1);
 	}
 
 	@Override

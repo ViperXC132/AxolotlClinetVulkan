@@ -27,6 +27,7 @@ import io.github.axolotlclient.bridge.events.types.PlayerDirectionChangeEvent;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.mixin.GuiGraphicsAccessor;
 import io.github.axolotlclient.modules.hud.util.PlayerHudEntityRenderState;
+import io.github.axolotlclient.modules.hud.util.PlayerHudEntityRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.player.LocalPlayer;
@@ -49,6 +50,7 @@ import org.joml.Vector3f;
 public class PlayerHud extends PlayerHudCommon {
 
 	private LivingEntityRenderState reusedPlayerRendererState = null;
+	private PlayerHudEntityRenderer renderer;
 
 	public PlayerHud() {
 		super();
@@ -148,7 +150,9 @@ public class PlayerHud extends PlayerHudCommon {
 		@Nullable Quaternionf quaternionf2,
 		LivingEntity livingEntity
 	) {
-		EntityRenderDispatcher entityRenderDispatcher = Minecraft.getInstance().getEntityRenderDispatcher();
+		Minecraft mc = Minecraft.getInstance();
+		EntityRenderDispatcher entityRenderDispatcher = mc.getEntityRenderDispatcher();
+		if (renderer == null) renderer = new PlayerHudEntityRenderer(mc.renderBuffers().bufferSource(), entityRenderDispatcher);
 		EntityRenderer<LivingEntity, LivingEntityRenderState> entityRenderer = (EntityRenderer<LivingEntity, LivingEntityRenderState>) entityRenderDispatcher.getRenderer(livingEntity);
 		if (reusedPlayerRendererState == null) {
 			reusedPlayerRendererState = entityRenderer.createRenderState();
@@ -156,7 +160,7 @@ public class PlayerHud extends PlayerHudCommon {
 		entityRenderer.extractRenderState(livingEntity, reusedPlayerRendererState, 1.0f);
 		reusedPlayerRendererState.nameTag = null;
 		reusedPlayerRendererState.hitboxesRenderState = null;
-		((GuiGraphicsAccessor) guiGraphics).getGuiRenderState().submitPicturesInPictureState(new PlayerHudEntityRenderState(reusedPlayerRendererState, vector3f, quaternionf, quaternionf2, i, j, k, l, f, ((GuiGraphicsAccessor) guiGraphics).getScissorStack().peek()));
+		((GuiGraphicsAccessor) guiGraphics).getGuiRenderState().submitPicturesInPictureState(new PlayerHudEntityRenderState(reusedPlayerRendererState, vector3f, quaternionf, quaternionf2, i, j, k, l, f, ((GuiGraphicsAccessor) guiGraphics).getScissorStack().peek(), renderer));
 	}
 
 	private boolean isPerformingAction() {

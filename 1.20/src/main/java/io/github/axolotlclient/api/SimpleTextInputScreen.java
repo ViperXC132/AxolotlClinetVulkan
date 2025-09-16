@@ -60,6 +60,11 @@ public class SimpleTextInputScreen extends Screen {
 	}
 
 	@Override
+	public void tick() {
+		input.tick();
+	}
+
+	@Override
 	public void render(GuiGraphics graphics, int i, int j, float f) {
 		renderBackground(graphics);
 		super.render(graphics, i, j, f);

@@ -26,6 +26,7 @@
 		"GameRendererMixin",
 		"GuiGraphicsAccessor",
 		"GuiGraphicsMixin",
+		"GuiRendererMixin",
 		"HandledScreenMixin",
 		"InGameHudMixin",
 		"InGameOverlayRendererMixin",
@@ -64,6 +65,7 @@
 		"WorldListWidgetEntryMixin",
 		"WorldRendererMixin",
 		"api.JoinMulitplayerScreenMixin",
+		"skins.SkinTextureDownloaderAccessor",
 		"translation.TranslationStorageMixin"
 	],
 	"injectors": {

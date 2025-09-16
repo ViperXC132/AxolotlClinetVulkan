@@ -28,7 +28,6 @@ import java.util.concurrent.CompletableFuture;
 import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.yggdrasil.ProfileResult;
 import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.util.UUIDHelper;
@@ -37,6 +36,7 @@ import io.github.axolotlclient.mixin.MinecraftClientAccessor;
 import io.github.axolotlclient.mixin.ServerPackManagerAccessor;
 import io.github.axolotlclient.mixin.SplashManagerAccessor;
 import io.github.axolotlclient.modules.Module;
+import io.github.axolotlclient.modules.auth.skin.SkinManager;
 import io.github.axolotlclient.util.ThreadExecuter;
 import io.github.axolotlclient.util.notifications.Notifications;
 import io.github.axolotlclient.util.options.GenericOption;
@@ -59,26 +59,28 @@ public class Auth extends Accounts implements Module {
 	@Getter
 	private final static Auth Instance = new Auth();
 	public final BooleanOption showButton = new BooleanOption("auth.showButton", false);
+	public final BooleanOption skinManagerAnimations = new BooleanOption("skins.manage.animations", true);
 	private final Minecraft mc = Minecraft.getInstance();
 	private final GenericOption viewAccounts = new GenericOption("viewAccounts", "clickToOpen", () -> mc.setScreen(new AccountsScreen(mc.screen)));
 	private final Set<String> loadingTexture = new HashSet<>();
 	private final Map<String, ResourceLocation> textures = new WeakHashMap<>();
+	@Getter
+	private final SkinManager skinManager = new SkinManager();
 
 	@Override
 	public void init() {
 		load();
-		this.auth = new MSAuth(AxolotlClient.LOGGER, this, () -> mc.options.languageCode);
+		this.msApi = new MSApi(this, () -> mc.options.languageCode);
 		if (isContained(mc.getUser().getSessionId())) {
 			current = getAccounts().stream().filter(account -> account.getUuid().equals(UUIDHelper.toUndashed(mc.getUser().getProfileId()))).toList().getFirst();
 			if (current.needsRefresh()) {
-				current.refresh(auth).thenRun(this::save);
+				current.refresh(msApi).thenRun(this::save);
 			}
 		} else {
 			current = new Account(mc.getUser().getName(), UUIDHelper.toUndashed(mc.getUser().getProfileId()), mc.getUser().getAccessToken());
 		}
 
-		OptionCategory category = OptionCategory.create("auth");
-		category.add(showButton, viewAccounts);
+		category.add(showButton, viewAccounts, skinManagerAnimations);
 		AxolotlClient.config().general.add(category);
 	}
 
@@ -92,11 +94,11 @@ public class Auth extends Accounts implements Module {
 			if (account.isExpired()) {
 				Notifications.getInstance().addStatus(Component.translatable("auth.notif.title"), Component.translatable("auth.notif.refreshing", account.getName()));
 			}
-			account.refresh(auth).thenAccept(res -> res.ifPresent(a -> {
+			account.refresh(msApi).thenAccept(a -> {
 				if (!a.isExpired()) {
 					login(a);
 				}
-			})).thenRun(this::save);
+			}).thenRun(this::save);
 		} else {
 			try {
 				API.getInstance().shutdown();
@@ -129,14 +131,18 @@ public class Auth extends Accounts implements Module {
 	}
 
 	@Override
-	void showAccountsExpiredScreen(Account account) {
+	CompletableFuture<Account> showAccountsExpiredScreen(Account account) {
 		Screen current = mc.screen;
+		var fut = new CompletableFuture<Account>();
 		mc.execute(() -> mc.setScreen(new ConfirmScreen((bl) -> {
-			mc.setScreen(current);
 			if (bl) {
-				auth.startDeviceAuth();
+				msApi.startDeviceAuth().thenRun(() -> fut.complete(account));
+			} else {
+				fut.cancel(true);
 			}
+			mc.setScreen(current);
 		}, Component.translatable("auth"), Component.translatable("auth.accountExpiredNotice", account.getName()))));
+		return fut;
 	}
 
 	@Override

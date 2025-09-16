@@ -54,6 +54,7 @@ allprojects {
 		}
 		mavenLocal()
 		mavenCentral()
+		maven("https://central.sonatype.com/repository/maven-snapshots")
 	}
 }
 
@@ -91,7 +92,7 @@ subprojects {
 					return@forEach
 				}
 				val oldName = old.fileName.toString()
-				val oldVer = oldName.substring(0, oldName.indexOf("+"))
+				val oldVer = oldName.substringBefore("+")
 				val mcVer = oldName.substring(oldName.indexOf("+") + 1, oldName.length - 4).removeSuffix("-sources")
 				if (!project.version.toString().contains(mcVer)) {
 					return@forEach
