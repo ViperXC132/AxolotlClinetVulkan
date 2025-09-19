@@ -53,7 +53,7 @@ public sealed abstract class WindowAccess permits WindowAccess.GLFWAccess, Windo
 
 	public abstract void setCursor(long cursor);
 
-	public abstract void destroyCursors(long... cursors);
+	public abstract void destroyStandardCursor(long... cursors);
 
 	public abstract boolean rawMouseMotionAvailable();
 
@@ -105,7 +105,7 @@ public sealed abstract class WindowAccess permits WindowAccess.GLFWAccess, Windo
 		}
 
 		@Override
-		public void destroyCursors(long... cursors) {
+		public void destroyStandardCursor(long... cursors) {
 
 		}
 
@@ -138,7 +138,7 @@ public sealed abstract class WindowAccess permits WindowAccess.GLFWAccess, Windo
 		}
 
 		@Override
-		public void destroyCursors(long... cursors) {
+		public void destroyStandardCursor(long... cursors) {
 			for (long c : cursors) {
 				SDLMouse.SDL_DestroyCursor(c);
 			}
@@ -173,10 +173,8 @@ public sealed abstract class WindowAccess permits WindowAccess.GLFWAccess, Windo
 		}
 
 		@Override
-		public void destroyCursors(long... cursors) {
-			for (long c : cursors) {
-				GLFW.glfwDestroyCursor(c);
-			}
+		public void destroyStandardCursor(long... cursors) {
+			// we do not need to destroy glfw standard cursors ourselves
 		}
 
 		@Override

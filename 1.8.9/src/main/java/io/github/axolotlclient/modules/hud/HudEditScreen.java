@@ -286,7 +286,7 @@ public class HudEditScreen extends Screen {
 		super.removed();
 		setCursor(DEFAULT_CURSOR);
 		mode = ModificationMode.NONE;
-		WindowAccess.getInstance().destroyCursors(DEFAULT_CURSOR, NWSE_RESIZE_CURSOR, NESW_RESIZE_CURSOR, MOVE_CURSOR);
+		WindowAccess.getInstance().destroyStandardCursor(DEFAULT_CURSOR, NWSE_RESIZE_CURSOR, NESW_RESIZE_CURSOR, MOVE_CURSOR);
 	}
 
 	@Override
