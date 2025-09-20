@@ -26,12 +26,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.collect.Lists;
-import io.github.axolotlclient.mixin.KeyBindAccessor;
+import io.github.axolotlclient.AxolotlClientCommon;
 import lombok.Getter;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.KeyMapping;
+import net.minecraft.resources.ResourceLocation;
 
 public class KeyBinds {
+	public static KeyMapping.Category CATEGORY_AXOLOTLCLIENT = KeyMapping.Category.register(ResourceLocation.fromNamespaceAndPath(AxolotlClientCommon.MODID, "category.axolotlclient"));
 	@Getter
 	private final static KeyBinds instance = new KeyBinds();
 
@@ -39,11 +41,6 @@ public class KeyBinds {
 
 	public KeyMapping register(KeyMapping bind) {
 		binds.add(bind);
-
-		if (!KeyBindAccessor.getOrderByCategories().containsKey(bind.getCategory())) {
-			int index = KeyBindAccessor.getOrderByCategories().values().stream().max(Integer::compareTo).get() + 1;
-			KeyBindAccessor.getOrderByCategories().put(bind.getCategory(), index);
-		}
 
 		return bind;
 	}

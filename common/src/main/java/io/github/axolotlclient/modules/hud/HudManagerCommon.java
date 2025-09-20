@@ -69,8 +69,8 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 	private static HudManagerCommon instance;
 
 	private final static String CUSTOM_MODULE_SAVE_FILE_NAME = "custom_hud.json";
-	private final AxoKeybinding key = AxoKeybinding.create(AxoKeys.KEY_RSHIFT, "key.openHud", "category.axolotlclient");
-	private final AxoKeybinding toggleHud = AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "key.toggle_hud", "category.axolotlclient");
+	private final AxoKeybinding key = AxoKeybinding.create(AxoKeys.KEY_RSHIFT, "key.openHud");
+	private final AxoKeybinding toggleHud = AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "key.toggle_hud");
 	private final OptionCategory hudCategory = OptionCategory.create("hud");
 	private final BooleanOption enabled = new BooleanOption("enabled", true);
 	private final Map<AxoIdentifier, HudEntry> entries;

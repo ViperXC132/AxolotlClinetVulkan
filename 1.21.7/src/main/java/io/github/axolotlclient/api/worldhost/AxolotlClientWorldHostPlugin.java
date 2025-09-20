@@ -95,7 +95,7 @@ public class AxolotlClientWorldHostPlugin implements WorldHostPlugin {
 					.filter(u -> u.getStatus().isOnline()).filter(u -> u.getStatus().getActivity() != null)
 					.filter(u -> u.getStatus().getActivity().hasMetadata())
 					.map(AxolotlClientOnlineFriend::of)
-					.forEach(friend -> WorldHost.ONLINE_FRIENDS.put(friend.profile.getId(), friend));
+					.forEach(friend -> WorldHost.ONLINE_FRIENDS.put(friend.profile.id(), friend));
 				WorldHost.ONLINE_FRIEND_UPDATES.forEach(FriendsListUpdate::friendsListUpdate);
 			});
 		}
@@ -130,7 +130,7 @@ public class AxolotlClientWorldHostPlugin implements WorldHostPlugin {
 
 		@Override
 		public UUID uuid() {
-			return profile.getId();
+			return profile.id();
 		}
 
 		@Override

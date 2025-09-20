@@ -35,6 +35,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.components.PlayerFaceRenderer;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
@@ -73,7 +75,7 @@ public class UserListWidget extends ObjectSelectionList<UserListWidget.UserListE
 	}
 
 	@Override
-	protected boolean isValidClickButton(int index) {
+	protected boolean isValidClickButton(MouseButtonInfo mouseButtonInfo) {
 		return true;
 	}
 
@@ -115,7 +117,11 @@ public class UserListWidget extends ObjectSelectionList<UserListWidget.UserListE
 		}
 
 		@Override
-		public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		public void renderContent(GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			var x = getContentX();
+			var y = getContentY();
+			var entryWidth = getContentWidth();
+			var entryHeight = getContentHeight();
 			if (user.isSystem()) {
 				MutableComponent fronters = Component.literal(
 					user.getSystem().getFronters().stream().map(PkSystem.Member::getDisplayName)
@@ -145,7 +151,7 @@ public class UserListWidget extends ObjectSelectionList<UserListWidget.UserListE
 		}
 
 		@Override
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 			this.screen.select(this);
 			if (Util.getMillis() - this.time < 250L && client.level == null) {
 				screen.openChat();

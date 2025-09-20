@@ -40,6 +40,8 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.components.PlayerFaceRenderer;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -77,7 +79,7 @@ public class ChatUserListWidget extends ObjectSelectionList<ChatUserListWidget.U
 	}
 
 	@Override
-	protected boolean isValidClickButton(int index) {
+	protected boolean isValidClickButton(MouseButtonInfo index) {
 		return true;
 	}
 
@@ -87,7 +89,6 @@ public class ChatUserListWidget extends ObjectSelectionList<ChatUserListWidget.U
 		private final User user;
 		private final Minecraft client;
 		private final Channel channel;
-		private long time;
 		private ChatScreen screen;
 
 		public UserListEntry(User user, Channel channel) {
@@ -126,7 +127,11 @@ public class ChatUserListWidget extends ObjectSelectionList<ChatUserListWidget.U
 		}
 
 		@Override
-		public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		public void renderContent(GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			var x = getContentX();
+			var y = getContentY();
+			var entryWidth = getContentWidth();
+			var entryHeight = getContentHeight();
 			if (hovered && !screen.hasContextMenu()) {
 				graphics.fill(x - 2, y - 1, x + entryWidth - 3, y + entryHeight + 1, 0x55ffffff);
 			}
@@ -141,14 +146,11 @@ public class ChatUserListWidget extends ObjectSelectionList<ChatUserListWidget.U
 		}
 
 		@Override
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 			ChatUserListWidget.this.setSelected(this);
-			if (button == 0) { // left click
-				if (Util.getMillis() - this.time < 250L && client.level == null) { // left *double* click
+			/*if (event.button() == 0) { // left click
 
-				}
-				this.time = Util.getMillis();
-			} else if (button == 1) { // right click
+			} else*/ if (event.button() == 1) { // right click
 
 				if (!user.equals(API.getInstance().getSelf())) {
 					ContextMenu.Builder menu = ContextMenu.builder().title(Component.literal(user.getName())).spacer();

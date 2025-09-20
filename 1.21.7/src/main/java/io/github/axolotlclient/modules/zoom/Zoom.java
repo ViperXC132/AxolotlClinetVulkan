@@ -41,7 +41,7 @@ import net.minecraft.util.Mth;
 
 public class Zoom extends AbstractModule {
 
-	public static final KeyMapping key = new KeyMapping("key.zoom", InputConstants.KEY_C, "category.axolotlclient");
+	public static final KeyMapping key = new KeyMapping("key.zoom", InputConstants.KEY_C, KeyBinds.CATEGORY_AXOLOTLCLIENT);
 	public static final FloatOption zoomDivisor = new FloatOption("zoomDivisor", 4F, 1F, 16F);
 	public static final FloatOption zoomSpeed = new FloatOption("zoomSpeed", 7.5F, 1F, 10F);
 	public static final BooleanOption zoomScrolling = new BooleanOption("zoomScrolling", false);
@@ -154,11 +154,11 @@ public class Zoom extends AbstractModule {
 		active = false;
 
 		KeyBinds.getInstance().registerWithSimpleAction(
-			new KeyMapping("key.zoom.increase", InputConstants.UNKNOWN.getValue(), "category.axolotlclient"),
+			new KeyMapping("key.zoom.increase", InputConstants.UNKNOWN.getValue(), KeyBinds.CATEGORY_AXOLOTLCLIENT),
 			() -> scroll(zoomSpeed.get() / 2)
 		);
 		KeyBinds.getInstance().registerWithSimpleAction(
-			new KeyMapping("key.zoom.decrease", InputConstants.UNKNOWN.getValue(), "category.axolotlclient"),
+			new KeyMapping("key.zoom.decrease", InputConstants.UNKNOWN.getValue(), KeyBinds.CATEGORY_AXOLOTLCLIENT),
 			() -> scroll(-zoomSpeed.get() / 2)
 		);
 	}

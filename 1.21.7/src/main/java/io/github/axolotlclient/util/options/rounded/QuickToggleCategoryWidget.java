@@ -31,6 +31,8 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.rounded.widgets.PillB
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 
 public class QuickToggleCategoryWidget extends CategoryWidget {
 	private PillBooleanWidget enabledButton;
@@ -43,6 +45,8 @@ public class QuickToggleCategoryWidget extends CategoryWidget {
 			.filter(o -> "enabled".equals(o.getName())).findFirst()
 			.ifPresent(booleanOption -> {
 				enabledButton = new PillBooleanWidget(x + (width - 43), y + 3, 40, height - 5, booleanOption);
+				enabledButton.setWidth(40);
+				enabledButton.setX(x+width-43);
 				enabledButton.active = !(booleanOption instanceof ForceableBooleanOption o && o.isForceOff());
 			});
 	}
@@ -79,26 +83,26 @@ public class QuickToggleCategoryWidget extends CategoryWidget {
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 
 		if (enabledButton != null &&
 			enabledButton.isHoveredOrFocused()) {
 			playDownSound(Minecraft.getInstance().getSoundManager());
-			enabledButton.onPress();
+			enabledButton.onPress(event);
 			return true;
 		}
-		return this.isHovered && super.mouseClicked(mouseX, mouseY, button);
+		return this.isHovered && super.mouseClicked(event, doubleClick);
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyEvent event) {
 		if (!this.active || !this.visible) {
 			return false;
-		} else if (keyCode != 257 && keyCode != 32 && keyCode != 335) {
+		} else if (!event.isSelection()) {
 			return false;
 		} else {
 			this.playDownSound(Minecraft.getInstance().getSoundManager());
-			mouseClicked(0, 0, 0);
+			onPress(event);
 			return true;
 		}
 	}

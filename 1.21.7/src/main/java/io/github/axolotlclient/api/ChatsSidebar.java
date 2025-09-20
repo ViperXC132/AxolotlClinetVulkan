@@ -34,6 +34,7 @@ import io.github.axolotlclient.api.requests.ChannelRequest;
 import io.github.axolotlclient.api.types.Channel;
 import io.github.axolotlclient.api.types.User;
 import io.github.axolotlclient.api.util.AlphabeticalComparator;
+import lombok.Getter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
@@ -42,6 +43,8 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -176,18 +179,18 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 		if (contextMenu.getMenu() != null) {
-			if (contextMenu.mouseClicked(mouseX, mouseY, button)) {
+			if (contextMenu.mouseClicked(event, doubleClick)) {
 				return true;
 			}
 			contextMenu.removeMenu();
 		}
-		if (mouseX > sidebarWidth) {
+		if (event.x() > sidebarWidth) {
 			remove();
 			return true;
 		}
-		return super.mouseClicked(mouseX, mouseY, button);
+		return super.mouseClicked(event, doubleClick);
 	}
 
 	private void removeChat() {
@@ -216,13 +219,13 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 		addRenderableWidget(chatWidget);
 		addRenderableWidget(input = new EditBox(font, 75, height - 30, sidebarWidth - 80, 20, Component.translatable("api.friends.chat.input")) {
 			@Override
-			public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-				if (keyCode == InputConstants.KEY_RETURN) {
+			public boolean keyPressed(KeyEvent event) {
+				if (event.key() == InputConstants.KEY_RETURN) {
 					ChatHandler.getInstance().sendMessage(channel, input.getValue());
 					input.setValue("");
 					return true;
 				}
-				return super.keyPressed(keyCode, scanCode, modifiers);
+				return super.keyPressed(event);
 			}
 		});
 		input.setSuggestion(input.getMessage().getString());
@@ -258,6 +261,7 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 		private final int height;
 		private final int entryHeight = 25;
 		protected boolean hovered;
+		@Getter
 		private int x;
 		private int scrollAmount;
 		private boolean visible;
@@ -316,10 +320,6 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 		@Override
 		public boolean isMouseOver(double mouseX, double mouseY) {
 			return hovered = visible && mouseX >= (double) this.x && mouseY >= (double) this.y && mouseX < (double) (this.x + this.width) && mouseY < (double) (this.y + this.height);
-		}
-
-		public int getX() {
-			return x;
 		}
 
 		public void setX(int x) {

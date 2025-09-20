@@ -22,15 +22,15 @@
 
 package io.github.axolotlclient.mixin;
 
-import java.util.function.Supplier;
-
 import com.mojang.authlib.GameProfile;
 import io.github.axolotlclient.modules.hypixel.NickHider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.resources.DefaultPlayerSkin;
-import net.minecraft.client.resources.PlayerSkin;
+import net.minecraft.world.entity.player.PlayerSkin;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -38,14 +38,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(PlayerInfo.class)
 public abstract class PlayerListEntryMixin {
 
-	@Inject(method = "createSkinLookup", at = @At("RETURN"), cancellable = true)
-	private static void axolotlclient$hideSkins(GameProfile gameProfile, CallbackInfoReturnable<Supplier<PlayerSkin>> cir) {
-		if (gameProfile.equals(Minecraft.getInstance().player.getGameProfile())
+	@Shadow
+	@Final
+	private GameProfile profile;
+
+	@Inject(method = "getSkin", at = @At("HEAD"), cancellable = true)
+	private void hideSkins(CallbackInfoReturnable<PlayerSkin> cir) {
+		if (profile.equals(Minecraft.getInstance().player.getGameProfile())
 			&& NickHider.getInstance().hideOwnSkin.get()) {
-			cir.setReturnValue(() -> DefaultPlayerSkin.get(gameProfile.getId()));
-		} else if (!gameProfile.equals(Minecraft.getInstance().player.getGameProfile())
+			cir.setReturnValue(DefaultPlayerSkin.get(profile.id()));
+		} else if (!profile.equals(Minecraft.getInstance().player.getGameProfile())
 			&& NickHider.getInstance().hideOtherSkins.get()) {
-			cir.setReturnValue(() -> DefaultPlayerSkin.get(gameProfile.getId()));
+			cir.setReturnValue(DefaultPlayerSkin.get(profile.id()));
 		}
 	}
 }

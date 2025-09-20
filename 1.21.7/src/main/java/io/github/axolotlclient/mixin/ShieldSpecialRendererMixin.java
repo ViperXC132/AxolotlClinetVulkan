@@ -25,7 +25,7 @@ package io.github.axolotlclient.mixin;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.axolotlclient.AxolotlClient;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.special.ShieldSpecialRenderer;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.world.item.ItemDisplayContext;
@@ -37,8 +37,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ShieldSpecialRenderer.class)
 public abstract class ShieldSpecialRendererMixin {
 
-	@Inject(method = "render(Lnet/minecraft/core/component/DataComponentMap;Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;IIZ)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/ShieldModel;handle()Lnet/minecraft/client/model/geom/ModelPart;"))
-	private void axolotlclient$lowShield(DataComponentMap dataComponentMap, ItemDisplayContext itemDisplayContext, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, boolean bl, CallbackInfo ci) {
+	@Inject(method = "submit(Lnet/minecraft/core/component/DataComponentMap;Lnet/minecraft/world/item/ItemDisplayContext;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;IIZ)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/model/ShieldModel;handle()Lnet/minecraft/client/model/geom/ModelPart;"))
+	private void axolotlclient$lowShield(DataComponentMap dataComponentMap, ItemDisplayContext itemDisplayContext, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int i, int j, boolean bl, CallbackInfo ci) {
 		if (AxolotlClient.config().lowShield.get()
 			&& Minecraft.getInstance().options.getCameraType().isFirstPerson()
 			&& (itemDisplayContext.equals(ItemDisplayContext.FIRST_PERSON_LEFT_HAND)

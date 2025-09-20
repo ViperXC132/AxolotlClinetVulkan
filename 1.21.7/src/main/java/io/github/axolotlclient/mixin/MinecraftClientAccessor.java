@@ -26,7 +26,6 @@ import java.util.concurrent.CompletableFuture;
 
 import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.yggdrasil.ProfileResult;
-import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.User;
 import net.minecraft.client.gui.screens.social.PlayerSocialManager;
@@ -63,9 +62,6 @@ public interface MinecraftClientAccessor {
 	@Accessor("userApiService")
 	@Mutable
 	void axolotlclient$setUserApiService(UserApiService service);
-
-	@Accessor("authenticationService")
-	YggdrasilAuthenticationService getAuthService();
 
 	@Accessor("profileFuture")
 	@Mutable

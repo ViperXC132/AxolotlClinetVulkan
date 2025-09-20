@@ -29,6 +29,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -643,20 +644,7 @@ public class SkinManagementScreen extends Screen {
 				if (asset.supportsDownload() && !asset.isLocal()) {
 					this.actionButtons.add(new SpriteButton(new TranslatableText("skins.manage.download"), btn -> {
 						btn.active = false;
-						asset.image().thenAcceptAsync(b -> {
-							try {
-								var out = SKINS_DIR.resolve(asset.textureKey());
-								Files.createDirectories(out.getParent());
-								Files.write(out, b);
-								if (asset instanceof Skin skin) {
-									Skin.Local.writeMetadata(out, Map.of(Skin.Local.CLASSIC_METADATA_KEY, skin.classicVariant()));
-								}
-							} catch (IOException e) {
-								AxolotlClientCommon.getInstance().getLogger().warn("Failed to download: ", e);
-							}
-							refreshCurrentList();
-							btn.active = true;
-						});
+						download(asset).thenRun(() -> btn.active = true);
 					}, new Identifier("axolotlclient", "textures/gui/sprites/download.png")));
 				}
 			}
@@ -678,7 +666,7 @@ public class SkinManagementScreen extends Screen {
 					equipping = true;
 					btn.setMessage(TEXT_EQUIPPING);
 					btn.active = false;
-					widget.equip().thenAcceptAsync(p -> {
+					Consumer<CompletableFuture<MSApi.MCProfile>> consumer = f -> f.thenAcceptAsync(p -> {
 						cachedProfile = p;
 						refreshCurrentList();
 					}).exceptionally(t -> {
@@ -686,9 +674,36 @@ public class SkinManagementScreen extends Screen {
 						equipping = false;
 						return null;
 					});
+					if (asset instanceof Skin && !current.getSkin().isLocal()) {
+						client.openScreen(new ConfirmScreen(confirmed -> {
+							if (confirmed) {
+								consumer.accept(download(current.getSkin()).thenCompose(a -> widget.equip()));
+							} else {
+								consumer.accept(widget.equip());
+							}
+						}, new TranslatableText("skins.manage.equip.confirm"), new TranslatableText("skins.manage.equip.download_current")));
+					} else {
+						consumer.accept(widget.equip());
+					}
 				});
 			this.equipButton.active = !widget.isEquipped();
 			this.skinWidget = widget;
+		}
+
+		private @NotNull CompletableFuture<?> download(Asset asset) {
+			return asset.image().thenAcceptAsync(b -> {
+				try {
+					var out = SKINS_DIR.resolve(asset.textureKey());
+					Files.createDirectories(out.getParent());
+					Files.write(out, b);
+					if (asset instanceof Skin skin) {
+						Skin.Local.writeMetadata(out, Map.of(Skin.Local.CLASSIC_METADATA_KEY, skin.classicVariant()));
+					}
+				} catch (IOException e) {
+					AxolotlClientCommon.getInstance().getLogger().warn("Failed to download: ", e);
+				}
+				refreshCurrentList();
+			});
 		}
 
 		@Override

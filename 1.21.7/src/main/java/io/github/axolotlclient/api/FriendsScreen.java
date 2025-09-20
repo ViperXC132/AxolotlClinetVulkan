@@ -29,6 +29,7 @@ import io.github.axolotlclient.api.util.AlphabeticalComparator;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
@@ -60,15 +61,15 @@ public class FriendsScreen extends Screen {
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (super.keyPressed(keyCode, scanCode, modifiers)) {
+	public boolean keyPressed(KeyEvent event) {
+		if (super.keyPressed(event)) {
 			return true;
-		} else if (keyCode == 294) {
+		} else if (event.key() == 294) {
 			this.refresh();
 			return true;
 		} else if (this.widget.getSelected() != null) {
-			if (keyCode != 257 && keyCode != 335) {
-				return this.widget.keyPressed(keyCode, scanCode, modifiers);
+			if (event.key() != 257 && event.key() != 335) {
+				return this.widget.keyPressed(event);
 			} else {
 				this.openChat();
 				return true;

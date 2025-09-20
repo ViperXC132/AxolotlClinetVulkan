@@ -24,11 +24,12 @@ package io.github.axolotlclient.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.axolotlclient.modules.tnttime.TntTime;
-import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.TntRenderer;
 import net.minecraft.client.renderer.entity.state.TntRenderState;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
@@ -44,22 +45,30 @@ public abstract class TntEntityRendererMixin extends EntityRenderer<PrimedTnt, T
 	}
 
 	@Inject(
-		method = "render(Lnet/minecraft/client/renderer/entity/state/TntRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
+		method = "submit(Lnet/minecraft/client/renderer/entity/state/TntRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V",
 		at = @At(value = "TAIL"))
-	private void axolotlclient$render(TntRenderState tntRenderState, PoseStack matrices, MultiBufferSource vertexConsumers, int i, CallbackInfo ci) {
+	private void axolotlclient$render(TntRenderState tntRenderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
 		if (TntTime.getInstance().enabled.get()) {
-			matrices.pushPose();
+			poseStack.pushPose();
 			if (tntRenderState.nameTag != null) {
-				matrices.translate(0, 0.25, 0);
+				poseStack.translate(0, 0.25, 0);
 			}
 			Vec3 prevAttachment = tntRenderState.nameTagAttachment;
 			if (prevAttachment == null) {
 				tntRenderState.nameTagAttachment = new Vec3(0, 1, 0);
 			}
-			renderNameTag(tntRenderState, TntTime.getInstance().getFuseTime(tntRenderState.fuseRemainingInTicks),
-				matrices, vertexConsumers, i);
+			submitNodeCollector.submitNameTag(
+				poseStack,
+				tntRenderState.nameTagAttachment,
+				0,
+				TntTime.getInstance().getFuseTime(tntRenderState.fuseRemainingInTicks),
+				!tntRenderState.isDiscrete,
+				tntRenderState.lightCoords,
+				tntRenderState.distanceToCameraSq,
+				cameraRenderState
+			);
 			tntRenderState.nameTagAttachment = prevAttachment;
-			matrices.popPose();
+			poseStack.popPose();
 		}
 	}
 }

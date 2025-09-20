@@ -37,7 +37,7 @@ import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -93,7 +93,7 @@ public class HudEntryWidget implements Renderable, GuiEventListener, NarratableE
 	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 		if (isFocused()) {
 			var bounds = entry.getTrueBounds();
-			guiGraphics.renderOutline(bounds.x() - 1, bounds.y() - 1, bounds.width() + 2, bounds.height() + 2, moving ? ClientColors.SELECTOR_RED.toInt() : -1);
+			guiGraphics.br$outlineRect(bounds.x() - 1, bounds.y() - 1, bounds.width() + 2, bounds.height() + 2, moving ? ClientColors.SELECTOR_RED.toInt() : -1);
 		}
 	}
 
@@ -108,12 +108,13 @@ public class HudEntryWidget implements Renderable, GuiEventListener, NarratableE
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyEvent event) {
 		var mc = Minecraft.getInstance();
 		boolean consume = false;
+		var keyCode = event.key();
 		if (moving) {
 			consume = true;
-			int step = Screen.hasControlDown() ? 10 : 1;
+			int step = mc.hasControlDown() ? 10 : 1;
 			if (keyCode == InputConstants.KEY_ESCAPE || keyCode == InputConstants.KEY_SPACE) {
 				moving = false;
 			} else if (keyCode == InputConstants.KEY_UP) {

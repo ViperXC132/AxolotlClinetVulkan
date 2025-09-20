@@ -29,6 +29,7 @@ import io.github.axolotlclient.api.types.Channel;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
@@ -85,13 +86,13 @@ public class ChatListScreen extends Screen implements ContextMenuScreen {
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 		if (container.getMenu() != null) {
-			if (container.mouseClicked(mouseX, mouseY, button)) {
+			if (container.mouseClicked(event, doubleClick)) {
 				return true;
 			}
 			container.removeMenu();
 		}
-		return super.mouseClicked(mouseX, mouseY, button);
+		return super.mouseClicked(event, doubleClick);
 	}
 }

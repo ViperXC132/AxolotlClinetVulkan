@@ -36,7 +36,6 @@ import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.state.PlayerRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4fStack;
@@ -54,7 +53,7 @@ public class SkinRenderer extends PictureInPictureRenderer<SkinRenderState> {
 	}
 
 	private PlayerModel classicModel, slimModel;
-	private PlayerCapeModel<PlayerRenderState> capeModel;
+	private PlayerCapeModel capeModel;
 	private final Minecraft minecraft;
 	private final String id;
 
@@ -90,7 +89,7 @@ public class SkinRenderer extends PictureInPictureRenderer<SkinRenderState> {
 		model.renderToBuffer(poseStack, this.bufferSource.getBuffer(renderType), 15728880, OverlayTexture.NO_OVERLAY);
 		if (renderState.cape() != null) {
 			if (capeModel == null) {
-				capeModel = new PlayerCapeModel<>(minecraft.getEntityModels().bakeLayer(ModelLayers.PLAYER_CAPE));
+				capeModel = new PlayerCapeModel(minecraft.getEntityModels().bakeLayer(ModelLayers.PLAYER_CAPE));
 			}
 			var type = capeModel.renderType(renderState.cape());
 			poseStack.mulPose(Axis.XP.rotationDegrees(6.0F));

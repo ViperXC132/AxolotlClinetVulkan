@@ -98,7 +98,7 @@ public class PlatformImplInternal {
 	}
 
 	@RequiresImpl
-	public static AxoKeybinding createKeyBinding(@Nullable AxoKey defaultKey, String name, String category) {
+	public static AxoKeybinding createKeyBinding(@Nullable AxoKey defaultKey, String name) {
 		throw BridgeUtil.noImpl();
 	}
 

@@ -33,6 +33,9 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
+import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -85,30 +88,30 @@ public class ContextMenuContainer implements Renderable, GuiEventListener, Narra
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 		if (menu != null) {
-			if (!menu.isMouseOver(mouseX, mouseY)) {
+			if (!menu.isMouseOver(event.x(), event.y())) {
 				removeMenu();
 				return true;
 			}
-			if (menu.mouseClicked(mouseX, mouseY, button)) removeMenu();
+			if (menu.mouseClicked(event, doubleClick)) removeMenu();
 			return true;
 		}
 		return false;
 	}
 
 	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+	public boolean mouseReleased(MouseButtonEvent event) {
 		if (menu != null) {
-			return menu.mouseReleased(mouseX, mouseY, button);
+			return menu.mouseReleased(event);
 		}
 		return false;
 	}
 
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+	public boolean mouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
 		if (menu != null) {
-			return menu.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+			return menu.mouseDragged(event, deltaX, deltaY);
 		}
 		return false;
 	}
@@ -122,29 +125,29 @@ public class ContextMenuContainer implements Renderable, GuiEventListener, Narra
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+	public boolean keyPressed(KeyEvent event) {
 		if (menu != null) {
-			if (keyCode == InputConstants.KEY_ESCAPE) {
+			if (event.key() == InputConstants.KEY_ESCAPE) {
 				removeMenu();
 				return true;
 			}
-			return menu.keyPressed(keyCode, scanCode, modifiers);
+			return menu.keyPressed(event);
 		}
 		return false;
 	}
 
 	@Override
-	public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+	public boolean keyReleased(KeyEvent event) {
 		if (menu != null) {
-			return menu.keyReleased(keyCode, scanCode, modifiers);
+			return menu.keyReleased(event);
 		}
 		return false;
 	}
 
 	@Override
-	public boolean charTyped(char chr, int modifiers) {
+	public boolean charTyped(CharacterEvent event) {
 		if (menu != null) {
-			return menu.charTyped(chr, modifiers);
+			return menu.charTyped(event);
 		}
 		return false;
 	}

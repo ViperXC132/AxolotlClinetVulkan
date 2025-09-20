@@ -62,7 +62,7 @@ public class APIOptions extends Options {
 			return fut;
 		};
 		KeyBinds.getInstance().registerWithSimpleAction(
-			new KeyMapping("api.chats.sidebar.open", InputConstants.KEY_O, "category.axolotlclient"), () -> {
+			new KeyMapping("api.chats.sidebar.open", InputConstants.KEY_O, KeyBinds.CATEGORY_AXOLOTLCLIENT), () -> {
 				if (API.getInstance().isAuthenticated()) {
 					client.setScreen(new ChatsSidebar(client.screen));
 				}

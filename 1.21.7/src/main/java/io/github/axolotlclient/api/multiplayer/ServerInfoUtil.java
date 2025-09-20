@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import com.mojang.authlib.GameProfile;
 import io.github.axolotlclient.api.types.Status;
 import io.github.axolotlclient.api.util.UUIDHelper;
 import net.minecraft.ChatFormatting;
@@ -34,6 +33,7 @@ import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerStatusPinger;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.status.ServerStatus;
+import net.minecraft.server.players.NameAndId;
 
 public class ServerInfoUtil {
 	public static Status.Activity.ServerInfo getServerInfo(String levelName, ServerStatus status) {
@@ -44,7 +44,7 @@ public class ServerInfoUtil {
 			new Status.Activity.ServerInfo.Favicon(status.favicon().map(ServerStatus.Favicon::iconBytes).orElse(null)),
 			status.players().map(p ->
 				new Status.Activity.ServerInfo.Players(p.max(), p.online(),
-					p.sample().stream().map(prof -> new Status.Activity.ServerInfo.Players.Player(prof.getName(), UUIDHelper.toUndashed(prof.getId()))).toList())
+					p.sample().stream().map(prof -> new Status.Activity.ServerInfo.Players.Player(prof.name(), UUIDHelper.toUndashed(prof.id()))).toList())
 			).orElse(null),
 			status.version().map(v -> new Status.Activity.ServerInfo.Version(v.name(), v.protocol())).orElse(null));
 	}
@@ -53,7 +53,7 @@ public class ServerInfoUtil {
 		return new ServerStatus(Component.nullToEmpty(info.description()),
 			Optional.ofNullable(info.players()).map(p -> new ServerStatus.Players(p.max(),
 				p.online(),
-				p.sample().stream().map(prof -> new GameProfile(UUIDHelper.fromUndashed(prof.uuid()), prof.name())).toList())),
+				p.sample().stream().map(prof -> new NameAndId(UUIDHelper.fromUndashed(prof.uuid()), prof.name())).toList())),
 			Optional.ofNullable(info.version()).map(v -> new ServerStatus.Version(v.name(), v.protocol())),
 			Optional.ofNullable(info.icon()).map(f -> new ServerStatus.Favicon(f.iconBytes())),
 			false);
@@ -78,8 +78,8 @@ public class ServerInfoUtil {
 				if (!player.sample().isEmpty()) {
 					List<Component> list = new ArrayList<>(player.sample().size());
 
-					for (GameProfile gameProfile : player.sample()) {
-						list.add(Component.literal(gameProfile.getName()));
+					for (var gameProfile : player.sample()) {
+						list.add(Component.literal(gameProfile.name()));
 					}
 
 					if (player.sample().size() < player.online()) {

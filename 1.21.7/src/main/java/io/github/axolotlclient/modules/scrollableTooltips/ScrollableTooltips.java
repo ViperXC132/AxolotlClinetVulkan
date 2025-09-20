@@ -30,7 +30,6 @@ import io.github.axolotlclient.mixin.AbstractContainerScreenAccessor;
 import io.github.axolotlclient.modules.AbstractModule;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -68,10 +67,10 @@ public class ScrollableTooltips extends AbstractModule {
 				return false;
 			}
 			Slot hovered = ((AbstractContainerScreenAccessor) screen).getHoveredSlot();
-			if (hovered == null || hovered.hasItem() && hovered.getItem().is(Items.BUNDLE) && !Screen.hasControlDown()) {
+			if (hovered == null || hovered.hasItem() && hovered.getItem().is(Items.BUNDLE) && !Minecraft.getInstance().hasControlDown()) {
 				return false;
 			}
-			if (Screen.hasShiftDown()) {
+			if (Minecraft.getInstance().hasShiftDown()) {
 				if (applyInverse(reverse)) {
 					tooltipOffsetX -= scrollAmount.get();
 				} else {

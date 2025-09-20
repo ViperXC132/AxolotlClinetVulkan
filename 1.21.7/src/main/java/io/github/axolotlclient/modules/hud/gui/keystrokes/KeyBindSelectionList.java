@@ -58,13 +58,13 @@ public class KeyBindSelectionList extends ContainerObjectSelectionList<KeyBindSe
 		this.selectionConsumer = selectionConsumer;
 		KeyMapping[] keyMappings = ArrayUtils.clone(minecraft.options.keyMappings);
 		Arrays.sort(keyMappings);
-		String string = null;
+		KeyMapping.Category string = null;
 
 		for (KeyMapping keyMapping : keyMappings) {
-			String string2 = keyMapping.getCategory();
+			var string2 = keyMapping.getCategory();
 			if (!string2.equals(string)) {
 				string = string2;
-				this.addEntry(new KeyBindSelectionList.CategoryEntry(Component.translatable(string2)));
+				this.addEntry(new KeyBindSelectionList.CategoryEntry(string2.label()));
 			}
 
 			Component component = Component.translatable(keyMapping.getName());
@@ -88,8 +88,8 @@ public class KeyBindSelectionList extends ContainerObjectSelectionList<KeyBindSe
 		}
 
 		@Override
-		public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
-			guiGraphics.drawString(KeyBindSelectionList.this.minecraft.font, this.name, KeyBindSelectionList.this.width / 2 - this.width / 2, top + height - 9 - 1, -1);
+		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+			guiGraphics.drawString(KeyBindSelectionList.this.minecraft.font, this.name, KeyBindSelectionList.this.width / 2 - this.width / 2, getContentY() + getContentHeight() - 9 - 1, -1);
 		}
 
 		@Nullable
@@ -142,14 +142,14 @@ public class KeyBindSelectionList extends ContainerObjectSelectionList<KeyBindSe
 		}
 
 		@Override
-		public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
+		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
 			int i = KeyBindSelectionList.this.scrollBarX() - 10;
-			int j = top - 2;
+			int j = getContentY() - 2;
 			int k = i - 5 - this.changeButton.getWidth();
 			this.changeButton.setPosition(k, j);
 			this.changeButton.render(guiGraphics, mouseX, mouseY, partialTick);
-			guiGraphics.drawString(minecraft.font, this.name, left, top + height / 2 - 9 / 2, -1);
-			guiGraphics.drawString(minecraft.font, boundKey, left + width / 2 - minecraft.font.width(boundKey) / 2, top + height / 2 - 9 / 2, Colors.GRAY.toInt());
+			guiGraphics.drawString(minecraft.font, this.name, getContentX(), getContentY() + getContentHeight() / 2 - 9 / 2, -1);
+			guiGraphics.drawString(minecraft.font, boundKey, getContentX() + getContentWidth() / 2 - minecraft.font.width(boundKey) / 2, getContentY() + getContentHeight() / 2 - 9 / 2, Colors.GRAY.toInt());
 		}
 
 		@Override

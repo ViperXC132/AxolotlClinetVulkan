@@ -27,6 +27,7 @@ import java.util.concurrent.CompletableFuture;
 
 import com.mojang.authlib.minecraft.UserApiService;
 import com.mojang.authlib.yggdrasil.ProfileResult;
+import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.api.API;
@@ -103,13 +104,12 @@ public class Auth extends Accounts implements Module {
 			try {
 				API.getInstance().shutdown();
 				var mcAccessor = (MinecraftClientAccessor) mc;
-				mcAccessor.axolotlclient$setSession(new User(account.getName(), UUIDHelper.fromUndashed(account.getUuid()), account.getAuthToken(), Optional.empty(), Optional.empty(), User.Type.MSA));
+				mcAccessor.axolotlclient$setSession(new User(account.getName(), UUIDHelper.fromUndashed(account.getUuid()), account.getAuthToken(), Optional.empty(), Optional.empty()));
 				UserApiService service;
 				if (account.isOffline()) {
 					service = UserApiService.OFFLINE;
 				} else {
-
-					service = mcAccessor.getAuthService().createUserApiService(mc.getUser().getAccessToken());
+					service = new YggdrasilAuthenticationService(mc.getProxy()).createUserApiService(mc.getUser().getAccessToken());
 				}
 				mcAccessor.axolotlclient$setUserApiService(service);
 				var sourceAccessor = (DownloadedPackSourceAccessor) mc.getDownloadedPackSource();
@@ -118,7 +118,7 @@ public class Auth extends Accounts implements Module {
 				mcAccessor.axolotlclient$setSocialInteractionsManager(new PlayerSocialManager(mc, service));
 				mcAccessor.axolotlclient$setPlayerKeyPairManager(ProfileKeyPairManager.create(service, mc.getUser(), mc.gameDirectory.toPath()));
 				mcAccessor.axolotlclient$setChatReportingContext(ReportingContext.create(ReportEnvironment.local(), service));
-				mcAccessor.axolotlclient$setProfileFuture(CompletableFuture.supplyAsync(() -> mc.getMinecraftSessionService().fetchProfile(mc.getUser().getProfileId(), true), Util.nonCriticalIoPool()));
+				mcAccessor.axolotlclient$setProfileFuture(CompletableFuture.supplyAsync(() -> mc.services().sessionService().fetchProfile(mc.getUser().getProfileId(), true), Util.nonCriticalIoPool()));
 				((SplashManagerAccessor) mc.getSplashManager()).setUser(mc.getUser());
 				save();
 				current = account;
@@ -155,9 +155,9 @@ public class Auth extends Accounts implements Module {
 			loadingTexture.add(uuid);
 			ThreadExecuter.scheduleTask(() -> {
 				UUID uUID = UUIDHelper.fromUndashed(uuid);
-				ProfileResult profileResult = mc.getMinecraftSessionService().fetchProfile(uUID, false);
+				ProfileResult profileResult = mc.services().sessionService().fetchProfile(uUID, false);
 				if (profileResult != null) {
-					mc.getSkinManager().getOrLoad(profileResult.profile()).thenAccept(playerSkin -> playerSkin.ifPresent(skin -> textures.put(uuid, skin.texture())));
+					mc.getSkinManager().get(profileResult.profile()).thenAccept(playerSkin -> playerSkin.ifPresent(skin -> textures.put(uuid, skin.body().texturePath())));
 				}
 				loadingTexture.remove(uuid);
 			});
@@ -175,7 +175,7 @@ public class Auth extends Accounts implements Module {
 	public ResourceLocation getSkinTexture(String uuid) {
 		if (!textures.containsKey(uuid)) {
 			loadTexture(uuid);
-			return Objects.requireNonNullElseGet(textures.get(uuid), () -> DefaultPlayerSkin.get(UUIDHelper.fromUndashed(uuid)).texture());
+			return Objects.requireNonNullElseGet(textures.get(uuid), () -> DefaultPlayerSkin.get(UUIDHelper.fromUndashed(uuid)).body().texturePath());
 		}
 		return textures.get(uuid);
 	}

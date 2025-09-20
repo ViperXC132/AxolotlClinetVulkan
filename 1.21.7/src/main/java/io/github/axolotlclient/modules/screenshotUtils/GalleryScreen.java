@@ -51,6 +51,7 @@ import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -255,7 +256,7 @@ public class GalleryScreen extends Screen {
 		}
 
 		@Override
-		public void onPress() {
+		public void onPress(InputWithModifiers inputWithModifiers) {
 			minecraft.setScreen(ImageScreen.create(GalleryScreen.this, load(), false));
 		}
 
@@ -273,7 +274,7 @@ public class GalleryScreen extends Screen {
 				guiGraphics.fill(getX() + 2, getBottom() - font.lineHeight - 1, getRight() - 2, getBottom() - 2, bgColor);
 				drawHorizontalGradient(guiGraphics, getX() + 2, getBottom() - font.lineHeight - 1, getBottom() - 2, lerp(delta, getX() + 2, getRight() - 2));
 			}
-			guiGraphics.renderOutline(getX(), getY(), getWidth(), getHeight(), isHoveredOrFocused() ? -1 : bgColor);
+			guiGraphics.br$outlineRect(getX(), getY(), getWidth(), getHeight(), isHoveredOrFocused() ? -1 : bgColor);
 		}
 
 		private void drawHorizontalGradient(GuiGraphics guiGraphics, int x1, int y1, int y2, int x2) {
@@ -320,17 +321,15 @@ public class GalleryScreen extends Screen {
 		}
 
 		@Override
-		public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
-			if (Math.max(left, list.getX()) <= Math.min(left + width, list.getX() + list.getWidth()) - 1 &&
-				Math.max(top - height, list.getY()) <= Math.min(top + height * 2, list.getY() + list.getHeight()) - 1) {
+		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+			if (Math.max(getContentX(), list.getX()) <= Math.min(getContentX() + getContentWidth(), list.getX() + list.getWidth()) - 1 &&
+				Math.max(getContentY() - getContentHeight(), list.getY()) <= Math.min(getContentY() + getContentHeight() * 2, list.getY() + list.getHeight()) - 1) {
 				buttons.forEach(e -> {
-					e.setY(top);
+					e.setY(getContentY());
 					e.render(guiGraphics, mouseX, mouseY, partialTick);
 				});
 			} else {
-				buttons.forEach(e -> {
-					e.setY(top);
-				});
+				buttons.forEach(e -> e.setY(getContentY()));
 			}
 		}
 
@@ -400,8 +399,8 @@ public class GalleryScreen extends Screen {
 		}
 
 		@Override
-		public boolean removeEntry(ImageListEntry entry) {
-			return super.removeEntry(entry);
+		public void removeEntry(ImageListEntry entry) {
+			super.removeEntry(entry);
 		}
 
 		public void shiftEntries(ImageListEntry origin) {
@@ -410,7 +409,7 @@ public class GalleryScreen extends Screen {
 			if (originIndex == lastIndex) {
 				return;
 			}
-			ImageListEntry next = getEntry(originIndex + 1);
+			ImageListEntry next = children().get(originIndex + 1);
 			origin.add(next.pop());
 		}
 	}

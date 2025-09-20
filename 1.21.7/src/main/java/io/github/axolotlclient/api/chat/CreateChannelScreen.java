@@ -114,7 +114,7 @@ public class CreateChannelScreen extends Screen {
 				),
 				Arrays.stream(namesInput.getValue().split(",")).filter(s -> !s.isEmpty())
 					.toArray(String[]::new)
-			).thenRun(() -> minecraft.submit(() -> minecraft.setScreen(parent)));
+			).thenRun(() -> minecraft.execute(() -> minecraft.setScreen(parent)));
 		}).build());
 		layout.addToFooter(footer);
 
@@ -135,6 +135,10 @@ public class CreateChannelScreen extends Screen {
 			protected void applyValue() {
 				currentVal.set(valueFunc.apply(value));
 			}
+
+			public void setValue(double v) {
+				this.value = v;
+			}
 		};
 		slider.updateMessage();
 		slider.applyValue();
@@ -148,9 +152,7 @@ public class CreateChannelScreen extends Screen {
 				text.setValue(String.valueOf(currentVal.get()));
 			} else {
 				try {
-					slider.onClick(slider.getX() + (1d / slider.getWidth()) * Double.parseDouble(text.getValue()),
-						slider.getY()
-					);
+					slider.setValue(Double.parseDouble(text.getValue()));
 				} catch (Exception ignored) {
 				}
 			}

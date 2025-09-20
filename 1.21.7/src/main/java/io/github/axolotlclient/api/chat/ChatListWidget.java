@@ -38,6 +38,8 @@ import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.ConfirmScreen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 
@@ -75,7 +77,7 @@ public class ChatListWidget extends ContainerObjectSelectionList<ChatListWidget.
 	}
 
 	@Override
-	protected boolean isValidClickButton(int index) {
+	protected boolean isValidClickButton(MouseButtonInfo index) {
 		return true;
 	}
 
@@ -96,9 +98,9 @@ public class ChatListWidget extends ContainerObjectSelectionList<ChatListWidget.
 		}
 
 		@Override
-		public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-			widget.setX(x);
-			widget.setY(y);
+		public void renderContent(GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			widget.setX(getContentX());
+			widget.setY(getContentY());
 			widget.render(graphics, mouseX, mouseY, tickDelta);
 		}
 
@@ -108,11 +110,11 @@ public class ChatListWidget extends ContainerObjectSelectionList<ChatListWidget.
 		}
 
 		@Override
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
-			if (widget.isMouseOver(mouseX, mouseY)) {
-				if (button == 0) {
-					return widget.mouseClicked(mouseX, mouseY, button);
-				} else if (button == 1) {
+		public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+			if (widget.isMouseOver(event.x(), event.y())) {
+				if (event.button() == 0) {
+					return widget.mouseClicked(event, doubleClick);
+				} else if (event.button() == 1) {
 					ContextMenu.Builder builder = ContextMenu.builder()
 						.title(Component.literal(channel.getName()))
 						.spacer()
@@ -137,7 +139,7 @@ public class ChatListWidget extends ContainerObjectSelectionList<ChatListWidget.
 					return true;
 				}
 			}
-			return super.mouseClicked(mouseX, mouseY, button);
+			return super.mouseClicked(event, doubleClick);
 		}
 
 		@Override

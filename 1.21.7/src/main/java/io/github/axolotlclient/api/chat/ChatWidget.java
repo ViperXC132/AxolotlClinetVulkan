@@ -47,6 +47,8 @@ import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.components.PlayerFaceRenderer;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
@@ -134,7 +136,7 @@ public class ChatWidget extends ObjectSelectionList<ChatWidget.ChatLine> {
 
 	@Override
 	public boolean mouseScrolled(double mouseX, double mouseY, double amountX, double amountY) {
-		double scrollAmount = (this.scrollAmount() - amountY * (double) this.itemHeight / 2.0);
+		double scrollAmount = (this.scrollAmount() - amountY * scrollRate());
 		if (scrollAmount < 0) {
 			loadMessages();
 		}
@@ -149,11 +151,11 @@ public class ChatWidget extends ObjectSelectionList<ChatWidget.ChatLine> {
 	}
 
 	@Override
-	protected void renderSelection(GuiGraphics graphics, int y, int entryWidth, int entryHeight, int borderColor, int fillColor) {
+	protected void renderSelection(GuiGraphics guiGraphics, ChatLine entry, int i) {
 	}
 
 	@Override
-	protected boolean isValidClickButton(int index) {
+	protected boolean isValidClickButton(MouseButtonInfo mouseButtonInfo) {
 		return true;
 	}
 
@@ -171,20 +173,19 @@ public class ChatWidget extends ObjectSelectionList<ChatWidget.ChatLine> {
 		}
 
 		@Override
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
-			if (button == 0) {
+		public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+			if (event.button() == 0) {
 				ChatWidget.this.setSelected(this);
 				return true;
 			}
-			if (button == 1) {
+			if (event.button() == 1) {
 				ContextMenu.Builder builder =
 					ContextMenu.builder().title(Component.literal(origin.sender().getName())).spacer();
 				if (!origin.sender().equals(API.getInstance().getSelf())) {
-					builder.entry(Component.translatable("api.friends.chat"), buttonWidget -> {
-						ChannelRequest.getOrCreateDM(origin.sender()).whenCompleteAsync(
-							(channel, throwable) -> client.execute(
-								() -> client.setScreen(new ChatScreen(screen.getParent(), channel))));
-					}).spacer();
+					builder.entry(Component.translatable("api.friends.chat"),
+						buttonWidget -> ChannelRequest.getOrCreateDM(origin.sender()).whenCompleteAsync(
+						(channel, throwable) -> client.execute(
+							() -> client.setScreen(new ChatScreen(screen.getParent(), channel))))).spacer();
 				}
 				builder.entry(Component.translatable("api.chat.report.message"), buttonWidget -> {
 					Screen previous = client.screen;
@@ -205,7 +206,7 @@ public class ChatWidget extends ObjectSelectionList<ChatWidget.ChatLine> {
 		}
 
 		@Override
-		public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		public void renderContent(GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			for (ChatLine l : children()) {
 				if (l.getOrigin().equals(origin)) {
 					if (Objects.equals(getHovered(), l)) {
@@ -215,6 +216,11 @@ public class ChatWidget extends ObjectSelectionList<ChatWidget.ChatLine> {
 				}
 			}
 			if (hovered && !screen.hasContextMenu()) {
+				var x = getContentX();
+				var y = getContentY();
+				var entryWidth = getContentWidth();
+				var entryHeight = getContentHeight();
+				var index = ChatWidget.this.children().indexOf(this);
 				graphics.fill(x - 2 - 22, y - 2, x + entryWidth + 20, y + entryHeight - 1, 0x33FFFFFF);
 				if (index < children().size() - 1 && children().get(index + 1).getOrigin().equals(origin)) {
 					graphics.fill(x - 2 - 22, y + entryHeight - 1, x + entryWidth + 20, y + entryHeight + 2,
@@ -251,7 +257,6 @@ public class ChatWidget extends ObjectSelectionList<ChatWidget.ChatLine> {
 		@Override
 		protected void renderExtras(GuiGraphics graphics, int x, int y, int mouseX, int mouseY) {
 			graphics.pose().pushMatrix();
-			//graphics.pose().translate(0, 0, 5);
 			ResourceLocation texture =
 				Auth.getInstance().getSkinTexture(getOrigin().sender().getUuid());
 			PlayerFaceRenderer.draw(graphics, texture, x - 22, y, 18, true, false, -1);

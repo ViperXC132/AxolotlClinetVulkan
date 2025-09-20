@@ -39,6 +39,7 @@ import io.github.axolotlclient.util.ClientColors;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
@@ -118,9 +119,11 @@ public class KeystrokePositioningScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		var value = super.mouseClicked(mouseX, mouseY, button);
-		if (button == 0) {
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+		var value = super.mouseClicked(event, doubleClick);
+		if (event.button() == 0) {
+			var mouseX = event.x();
+			var mouseY = event.y();
 			Optional<KeystrokeHud.Keystroke> entry = Optional.empty();
 			Optional<Rectangle> pos = Optional.empty();
 			if (editing == null) {
@@ -159,21 +162,21 @@ public class KeystrokePositioningScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+	public boolean mouseReleased(MouseButtonEvent event) {
 		if (focused != null) {
 			hud.saveKeystrokes();
 		}
 		snap = null;
 		mouseDown = false;
 		focused = null;
-		return super.mouseReleased(mouseX, mouseY, button);
+		return super.mouseReleased(event);
 	}
 
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+	public boolean mouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
 		if (focused != null && mouseDown) {
-			focused.setX((int) Math.round((mouseX - offset.x()) / hud.getScale()));
-			focused.setY((int) Math.round((mouseY - offset.y()) / hud.getScale()));
+			focused.setX((int) Math.round((event.x() - offset.x()) / hud.getScale()));
+			focused.setY((int) Math.round((event.y() - offset.y()) / hud.getScale()));
 			if (snap != null) {
 				Integer snapX, snapY;
 				var rect = getScaledRenderPos(focused);

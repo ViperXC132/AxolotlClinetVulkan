@@ -176,9 +176,9 @@ public class CreditsScreen extends Screen {
 		}
 
 		@Override
-		public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX,
+		public void renderContent(GuiGraphics graphics, int mouseX,
 						   int mouseY, boolean hovered, float tickDelta) {
-			c.setPosition(x, y);
+			c.setPosition(getContentX(), getContentY());
 			c.render(graphics, mouseX, mouseY, tickDelta);
 		}
 
@@ -255,9 +255,9 @@ public class CreditsScreen extends Screen {
 		}
 
 		@Override
-		public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX,
+		public void renderContent(GuiGraphics graphics, int mouseX,
 						   int mouseY, boolean hovered, float tickDelta) {
-			DrawUtil.drawCenteredString(graphics, font, name, x + entryWidth / 2, y, -128374,
+			DrawUtil.drawCenteredString(graphics, font, name, getContentXMiddle(), getContentY(), -128374,
 				true);
 		}
 

@@ -38,6 +38,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
@@ -104,7 +105,7 @@ public class HudEditScreen extends Screen {
 	private void setCursor(long cursor) {
 		if (cursor > 0 && cursor != currentCursor) {
 			currentCursor = cursor;
-			GLFW.glfwSetCursor(Minecraft.getInstance().getWindow().getWindow(), cursor);
+			GLFW.glfwSetCursor(Minecraft.getInstance().getWindow().handle(), cursor);
 		}
 	}
 
@@ -190,11 +191,13 @@ public class HudEditScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		boolean value = super.mouseClicked(mouseX, mouseY, button);
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+		boolean value = super.mouseClicked(event, doubleClick);
+		var mouseX = event.x();
+		var mouseY = event.y();
 		Optional<HudEntry> entry = HudManager.getInstance().getEntryXY((int) Math.round(mouseX),
 			(int) Math.round(mouseY));
-		if (button == 0) {
+		if (event.button() == 0) {
 			mouseDown = true;
 			if (entry.isPresent()) {
 				current = entry.get();
@@ -228,7 +231,7 @@ public class HudEditScreen extends Screen {
 				mode = ModificationMode.NONE;
 				current = null;
 			}
-		} else if (button == 1) {
+		} else if (event.button() == 1) {
 			entry.ifPresent(abstractHudEntry -> {
 				Screen screen = ConfigStyles.createScreen(this, abstractHudEntry.getCategory());
 				minecraft.setScreen(screen);
@@ -238,7 +241,7 @@ public class HudEditScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseReleased(double mouseX, double mouseY, int button) {
+	public boolean mouseReleased(MouseButtonEvent event) {
 		if (current != null) {
 			AxolotlClientConfig.getInstance().getConfigManager(current.getCategory()).save();
 		}
@@ -247,11 +250,13 @@ public class HudEditScreen extends Screen {
 		mouseDown = false;
 		mode = ModificationMode.NONE;
 		setCursor(DEFAULT_CURSOR);
-		return super.mouseReleased(mouseX, mouseY, button);
+		return super.mouseReleased(event);
 	}
 
 	@Override
-	public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+	public boolean mouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
+		var mouseX = event.x();
+		var mouseY = event.y();
 		if (current != null) {
 			if (mode == ModificationMode.MOVE) {
 				current.setX((int) mouseX - offset.x() + current.offsetTrueWidth());

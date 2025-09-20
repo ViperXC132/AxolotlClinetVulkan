@@ -173,7 +173,7 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 		general.add(new GenericOption("profiles.title", "profiles.configure", () ->
 			Minecraft.getInstance().setScreen(new ProfilesScreen(Minecraft.getInstance().screen))), false);
 
-		var toggleFullbright = new KeyMapping("toggle_fullbright", -1, "category.axolotlclient");
+		var toggleFullbright = new KeyMapping("toggle_fullbright", -1, KeyBinds.CATEGORY_AXOLOTLCLIENT);
 		KeyBinds.getInstance().registerWithSimpleAction(toggleFullbright, fullBright::toggle);
 	}
 }

@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
@@ -36,6 +37,8 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.input.InputWithModifiers;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
@@ -122,7 +125,7 @@ public class ContextMenu implements ContainerEventHandler, Renderable, Narratabl
 		graphics.pose().pushMatrix();
 		//graphics.pose().translate(0, 0, 200);
 		graphics.fill(xStart, yStart, xStart + width + 1, y, 0xDD1E1F22);
-		graphics.renderOutline(xStart, yStart, width + 1, y - yStart + 1, -1);
+		DrawUtil.outlineRect(graphics, xStart, yStart, width + 1, y - yStart + 1, -1);
 		for (AbstractButton c : children) {
 			c.setWidth(width);
 			c.render(graphics, mouseX, mouseY, delta);
@@ -147,13 +150,13 @@ public class ContextMenu implements ContainerEventHandler, Renderable, Narratabl
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
-		Optional<GuiEventListener> optional = this.getChildAt(mouseX, mouseY);
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+		Optional<GuiEventListener> optional = this.getChildAt(event.x(), event.y());
 		if (optional.isPresent()) {
 			GuiEventListener guiEventListener = optional.get();
-			if (guiEventListener.mouseClicked(mouseX, mouseY, button)) {
+			if (guiEventListener.mouseClicked(event, doubleClick)) {
 				this.setFocused(guiEventListener);
-				if (button == 0) {
+				if (event.button() == 0) {
 					this.setDragging(true);
 				}
 				return true;
@@ -212,7 +215,7 @@ public class ContextMenu implements ContainerEventHandler, Renderable, Narratabl
 		}
 
 		@Override
-		public void onPress() {
+		public void onPress(InputWithModifiers input) {
 
 		}
 
@@ -222,7 +225,7 @@ public class ContextMenu implements ContainerEventHandler, Renderable, Narratabl
 		}
 
 		@Override
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 			return false;
 		}
 

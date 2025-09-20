@@ -24,13 +24,14 @@ package io.github.axolotlclient.modules.auth;
 
 import java.util.List;
 
+import lombok.Getter;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.components.PlayerFaceRenderer;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -72,9 +73,9 @@ public class AccountsListWidget extends ObjectSelectionList<AccountsListWidget.E
 			ResourceLocation.fromNamespaceAndPath("axolotlclient", "textures/warning.png");
 
 		private final AccountsScreen screen;
+		@Getter
 		private final Account account;
 		private final Minecraft client;
-		private long time;
 
 		public Entry(AccountsScreen screen, Account account) {
 			this.screen = screen;
@@ -88,37 +89,32 @@ public class AccountsListWidget extends ObjectSelectionList<AccountsListWidget.E
 		}
 
 		@Override
-		public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		public void renderContent(GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			if (Auth.getInstance().getCurrent().equals(account)) {
-				graphics.blit(RenderPipelines.GUI_TEXTURED, checkmark, x - 35, y + 1, 0, 0, 32, 32, 32, 32);
+				graphics.blit(RenderPipelines.GUI_TEXTURED, checkmark, getContentX() - 35, getContentY() + 1, 0, 0, 32, 32, 32, 32);
 			} else if (account.isExpired()) {
-				graphics.blit(RenderPipelines.GUI_TEXTURED, warningSign, x - 35, y + 1, 0, 0, 32, 32, 32, 32);
+				graphics.blit(RenderPipelines.GUI_TEXTURED, warningSign, getContentX() - 35, getContentY() + 1, 0, 0, 32, 32, 32, 32);
 			}
 
 
 			ResourceLocation texture = Auth.getInstance().getSkinTexture(account);
-			PlayerFaceRenderer.draw(graphics, texture, x - 1, y - 1, 33, true, false, -1);
+			PlayerFaceRenderer.draw(graphics, texture, getContentX() - 1, getContentY() - 1, 33, true, false, -1);
 
-			graphics.drawString(client.font, account.getName(), x + 3 + 33, y + 1, -1);
-			graphics.drawString(client.font, account.getUuid(), x + 3 + 33, y + 12, 0xFF808080);
+			graphics.drawString(client.font, account.getName(), getContentX() + 3 + 33, getContentY() + 1, -1);
+			graphics.drawString(client.font, account.getUuid(), getContentX() + 3 + 33, getContentY() + 12, 0xFF808080);
 		}
 
 		@Override
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 			this.screen.select(this);
-			if (Util.getMillis() - this.time < 250L && client.level == null) {
+			if (doubleClick) {
 				if (!getAccount().equals(Auth.getInstance().getCurrent())) {
 					screen.select(null);
 					Auth.getInstance().login(account);
 				}
 			}
 
-			this.time = Util.getMillis();
 			return false;
-		}
-
-		public Account getAccount() {
-			return account;
 		}
 	}
 }

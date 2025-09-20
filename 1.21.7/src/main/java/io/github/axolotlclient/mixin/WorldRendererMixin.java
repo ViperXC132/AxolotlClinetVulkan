@@ -28,9 +28,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.axolotlclient.AxolotlClient;
 import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.client.renderer.state.BlockOutlineRenderState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -38,11 +36,11 @@ import org.spongepowered.asm.mixin.injection.At;
 public abstract class WorldRendererMixin {
 
 	@WrapOperation(method = "renderBlockOutline", at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/client/renderer/LevelRenderer;renderHitOutline(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/world/entity/Entity;DDDLnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;I)V", ordinal = 1))
-	private void axolotlclient$customOutlineColor(LevelRenderer instance, PoseStack matrices, VertexConsumer consumer, Entity entity, double offsetX, double offsetY, double offsetZ, BlockPos blockPos, BlockState blockState, int i, Operation<Void> original) {
+		target = "Lnet/minecraft/client/renderer/LevelRenderer;renderHitOutline(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;DDDLnet/minecraft/client/renderer/state/BlockOutlineRenderState;I)V", ordinal = 1))
+	private void axolotlclient$customOutlineColor(LevelRenderer instance, PoseStack poseStack, VertexConsumer vertexConsumer, double d, double e, double f, BlockOutlineRenderState blockOutlineRenderState, int i, Operation<Void> original) {
 		if (AxolotlClient.config().enableCustomOutlines.get()) {
 			i = AxolotlClient.config().outlineColor.get().toInt();
 		}
-		original.call(instance, matrices, consumer, entity, offsetX, offsetY, offsetZ, blockPos, blockState, i);
+		original.call(instance, poseStack, vertexConsumer, d, e, f, blockOutlineRenderState, i);
 	}
 }

@@ -52,7 +52,7 @@ public class PrivacyNoticeScreen extends Screen {
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 		super.render(graphics, mouseX, mouseY, delta);
 		graphics.drawCenteredString(this.font, this.title, this.width / 2, getTitleY(), -1);
-		message.renderCentered(graphics, width / 2, getMessageY());
+		message.render(graphics, MultiLineLabel.Align.CENTER, width / 2, getMessageY(), 10, true, -1);
 	}
 
 	@Override
@@ -82,9 +82,8 @@ public class PrivacyNoticeScreen extends Screen {
 			APIOptions.getInstance().privacyAccepted.set(Options.PrivacyPolicyState.DENIED);
 			accepted.complete(false);
 		}).bounds(width / 2 - 50 + 105, y, 100, 20).build());
-		addRenderableWidget(Button.builder(Component.translatable("api.privacyNotice.openPolicy"), buttonWidget -> {
-			OSUtil.getOS().open(TERMS_URI);
-		}).bounds(width / 2 - 50 - 105, y, 100, 20).build());
+		addRenderableWidget(Button.builder(Component.translatable("api.privacyNotice.openPolicy"),
+			buttonWidget -> OSUtil.getOS().open(TERMS_URI)).bounds(width / 2 - 50 - 105, y, 100, 20).build());
 	}
 
 	private int getTitleY() {

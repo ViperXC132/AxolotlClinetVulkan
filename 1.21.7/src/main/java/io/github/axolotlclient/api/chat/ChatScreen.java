@@ -33,6 +33,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
@@ -75,13 +77,13 @@ public class ChatScreen extends Screen implements ContextMenuScreen {
 			300, 20, Component.translatable("api.chat.enterMessage")) {
 
 			@Override
-			public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-				if (keyCode == InputConstants.KEY_RETURN && !getValue().isEmpty()) {
+			public boolean keyPressed(KeyEvent event) {
+				if (event.key() == InputConstants.KEY_RETURN && !getValue().isEmpty()) {
 					ChatHandler.getInstance().sendMessage(channel, getValue());
 					setValue("");
 					return true;
 				}
-				return super.keyPressed(keyCode, scanCode, modifiers);
+				return super.keyPressed(event);
 			}
 		});
 
@@ -116,14 +118,14 @@ public class ChatScreen extends Screen implements ContextMenuScreen {
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 		if (contextMenu.getMenu() != null) {
-			if (contextMenu.mouseClicked(mouseX, mouseY, button)) {
+			if (contextMenu.mouseClicked(event, doubleClick)) {
 				return true;
 			}
 			contextMenu.removeMenu();
 		}
-		return super.mouseClicked(mouseX, mouseY, button);
+		return super.mouseClicked(event, doubleClick);
 	}
 
 	@Override

@@ -38,12 +38,13 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.DefaultPlayerSkin;
-import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.PlayerModelType;
 import org.jetbrains.annotations.Nullable;
 
 public class SkinWidget extends AbstractWidget {
@@ -97,8 +98,8 @@ public class SkinWidget extends AbstractWidget {
 			classic = skin.classicVariant();
 		} else {
 			var skin = DefaultPlayerSkin.get(UUIDHelper.fromUndashed(owner.getUuid()));
-			classic = skin.model() == PlayerSkin.Model.WIDE;
-			skinRl = skin.texture();
+			classic = skin.model() == PlayerModelType.WIDE;
+			skinRl = skin.body().texturePath();
 		}
 		var capeRl = cape == null ? null : skinManager.loadCape(cape);
 
@@ -111,7 +112,7 @@ public class SkinWidget extends AbstractWidget {
 	}
 
 	@Override
-	protected void onDrag(double mouseX, double mouseY, double dragX, double dragY) {
+	protected void onDrag(MouseButtonEvent mouseButtonEvent, double dragX, double dragY) {
 		this.rotationX = Mth.clamp(this.rotationX - (float) dragY * ROTATION_SENSITIVITY, -ROTATION_X_LIMIT, ROTATION_X_LIMIT);
 		this.rotationY += (float) dragX * ROTATION_SENSITIVITY;
 	}

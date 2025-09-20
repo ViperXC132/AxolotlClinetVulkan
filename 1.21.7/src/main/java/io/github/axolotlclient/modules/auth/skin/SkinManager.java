@@ -145,7 +145,7 @@ public class SkinManager {
 		var mc = Minecraft.getInstance();
 		var resourceManager = mc.getResourceManager();
 		try {
-			var res = resourceManager.getResourceOrThrow(skin.texture());
+			var res = resourceManager.getResourceOrThrow(skin.body().texturePath());
 			try (
 				var in = res.open()) {
 				return Hashing.sha256().hashBytes(in.readAllBytes()).toString();

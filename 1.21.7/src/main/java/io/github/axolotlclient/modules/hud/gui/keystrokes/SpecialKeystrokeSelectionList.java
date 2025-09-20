@@ -80,21 +80,21 @@ public class SpecialKeystrokeSelectionList extends ContainerObjectSelectionList<
 		}
 
 		@Override
-		public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
+		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
 			int i = SpecialKeystrokeSelectionList.this.scrollBarX() - 10;
-			int j = top - 2;
+			int j = getContentY() - 2;
 			int k = i - 5 - this.addButton.getWidth();
 			this.addButton.setPosition(k, j);
 			this.addButton.render(guiGraphics, mouseX, mouseY, partialTick);
 			guiGraphics.pose().pushMatrix();
 			var rect = keystroke.getRenderPosition();
 			float scale = Math.min((float) height / rect.height(), (float) 100 / rect.width());
-			guiGraphics.pose().translate(left, top);
+			guiGraphics.pose().translate(getContentX(), getContentY());
 			guiGraphics.pose().scale(scale, scale);
 			guiGraphics.pose().translate(-rect.x(), -rect.y());
 			keystroke.render(guiGraphics);
 			guiGraphics.pose().popMatrix();
-			guiGraphics.drawString(minecraft.font, boundKey, left + 110 + (k - left - 110) / 3, top + height / 2 - 9 / 2, Colors.GRAY.toInt());
+			guiGraphics.drawString(minecraft.font, boundKey, getContentX() + 110 + (k - getContentX() - 110) / 3, getContentY() + height / 2 - 9 / 2, Colors.GRAY.toInt());
 		}
 
 		@Override

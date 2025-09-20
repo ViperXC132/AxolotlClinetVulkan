@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.config.screen;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import io.github.axolotlclient.config.profiles.Profiles;
@@ -39,6 +40,7 @@ import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -106,10 +108,10 @@ public class ProfilesScreen extends Screen {
 		}
 
 		@Override
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
+		public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 			children().stream().filter(e -> e instanceof ProfileEntry)
 				.map(e -> (ProfileEntry) e).map(e -> e.profileName).forEach(e -> e.setFocused(false));
-			return super.mouseClicked(mouseX, mouseY, button);
+			return super.mouseClicked(event, doubleClick);
 		}
 
 		@Environment(EnvType.CLIENT)
@@ -125,7 +127,7 @@ public class ProfilesScreen extends Screen {
 			}
 
 			@Override
-			public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
+			public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
 
 			}
 
@@ -164,7 +166,9 @@ public class ProfilesScreen extends Screen {
 				duplicateButton = Button.builder(DUPLICATE_BUTTON_TITLE, b -> {
 					var dup = Profiles.getInstance().duplicate(profile);
 					double d = (double) ProfilesList.this.maxScrollAmount() - ProfilesList.this.scrollAmount();
-					ProfilesList.this.children().add(ProfilesList.this.children().indexOf(ProfileEntry.this) + 1, new ProfileEntry(dup));
+					@SuppressWarnings("unchecked") var entries = new ArrayList<>((List<Entry>) children());
+					entries.add(entries.indexOf(ProfileEntry.this) + 1, new ProfileEntry(dup));
+					replaceEntries(entries);
 					ProfilesList.this.setScrollAmount(ProfilesList.this.maxScrollAmount() - d);
 				}).bounds(0, 0, 50, 20).build();
 
@@ -177,9 +181,9 @@ public class ProfilesScreen extends Screen {
 			}
 
 			@Override
-			public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
+			public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
 				int i = scrollBarX() - removeButton.getWidth() - 4;
-				int j = top - 2;
+				int j = getContentY() - 2;
 				this.removeButton.setPosition(i, j);
 				this.removeButton.render(guiGraphics, mouseX, mouseY, partialTick);
 
@@ -196,8 +200,8 @@ public class ProfilesScreen extends Screen {
 				i -= exportButton.getWidth();
 				exportButton.setPosition(i, j);
 				exportButton.render(guiGraphics, mouseX, mouseY, partialTick);
-				profileName.setWidth(i - left - 4);
-				profileName.setPosition(left, j);
+				profileName.setWidth(i - getContentX() - 4);
+				profileName.setPosition(getContentX(), j);
 				profileName.render(guiGraphics, mouseX, mouseY, partialTick);
 			}
 
@@ -218,8 +222,9 @@ public class ProfilesScreen extends Screen {
 
 			public NewEntry() {
 				this.addButton = Button.builder(Component.translatable("profiles.profile.add"), button -> {
-						int i = ProfilesList.this.children().indexOf(this);
-						ProfilesList.this.children().add(Math.max(i - 1, 0), new ProfilesList.ProfileEntry(Profiles.getInstance().newProfile(I18n.get("profiles.profile.default_new_name"))));
+						@SuppressWarnings("unchecked") var entries = new ArrayList<>((List<Entry>) children());
+						entries.add(Math.max(entries.indexOf(this) - 1, 0), new ProfileEntry(Profiles.getInstance().newProfile(I18n.get("profiles.profile.default_new_name"))));
+						replaceEntries(entries);
 						Profiles.getInstance().saveProfiles();
 						setScrollAmount(maxScrollAmount());
 					}).bounds(0, 0, 150, 20)
@@ -234,9 +239,9 @@ public class ProfilesScreen extends Screen {
 			}
 
 			@Override
-			public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
+			public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
 				int i = scrollBarX() - width / 2 - 10 - addButton.getWidth() + 2;
-				int j = top - 2;
+				int j = getContentY() - 2;
 				this.addButton.setPosition(i, j);
 				this.addButton.render(guiGraphics, mouseX, mouseY, partialTick);
 				this.importButton.setPosition(addButton.getRight() + 2, j);

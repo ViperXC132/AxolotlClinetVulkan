@@ -23,6 +23,7 @@
 package io.github.axolotlclient.api.chat;
 
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -116,7 +117,8 @@ public class ChannelSettingsScreen extends Screen {
 		footer.addChild(Button.builder(CommonComponents.GUI_DONE, widget -> {
 			ChannelRequest.updateChannel(channel.getId(), nameField.getValue(),
 				Persistence.of(persistence.getValue(), count.get().get(), duration.get().get()),
-				Arrays.stream(namesInput.getValue().split(",")).filter(s -> !s.isEmpty()).map(UUIDHelper::ensureUuid).toArray(String[]::new));
+				Arrays.stream(namesInput.getValue().split(",")).filter(s -> !s.isEmpty()).map(UUIDHelper::ensureUuid)
+					.map(CompletableFuture::join).toArray(String[]::new));
 			minecraft.setScreen(parent);
 		}).build());
 		layout.addToFooter(footer);
@@ -138,6 +140,10 @@ public class ChannelSettingsScreen extends Screen {
 			protected void applyValue() {
 				currentVal.set(valueFunc.apply(value));
 			}
+
+			public void setValue(double d) {
+				this.value = d;
+			}
 		};
 		slider.updateMessage();
 		slider.applyValue();
@@ -151,7 +157,7 @@ public class ChannelSettingsScreen extends Screen {
 				text.setValue(String.valueOf(currentVal.get()));
 			} else {
 				try {
-					slider.onClick(slider.getX() + (1d / slider.getWidth()) * Double.parseDouble(text.getValue()), slider.getY());
+					slider.setValue(Double.parseDouble(text.getValue()));
 				} catch (Exception ignored) {
 				}
 			}

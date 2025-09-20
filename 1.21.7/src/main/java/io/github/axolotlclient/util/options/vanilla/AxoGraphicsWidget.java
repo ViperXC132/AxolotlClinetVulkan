@@ -32,6 +32,7 @@ import io.github.axolotlclient.util.notifications.Notifications;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.network.chat.Component;
 
 public class AxoGraphicsWidget extends GraphicsWidget {
@@ -43,7 +44,7 @@ public class AxoGraphicsWidget extends GraphicsWidget {
 	}
 
 	@Override
-	public void onPress() {
+	public void onPress(InputWithModifiers mods) {
 		Minecraft.getInstance().setScreen(new AxoGraphicsEditorScreen(Minecraft.getInstance().screen, this.option));
 	}
 

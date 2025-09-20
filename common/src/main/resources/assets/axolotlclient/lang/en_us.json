@@ -851,5 +851,7 @@
 	"profiles.profile.import.notification.failed.generic": "See the log for more information.",
 	"profiles.profile.import.notification.success": "Import Complete",
 	"profiles.profile.import.notification.success.desc.one": "Imported 1 profile",
-	"profiles.profile.import.notification.success.desc.more": "Imported %s profiles"
+	"profiles.profile.import.notification.success.desc.more": "Imported %s profiles",
+	"skins.manage.equip.confirm": "Confirm Equipping",
+	"skins.manage.equip.download_current": "Your current skin is not downloaded and will get overridden by equipping a different one. Do you want to download your current skin before equipping this one?"
 }

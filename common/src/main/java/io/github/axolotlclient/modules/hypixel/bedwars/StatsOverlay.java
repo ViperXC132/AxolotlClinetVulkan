@@ -170,7 +170,7 @@ public class StatsOverlay extends TextHudEntry implements DynamicallyPositionabl
 
 	private Map<String, PlayerData.Bedwars> stats = new HashMap<>();
 	private final Map<BedwarsTeam, List<String>> playersByTeam = new EnumMap<>(BedwarsTeam.class);
-	private final AxoKeybinding toggle = AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "bedwars_stats_overlay", "category.axolotlclient");
+	private final AxoKeybinding toggle = AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "bedwars_stats_overlay");
 	private boolean shouldRender = false;
 	@Nullable
 	private String errorMessage = null;

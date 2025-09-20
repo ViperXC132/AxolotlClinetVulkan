@@ -100,7 +100,7 @@ public abstract class GameRendererMixin {
 		at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(FFF)V"),
 		cancellable = true)
 	private void axolotlclient$minimalViewBob(PoseStack matrices, float tickDelta, CallbackInfo ci,
-											  @Local(ordinal = 2) float g, @Local(ordinal = 3) float h) {
+											  @Local(ordinal = 1) float g, @Local(ordinal = 2) float h) {
 		if (AxolotlClient.config().minimalViewBob.get()) {
 			g /= 2;
 			h /= 2;

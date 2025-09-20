@@ -25,6 +25,7 @@ package io.github.axolotlclient.util.options.rounded;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.rounded.widgets.PillBooleanWidget;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.InputWithModifiers;
 
 public class ForceableBooleanWidget extends PillBooleanWidget {
 	private final ForceableBooleanOption option;
@@ -50,9 +51,9 @@ public class ForceableBooleanWidget extends PillBooleanWidget {
 	}
 
 	@Override
-	public void onPress() {
+	public void onPress(InputWithModifiers mods) {
 		if (!option.isForceOff()) {
-			super.onPress();
+			super.onPress(mods);
 		}
 	}
 }

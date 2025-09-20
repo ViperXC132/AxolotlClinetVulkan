@@ -74,10 +74,10 @@ public abstract class PlayerListHudMixin {
 			return orig;
 		}
 		if (playerInfo.getProfile().equals(minecraft.player.getGameProfile()) && NickHider.getInstance().hideOwnName.get()) {
-			return (Component) NickHider.getInstance().editComponent(orig, playerInfo.getProfile().getName(), NickHider.getInstance().hiddenNameSelf.get());
+			return (Component) NickHider.getInstance().editComponent(orig, playerInfo.getProfile().name(), NickHider.getInstance().hiddenNameSelf.get());
 		} else if (!playerInfo.getProfile().equals(minecraft.player.getGameProfile()) &&
 			NickHider.getInstance().hideOtherNames.get()) {
-			return (Component) NickHider.getInstance().editComponent(orig, playerInfo.getProfile().getName(), NickHider.getInstance().hiddenNameOthers.get());
+			return (Component) NickHider.getInstance().editComponent(orig, playerInfo.getProfile().name(), NickHider.getInstance().hiddenNameOthers.get());
 		}
 		return orig;
 	}
@@ -87,7 +87,7 @@ public abstract class PlayerListHudMixin {
 	private int axolotlclient$moveName(Font instance, FormattedText text, Operation<Integer> original, @Local PlayerInfo info) {
 		int width = original.call(instance, text);
 		if (AxolotlClient.config().showBadges.get() &&
-			UserRequest.getOnline(info.getProfile().getId().toString())) width += 10;
+			UserRequest.getOnline(info.getProfile().id().toString())) width += 10;
 		if (Tablist.getInstance().numericalPing.get())
 			width += (instance.width(String.valueOf(info.getLatency())) - 10);
 		return width;
@@ -97,7 +97,7 @@ public abstract class PlayerListHudMixin {
 		target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;III)V"))
 	public void axolotlclient$moveName2(GuiGraphics instance, Font font, Component component, int x, int y, int color, Operation<Integer> original, @Local PlayerInfo info) {
 		if (AxolotlClient.config().showBadges.get() &&
-			UserRequest.getOnline(info.getProfile().getId().toString())) {
+			UserRequest.getOnline(info.getProfile().id().toString())) {
 			instance.blit(RenderPipelines.GUI_TEXTURED, AxolotlClient.badgeIcon, x, y, 0, 0, 8, 8, 8, 8);
 			x += 9;
 		}
@@ -189,7 +189,7 @@ public abstract class PlayerListHudMixin {
 		if (game == null || !game.isStarted()) {
 			return;
 		}
-		BedwarsPlayer player = game.getPlayer(entry.getProfile().getName()).orElse(null);
+		BedwarsPlayer player = game.getPlayer(entry.getProfile().name()).orElse(null);
 		if (player == null) {
 			return;
 		}

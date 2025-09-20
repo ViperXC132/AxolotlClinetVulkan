@@ -31,8 +31,8 @@ import org.jetbrains.annotations.Nullable;
  * An abstract representation of a keybind
  */
 public interface AxoKeybinding {
-	static AxoKeybinding create(@Nullable AxoKey defaultKey, String name, String category) {
-		return PlatformImplInternal.createKeyBinding(defaultKey, name, category);
+	static AxoKeybinding create(@Nullable AxoKey defaultKey, String name) {
+		return PlatformImplInternal.createKeyBinding(defaultKey, name);
 	}
 
 	@RequiresImpl

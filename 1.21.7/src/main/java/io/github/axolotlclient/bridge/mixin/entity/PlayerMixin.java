@@ -60,6 +60,6 @@ public abstract class PlayerMixin implements AxoPlayer {
 
 	@Override
 	public String br$getName() {
-		return gameProfile.getName();
+		return gameProfile.name();
 	}
 }

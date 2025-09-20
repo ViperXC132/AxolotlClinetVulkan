@@ -57,7 +57,7 @@ public abstract class SplashOverlayMixin {
 	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/client/gui/screens/Screen;init(Lnet/minecraft/client/Minecraft;II)V"))
+		target = "Lnet/minecraft/client/Minecraft;setOverlay(Lnet/minecraft/client/gui/screens/Overlay;)V"))
 	private void onReloadFinish(GuiGraphics graphics, int mouseX, int mouseY, float delta, CallbackInfo ci) {
 		if (!API.getInstance().isSocketConnected() && !Auth.getInstance().getCurrent().isOffline()) {
 			API.getInstance().startup(Auth.getInstance().getCurrent());

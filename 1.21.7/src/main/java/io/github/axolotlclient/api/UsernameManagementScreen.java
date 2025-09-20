@@ -129,13 +129,13 @@ public class UsernameManagementScreen extends Screen {
 			}
 
 			@Override
-			public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			public void renderContent(GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 				int deleteX = UsernameListWidget.this.scrollBarX() - delete.getWidth() - 10;
-				delete.setPosition(deleteX, y - 2);
-				visibility.setPosition(deleteX - visibility.getWidth() - 5, y - 2);
+				delete.setPosition(deleteX, getContentY() - 2);
+				visibility.setPosition(deleteX - visibility.getWidth() - 5, getContentY() - 2);
 				delete.render(graphics, mouseX, mouseY, tickDelta);
 				visibility.render(graphics, mouseX, mouseY, tickDelta);
-				graphics.drawString(font, name, x, y + entryHeight / 2 - 9 / 2, -1);
+				graphics.drawString(font, name, getContentX(), getContentYMiddle() - 9 / 2, -1);
 			}
 
 			@Override

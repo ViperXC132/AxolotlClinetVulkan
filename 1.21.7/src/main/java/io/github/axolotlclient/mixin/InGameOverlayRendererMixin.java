@@ -26,6 +26,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.axolotlclient.AxolotlClient;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.ScreenEffectRenderer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -35,7 +36,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class InGameOverlayRendererMixin {
 
 	@Inject(method = "renderFire", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;pushPose()V"))
-	private static void axolotlclient$lowFire(PoseStack poseStack, MultiBufferSource multiBufferSource, CallbackInfo ci) {
+	private static void axolotlclient$lowFire(PoseStack poseStack, MultiBufferSource multiBufferSource, TextureAtlasSprite textureAtlasSprite, CallbackInfo ci) {
 		if (AxolotlClient.config().lowFire.get()) {
 			poseStack.translate(0, -0.2F, 0);
 		}

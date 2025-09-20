@@ -32,10 +32,10 @@ import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
-import io.github.axolotlclient.mixin.ParticleAccessor;
+import io.github.axolotlclient.mixin.SingleQuadParticleAccessor;
 import io.github.axolotlclient.modules.AbstractModule;
 import io.github.axolotlclient.util.ClientColors;
-import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.SingleQuadParticle;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -46,7 +46,6 @@ public class Particles extends AbstractModule {
 	private static final Particles Instance = new Particles();
 
 	public final HashMap<ParticleType<?>, HashMap<String, Option<?>>> particleOptions = new HashMap<>();
-	public final WeakHashMap<Particle, ParticleType<?>> particleMap = new WeakHashMap<>();
 
 	private final OptionCategory cat = OptionCategory.create("particles");
 	private final BooleanOption enabled = new BooleanOption("enabled", false);
@@ -94,16 +93,13 @@ public class Particles extends AbstractModule {
 		}
 	}
 
-	public void applyOptions(Particle particle) {
-		if (enabled.get() && particleMap.containsKey(particle)) {
-			ParticleType<?> type = particleMap.get(particle);
-			if (particleOptions.containsKey(type)) {
-				HashMap<String, Option<?>> options = particleOptions.get(type);
-				if (((BooleanOption) options.get("customColor")).get()) {
-					Color color = ((ColorOption) options.get("color")).get();
-					particle.setColor(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F);
-					((ParticleAccessor) particle).axolotlclient$setColorAlpha(color.getAlpha() / 255F);
-				}
+	public void applyOptions(SingleQuadParticle particle, ParticleType<?> type) {
+		if (enabled.get()) {
+			HashMap<String, Option<?>> options = particleOptions.get(type);
+			if (((BooleanOption) options.get("customColor")).get()) {
+				Color color = ((ColorOption) options.get("color")).get();
+				particle.setColor(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F);
+				((SingleQuadParticleAccessor) particle).axolotlclient$setColorAlpha(color.getAlpha() / 255F);
 			}
 		}
 	}

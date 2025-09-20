@@ -87,7 +87,7 @@ public class KeyBindsList extends ContainerObjectSelectionList<KeyBindsList.Entr
 		}
 
 		@Override
-		public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
+		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
 
 		}
 
@@ -127,9 +127,9 @@ public class KeyBindsList extends ContainerObjectSelectionList<KeyBindsList.Entr
 		}
 
 		@Override
-		public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
+		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
 			int i = KeyBindsList.this.scrollBarX() - removeButton.getWidth() - 10;
-			int j = top - 2;
+			int j = getContentY() - 2;
 			this.removeButton.setPosition(i, j);
 			this.removeButton.render(guiGraphics, mouseX, mouseY, partialTick);
 			int k = i - this.configureButton.getWidth();
@@ -137,13 +137,13 @@ public class KeyBindsList extends ContainerObjectSelectionList<KeyBindsList.Entr
 			this.configureButton.render(guiGraphics, mouseX, mouseY, partialTick);
 			guiGraphics.pose().pushMatrix();
 			var rect = key.getRenderPosition();
-			float scale = Math.min((float) height / rect.height(), (float) 100 / rect.width());
-			guiGraphics.pose().translate(left, top);
+			float scale = Math.min((float) getContentHeight() / rect.height(), (float) 100 / rect.width());
+			guiGraphics.pose().translate(getContentX(), getContentY());
 			guiGraphics.pose().scale(scale, scale);
 			guiGraphics.pose().translate(-rect.x(), -rect.y());
 			key.render(guiGraphics);
 			guiGraphics.pose().popMatrix();
-			guiGraphics.drawString(minecraft.font, name, left + width / 2 - minecraft.font.width(name) / 2, top + height / 2 - 9 / 2, Colors.GRAY.toInt());
+			guiGraphics.drawString(minecraft.font, name, getContentX() + getContentWidth() / 2 - minecraft.font.width(name) / 2, getContentY() + getContentHeight() / 2 - 9 / 2, Colors.GRAY.toInt());
 		}
 
 		@Override
@@ -177,9 +177,9 @@ public class KeyBindsList extends ContainerObjectSelectionList<KeyBindsList.Entr
 		}
 
 		@Override
-		public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
-			int i = KeyBindsList.this.scrollBarX() - width / 2 - 10 + 4;
-			int j = top - 2;
+		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+			int i = KeyBindsList.this.scrollBarX() - getContentWidth() / 2 - 10 + 4;
+			int j = getContentY() - 2;
 			this.addButton.setPosition(i, j);
 			this.addButton.render(guiGraphics, mouseX, mouseY, partialTick);
 			int k = i - addButton.getWidth() - 8;

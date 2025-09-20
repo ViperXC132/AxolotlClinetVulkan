@@ -46,7 +46,7 @@ public abstract class KeyBindingMixin implements AxoKeybinding {
 	public abstract boolean isDown();
 
 	@Shadow
-	private InputConstants.Key key;
+	protected InputConstants.Key key;
 
 	@Shadow
 	public abstract boolean consumeClick();
@@ -68,8 +68,8 @@ public abstract class KeyBindingMixin implements AxoKeybinding {
 		}
 	}
 
-	@Inject(method = "<init>(Ljava/lang/String;Lcom/mojang/blaze3d/platform/InputConstants$Type;ILjava/lang/String;)V", at = @At("TAIL"))
-	private void registerClickHandler(String name, InputConstants.Type type, int keyCode, String category, CallbackInfo ci) {
+	@Inject(method = "<init>(Ljava/lang/String;Lcom/mojang/blaze3d/platform/InputConstants$Type;ILnet/minecraft/client/KeyMapping$Category;)V", at = @At("TAIL"))
+	private void registerClickHandler(String string, InputConstants.Type type, int i, KeyMapping.Category category, CallbackInfo ci) {
 		Events.TICK.register(() -> {
 			while (axolotlclient$onConsumeClick != null && consumeClick()) {
 				axolotlclient$onConsumeClick.forEach(Runnable::run);

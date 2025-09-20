@@ -28,21 +28,20 @@ import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.multiplayer.FriendsMultiplayerScreen;
 import io.github.axolotlclient.api.requests.FriendRequest;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
+import net.minecraft.client.gui.layouts.LayoutSettings;
+import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
-import net.minecraft.client.gui.screens.multiplayer.ServerSelectionList;
 import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyArgs;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(JoinMultiplayerScreen.class)
 public class JoinMulitplayerScreenMixin extends Screen {
@@ -57,41 +56,21 @@ public class JoinMulitplayerScreenMixin extends Screen {
 		super(title);
 	}
 
-	@Inject(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/multiplayer/JoinMultiplayerScreen;addRenderableWidget(Lnet/minecraft/client/gui/components/events/GuiEventListener;)Lnet/minecraft/client/gui/components/events/GuiEventListener;", ordinal = 1))
-	private void addFriendsMultiplayerScreenButtons(CallbackInfo ci) {
+	@WrapOperation(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/layouts/HeaderAndFooterLayout;addTitleHeader(Lnet/minecraft/network/chat/Component;Lnet/minecraft/client/gui/Font;)V"))
+	private void modifyHeader(HeaderAndFooterLayout instance, Component message, Font font, Operation<Void> original) {
 		if (API.getInstance().isAuthenticated() && !WORLD_HOST_INSTALLED) {
-			addRenderableWidget(Button.builder(Component.translatable("api.servers"), button -> {
+			instance.setHeaderHeight(60);
+			var header = instance.addToHeader(LinearLayout.vertical()).spacing(8);
+			header.addChild(new StringWidget(message, font), LayoutSettings::alignHorizontallyCenter);
+			var buttons = header.addChild(LinearLayout.horizontal()).spacing(4);
+			buttons.addChild(Button.builder(Component.translatable("api.servers"), button -> {
 
-			}).pos(this.width / 2 - 102, 32).width(100).build()).active = false;
-			Button friendsCountButton = addRenderableWidget(Button.builder(Component.translatable("api.servers.friends", "..."), button -> {
-				minecraft.setScreen(new FriendsMultiplayerScreen(this.lastScreen));
-			}).bounds(width/2+2, 32, 100, 20).build());
-			FriendRequest.getInstance().getOnlineFriendCount().thenAccept(count -> friendsCountButton.setMessage(Component.translatable("api.servers.friends", count)));
+			}).width(100).build()).active = false;
+			var friends = buttons.addChild(Button.builder(Component.translatable("api.servers.friends", "..."),
+				button -> minecraft.setScreen(new FriendsMultiplayerScreen(this.lastScreen))).width(100).build());
+			FriendRequest.getInstance().getOnlineFriendCount().thenAccept(count -> friends.setMessage(Component.translatable("api.servers.friends", count)));
+		} else {
+			original.call(instance, message, font);
 		}
-	}
-
-	@WrapOperation(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/multiplayer/ServerSelectionList;setRectangle(IIII)V"))
-	private void increaseHeaderSize(ServerSelectionList instance, int width, int height, int x, int y, Operation<Void> original) {
-		if (API.getInstance().isAuthenticated() && !WORLD_HOST_INSTALLED) {
-			height += 32 - 60;
-			y += -32 + 60;
-		}
-		original.call(instance, width, height, x, y);
-	}
-
-	@ModifyArgs(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/multiplayer/ServerSelectionList;<init>(Lnet/minecraft/client/gui/screens/multiplayer/JoinMultiplayerScreen;Lnet/minecraft/client/Minecraft;IIII)V"))
-	private void increaseHeaderSize$2(Args args) {
-		if (API.getInstance().isAuthenticated() && !WORLD_HOST_INSTALLED) {
-			args.set(3, ((Integer)args.get(3)) + 32 - 60);
-			args.set(4, ((Integer)args.get(4)) - 32 + 60);
-		}
-	}
-
-	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawCenteredString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;III)V"), index = 3)
-	private int shiftTitle(int par3) {
-		if (API.getInstance().isAuthenticated() && !WORLD_HOST_INSTALLED) {
-			return 15;
-		}
-		return par3;
 	}
 }

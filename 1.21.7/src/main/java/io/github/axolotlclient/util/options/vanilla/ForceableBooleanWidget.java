@@ -25,6 +25,7 @@ package io.github.axolotlclient.util.options.vanilla;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.BooleanWidget;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.input.InputWithModifiers;
 
 public class ForceableBooleanWidget extends BooleanWidget {
 	private final ForceableBooleanOption option;
@@ -41,9 +42,9 @@ public class ForceableBooleanWidget extends BooleanWidget {
 	}
 
 	@Override
-	public void onPress() {
+	public void onPress(InputWithModifiers mods) {
 		if (!option.isForceOff()) {
-			super.onPress();
+			super.onPress(mods);
 		}
 	}
 }

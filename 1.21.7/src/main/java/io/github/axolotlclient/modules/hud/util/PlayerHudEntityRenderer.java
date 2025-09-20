@@ -28,6 +28,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.feature.FeatureRenderDispatcher;
+import net.minecraft.client.renderer.state.CameraRenderState;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -55,13 +57,14 @@ public class PlayerHudEntityRenderer extends PictureInPictureRenderer<PlayerHudE
 		poseStack.translate(vector3f.x, vector3f.y, vector3f.z);
 		poseStack.mulPose(guiEntityRenderState.rotation());
 		Quaternionf quaternionf = guiEntityRenderState.overrideCameraAngle();
+		FeatureRenderDispatcher featureRenderDispatcher = Minecraft.getInstance().gameRenderer.getFeatureRenderDispatcher();
+		CameraRenderState cameraRenderState = new CameraRenderState();
 		if (quaternionf != null) {
-			this.entityRenderDispatcher.overrideCameraOrientation(quaternionf.conjugate(new Quaternionf()).rotateY((float) Math.PI));
+			cameraRenderState.orientation = quaternionf.conjugate(new Quaternionf()).rotateY((float) Math.PI);
 		}
 
-		this.entityRenderDispatcher.setRenderShadow(false);
-		this.entityRenderDispatcher.render(guiEntityRenderState.renderState(), 0.0, 0.0, 0.0, poseStack, this.bufferSource, 15728880);
-		this.entityRenderDispatcher.setRenderShadow(true);
+		this.entityRenderDispatcher.submit(guiEntityRenderState.renderState(), cameraRenderState, 0.0, 0.0, 0.0, poseStack, featureRenderDispatcher.getSubmitNodeStorage());
+		featureRenderDispatcher.renderAllFeatures();
 	}
 
 	@Override

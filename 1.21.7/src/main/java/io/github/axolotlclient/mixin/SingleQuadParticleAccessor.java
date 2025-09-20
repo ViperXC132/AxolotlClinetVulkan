@@ -22,21 +22,13 @@
 
 package io.github.axolotlclient.mixin;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.ReceivingLevelScreen;
+import net.minecraft.client.particle.SingleQuadParticle;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(ReceivingLevelScreen.class)
-public abstract class DownloadingTerrainScreenMixin {
+@Mixin(SingleQuadParticle.class)
+public interface SingleQuadParticleAccessor {
 
-	@Inject(method = "<init>", at = @At("TAIL"))
-	public void axolotlclient$noLoadingScreen(CallbackInfo ci) {
-		if (Minecraft.getInstance().screen != null) {
-			Minecraft.getInstance().screen.onClose();
-			Minecraft.getInstance().screen = null;
-		}
-	}
+	@Accessor("alpha")
+	void axolotlclient$setColorAlpha(float alpha);
 }

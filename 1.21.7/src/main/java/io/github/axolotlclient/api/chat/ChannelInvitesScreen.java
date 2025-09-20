@@ -34,6 +34,7 @@ import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -65,13 +66,13 @@ public class ChannelInvitesScreen extends Screen {
 		acceptButton = footerTop.addChild(Button.builder(Component.translatable("api.channels.invite.accept"), w -> {
 			if (invites.getSelected() != null) {
 				w.active = false;
-				ChannelRequest.acceptChannelInvite(invites.getSelected().invite).thenRun(() -> minecraft.submit(this::rebuildWidgets));
+				ChannelRequest.acceptChannelInvite(invites.getSelected().invite).thenRun(() -> minecraft.execute(this::rebuildWidgets));
 			}
 		}).width(73).build());
 		denyButton = footerTop.addChild(Button.builder(Component.translatable("api.channels.invite.ignore"), w -> {
 			if (invites.getSelected() != null) {
 				w.active = false;
-				ChannelRequest.ignoreChannelInvite(invites.getSelected().invite).thenRun(() -> minecraft.submit(this::rebuildWidgets));
+				ChannelRequest.ignoreChannelInvite(invites.getSelected().invite).thenRun(() -> minecraft.execute(this::rebuildWidgets));
 			}
 		}).width(73).build());
 		footer.addChild(Button.builder(CommonComponents.GUI_BACK, w -> onClose()).build());
@@ -100,8 +101,8 @@ public class ChannelInvitesScreen extends Screen {
 		}
 
 		@Override
-		public boolean mouseClicked(double mouseX, double mouseY, int button) {
-			boolean bl = super.mouseClicked(mouseX, mouseY, button);
+		public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+			boolean bl = super.mouseClicked(event, doubleClick);
 			updateButtons();
 			return bl;
 		}
@@ -122,7 +123,9 @@ public class ChannelInvitesScreen extends Screen {
 			}
 
 			@Override
-			public void render(GuiGraphics graphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
+			public void renderContent(GuiGraphics graphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+				var left = getContentX();
+				var top = getContentY();
 				graphics.drawString(font, Component.translatable("api.channels.invite.name", invite.channelName()), left + 2, top + 2, -1);
 				if (fromName.isDone()) {
 					graphics.drawString(font, Component.translatable("api.channels.invite.from", fromName.join()).withStyle(Style.EMPTY.withItalic(true)), left + 15, top + height - font.lineHeight - 1, 0xFF808080);

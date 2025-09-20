@@ -43,8 +43,8 @@ import net.minecraft.world.entity.Entity;
 public class Freelook extends AbstractModule {
 
 	private static final Freelook INSTANCE = new Freelook();
-	private static final KeyMapping KEY = KeyBinds.getInstance().register(new KeyMapping("key.freelook", InputConstants.KEY_V, "category.axolotlclient"));
-	private static final KeyMapping KEY_ALT = KeyBinds.getInstance().register(new KeyMapping("key.freelook.alt", InputConstants.UNKNOWN.getValue(), "category.axolotlclient"));
+	private static final KeyMapping KEY = KeyBinds.getInstance().register(new KeyMapping("key.freelook", InputConstants.KEY_V, KeyBinds.CATEGORY_AXOLOTLCLIENT));
+	private static final KeyMapping KEY_ALT = KeyBinds.getInstance().register(new KeyMapping("key.freelook.alt", InputConstants.UNKNOWN.getValue(), KeyBinds.CATEGORY_AXOLOTLCLIENT));
 	public final ForceableBooleanOption enabled = new ForceableBooleanOption("enabled", false);
 	private final Minecraft client = Minecraft.getInstance();
 	private final OptionCategory category = OptionCategory.create("freelook");

@@ -27,6 +27,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
@@ -46,19 +47,19 @@ public class AccountsScreen extends Screen {
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 		super.render(graphics, mouseX, mouseY, delta);
-		graphics.drawCenteredString(this.font, this.title, this.width / 2, 20, -1);
+		graphics.drawCenteredString(this.font, this.title, this.width / 2, 33/2, -1);
 	}
 
 	@Override
-	public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-		if (super.keyPressed(keyCode, scanCode, modifiers)) {
+	public boolean keyPressed(KeyEvent event) {
+		if (super.keyPressed(event)) {
 			return true;
-		} else if (keyCode == 294) {
+		} else if (event.key() == 294) {
 			this.refresh();
 			return true;
 		} else if (this.accountsListWidget.getSelected() != null) {
-			if (keyCode != 257 && keyCode != 335) {
-				return this.accountsListWidget.keyPressed(keyCode, scanCode, modifiers);
+			if (event.key() != 257 && event.key() != 335) {
+				return this.accountsListWidget.keyPressed(event);
 			} else {
 				this.login();
 				return true;

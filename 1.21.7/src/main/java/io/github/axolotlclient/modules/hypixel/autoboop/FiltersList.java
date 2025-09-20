@@ -36,11 +36,14 @@ import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
+import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class FiltersList extends ContainerObjectSelectionList<FiltersList.Entry> {
+	private final SpacerEntry spacer = new SpacerEntry();
+	private final NewEntry newEntry = new NewEntry();
 	final FilterListConfigurationScreen screen;
 
 	public FiltersList(FilterListConfigurationScreen screen) {
@@ -56,8 +59,8 @@ public class FiltersList extends ContainerObjectSelectionList<FiltersList.Entry>
 			this.addEntry(new FilterEntry(entry));
 		}
 
-		addEntry(new SpacerEntry());
-		addEntry(new NewEntry());
+		addEntry(spacer);
+		addEntry(newEntry);
 	}
 
 	@Override
@@ -74,10 +77,10 @@ public class FiltersList extends ContainerObjectSelectionList<FiltersList.Entry>
 	}
 
 	@Override
-	public boolean mouseClicked(double mouseX, double mouseY, int button) {
+	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 		children().stream().filter(e -> e instanceof FilterEntry)
 			.map(e -> (FilterEntry) e).map(e -> e.editBox).forEach(e -> e.setFocused(false));
-		return super.mouseClicked(mouseX, mouseY, button);
+		return super.mouseClicked(event, doubleClick);
 	}
 
 	@Environment(EnvType.CLIENT)
@@ -93,7 +96,7 @@ public class FiltersList extends ContainerObjectSelectionList<FiltersList.Entry>
 		}
 
 		@Override
-		public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
+		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
 
 		}
 
@@ -128,14 +131,14 @@ public class FiltersList extends ContainerObjectSelectionList<FiltersList.Entry>
 		}
 
 		@Override
-		public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
+		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
 			int i = scrollBarX() - removeButton.getWidth() - 10;
-			int j = top - 2;
+			int j = getContentY() - 2;
 			this.removeButton.setPosition(i, j);
 			this.removeButton.render(guiGraphics, mouseX, mouseY, partialTick);
 
-			this.editBox.setPosition(left, j);
-			this.editBox.setWidth(i - left - 4);
+			this.editBox.setPosition(getContentX(), j);
+			this.editBox.setWidth(i - getContentX() - 4);
 			this.editBox.render(guiGraphics, mouseX, mouseY, partialTick);
 		}
 
@@ -156,8 +159,11 @@ public class FiltersList extends ContainerObjectSelectionList<FiltersList.Entry>
 
 		public NewEntry() {
 			this.addButton = Button.builder(Component.translatable("autoboop.filters.add"), button -> {
-					int i = FiltersList.this.children().indexOf(this);
-					FiltersList.this.children().add(Math.max(i - 1, 0), new FilterEntry(""));
+					removeEntry(spacer);
+					removeEntry(newEntry);
+					addEntry(new FilterEntry(""));
+					addEntry(spacer);
+					addEntry(newEntry);
 					apply();
 					setScrollAmount(maxScrollAmount());
 				}).bounds(0, 0, 150, 20)
@@ -170,9 +176,9 @@ public class FiltersList extends ContainerObjectSelectionList<FiltersList.Entry>
 		}
 
 		@Override
-		public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
-			int i = scrollBarX() - width / 2 - 10 - addButton.getWidth() / 2;
-			int j = top - 2;
+		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+			int i = scrollBarX() - getContentWidth() / 2 - 10 - addButton.getWidth() / 2;
+			int j = getContentY() - 2;
 			this.addButton.setPosition(i, j);
 			this.addButton.render(guiGraphics, mouseX, mouseY, partialTick);
 		}

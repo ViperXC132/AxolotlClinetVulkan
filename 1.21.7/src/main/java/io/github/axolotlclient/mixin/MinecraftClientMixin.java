@@ -29,7 +29,6 @@ import io.github.axolotlclient.util.events.Events;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.ReceivingLevelScreen;
 import net.minecraft.client.main.GameConfig;
 import net.minecraft.client.multiplayer.ClientLevel;
 import org.spongepowered.asm.mixin.Mixin;
@@ -67,7 +66,7 @@ public abstract class MinecraftClientMixin {
 	}
 
 	@Inject(method = "setLevel", at = @At("HEAD"))
-	private void axolotlclient$onWorldLoad(ClientLevel world, ReceivingLevelScreen.Reason type, CallbackInfo ci) {
+	private void axolotlclient$onWorldLoad(ClientLevel world, CallbackInfo ci) {
 		io.github.axolotlclient.bridge.events.Events.WORLD_LOAD_EVENT.invoker().accept(new WorldLoadEvent(world));
 	}
 

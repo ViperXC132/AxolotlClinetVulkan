@@ -146,9 +146,9 @@ public class PlatformImplInternalMixin {
      * @reason Implement bridge platform.
      */
     @Overwrite
-    public static AxoKeybinding createKeyBinding(AxoKey defaultKey, String name, String category) {
+    public static AxoKeybinding createKeyBinding(AxoKey defaultKey, String name) {
 		int code = ((InputUtil.Key) Objects.requireNonNullElse(defaultKey, AxoKeys.KEY_UNKNOWN)).getKeyCode();
-		final var binding = new KeyBind(name, code, category);
+		final var binding = new KeyBind(name, code, "category.axolotlclient");
 		KeyBinds.getInstance().register(binding);
 		return binding;
 	}

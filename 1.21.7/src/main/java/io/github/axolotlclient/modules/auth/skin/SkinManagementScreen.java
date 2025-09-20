@@ -29,6 +29,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,6 +45,7 @@ import io.github.axolotlclient.mixin.GuiGraphicsAccessor;
 import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.auth.MSApi;
+import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.Watcher;
 import io.github.axolotlclient.util.notifications.Notifications;
@@ -106,7 +108,7 @@ public class SkinManagementScreen extends Screen {
 		int headerHeight = 33;
 		int contentHeight = height - headerHeight * 2;
 
-		StringWidget titleWidget = new StringWidget(0, headerHeight / 2 - font.lineHeight / 2, width, font.lineHeight, getTitle(), getFont());
+		StringWidget titleWidget = new StringWidget(width/2-font.width(getTitle())/2, headerHeight / 2 - font.lineHeight / 2, font.width(getTitle()), font.lineHeight, getTitle(), getFont());
 		addRenderableWidget(titleWidget);
 
 		var back = Button.builder(CommonComponents.GUI_BACK, btn -> onClose())
@@ -294,6 +296,7 @@ public class SkinManagementScreen extends Screen {
 			}
 			capesList.addEntry(new Row(widgets));
 		}
+		capesList.setScrollAmount(capesList.scrollAmount());
 	}
 
 	private void loadSkinsList() {
@@ -321,6 +324,7 @@ public class SkinManagementScreen extends Screen {
 			skins.add(null);
 		}
 		populateSkinList(skins, columns);
+		skinList.setScrollAmount(skinList.scrollAmount());
 	}
 
 	private List<Skin> loadLocalSkins() {
@@ -466,7 +470,7 @@ public class SkinManagementScreen extends Screen {
 		}
 
 		public int getEntryContentsHeight() {
-			return itemHeight - 4;
+			return defaultEntryHeight - 4;
 		}
 
 		@Override
@@ -499,13 +503,13 @@ public class SkinManagementScreen extends Screen {
 		}
 
 		@Override
-		public void render(GuiGraphics guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
-			int x = left;
+		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+			int x = getX();
 			if (widgets.isEmpty()) return;
 			int count = widgets.size();
-			int padding = ((width - 5 * (count - 1)) / count);
+			int padding = ((getWidth() - 5 * (count - 1)) / count);
 			for (var w : widgets) {
-				w.setPosition(x, top);
+				w.setPosition(x, getContentY());
 				w.setWidth(padding);
 				w.render(guiGraphics, mouseX, mouseY, partialTick);
 				x += w.getWidth() + 5;
@@ -609,20 +613,7 @@ public class SkinManagementScreen extends Screen {
 				if (asset.supportsDownload() && !asset.isLocal()) {
 					this.actionButtons.add(new SpriteButton(Component.translatable("skins.manage.download"), btn -> {
 						btn.active = false;
-						asset.image().thenAcceptAsync(b -> {
-							try {
-								var out = SKINS_DIR.resolve(asset.textureKey());
-								Files.createDirectories(out.getParent());
-								Files.write(out, b);
-								if (asset instanceof Skin skin) {
-									Skin.Local.writeMetadata(out, Map.of(Skin.Local.CLASSIC_METADATA_KEY, skin.classicVariant()));
-								}
-							} catch (IOException e) {
-								AxolotlClientCommon.getInstance().getLogger().warn("Failed to download: ", e);
-							}
-							refreshCurrentList();
-							btn.active = true;
-						});
+						download(asset).thenRun(() -> btn.active = true);
 					}, ResourceLocation.fromNamespaceAndPath("axolotlclient", "download")));
 				}
 			}
@@ -644,7 +635,7 @@ public class SkinManagementScreen extends Screen {
 					equipping = true;
 					btn.setMessage(TEXT_EQUIPPING);
 					btn.active = false;
-					widget.equip().thenAcceptAsync(p -> {
+					Consumer<CompletableFuture<MSApi.MCProfile>> consumer = f -> f.thenAcceptAsync(p -> {
 						cachedProfile = p;
 						refreshCurrentList();
 					}).exceptionally(t -> {
@@ -652,9 +643,36 @@ public class SkinManagementScreen extends Screen {
 						equipping = false;
 						return null;
 					});
+					if (asset instanceof Skin && !current.getSkin().isLocal()) {
+						minecraft.setScreen(new ConfirmScreen(confirmed -> {
+							if (confirmed) {
+								consumer.accept(download(current.getSkin()).thenCompose(a -> widget.equip()));
+							} else {
+								consumer.accept(widget.equip());
+							}
+						}, Component.translatable("skins.manage.equip.confirm"), Component.translatable("skins.manage.equip.download_current")));
+					} else {
+						consumer.accept(widget.equip());
+					}
 				}).width(widget.getWidth()).build();
 			this.equipButton.active = !widget.isEquipped();
 			this.skinWidget = widget;
+		}
+
+		private @NotNull CompletableFuture<?> download(Asset asset) {
+			return asset.image().thenAcceptAsync(b -> {
+				try {
+					var out = SKINS_DIR.resolve(asset.textureKey());
+					Files.createDirectories(out.getParent());
+					Files.write(out, b);
+					if (asset instanceof Skin skin) {
+						Skin.Local.writeMetadata(out, Map.of(Skin.Local.CLASSIC_METADATA_KEY, skin.classicVariant()));
+					}
+				} catch (IOException e) {
+					AxolotlClientCommon.getInstance().getLogger().warn("Failed to download: ", e);
+				}
+				refreshCurrentList();
+			});
 		}
 
 		@Override
@@ -688,7 +706,7 @@ public class SkinManagementScreen extends Screen {
 					if (equipping) prog = (Util.getMillis() - equippingStart) / 20 % 100;
 					else prog = Math.abs((Util.getMillis() / 30 % 200) - 100);
 				} else prog = 100;
-				var percent = (prog / 100f);
+				var percent = prog / 100f;
 				float gradientWidth;
 				if (equipping) {
 					gradientWidth = percent * Math.min(getWidth() / 3f, getHeight() / 3f);
@@ -699,6 +717,7 @@ public class SkinManagementScreen extends Screen {
 					skinWidget.getBottom() + 2,
 					gradientWidth,
 					equipping ? 0xFFFF0088 : ClientColors.SELECTOR_GREEN.toInt(), 0).submit();
+				//guiGraphics.fill(getX()+2, getY()+2, getRight()-2, skinWidget.getBottom()+2, 0x33000000);
 			}
 			skinWidget.render(guiGraphics, mouseX, mouseY, partialTick);
 			int actionButtonY = getY() + 2;
@@ -721,7 +740,7 @@ public class SkinManagementScreen extends Screen {
 			equipButton.render(guiGraphics, mouseX, mouseY, partialTick);
 
 			if (isHovered()) {
-				guiGraphics.renderOutline(getX(), getY(), getWidth(), getHeight(), -1);
+				DrawUtil.outlineRect(guiGraphics, getX(), getY(), getWidth(), getHeight(), -1);
 			}
 		}
 
@@ -752,27 +771,27 @@ public class SkinManagementScreen extends Screen {
 			}
 
 			@Override
-			public void buildVertices(VertexConsumer vertexConsumer, float z) {
+			public void buildVertices(VertexConsumer vertexConsumer) {
 				//top
-				vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0(), z).setColor(this.col1());
-				vertexConsumer.addVertexWith2DPose(this.pose(), this.x0() + gradientWidth(), this.y0() + gradientWidth(), z).setColor(this.col2());
-				vertexConsumer.addVertexWith2DPose(this.pose(), this.x1() - gradientWidth(), this.y0() + gradientWidth(), z).setColor(this.col2());
-				vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y0(), z).setColor(this.col1());
+				vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0()).setColor(this.col1());
+				vertexConsumer.addVertexWith2DPose(this.pose(), this.x0() + gradientWidth(), this.y0() + gradientWidth()).setColor(this.col2());
+				vertexConsumer.addVertexWith2DPose(this.pose(), this.x1() - gradientWidth(), this.y0() + gradientWidth()).setColor(this.col2());
+				vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y0()).setColor(this.col1());
 				//left
-				vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y1(), z).setColor(this.col1());
-				vertexConsumer.addVertexWith2DPose(this.pose(), this.x0() + gradientWidth(), this.y1() - gradientWidth(), z).setColor(this.col2());
-				vertexConsumer.addVertexWith2DPose(this.pose(), this.x0() + gradientWidth(), this.y0() + gradientWidth(), z).setColor(this.col2());
-				vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0(), z).setColor(this.col1());
+				vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y1()).setColor(this.col1());
+				vertexConsumer.addVertexWith2DPose(this.pose(), this.x0() + gradientWidth(), this.y1() - gradientWidth()).setColor(this.col2());
+				vertexConsumer.addVertexWith2DPose(this.pose(), this.x0() + gradientWidth(), this.y0() + gradientWidth()).setColor(this.col2());
+				vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y0()).setColor(this.col1());
 				//bottom
-				vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y1(), z).setColor(this.col1());
-				vertexConsumer.addVertexWith2DPose(this.pose(), this.x1() - gradientWidth(), this.y1() - gradientWidth(), z).setColor(this.col2());
-				vertexConsumer.addVertexWith2DPose(this.pose(), this.x0() + gradientWidth(), this.y1() - gradientWidth(), z).setColor(this.col2());
-				vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y1(), z).setColor(this.col1());
+				vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y1()).setColor(this.col1());
+				vertexConsumer.addVertexWith2DPose(this.pose(), this.x1() - gradientWidth(), this.y1() - gradientWidth()).setColor(this.col2());
+				vertexConsumer.addVertexWith2DPose(this.pose(), this.x0() + gradientWidth(), this.y1() - gradientWidth()).setColor(this.col2());
+				vertexConsumer.addVertexWith2DPose(this.pose(), this.x0(), this.y1()).setColor(this.col1());
 				//right
-				vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y0(), z).setColor(this.col1());
-				vertexConsumer.addVertexWith2DPose(this.pose(), this.x1() - gradientWidth(), this.y0() + gradientWidth(), z).setColor(this.col2());
-				vertexConsumer.addVertexWith2DPose(this.pose(), this.x1() - gradientWidth(), this.y1() - gradientWidth(), z).setColor(this.col2());
-				vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y1(), z).setColor(this.col1());
+				vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y0()).setColor(this.col1());
+				vertexConsumer.addVertexWith2DPose(this.pose(), this.x1() - gradientWidth(), this.y0() + gradientWidth()).setColor(this.col2());
+				vertexConsumer.addVertexWith2DPose(this.pose(), this.x1() - gradientWidth(), this.y1() - gradientWidth()).setColor(this.col2());
+				vertexConsumer.addVertexWith2DPose(this.pose(), this.x1(), this.y1()).setColor(this.col1());
 			}
 
 			@Nullable

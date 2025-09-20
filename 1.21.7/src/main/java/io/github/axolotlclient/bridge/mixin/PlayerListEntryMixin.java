@@ -39,11 +39,11 @@ public class PlayerListEntryMixin implements AxoPlayerListEntry {
 
 	@Override
 	public String br$getName() {
-		return profile.getName();
+		return profile.name();
 	}
 
 	@Override
 	public UUID br$getId() {
-		return profile.getId();
+		return profile.id();
 	}
 }
