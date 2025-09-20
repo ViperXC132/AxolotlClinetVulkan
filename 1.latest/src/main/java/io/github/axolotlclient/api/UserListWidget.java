@@ -30,7 +30,6 @@ import io.github.axolotlclient.api.types.User;
 import io.github.axolotlclient.modules.auth.Auth;
 import lombok.Getter;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
@@ -79,12 +78,16 @@ public class UserListWidget extends ObjectSelectionList<UserListWidget.UserListE
 		return true;
 	}
 
+	@Override
+	public void clearEntries() {
+		super.clearEntries();
+	}
+
 	public static class UserListEntry extends Entry<UserListEntry> {
 
 		@Getter
 		private final User user;
 		private final Minecraft client;
-		private long time;
 		private MutableComponent note;
 		private FriendsScreen screen;
 
@@ -153,11 +156,10 @@ public class UserListWidget extends ObjectSelectionList<UserListWidget.UserListE
 		@Override
 		public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 			this.screen.select(this);
-			if (Util.getMillis() - this.time < 250L && client.level == null) {
+			if (doubleClick && client.level == null) {
 				screen.openChat();
 			}
 
-			this.time = Util.getMillis();
 			return false;
 		}
 	}

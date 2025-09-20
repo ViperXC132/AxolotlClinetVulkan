@@ -225,7 +225,6 @@ public class FriendsMultiplayerSelectionList extends ObjectSelectionList<Friends
 		protected final ServerData serverData;
 		private final FaviconTexture icon;
 		private byte @Nullable [] lastIconBytes;
-		private long lastClickTime;
 		@Nullable
 		private List<Component> onlinePlayersTooltip;
 		@Nullable
@@ -419,7 +418,6 @@ public class FriendsMultiplayerSelectionList extends ObjectSelectionList<Friends
 		@Override
 		public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 			double d = event.x() - FriendsMultiplayerSelectionList.this.getRowLeft();
-			double e = event.y() - FriendsMultiplayerSelectionList.this.getRowTop(FriendsMultiplayerSelectionList.this.children().indexOf(this));
 			if (d <= 32.0) {
 				if (d < 32.0 && d > 16.0 && this.canJoin()) {
 					this.screen.setSelected(this);
@@ -429,11 +427,10 @@ public class FriendsMultiplayerSelectionList extends ObjectSelectionList<Friends
 			}
 
 			this.screen.setSelected(this);
-			if (Util.getMillis() - this.lastClickTime < 250L && canJoin()) {
+			if (doubleClick && canJoin()) {
 				this.screen.joinSelectedServer();
 			}
 
-			this.lastClickTime = Util.getMillis();
 			return super.mouseClicked(event, doubleClick);
 		}
 

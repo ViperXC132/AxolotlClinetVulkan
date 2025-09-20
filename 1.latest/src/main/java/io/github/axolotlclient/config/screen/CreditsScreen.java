@@ -228,7 +228,7 @@ public class CreditsScreen extends Screen {
 		@Override
 		public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 			super.renderBackground(graphics, mouseX, mouseY, delta);
-			DrawUtil.outlineRect(graphics, 100, 50, width - 200, height - 100,
+			DrawUtil.fillRect(graphics, 100, 50, width - 200, height - 100,
 				ClientColors.DARK_GRAY.withAlpha(127).toInt());
 			DrawUtil.outlineRect(graphics, 100, 50, width - 200, height - 100,
 				ClientColors.BLACK.toInt());

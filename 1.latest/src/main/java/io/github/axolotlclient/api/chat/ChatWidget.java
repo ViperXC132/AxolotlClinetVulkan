@@ -116,7 +116,7 @@ public class ChatWidget extends ObjectSelectionList<ChatWidget.ChatLine> {
 		list.forEach(t -> addEntry(new ChatLine(t, message)));
 		messages.add(message);
 
-		children().sort(Comparator.comparingLong(c -> c.getOrigin().timestamp().getEpochSecond()));
+		sort(Comparator.comparingLong(c -> c.getOrigin().timestamp().getEpochSecond()));
 
 		if (scrollToBottom) {
 			setScrollAmount(maxScrollAmount());
@@ -232,8 +232,8 @@ public class ChatWidget extends ObjectSelectionList<ChatWidget.ChatLine> {
 					graphics.fill(x - 2 - 22, y + entryHeight - 1, x + entryWidth + 20, y + entryHeight, 0x33FFFFFF);
 				}
 			}
-			renderExtras(graphics, x, y, mouseX, mouseY);
-			graphics.drawString(client.font, content, x, y, -1, false);
+			renderExtras(graphics, getContentX(), getContentY(), mouseX, mouseY);
+			graphics.drawString(client.font, content, getContentX(), getContentY(), -1, false);
 		}
 
 		@Override

@@ -240,7 +240,7 @@ public class ProfilesScreen extends Screen {
 
 			@Override
 			public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
-				int i = scrollBarX() - width / 2 - 10 - addButton.getWidth() + 2;
+				int i = scrollBarX() - getContentWidth() / 2 - 10 - addButton.getWidth() + 2;
 				int j = getContentY() - 2;
 				this.addButton.setPosition(i, j);
 				this.addButton.render(guiGraphics, mouseX, mouseY, partialTick);

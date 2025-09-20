@@ -83,7 +83,7 @@ public class FriendsScreen extends Screen {
 	protected void init() {
 		addRenderableWidget(widget = new UserListWidget(this, minecraft, width, height, 32, height - 64, 35));
 
-		widget.children().clear();
+		widget.clearEntries();
 
 		if (current == Tab.ALL || current == Tab.ONLINE) {
 			FriendRequest.getInstance().getFriends().whenCompleteAsync((list, t) -> widget.setUsers(
