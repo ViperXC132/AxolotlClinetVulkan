@@ -36,6 +36,7 @@ import org.spongepowered.asm.mixin.Unique;
 public abstract class StatusEffectMixin implements AxoStatusEffect {
 	@Unique
 	private static final Identifier INVENTORY_TEXTURE = new Identifier("textures/gui/container/inventory.png");
+
 	@Shadow
 	public abstract int getIconIndex();
 

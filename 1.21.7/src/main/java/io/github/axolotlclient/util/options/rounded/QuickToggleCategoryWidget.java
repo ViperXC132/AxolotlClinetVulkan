@@ -46,7 +46,7 @@ public class QuickToggleCategoryWidget extends CategoryWidget {
 			.ifPresent(booleanOption -> {
 				enabledButton = new PillBooleanWidget(x + (width - 43), y + 3, 40, height - 5, booleanOption);
 				enabledButton.setWidth(40);
-				enabledButton.setX(x+width-43);
+				enabledButton.setX(x + width - 43);
 				enabledButton.active = !(booleanOption instanceof ForceableBooleanOption o && o.isForceOff());
 			});
 	}

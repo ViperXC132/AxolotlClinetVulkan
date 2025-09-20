@@ -177,7 +177,7 @@ public class CreditsScreen extends Screen {
 
 		@Override
 		public void renderContent(GuiGraphics graphics, int mouseX,
-						   int mouseY, boolean hovered, float tickDelta) {
+								  int mouseY, boolean hovered, float tickDelta) {
 			c.setPosition(getContentX(), getContentY());
 			c.render(graphics, mouseX, mouseY, tickDelta);
 		}
@@ -250,13 +250,14 @@ public class CreditsScreen extends Screen {
 	private class SpacerTitle extends Entry {
 
 		private final String name;
+
 		public SpacerTitle(String name) {
 			this.name = name;
 		}
 
 		@Override
 		public void renderContent(GuiGraphics graphics, int mouseX,
-						   int mouseY, boolean hovered, float tickDelta) {
+								  int mouseY, boolean hovered, float tickDelta) {
 			DrawUtil.drawCenteredString(graphics, font, name, getContentXMiddle(), getContentY(), -128374,
 				true);
 		}

@@ -95,7 +95,7 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	// scissor
 	@Override
 	public void br$pushScissor(int x, int y, int w, int h) {
-		enableScissor(x, y, x+w, y+h);
+		enableScissor(x, y, x + w, y + h);
 	}
 
 	@Override
@@ -129,18 +129,18 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	@Override
 	public int br$drawString(String value, int x, int y, int color, boolean shadow) {
 		drawString(minecraft.font, value, x, y, color, shadow);
-		return x+minecraft.font.width(value);
+		return x + minecraft.font.width(value);
 	}
 
 	@Override
 	public int br$drawString(AxoText value, int x, int y, int color, boolean shadow) {
 		drawString(minecraft.font, (Component) value, x, y, color, shadow);
-		return x+minecraft.font.width((FormattedText) value);
+		return x + minecraft.font.width((FormattedText) value);
 	}
 
 	@Override
 	public void br$fillRect(int x, int y, int width, int height, int color) {
-		fill(x, y, x+width, y+height, color);
+		fill(x, y, x + width, y + height, color);
 	}
 
 	@Override

@@ -224,7 +224,7 @@ public class ProfilesScreen extends Screen {
 				int j = top - 2;
 				this.addButton.setPosition(i, j);
 				this.addButton.render(guiGraphics, mouseX, mouseY, partialTick);
-				this.importButton.setPosition(addButton.getX()+addButton.getWidth() + 2, j);
+				this.importButton.setPosition(addButton.getX() + addButton.getWidth() + 2, j);
 				this.importButton.render(guiGraphics, mouseX, mouseY, partialTick);
 			}
 

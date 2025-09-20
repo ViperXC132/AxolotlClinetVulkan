@@ -89,9 +89,10 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	public abstract ResourceManager getResourceManager();
 
 	@Override
-	public@Nullable AxoPlayer br$getPlayer() {
+	public @Nullable AxoPlayer br$getPlayer() {
 		return player;
 	}
+
 	@Override
 
 	public AxoWorld br$getWorld() {
@@ -146,7 +147,7 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	@Override
 	public void br$reinitScreen() {
 		if (currentScreen != null) {
-			currentScreen.init((MinecraftClient) (Object)this, currentScreen.width, currentScreen.height);
+			currentScreen.init((MinecraftClient) (Object) this, currentScreen.width, currentScreen.height);
 		}
 	}
 

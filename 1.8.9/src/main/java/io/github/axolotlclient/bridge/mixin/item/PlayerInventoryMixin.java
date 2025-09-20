@@ -35,7 +35,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(PlayerInventory.class)
-public abstract class PlayerInventoryMixin implements AxoPlayerInventory{
+public abstract class PlayerInventoryMixin implements AxoPlayerInventory {
 	@Shadow
 	public abstract ItemStack getMainHandStack();
 

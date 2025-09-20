@@ -146,7 +146,7 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	@Override
 	public void br$reinitScreen() {
 		if (screen != null) {
-			screen.init((Minecraft) (Object)this, screen.width, screen.height);
+			screen.init((Minecraft) (Object) this, screen.width, screen.height);
 		}
 	}
 

@@ -137,7 +137,7 @@ public abstract class PlatformDispatchMixin {
 			@Override
 			public void draw(MinecraftClient client, MatrixStack stack, int sX, int sY, int sW, int sH) {
 				client.getTextureManager().bindTexture(iconId);
-				DrawUtil.drawTexture(stack, sX, sY, 0, 0, sW, sH,  sW, sH);
+				DrawUtil.drawTexture(stack, sX, sY, 0, 0, sW, sH, sW, sH);
 			}
 
 			@Override

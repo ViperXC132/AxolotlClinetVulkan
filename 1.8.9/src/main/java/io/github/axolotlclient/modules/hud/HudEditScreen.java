@@ -292,22 +292,22 @@ public class HudEditScreen extends Screen {
 	@Override
 	protected void buttonClicked(ButtonWidget button) {
 		switch (button.id) {
-		case 3:
-			snapping.toggle();
-			button.message = I18n.translate("hud.snapping") + ": "
-				+ I18n.translate(snapping.get() ? "options.on" : "options.off");
-			AxolotlClient.getInstance().getConfigManager().save();
-			break;
-		case 1:
-			Screen screen = ConfigStyles.createScreen(this, AxolotlClient.getInstance().getConfigManager().getRoot());
-			Minecraft.getInstance().openScreen(screen);
-			break;
-		case 0:
-			Minecraft.getInstance().openScreen(parent);
-			break;
-		case 2:
-			Minecraft.getInstance().openScreen(null);
-			break;
+			case 3:
+				snapping.toggle();
+				button.message = I18n.translate("hud.snapping") + ": "
+					+ I18n.translate(snapping.get() ? "options.on" : "options.off");
+				AxolotlClient.getInstance().getConfigManager().save();
+				break;
+			case 1:
+				Screen screen = ConfigStyles.createScreen(this, AxolotlClient.getInstance().getConfigManager().getRoot());
+				Minecraft.getInstance().openScreen(screen);
+				break;
+			case 0:
+				Minecraft.getInstance().openScreen(parent);
+				break;
+			case 2:
+				Minecraft.getInstance().openScreen(null);
+				break;
 		}
 	}
 

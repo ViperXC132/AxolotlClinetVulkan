@@ -13,6 +13,6 @@ public abstract class SubmitNodeStorageMixin implements SubmitNodeCollectorExten
 
 	@Override
 	public void axolotlclient$lastNameTagSubmitHasBadge() {
-		((SubmitNodeCollectorExtension)order(0)).axolotlclient$lastNameTagSubmitHasBadge();
+		((SubmitNodeCollectorExtension) order(0)).axolotlclient$lastNameTagSubmitHasBadge();
 	}
 }

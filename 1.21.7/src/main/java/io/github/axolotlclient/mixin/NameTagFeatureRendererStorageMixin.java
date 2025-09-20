@@ -19,11 +19,11 @@ public abstract class NameTagFeatureRendererStorageMixin implements NameTagFeatu
 
 	@Override
 	public void axolotlclient$lastNameTagSubmitHasBadge() {
-		((NameTagSubmitExtension)(Object)nameTagSubmitsNormal.getLast()).axolotlclient$hasBadge(true);
+		((NameTagSubmitExtension) (Object) nameTagSubmitsNormal.getLast()).axolotlclient$hasBadge(true);
 	}
 
 	@Override
 	public void axolotlclient$lastNameTagSubmitIsLevelHead() {
-		((NameTagSubmitExtension)(Object)nameTagSubmitsNormal.getLast()).axolotlclient$isForLevelHead(true);
+		((NameTagSubmitExtension) (Object) nameTagSubmitsNormal.getLast()).axolotlclient$isForLevelHead(true);
 	}
 }

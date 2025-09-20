@@ -26,9 +26,9 @@ import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import io.github.axolotlclient.modules.hud.gui.hud.PackDisplayHud;
 import io.github.axolotlclient.modules.hud.gui.hud.PlayerHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
 import io.github.axolotlclient.modules.hud.gui.hud.simple.ComboHud;
 import io.github.axolotlclient.modules.hud.gui.hud.simple.ReachHud;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.profiling.Profiler;
@@ -67,7 +67,7 @@ public class HudManager extends HudManagerCommon {
 	public void render(AxoRenderContext context, float delta) {
 		final var mc = Profiler.get();
 		mc.push("Hud render");
-		if(!(Minecraft.getInstance().screen instanceof HudEditScreen)) {
+		if (!(Minecraft.getInstance().screen instanceof HudEditScreen)) {
 			super.render(context, delta);
 		}
 		mc.pop();

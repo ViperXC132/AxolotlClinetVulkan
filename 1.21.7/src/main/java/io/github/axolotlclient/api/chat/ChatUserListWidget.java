@@ -148,9 +148,7 @@ public class ChatUserListWidget extends ObjectSelectionList<ChatUserListWidget.U
 		@Override
 		public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
 			ChatUserListWidget.this.setSelected(this);
-			/*if (event.button() == 0) { // left click
-
-			} else*/ if (event.button() == 1) { // right click
+			if (event.button() == 1) { // right click
 
 				if (!user.equals(API.getInstance().getSelf())) {
 					ContextMenu.Builder menu = ContextMenu.builder().title(Component.literal(user.getName())).spacer();

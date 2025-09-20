@@ -34,7 +34,7 @@ public abstract class MutableTextMixin implements Text, AxoText.Mutable {
 	public abstract MutableText append(Text text);
 
 	@Override
-	public  Mutable br$append(AxoText child) {
+	public Mutable br$append(AxoText child) {
 		return append((Text) child);
 	}
 

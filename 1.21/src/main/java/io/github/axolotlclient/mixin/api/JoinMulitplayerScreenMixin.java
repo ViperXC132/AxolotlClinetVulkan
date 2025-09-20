@@ -65,7 +65,7 @@ public abstract class JoinMulitplayerScreenMixin extends Screen {
 			}).position(this.width / 2 - 102, 32).width(100).build()).active = false;
 			ButtonWidget friendsCountButton = addDrawableSelectableElement(ButtonWidget.builder(Text.translatable("api.servers.friends", "..."), button -> {
 				client.setScreen(new FriendsMultiplayerScreen(this.parent));
-			}).positionAndSize(width/2+2, 32, 100, 20).build());
+			}).positionAndSize(width / 2 + 2, 32, 100, 20).build());
 			FriendRequest.getInstance().getOnlineFriendCount().thenAccept(count -> friendsCountButton.setMessage(Text.translatable("api.servers.friends", count)));
 		}
 	}
@@ -82,8 +82,8 @@ public abstract class JoinMulitplayerScreenMixin extends Screen {
 	@ModifyArgs(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/list/multiplayer/ServerEntryListWidget;<init>(Lnet/minecraft/client/gui/screen/multiplayer/SelectServerScreen;Lnet/minecraft/client/MinecraftClient;IIII)V"))
 	private void increaseHeaderSize$2(Args args) {
 		if (API.getInstance().isAuthenticated() && !WORLD_HOST_INSTALLED) {
-			args.set(3, ((Integer)args.get(3)) + 32 - 60);
-			args.set(4, ((Integer)args.get(4)) - 32 + 60);
+			args.set(3, ((Integer) args.get(3)) + 32 - 60);
+			args.set(4, ((Integer) args.get(4)) - 32 + 60);
 		}
 	}
 

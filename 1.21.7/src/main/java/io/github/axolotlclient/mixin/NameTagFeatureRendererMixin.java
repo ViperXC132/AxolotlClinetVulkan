@@ -8,8 +8,8 @@ import com.mojang.blaze3d.platform.DepthTestFunction;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.modules.hypixel.LevelHead;
-import io.github.axolotlclient.util.duck.NameTagSubmitExtension;
 import io.github.axolotlclient.util.Util;
+import io.github.axolotlclient.util.duck.NameTagSubmitExtension;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.*;
@@ -29,8 +29,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class NameTagFeatureRendererMixin {
 	@Unique
 	private static final RenderType TEXTURED_TYPE = RenderType.create("textured_quads", 1536, RenderPipeline.builder(RenderPipelines.GUI_TEXTURED_SNIPPET)
-		.withLocation(ResourceLocation.fromNamespaceAndPath(AxolotlClientCommon.MODID, "pipeline/badge"))
-		.withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST).build(),
+			.withLocation(ResourceLocation.fromNamespaceAndPath(AxolotlClientCommon.MODID, "pipeline/badge"))
+			.withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST).build(),
 		RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(AxolotlClient.badgeIcon, false))
 			.createCompositeState(false));
 
@@ -72,7 +72,7 @@ public abstract class NameTagFeatureRendererMixin {
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Lnet/minecraft/network/chat/Component;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)V"))
 	private void applyLevelHeadOptions(Font instance, Component text, float x, float y, int color, boolean drawShadow, Matrix4f pose, MultiBufferSource bufferSource, Font.DisplayMode mode, int backgroundColor, int packedLightCoords, Operation<Void> original, @Local SubmitNodeStorage.NameTagSubmit submit) {
-		if (((NameTagSubmitExtension)(Object)submit).axolotlclient$isForLevelHead()) {
+		if (((NameTagSubmitExtension) (Object) submit).axolotlclient$isForLevelHead()) {
 			color = ARGB.color(ARGB.alpha(color), LevelHead.getInstance().textColor.get().toInt());
 			if (backgroundColor != 0 && !LevelHead.getInstance().background.get()) {
 				backgroundColor = 0;

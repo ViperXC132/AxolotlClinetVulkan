@@ -200,7 +200,7 @@ public class ProfilesScreen extends io.github.axolotlclient.AxolotlClientConfig.
 				int j = top - 2;
 				this.addButton.setPosition(i, j);
 				this.addButton.render(mouseX, mouseY, partialTick);
-				this.importButton.setPosition(addButton.getX()+addButton.getWidth() + 2, j);
+				this.importButton.setPosition(addButton.getX() + addButton.getWidth() + 2, j);
 				this.importButton.render(mouseX, mouseY, partialTick);
 			}
 

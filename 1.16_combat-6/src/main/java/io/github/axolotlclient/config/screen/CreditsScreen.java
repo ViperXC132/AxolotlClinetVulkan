@@ -82,7 +82,7 @@ public class CreditsScreen extends Screen {
 		renderBackground(matrices);
 		creditsList.render(matrices, mouseX, mouseY, delta);
 		super.render(matrices, mouseX, mouseY, delta);
-		drawCenteredText(matrices, textRenderer, getTitle(), width / 2, 33/2 - textRenderer.fontHeight / 2, -1);
+		drawCenteredText(matrices, textRenderer, getTitle(), width / 2, 33 / 2 - textRenderer.fontHeight / 2, -1);
 	}
 
 	@Override

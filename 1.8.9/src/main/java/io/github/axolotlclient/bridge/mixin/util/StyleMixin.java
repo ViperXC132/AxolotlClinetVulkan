@@ -97,9 +97,9 @@ public abstract class StyleMixin implements AxoText.Style {
 
 	@Unique
 	private Integer axolotlclient$getColor() {
-		if (((Object)this) == ROOT) return null;
+		if (((Object) this) == ROOT) return null;
 		if (axolotlclient$color == null) {
-			return ((StyleMixin) (Object)getParent()).axolotlclient$getColor();
+			return ((StyleMixin) (Object) getParent()).axolotlclient$getColor();
 		}
 		return axolotlclient$color;
 	}

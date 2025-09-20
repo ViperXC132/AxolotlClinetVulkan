@@ -117,7 +117,7 @@ public class ConfigureKeyBindScreen extends io.github.axolotlclient.AxolotlClien
 			label.setChangedListener(stroke::setLabel);
 			if (supportsSynchronization) {
 				var s = (KeystrokeHud.LabelKeystroke) stroke;
-				ButtonWidget synchronizeButton = addDrawableChild(new VanillaButtonWidget(rightColX + + 30 + 4, rightColY, 58, 20, I18n.translate("keystrokes.stroke.label.synchronize_with_key", s.isSynchronizeLabel() ? I18n.translate("options.on") : I18n.translate("options.off")), b -> {
+				ButtonWidget synchronizeButton = addDrawableChild(new VanillaButtonWidget(rightColX + 30 + 4, rightColY, 58, 20, I18n.translate("keystrokes.stroke.label.synchronize_with_key", s.isSynchronizeLabel() ? I18n.translate("options.on") : I18n.translate("options.off")), b -> {
 					s.setSynchronizeLabel(!s.isSynchronizeLabel());
 					b.setMessage(I18n.translate("keystrokes.stroke.label.synchronize_with_key", s.isSynchronizeLabel() ? I18n.translate("options.on") : I18n.translate("options.off")));
 					label.setEditable(!s.isSynchronizeLabel());

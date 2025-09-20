@@ -60,7 +60,7 @@ public class FriendsMultiplayerScreen extends Screen {
 	@Override
 	protected void init() {
 		if (this.initialized) {
-			this.serverSelectionList.updateSize(this.width, this.height, 60, this.height-64);
+			this.serverSelectionList.updateSize(this.width, this.height, 60, this.height - 64);
 		} else {
 			this.serverSelectionList = new FriendsMultiplayerSelectionList(this, this.client, this.width, this.height - 64 - 60, 60, 36);
 		}

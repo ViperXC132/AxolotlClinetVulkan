@@ -30,20 +30,20 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(MutableComponent.class)
 public abstract class MutableComponentMixin implements Component, AxoText.Mutable {
-    @Shadow
-    public abstract MutableComponent append(Component sibling);
+	@Shadow
+	public abstract MutableComponent append(Component sibling);
 
-    @Shadow
-    public abstract MutableComponent setStyle(net.minecraft.network.chat.Style style);
+	@Shadow
+	public abstract MutableComponent setStyle(net.minecraft.network.chat.Style style);
 
-    @Override
-    public Mutable br$append(AxoText child) {
-        return append((Component) child);
-    }
+	@Override
+	public Mutable br$append(AxoText child) {
+		return append((Component) child);
+	}
 
-    @Override
-    public Mutable br$setStyle(Style style) {
-        // can't shadow setStyle because of stupid mapping bug...
-        return setStyle((net.minecraft.network.chat.Style) style);
-    }
+	@Override
+	public Mutable br$setStyle(Style style) {
+		// can't shadow setStyle because of stupid mapping bug...
+		return setStyle((net.minecraft.network.chat.Style) style);
+	}
 }

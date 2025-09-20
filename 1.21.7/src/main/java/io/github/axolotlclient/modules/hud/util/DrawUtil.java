@@ -49,10 +49,10 @@ public class DrawUtil {
 	}
 
 	public static void outlineRect(GuiGraphics graphics, int x, int y, int width, int height, int color) {
-		graphics.fill(x, y, x+width, y+1, color);
-		graphics.fill(x, y+height-1, x+width, y+height, color);
-		graphics.fill(x, y+1, x+1, y+height-1, color);
-		graphics.fill(x+width-1, y+1, x+width, y+height-1, color);
+		graphics.fill(x, y, x + width, y + 1, color);
+		graphics.fill(x, y + height - 1, x + width, y + height, color);
+		graphics.fill(x, y + 1, x + 1, y + height - 1, color);
+		graphics.fill(x + width - 1, y + 1, x + width, y + height - 1, color);
 	}
 
 	public static void drawCenteredString(GuiGraphics graphics, Font renderer, String text, int x, int y, Color color, boolean shadow) {

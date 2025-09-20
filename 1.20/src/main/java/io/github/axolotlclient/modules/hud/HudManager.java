@@ -62,7 +62,7 @@ public class HudManager extends HudManagerCommon {
 	public void render(AxoRenderContext context, float delta) {
 		final var mc = ((MinecraftClient) client);
 		mc.getProfiler().push("Hud render");
-		if(!(mc.currentScreen instanceof HudEditScreen)) {
+		if (!(mc.currentScreen instanceof HudEditScreen)) {
 			super.render(context, delta);
 		}
 		mc.getProfiler().pop();

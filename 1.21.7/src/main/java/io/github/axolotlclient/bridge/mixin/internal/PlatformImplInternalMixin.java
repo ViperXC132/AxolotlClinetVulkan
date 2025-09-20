@@ -249,10 +249,10 @@ public abstract class PlatformImplInternalMixin {
 	public static AxoSprite createTexture(GraphicsOption option) {
 		return (AxoSpriteImpl) (client, stack, sX, sY, sW, sH) ->
 			stack.blit(
-			RenderPipelines.GUI_TEXTURED,
-			io.github.axolotlclient.util.Util.getTexture(option), sX, sY, 0, 0,
-			sW, sH, option.get().getWidth(), option.get().getHeight()
-		);
+				RenderPipelines.GUI_TEXTURED,
+				io.github.axolotlclient.util.Util.getTexture(option), sX, sY, 0, 0,
+				sW, sH, option.get().getWidth(), option.get().getHeight()
+			);
 	}
 
 	/**

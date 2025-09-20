@@ -108,7 +108,7 @@ public class SkinManagementScreen extends Screen {
 		int headerHeight = 33;
 		int contentHeight = height - headerHeight * 2;
 
-		StringWidget titleWidget = new StringWidget(width/2-font.width(getTitle())/2, headerHeight / 2 - font.lineHeight / 2, font.width(getTitle()), font.lineHeight, getTitle(), getFont());
+		StringWidget titleWidget = new StringWidget(width / 2 - font.width(getTitle()) / 2, headerHeight / 2 - font.lineHeight / 2, font.width(getTitle()), font.lineHeight, getTitle(), getFont());
 		addRenderableWidget(titleWidget);
 
 		var back = Button.builder(CommonComponents.GUI_BACK, btn -> onClose())

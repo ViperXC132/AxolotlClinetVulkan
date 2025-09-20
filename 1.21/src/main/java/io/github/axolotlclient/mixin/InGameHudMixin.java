@@ -136,7 +136,7 @@ public abstract class InGameHudMixin {
 		HotbarHUD hud = (HotbarHUD) HudManager.getInstance().get(HotbarHUD.ID);
 		graphics.getMatrices().push();
 		if (hud.isEnabled()) {
-			graphics.getMatrices().translate(-graphics.getScaledWindowWidth()/2f + 182/2f, -graphics.getScaledWindowHeight()+22, 0);
+			graphics.getMatrices().translate(-graphics.getScaledWindowWidth() / 2f + 182 / 2f, -graphics.getScaledWindowHeight() + 22, 0);
 			graphics.getMatrices().translate(hud.getX(), hud.getY(), 0);
 		}
 		original.call(graphics, tracker);

@@ -239,11 +239,11 @@ public class Util {
 	}
 
 	public static Identifier getTexture(GraphicsOption option) {
-		return getTexture(option.get(), "graphics_"+option.getName());
+		return getTexture(option.get(), "graphics_" + option.getName());
 	}
 
 	public static Identifier getTexture(Graphics graphics, String name) {
-		Identifier id = new Identifier("axolotlclient",  name.toLowerCase(Locale.ROOT));
+		Identifier id = new Identifier("axolotlclient", name.toLowerCase(Locale.ROOT));
 		return getTexture(graphics, id);
 	}
 
