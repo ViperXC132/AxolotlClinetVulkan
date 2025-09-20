@@ -37,7 +37,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MultiPackResourceManager.class)
-public class MultiPackResourceManagerMixin {
+public abstract class MultiPackResourceManagerMixin {
 
 	@Inject(method = "getResource", at = @At("HEAD"), cancellable = true)
 	private void injectResources(ResourceLocation resourceLocation, CallbackInfoReturnable<Optional<Resource>> cir) {

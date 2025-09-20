@@ -34,7 +34,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = AxoItems.class, remap = false)
-public class AxoItemsMixin {
+public abstract class AxoItemsMixin {
 	@Mutable
 	@Shadow
 	@Final

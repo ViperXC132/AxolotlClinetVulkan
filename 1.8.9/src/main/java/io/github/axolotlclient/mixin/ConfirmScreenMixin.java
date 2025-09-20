@@ -34,7 +34,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(ConfirmScreen.class)
-public class ConfirmScreenMixin {
+public abstract class ConfirmScreenMixin {
 
 	@Redirect(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/TextRenderer;split(Ljava/lang/String;I)Ljava/util/List;"))
 	private List<String> fixTextWrapFormatting(TextRenderer instance, String string, int i) {

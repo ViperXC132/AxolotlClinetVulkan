@@ -31,7 +31,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(GameOptions.class)
-public class GameOptionsMixin implements AxoClientKeybinds{
+public abstract class GameOptionsMixin implements AxoClientKeybinds{
 	@Shadow
 	@Final
 	public KeyBinding keyAttack;

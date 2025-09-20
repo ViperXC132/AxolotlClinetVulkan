@@ -27,5 +27,5 @@ import io.github.axolotlclient.bridge.key.AxoKey;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(InputConstants.Key.class)
-public class KeyMixin implements AxoKey {
+public abstract class KeyMixin implements AxoKey {
 }

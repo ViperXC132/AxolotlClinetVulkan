@@ -39,7 +39,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(GuiGraphics.class)
-public class GuiGraphicsMixin {
+public abstract class GuiGraphicsMixin {
 
 	@Unique
 	private int recursionDepth;

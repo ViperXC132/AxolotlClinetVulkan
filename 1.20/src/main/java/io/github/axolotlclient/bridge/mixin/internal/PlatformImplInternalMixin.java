@@ -67,7 +67,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 
 @SuppressWarnings("OverwriteModifiers")
 @Mixin(value = PlatformImplInternal.class, remap = false)
-public class PlatformImplInternalMixin {
+public abstract class PlatformImplInternalMixin {
 	/**
 	 * @author Flowey
 	 * @reason Implement bridge platform.

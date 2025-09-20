@@ -26,7 +26,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(NameTagFeatureRenderer.class)
-public class NameTagFeatureRendererMixin {
+public abstract class NameTagFeatureRendererMixin {
 	@Unique
 	private static final RenderType TEXTURED_TYPE = RenderType.create("textured_quads", 1536, RenderPipeline.builder(RenderPipelines.GUI_TEXTURED_SNIPPET)
 		.withLocation(ResourceLocation.fromNamespaceAndPath(AxolotlClientCommon.MODID, "pipeline/badge"))

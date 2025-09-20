@@ -43,7 +43,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MultiplayerScreen.class)
-public class JoinMulitplayerScreenMixin extends Screen {
+public abstract class JoinMulitplayerScreenMixin extends Screen {
 
 	@Shadow
 	@Final

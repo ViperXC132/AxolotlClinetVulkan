@@ -38,7 +38,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SplashTextResourceSupplier.class)
-public class SplashTextResourceSupplierMixin {
+public abstract class SplashTextResourceSupplierMixin {
 	@Unique
 	private static final Identifier EXTRA_SPLASHES = new Identifier("axolotlclient", "texts/splashes.txt");
 

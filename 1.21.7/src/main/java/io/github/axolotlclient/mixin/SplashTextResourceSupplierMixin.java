@@ -38,7 +38,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(SplashManager.class)
-public class SplashTextResourceSupplierMixin {
+public abstract class SplashTextResourceSupplierMixin {
 	@Unique
 	private static final ResourceLocation EXTRA_SPLASHES =
 		ResourceLocation.fromNamespaceAndPath("axolotlclient", "texts/splashes.txt");

@@ -44,7 +44,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(JoinMultiplayerScreen.class)
-public class JoinMulitplayerScreenMixin extends Screen {
+public abstract class JoinMulitplayerScreenMixin extends Screen {
 
 	@Shadow
 	@Final

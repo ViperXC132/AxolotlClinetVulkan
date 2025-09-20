@@ -34,7 +34,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Options.class)
-public class GameOptionsMixin {
+public abstract class GameOptionsMixin {
 
 	@Mutable
 	@Shadow
