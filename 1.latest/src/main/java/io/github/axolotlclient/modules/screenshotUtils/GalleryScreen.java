@@ -150,7 +150,7 @@ public class GalleryScreen extends Screen {
 				loadTab(current, columnCount, area);
 			} catch (Exception e) {
 				LinearLayout error = LinearLayout.vertical().spacing(8);
-				error.defaultCellSetting().alignVerticallyMiddle();
+				error.defaultCellSetting().alignVerticallyMiddle().alignVerticallyMiddle();
 				error.addChild(new StringWidget(Component.translatable("gallery.error.loading"), font));
 				setInitialFocus(error.addChild(Button.builder(Component.translatable("gallery.reload"), b -> rebuildWidgets()).build()));
 				layout.addToContents(error);
@@ -307,7 +307,6 @@ public class GalleryScreen extends Screen {
 		private final List<ImageEntry> buttons;
 		private final int size;
 		private final ImageList list;
-		private final List<ImageEntry> removalQueue = new ArrayList<>(1);
 
 		public ImageListEntry(int size, ImageList list) {
 			this.size = size;

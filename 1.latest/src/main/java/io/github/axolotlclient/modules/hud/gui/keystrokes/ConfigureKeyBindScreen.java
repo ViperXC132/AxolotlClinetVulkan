@@ -32,6 +32,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.layouts.FrameLayout;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
+import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
@@ -90,7 +91,7 @@ public class ConfigureKeyBindScreen extends Screen {
 			}
 		}).active = false;
 		body.addChild(labelFrame);
-		currentKey = body.addChild(new StringWidget(Component.empty(), font));
+		currentKey = body.addChild(new StringWidget(Component.empty(), font), LayoutSettings::alignHorizontallyCenter);
 
 		var optionsFrame = new FrameLayout();
 		optionsFrame.setMinWidth(super.width);
@@ -163,7 +164,6 @@ public class ConfigureKeyBindScreen extends Screen {
 
 	@Override
 	protected void repositionElements() {
-		layout.arrangeElements();
 		if (isAddScreen && stroke.getKey() != null) {
 			addButton.active = true;
 		}
@@ -176,6 +176,7 @@ public class ConfigureKeyBindScreen extends Screen {
 		if (synchronizeButton != null) {
 			synchronizeButton.active = stroke.getKey() != null;
 		}
+		layout.arrangeElements();
 	}
 
 	@Override
