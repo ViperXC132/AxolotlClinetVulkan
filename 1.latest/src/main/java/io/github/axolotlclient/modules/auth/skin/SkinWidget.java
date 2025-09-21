@@ -24,7 +24,6 @@ package io.github.axolotlclient.modules.auth.skin;
 
 import java.util.concurrent.CompletableFuture;
 
-import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.mixin.GuiGraphicsAccessor;
 import io.github.axolotlclient.modules.auth.Account;
@@ -39,12 +38,10 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.PlayerModelType;
 import org.jetbrains.annotations.Nullable;
 
 public class SkinWidget extends AbstractWidget {
@@ -89,18 +86,9 @@ public class SkinWidget extends AbstractWidget {
 		float scale = FIT_SCALE * this.getHeight() / MODEL_HEIGHT;
 		float pivotY = -1.0625F;
 
-		AxoIdentifier skinRl;
-		boolean classic;
 		SkinManager skinManager = Auth.getInstance().getSkinManager();
-		CompletableFuture<AxoIdentifier> loader = skin == null ? null : skinManager.loadSkin(skin);
-		if (loader != null && loader.isDone()) {
-			skinRl = loader.join();
-			classic = skin.classicVariant();
-		} else {
-			var skin = DefaultPlayerSkin.get(UUIDHelper.fromUndashed(owner.getUuid()));
-			classic = skin.model() == PlayerModelType.WIDE;
-			skinRl = skin.body().texturePath();
-		}
+		AxoIdentifier skinRl = skinManager.loadSkin(skin);
+		boolean classic = skin.classicVariant();
 		var capeRl = cape == null ? null : skinManager.loadCape(cape);
 
 		// You might say that using `hashCode()` like this isn't ideal, but in reality it doesn't matter. These objects get freed

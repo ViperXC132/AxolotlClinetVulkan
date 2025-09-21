@@ -24,16 +24,23 @@ package io.github.axolotlclient.modules.auth.skin;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.UncheckedIOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+import com.google.common.hash.Hashing;
+import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.modules.auth.MSApi;
 import io.github.axolotlclient.util.GsonHelper;
+import io.github.axolotlclient.util.NetworkUtil;
 import org.jetbrains.annotations.NotNull;
 
 public interface Skin extends Asset {
@@ -41,17 +48,26 @@ public interface Skin extends Asset {
 
 	void classicVariant(boolean classic);
 
-	final class Local implements Skin {
+	interface Local extends Skin, Asset.Local {
+
+	}
+
+	interface Online extends Skin, Asset.Online {
+	}
+
+	final class LocalSkin implements Local {
 		public static final String META_DIR = ".meta";
 		public static final String METADATA_SUFFIX = ".meta";
 		public static final String CLASSIC_METADATA_KEY = "variant_classic";
 		private boolean classic;
 		private final Path file;
+		private final byte[] data;
 		private final String textureKey;
 
-		public Local(boolean classic, Path file, String textureKey) {
+		public LocalSkin(boolean classic, Path file, byte[] image, String textureKey) {
 			this.classic = classic;
 			this.file = file;
+			this.data = image;
 			this.textureKey = textureKey;
 		}
 
@@ -66,7 +82,9 @@ public interface Skin extends Asset {
 		}
 
 		public static void writeMetadata(Path skinFile, Map<String, Object> metadata) throws IOException {
-			try (var out = Files.newOutputStream(getMetadataFile(skinFile));
+			var metadataFile = getMetadataFile(skinFile);
+			Files.createDirectories(metadataFile.getParent());
+			try (var out = Files.newOutputStream(metadataFile);
 				 var writer = new OutputStreamWriter(out)) {
 				GsonHelper.GSON.toJson(metadata, writer);
 			}
@@ -100,14 +118,8 @@ public interface Skin extends Asset {
 		}
 
 		@Override
-		public CompletableFuture<byte[]> image() {
-			return CompletableFuture.supplyAsync(() -> {
-				try {
-					return Files.readAllBytes(file);
-				} catch (IOException e) {
-					throw new UncheckedIOException(e);
-				}
-			});
+		public byte[] image() {
+			return data;
 		}
 
 		@Override
@@ -121,22 +133,17 @@ public interface Skin extends Asset {
 		}
 
 		@Override
-		public boolean isLocal() {
-			return true;
-		}
-
-		@Override
 		public Path file() {
 			return file;
 		}
 
 		@Override
-		public String textureKey() {
+		public String sha256() {
 			return textureKey;
 		}
 	}
 
-	record Shared(Local local, MSApi.MCProfile.OnlineSkin online) implements Skin {
+	record Shared(Skin.Local local, MSApi.MCProfile.OnlineSkin online) implements Local, Online {
 
 		@Override
 		public boolean classicVariant() {
@@ -149,7 +156,7 @@ public interface Skin extends Asset {
 		}
 
 		@Override
-		public CompletableFuture<byte[]> image() {
+		public byte[] image() {
 			return local.image();
 		}
 
@@ -164,18 +171,8 @@ public interface Skin extends Asset {
 		}
 
 		@Override
-		public String textureKey() {
-			return local.textureKey();
-		}
-
-		@Override
-		public boolean isOnline() {
-			return true;
-		}
-
-		@Override
-		public boolean isLocal() {
-			return true;
+		public String sha256() {
+			return online.sha256();
 		}
 
 		@Override
@@ -192,5 +189,115 @@ public interface Skin extends Asset {
 		public boolean supportsDownload() {
 			return true;
 		}
+	}
+
+	static Skin getDefaultSkin(Account account) {
+		return getDefaultSkin(UUIDHelper.fromUndashed(account.getUuid()));
+	}
+
+	static Skin getDefaultSkin(UUID uuid) {
+		return DefaultSkin.get(uuid);
+	}
+}
+
+record DefaultSkin(String name, String stringUrl, URI url, boolean wide) {
+	private static final HttpClient client = NetworkUtil.createHttpClient();
+	private static final Map<DefaultSkin, Skin> DEFAULT_SKIN_CACHE = new HashMap<>();
+
+	DefaultSkin(String name, String url, boolean wide) {
+		this(name, url, URI.create(url), wide);
+	}
+
+	private static final DefaultSkin[] SKINS = new DefaultSkin[]{
+		new DefaultSkin("alex", "https://minecraft.wiki/images/Alex_%28slim_texture%29_JE3.png", false),
+		new DefaultSkin("ari", "https://minecraft.wiki/images/Ari_%28slim_texture%29_JE1.png", false),
+		new DefaultSkin("efe", "https://minecraft.wiki/images/Efe_%28slim_texture%29_JE1.png", false),
+		new DefaultSkin("kai", "https://minecraft.wiki/images/Kai_%28slim_texture%29_JE1.png", false),
+		new DefaultSkin("makena", "https://minecraft.wiki/images/Makena_%28slim_texture%29_JE1.png", false),
+		new DefaultSkin("noor", "https://minecraft.wiki/images/Noor_%28slim_texture%29_JE1.png", false),
+		new DefaultSkin("steve", "https://minecraft.wiki/images/Steve_%28slim_texture%29_JE2.png", false),
+		new DefaultSkin("sunny", "https://minecraft.wiki/images/Sunny_%28slim_texture%29_JE1.png", false),
+		new DefaultSkin("zuri", "https://minecraft.wiki/images/Zuri_%28slim_texture%29_JE1.png", false),
+		new DefaultSkin("alex", "https://minecraft.wiki/images/Alex_%28classic_texture%29_JE2.png", true),
+		new DefaultSkin("ari", "https://minecraft.wiki/images/Ari_%28classic_texture%29_JE1.png", true),
+		new DefaultSkin("efe", "https://minecraft.wiki/images/Efe_%28classic_texture%29_JE1.png", true),
+		new DefaultSkin("kai", "https://minecraft.wiki/images/Kai_%28classic_texture%29_JE1.png", true),
+		new DefaultSkin("makena", "https://minecraft.wiki/images/Makena_%28classic_texture%29_JE1.png", true),
+		new DefaultSkin("noor", "https://minecraft.wiki/images/Noor_%28classic_texture%29_JE1.png", true),
+		new DefaultSkin("steve", "https://minecraft.wiki/images/Steve_%28classic_texture%29_JE6.png", true),
+		new DefaultSkin("sunny", "https://minecraft.wiki/images/Sunny_%28classic_texture%29_JE1.png", true),
+		new DefaultSkin("zuri", "https://minecraft.wiki/images/Zuri_%28classic_texture%29_JE1.png", true)
+	};
+
+	@SuppressWarnings("UnstableApiUsage")
+	public Skin getSkin() {
+		return DEFAULT_SKIN_CACHE.computeIfAbsent(this, unused -> {
+			var wrapper = new Skin.Online() {
+				private DefaultSkin wrapped = DefaultSkin.this;
+				private byte[] data = null;
+				private String hash = null;
+
+				private void load() {
+					data = client.sendAsync(HttpRequest.newBuilder().GET().uri(wrapped.url()).build(), HttpResponse.BodyHandlers.ofByteArray())
+						.thenApply(HttpResponse::body).join();
+					hash = Hashing.sha256().hashBytes(data).toString();
+				}
+
+				@Override
+				public boolean classicVariant() {
+					return wrapped.wide();
+				}
+
+				@Override
+				public void classicVariant(boolean classic) {
+					int i = switch (name()) {
+						case "alex" -> 0;
+						case "ari" -> 1;
+						case "efe" -> 2;
+						case "kai" -> 3;
+						case "makena" -> 4;
+						case "noor" -> 5;
+						case "steve" -> 6;
+						case "sunny" -> 7;
+						case "zuri" -> 8;
+						default -> throw new IllegalStateException();
+					};
+					if (classic) i += 9;
+					wrapped = SKINS[i];
+					load();
+				}
+
+				@Override
+				public byte[] image() {
+					return data;
+				}
+
+				@Override
+				public boolean active() {
+					return false;
+				}
+
+				@Override
+				public CompletableFuture<MSApi.MCProfile> equip(MSApi api, Account account) {
+					return api.setSkin(account, this);
+				}
+
+				@Override
+				public String sha256() {
+					return hash;
+				}
+
+				@Override
+				public String url() {
+					return wrapped.stringUrl();
+				}
+			};
+			wrapper.load();
+			return wrapper;
+		});
+	}
+
+	static Skin get(UUID uuid) {
+		return SKINS[Math.floorMod(uuid.hashCode(), SKINS.length)].getSkin();
 	}
 }

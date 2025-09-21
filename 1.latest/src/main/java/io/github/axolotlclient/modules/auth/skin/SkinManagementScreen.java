@@ -86,7 +86,7 @@ public class SkinManagementScreen extends Screen {
 	private boolean capesTab;
 	private SkinWidget current;
 	private final Watcher skinDirWatcher;
-	private final CompletableFuture<?> refreshFuture;
+	private final CompletableFuture<MSApi.MCProfile> refreshFuture;
 
 	public SkinManagementScreen(Screen parent, Account account) {
 		super(Component.translatable("skins.manage"));
@@ -96,11 +96,10 @@ public class SkinManagementScreen extends Screen {
 			AxolotlClientCommon.getInstance().getLogger().info("Reloading screen as local files changed!");
 			loadSkinsList();
 		});
-		if (account.needsRefresh()) {
-			refreshFuture = account.refresh(Auth.getInstance().getMsApi());
-		} else {
-			refreshFuture = CompletableFuture.completedFuture(null);
-		}
+		refreshFuture = (account.needsRefresh() ? account.refresh(Auth.getInstance().getMsApi())
+			: CompletableFuture.completedFuture(null))
+			.thenComposeAsync(unused -> Auth.getInstance().getMsApi().getProfile(account));
+
 	}
 
 	@Override
@@ -196,8 +195,7 @@ public class SkinManagementScreen extends Screen {
 			return;
 		}
 
-		refreshFuture.thenComposeAsync(unused -> Auth.getInstance().getMsApi().getProfile(account))
-			.thenAcceptAsync(profile -> {
+		refreshFuture.thenAcceptAsync(profile -> {
 				cachedProfile = profile;
 				initDisplay();
 				addWidgets.run();
@@ -235,7 +233,7 @@ public class SkinManagementScreen extends Screen {
 							try {
 								var bytes = t.skin().join();
 								var out = ensureNonexistent(SKINS_DIR.resolve(t.skinKey()));
-								Skin.Local.writeMetadata(out, Map.of(Skin.Local.CLASSIC_METADATA_KEY, t.classicModel(), "name", t.name(), "uuid", t.id(), "download_time", Instant.now()));
+								Skin.LocalSkin.writeMetadata(out, Map.of(Skin.LocalSkin.CLASSIC_METADATA_KEY, t.classicModel(), "name", t.name(), "uuid", t.id(), "download_time", Instant.now()));
 								Files.write(out, bytes);
 								minecraft.execute(this::loadSkinsList);
 								Notifications.getInstance().addStatus("skins.notification.title", "skins.notification.import.online.downloaded", t.name());
@@ -304,15 +302,15 @@ public class SkinManagementScreen extends Screen {
 		var profile = cachedProfile;
 		int columns = Math.max(2, (width / 2 - 25) / LIST_SKIN_WIDTH);
 		List<Skin> skins = new ArrayList<>(profile.skins());
-		var hashes = skins.stream().map(Asset::textureKey).collect(Collectors.toSet());
-		var defaultSkinHash = Auth.getInstance().getSkinManager().getDefaultSkinHash(account);
+		var hashes = skins.stream().map(Asset::sha256).collect(Collectors.toSet());
+		var defaultSkin = Skin.getDefaultSkin(account);
 		var local = new ArrayList<>(loadLocalSkins());
-		var localHashes = local.stream().collect(Collectors.toMap(Asset::textureKey, Function.identity(), (skin, skin2) -> skin));
+		var localHashes = local.stream().collect(Collectors.toMap(Asset::sha256, Function.identity(), (skin, skin2) -> skin));
 		local.removeIf(s -> !localHashes.containsValue(s));
 		skins.replaceAll(s -> {
 			if (s instanceof MSApi.MCProfile.OnlineSkin online) {
-				if (localHashes.containsKey(s.textureKey()) && localHashes.get(s.textureKey()) instanceof Skin.Local file) {
-					local.remove(localHashes.remove(s.textureKey()));
+				if (localHashes.containsKey(s.sha256()) && localHashes.get(s.sha256()) instanceof Skin.LocalSkin file) {
+					local.remove(localHashes.remove(s.sha256()));
 					return new Skin.Shared(file, online);
 				}
 			}
@@ -320,8 +318,8 @@ public class SkinManagementScreen extends Screen {
 		});
 
 		skins.addAll(local);
-		if (!hashes.contains(defaultSkinHash)) {
-			skins.add(null);
+		if (!hashes.contains(defaultSkin.sha256())) {
+			skins.add(defaultSkin);
 		}
 		populateSkinList(skins, columns);
 		skinList.setScrollAmount(skinList.scrollAmount());
@@ -391,7 +389,7 @@ public class SkinManagementScreen extends Screen {
 					var target = ensureNonexistent(SKINS_DIR.resolve(p.getFileName()));
 					var skin = Auth.getInstance().getSkinManager().read(p, false);
 					if (skin != null) {
-						Files.write(target, skin.image().join());
+						Files.write(target, skin.image());
 					} else {
 						AxolotlClientCommon.getInstance().getLogger().info("Skipping dragged file {} because it does not seem to be a valid skin!", p);
 						Notifications.getInstance().addStatus("skins.notification.title", "skins.notification.not_copied", p.getFileName());
@@ -589,20 +587,20 @@ public class SkinManagementScreen extends Screen {
 						self.setMessage(skin.classicVariant() ? wideText : slimText);
 					}, skin.classicVariant() ? slimSprite : wideSprite));
 				}
-				if (asset.isLocal()) {
+				if (asset instanceof Asset.Local local) {
 					this.actionButtons.add(new SpriteButton(Component.translatable("skins.manage.delete"), btn -> {
 						btn.active = false;
 						minecraft.setScreen(new ConfirmScreen(confirmed -> {
-							minecraft.setScreen(SkinManagementScreen.this);
 							if (confirmed) {
 								try {
-									Files.delete(asset.file());
-									Skin.Local.deleteMetadata(asset.file());
+									Files.delete(local.file());
+									Skin.LocalSkin.deleteMetadata(local.file());
 									refreshCurrentList();
 								} catch (IOException e) {
 									AxolotlClientCommon.getInstance().getLogger().warn("Failed to delete: ", e);
 								}
 							}
+							minecraft.setScreen(SkinManagementScreen.this);
 							btn.active = true;
 						}, Component.translatable("skins.manage.delete.confirm"), (asset.active() ?
 							Component.translatable("skins.manage.delete.confirm.desc_active") :
@@ -610,10 +608,13 @@ public class SkinManagementScreen extends Screen {
 						).withColor(Colors.RED.toInt())));
 					}, ResourceLocation.fromNamespaceAndPath("axolotlclient", "delete")));
 				}
-				if (asset.supportsDownload() && !asset.isLocal()) {
+				if (asset instanceof Asset.Online online && online.supportsDownload() && !(asset instanceof Asset.Local)) {
 					this.actionButtons.add(new SpriteButton(Component.translatable("skins.manage.download"), btn -> {
 						btn.active = false;
-						download(asset).thenRun(() -> btn.active = true);
+						download(asset).thenRun(() -> {
+							refreshCurrentList();
+							btn.active = true;
+						});
 					}, ResourceLocation.fromNamespaceAndPath("axolotlclient", "download")));
 				}
 			}
@@ -637,13 +638,17 @@ public class SkinManagementScreen extends Screen {
 					btn.active = false;
 					Consumer<CompletableFuture<MSApi.MCProfile>> consumer = f -> f.thenAcceptAsync(p -> {
 						cachedProfile = p;
-						refreshCurrentList();
+						if (minecraft.screen == SkinManagementScreen.this) {
+							refreshCurrentList();
+						} else {
+							minecraft.setScreen(SkinManagementScreen.this);
+						}
 					}).exceptionally(t -> {
 						AxolotlClientCommon.getInstance().getLogger().warn("Failed to equip asset!", t);
 						equipping = false;
 						return null;
 					});
-					if (asset instanceof Skin && !current.getSkin().isLocal()) {
+					if (asset instanceof Skin && !(current.getSkin() instanceof Skin.Local)) {
 						minecraft.setScreen(new ConfirmScreen(confirmed -> {
 							if (confirmed) {
 								consumer.accept(download(current.getSkin()).thenCompose(a -> widget.equip()));
@@ -660,18 +665,17 @@ public class SkinManagementScreen extends Screen {
 		}
 
 		private @NotNull CompletableFuture<?> download(Asset asset) {
-			return asset.image().thenAcceptAsync(b -> {
+			return CompletableFuture.runAsync(() -> {
 				try {
-					var out = SKINS_DIR.resolve(asset.textureKey());
+					var out = SKINS_DIR.resolve(asset.sha256());
 					Files.createDirectories(out.getParent());
-					Files.write(out, b);
+					Files.write(out, asset.image());
 					if (asset instanceof Skin skin) {
-						Skin.Local.writeMetadata(out, Map.of(Skin.Local.CLASSIC_METADATA_KEY, skin.classicVariant()));
+						Skin.LocalSkin.writeMetadata(out, Map.of(Skin.LocalSkin.CLASSIC_METADATA_KEY, skin.classicVariant()));
 					}
 				} catch (IOException e) {
 					AxolotlClientCommon.getInstance().getLogger().warn("Failed to download: ", e);
 				}
-				refreshCurrentList();
 			});
 		}
 
@@ -717,7 +721,6 @@ public class SkinManagementScreen extends Screen {
 					skinWidget.getBottom() + 2,
 					gradientWidth,
 					equipping ? 0xFFFF0088 : ClientColors.SELECTOR_GREEN.toInt(), 0).submit();
-				//guiGraphics.fill(getX()+2, getY()+2, getRight()-2, skinWidget.getBottom()+2, 0x33000000);
 			}
 			skinWidget.render(guiGraphics, mouseX, mouseY, partialTick);
 			int actionButtonY = getY() + 2;

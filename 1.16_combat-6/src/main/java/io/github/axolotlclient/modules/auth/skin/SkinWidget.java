@@ -24,7 +24,6 @@ package io.github.axolotlclient.modules.auth.skin;
 
 import java.util.concurrent.CompletableFuture;
 
-import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.modules.auth.Auth;
@@ -33,7 +32,6 @@ import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.gui.widget.AbstractButtonWidget;
 import net.minecraft.client.sound.SoundManager;
-import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.MutableText;
@@ -81,18 +79,9 @@ public class SkinWidget extends AbstractButtonWidget {
 		float scale = FIT_SCALE * this.getHeight() / MODEL_HEIGHT;
 		float pivotY = -1.0625F;
 
-		AxoIdentifier skinRl;
-		boolean classic;
 		SkinManager skinManager = Auth.getInstance().getSkinManager();
-		CompletableFuture<AxoIdentifier> loader = skin == null ? null : skinManager.loadSkin(skin);
-		if (loader != null && loader.isDone()) {
-			skinRl = loader.join();
-			classic = skin.classicVariant();
-		} else {
-			var uuid = UUIDHelper.fromUndashed(owner.getUuid());
-			classic = DefaultSkinHelper.getModel(uuid).equals("default");
-			skinRl = DefaultSkinHelper.getTexture(uuid);
-		}
+		AxoIdentifier skinRl = skinManager.loadSkin(skin);
+		boolean classic = skin.classicVariant();
 		var capeRl = cape == null ? null : skinManager.loadCape(cape);
 
 		SkinRenderer.render(guiGraphics, classic, (Identifier) skinRl, (Identifier) capeRl, this.rotationX, this.rotationY, pivotY, this.getX(), this.getY(), this.getX() + getWidth(), this.getY() + getHeight(), scale);

@@ -29,21 +29,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import com.google.common.hash.Hashing;
 import io.github.axolotlclient.AxolotlClientCommon;
-import io.github.axolotlclient.api.util.UUIDHelper;
-import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.mixin.skins.PlayerSkinTextureAccessor;
-import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.util.ClientColors;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.util.Identifier;
 
 public class SkinManager {
@@ -78,85 +73,54 @@ public class SkinManager {
 					} else {
 						slim = ClientColors.ARGB.alpha(img.getPixelColor(50, 16)) == 0;
 					}
-					var metadata = Skin.Local.readMetadata(p);
-					if (metadata != null && metadata.containsKey(Skin.Local.CLASSIC_METADATA_KEY)) {
-						slim = !(boolean) metadata.get(Skin.Local.CLASSIC_METADATA_KEY);
+					var metadata = Skin.LocalSkin.readMetadata(p);
+					if (metadata != null && metadata.containsKey(Skin.LocalSkin.CLASSIC_METADATA_KEY)) {
+						slim = !(boolean) metadata.get(Skin.LocalSkin.CLASSIC_METADATA_KEY);
 					}
 				}
 			}
-			return new Skin.Local(!slim, p, sha256);
+			return new Skin.LocalSkin(!slim, p, in, sha256);
 		} catch (Exception e) {
 			AxolotlClientCommon.getInstance().getLogger().warn("Failed to probe skin: ", e);
 		}
 		return null;
 	}
 
-	public CompletableFuture<AxoIdentifier> loadSkin(Skin skin) {
-		var rl = AxoIdentifier.of(AxolotlClientCommon.MODID, "skins/" + skin.textureKey());
+	public AxoIdentifier loadSkin(Skin skin) {
+		var rl = AxoIdentifier.of(AxolotlClientCommon.MODID, "skins/" + skin.sha256());
 		if (loadedTextures.contains(rl)) {
-			return CompletableFuture.completedFuture(rl);
+			return rl;
 		}
 
-		return skin.image().thenApplyAsync(bytes -> {
-			try (var stream = new ByteArrayInputStream(bytes)) {
-				var tex = new NativeImageBackedTexture(NativeImage.read(stream));
-				tex.upload();
-				MinecraftClient.getInstance().getTextureManager().registerTexture((Identifier) rl, tex);
-			} catch (IOException e) {
-				throw new UncheckedIOException(e);
-			}
-			loadedTextures.add(rl);
-			return rl;
-		}, AxoMinecraftClient.getInstance()).handle((v, t) -> {
-			if (t != null) {
-				AxolotlClientCommon.getInstance().getLogger().warn("Failed to load skin!", t);
-			}
-			return v;
-		});
+		try (var stream = new ByteArrayInputStream(skin.image())) {
+			var tex = new NativeImageBackedTexture(NativeImage.read(stream));
+			tex.upload();
+			MinecraftClient.getInstance().getTextureManager().registerTexture((Identifier) rl, tex);
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+		loadedTextures.add(rl);
+		return rl;
 	}
 
 	public AxoIdentifier loadCape(Cape cape) {
-		var rl = AxoIdentifier.of(AxolotlClientCommon.MODID, "capes/" + cape.textureKey());
+		var rl = AxoIdentifier.of(AxolotlClientCommon.MODID, "capes/" + cape.id());
 		if (loadedTextures.contains(rl)) {
 			return rl;
 		}
 
-		return cape.image().thenApplyAsync(bytes -> {
-			try (var stream = new ByteArrayInputStream(bytes)) {
-				var tex = new NativeImageBackedTexture(NativeImage.read(stream));
-				MinecraftClient.getInstance().getTextureManager().registerTexture((Identifier) rl, tex);
-			} catch (IOException e) {
-				throw new UncheckedIOException(e);
-			}
-			loadedTextures.add(rl);
-			return rl;
-		}, AxoMinecraftClient.getInstance()).handle((id, t) -> {
-			if (t != null) {
-				AxolotlClientCommon.getInstance().getLogger().warn("Failed to load cape!", t);
-			}
-			return id;
-		}).getNow(null);
-
+		try (var stream = new ByteArrayInputStream(cape.image())) {
+			var tex = new NativeImageBackedTexture(NativeImage.read(stream));
+			MinecraftClient.getInstance().getTextureManager().registerTexture((Identifier) rl, tex);
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
+		loadedTextures.add(rl);
+		return rl;
 	}
 
 	public void releaseAll() {
 		loadedTextures.forEach(id -> MinecraftClient.getInstance().getTextureManager().destroyTexture((Identifier) id));
 		loadedTextures.clear();
-	}
-
-	@SuppressWarnings("UnstableApiUsage")
-	public String getDefaultSkinHash(Account account) {
-		var skin = DefaultSkinHelper.getTexture(UUIDHelper.fromUndashed(account.getUuid()));
-		var mc = MinecraftClient.getInstance();
-		var resourceManager = mc.getResourceManager();
-		try {
-			var res = resourceManager.getResource(skin);
-			try (
-				var in = res.br$asStream()) {
-				return Hashing.sha256().hashBytes(in.readAllBytes()).toString();
-			}
-		} catch (IOException ignored) {
-		}
-		return null;
 	}
 }

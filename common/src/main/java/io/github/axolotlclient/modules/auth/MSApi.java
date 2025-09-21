@@ -33,7 +33,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Base64;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
@@ -41,6 +40,7 @@ import java.util.function.Supplier;
 import com.github.mizosoft.methanol.FormBodyPublisher;
 import com.github.mizosoft.methanol.MediaType;
 import com.github.mizosoft.methanol.MultipartBodyPublisher;
+import com.google.common.hash.Hashing;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.axolotlclient.AxolotlClientCommon;
@@ -188,16 +188,21 @@ public class MSApi {
 
 	public record MCProfile(String id, String name, List<OnlineSkin> skins, List<OnlineCape> capes) {
 		public static MCProfile get(JsonObject json) {
-			return new MCProfile(json.get("id").getAsString(), json.get("name").getAsString(),
-				GsonHelper.jsonArrayToStream(json.getAsJsonArray("skins"))
-					.map(s -> OnlineSkin.get(s.getAsJsonObject()))
-					.toList(), GsonHelper.jsonArrayToStream(json.getAsJsonArray("capes"))
+			var skinList = GsonHelper.jsonArrayToStream(json.getAsJsonArray("skins"))
+				.map(s -> OnlineSkin.get(s.getAsJsonObject()))
+				.toList();
+			var capesList = GsonHelper.jsonArrayToStream(json.getAsJsonArray("capes"))
 				.map(s -> OnlineCape.get(s.getAsJsonObject()))
-				.toList());
+				.toList();
+			CompletableFuture.allOf(skinList.toArray(CompletableFuture[]::new));
+			CompletableFuture.allOf(capesList.toArray(CompletableFuture[]::new));
+			return new MCProfile(json.get("id").getAsString(), json.get("name").getAsString(),
+				skinList.stream().map(CompletableFuture::join).toList(),
+				capesList.stream().map(CompletableFuture::join).toList());
 		}
 
 		@ToString
-		public static final class OnlineSkin implements Skin {
+		public static final class OnlineSkin implements Skin.Online {
 			public static final String VARIANT_CLASSIC = "CLASSIC";
 			public static final String VARIANT_SLIM = "SLIM";
 			public static final String STATE_ACTIVE = "ACTIVE";
@@ -205,39 +210,37 @@ public class MSApi {
 			private final String state;
 			private final String url;
 			private boolean classicVariant;
+			private final byte[] image;
 			private final String textureKey;
 
 			public OnlineSkin(String id, String state, String url, String variant,
-							  String textureKey) {
+							  byte[] image, String textureKey) {
 				this.id = id;
 				this.state = state;
 				this.url = url;
 				this.classicVariant = VARIANT_CLASSIC.equals(variant);
+				this.image = image;
 				this.textureKey = textureKey;
 			}
 
-			public static OnlineSkin get(JsonObject object) {
+			@SuppressWarnings("UnstableApiUsage")
+			public static CompletableFuture<OnlineSkin> get(JsonObject object) {
 				String url = object.get("url").getAsString();
-				return new OnlineSkin(object.get("id").getAsString(),
-					object.get("state").getAsString(),
-					url,
-					object.get("variant").getAsString(),
-					url.substring(url.lastIndexOf("/") + 1));
-			}
-
-			@Override
-			public boolean isOnline() {
-				return true;
-			}
-
-			public CompletableFuture<byte[]> image() {
-				return INSTANCE.client.sendAsync(HttpRequest.newBuilder(URI.create(url())).GET().build(), HttpResponse.BodyHandlers.ofByteArray())
+				return INSTANCE.client.sendAsync(HttpRequest.newBuilder(URI.create(url)).GET().build(), HttpResponse.BodyHandlers.ofByteArray())
 					.thenApplyAsync(res -> {
 						if (res.statusCode() == 200) {
 							return res.body();
 						}
 						throw new IllegalArgumentException("abnormal status: " + res.statusCode());
-					});
+					}).thenApply(bytes -> new OnlineSkin(object.get("id").getAsString(),
+						object.get("state").getAsString(),
+						url,
+						object.get("variant").getAsString(), bytes,
+						Hashing.sha256().hashBytes(bytes).toString()));
+			}
+
+			public byte[] image() {
+				return image;
 			}
 
 			public boolean classicVariant() {
@@ -276,55 +279,27 @@ public class MSApi {
 				return url;
 			}
 
-			public String variant() {
-				return classicVariant ? VARIANT_CLASSIC : VARIANT_SLIM;
-			}
-
 			@Override
-			public String textureKey() {
+			public String sha256() {
 				return textureKey;
-			}
-
-			@Override
-			public boolean equals(Object obj) {
-				if (obj == this) return true;
-				if (obj == null || obj.getClass() != this.getClass()) return false;
-				var that = (OnlineSkin) obj;
-				return Objects.equals(this.id, that.id) &&
-					Objects.equals(this.state, that.state) &&
-					Objects.equals(this.url, that.url) &&
-					Objects.equals(this.classicVariant, that.classicVariant) &&
-					Objects.equals(this.textureKey, that.textureKey);
-			}
-
-			@Override
-			public int hashCode() {
-				return Objects.hash(id, state, url, classicVariant, textureKey);
 			}
 		}
 
-		public record OnlineCape(String id, String state, String url, String alias, String textureKey) implements Cape {
+		public record OnlineCape(String id, String state, String url, String alias, byte[] image,
+								 String sha256) implements Cape {
 			public static final String STATE_ACTIVE = "ACTIVE";
 
-			public static OnlineCape get(JsonObject object) {
+			@SuppressWarnings("UnstableApiUsage")
+			public static CompletableFuture<OnlineCape> get(JsonObject object) {
 				String url = object.get("url").getAsString();
-				return new OnlineCape(object.get("id").getAsString(), object.get("state").getAsString(),
-					url, object.get("alias").getAsString(), url.substring(url.lastIndexOf("/") + 1));
-			}
-
-			public CompletableFuture<byte[]> image() {
-				return INSTANCE.client.sendAsync(HttpRequest.newBuilder(URI.create(url())).GET().build(), HttpResponse.BodyHandlers.ofByteArray())
+				return INSTANCE.client.sendAsync(HttpRequest.newBuilder(URI.create(url)).GET().build(), HttpResponse.BodyHandlers.ofByteArray())
 					.thenApplyAsync(res -> {
 						if (res.statusCode() == 200) {
 							return res.body();
 						}
 						throw new IllegalArgumentException("abnormal status: " + res.statusCode());
-					});
-			}
-
-			@Override
-			public boolean isOnline() {
-				return true;
+					}).thenApply(bytes -> new OnlineCape(object.get("id").getAsString(), object.get("state").getAsString(),
+						url, object.get("alias").getAsString(), bytes, Hashing.sha256().hashBytes(bytes).toString()));
 			}
 
 			public boolean active() {
@@ -492,27 +467,43 @@ public class MSApi {
 		return MCProfile.get(profileJson);
 	}
 
-	public CompletableFuture<MCProfile> setSkin(Account account, MCProfile.OnlineSkin skin) {
+
+	public CompletableFuture<MCProfile> setSkin(Account account, Skin.Online skin) {
+		return setSkin(account, skin.classicVariant(), skin.url());
+	}
+
+	public CompletableFuture<MCProfile> setSkin(Account account, boolean wide, String url) {
 		return requestJson(HttpRequest.newBuilder()
 			.uri(URI.create("https://api.minecraftservices.com/minecraft/profile/skins"))
 			.header("Authorization", "Bearer " + account.getAuthToken())
 			.POST(HttpRequest.BodyPublishers.ofString(JsonBuilders.JsonObject.create()
-				.field("variant", skin.variant()).field("url", skin.url()).asString())).build())
+				.field("variant", wide ? MCProfile.OnlineSkin.VARIANT_CLASSIC : MCProfile.OnlineSkin.VARIANT_SLIM)
+				.field("url", url).asString())).build())
 			.thenApply(this::extractProfile);
 	}
 
-	public CompletableFuture<MCProfile> uploadAndSetSkin(Account account, Skin.Local skin) {
+	public CompletableFuture<MCProfile> uploadAndSetSkin(Account account, boolean wide, byte[] image) {
+		return uploadAndSetSkin(account, MultipartBodyPublisher.newBuilder()
+			.textPart("variant", wide ? "classic" : "slim")
+			.formPart("file", HttpRequest.BodyPublishers.ofByteArray(image)).build());
+	}
+
+	public CompletableFuture<MCProfile> uploadAndSetSkin(Account account, Skin.LocalSkin skin) {
 		try {
-			return requestJson(HttpRequest.newBuilder()
-				.uri(URI.create("https://api.minecraftservices.com/minecraft/profile/skins"))
-				.header("Authorization", "Bearer " + account.getAuthToken())
-				.POST(MultipartBodyPublisher.newBuilder()
-					.textPart("variant", skin.classicVariant() ? "classic" : "slim")
-					.filePart("file", skin.file(), MediaType.IMAGE_PNG).build()).build())
-				.thenApply(this::extractProfile);
+			return uploadAndSetSkin(account, MultipartBodyPublisher.newBuilder()
+				.textPart("variant", skin.classicVariant() ? "classic" : "slim")
+				.filePart("file", skin.file(), MediaType.IMAGE_PNG).build());
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+	private CompletableFuture<MCProfile> uploadAndSetSkin(Account account, MultipartBodyPublisher publisher) {
+		return requestJson(HttpRequest.newBuilder()
+			.uri(URI.create("https://api.minecraftservices.com/minecraft/profile/skins"))
+			.header("Authorization", "Bearer " + account.getAuthToken())
+			.POST(publisher).build())
+			.thenApply(this::extractProfile);
 	}
 
 	public CompletableFuture<MCProfile> resetSkin(Account account) {

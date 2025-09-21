@@ -30,31 +30,23 @@ import io.github.axolotlclient.modules.auth.MSApi;
 
 public interface Asset {
 
-	default boolean isOnline() {
-		return false;
-	}
-
-	default boolean isLocal() {
-		return false;
-	}
-
-	default Path file() {
-		return null;
-	}
-
-	default String url() {
-		return null;
-	}
-
-	default boolean supportsDownload() {
-		return false;
-	}
-
-	CompletableFuture<byte[]> image();
+	byte[] image();
 
 	boolean active();
 
 	CompletableFuture<MSApi.MCProfile> equip(MSApi api, Account account);
 
-	String textureKey();
+	String sha256();
+
+	interface Local extends Asset {
+		Path file();
+	}
+
+	interface Online extends Asset {
+		String url();
+
+		default boolean supportsDownload() {
+			return false;
+		}
+	}
 }

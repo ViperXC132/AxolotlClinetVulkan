@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.auth.skin;
 
-public interface Cape extends Asset {
+public interface Cape extends Asset.Online {
+	String id();
 	String alias();
 }

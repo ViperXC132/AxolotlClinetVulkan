@@ -24,22 +24,18 @@ package io.github.axolotlclient.modules.auth.skin;
 
 import java.util.concurrent.CompletableFuture;
 
-import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.auth.MSApi;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.ElementPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.GuiNavigationEvent;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.sound.SoundManager;
-import net.minecraft.client.texture.PlayerSkin;
-import net.minecraft.client.util.DefaultSkinHelper;
 import net.minecraft.text.CommonTexts;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
@@ -82,23 +78,13 @@ public class SkinWidget extends ClickableWidget {
 
 	@Override
 	protected void drawWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-		var minecraft = MinecraftClient.getInstance();
 
 		float scale = FIT_SCALE * this.getHeight() / MODEL_HEIGHT;
 		float pivotY = -1.0625F;
 
-		AxoIdentifier skinRl;
-		boolean classic;
 		SkinManager skinManager = Auth.getInstance().getSkinManager();
-		CompletableFuture<AxoIdentifier> loader = skin == null ? null : skinManager.loadSkin(skin);
-		if (loader != null && loader.isDone()) {
-			skinRl = loader.join();
-			classic = skin.classicVariant();
-		} else {
-			var skin = DefaultSkinHelper.getSkin(UUIDHelper.fromUndashed(owner.getUuid()));
-			classic = skin.model() == PlayerSkin.Model.WIDE;
-			skinRl = skin.texture();
-		}
+		AxoIdentifier skinRl = skinManager.loadSkin(skin);
+		boolean classic = skin.classicVariant();
 		var capeRl = cape == null ? null : skinManager.loadCape(cape);
 
 		SkinRenderer.render(guiGraphics, classic, (Identifier) skinRl, (Identifier) capeRl, this.rotationX, this.rotationY, pivotY, this.getX(), this.getY(), this.getXEnd(), this.getYEnd(), scale);
