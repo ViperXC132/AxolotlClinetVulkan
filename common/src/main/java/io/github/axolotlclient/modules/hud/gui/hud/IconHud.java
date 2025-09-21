@@ -22,13 +22,19 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud;
 
+import java.util.List;
+import java.util.Locale;
+
+import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoSprites;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
 
 public class IconHud extends BoxHudEntry {
-	private static final AxoIdentifier ID = AxoIdentifier.of("axolotlclient", "iconhud");
+	public static final AxoIdentifier ID = AxoIdentifier.of("axolotlclient", "iconhud");
+	private final EnumOption<Mode> mode = new EnumOption<>("iconhud.mode", Mode.class, Mode.BOTH);
 
 	public IconHud() {
 		super(16, 16, false);
@@ -37,6 +43,19 @@ public class IconHud extends BoxHudEntry {
 	@Override
 	public AxoIdentifier getId() {
 		return ID;
+	}
+
+	@Override
+	public void render(AxoRenderContext ctx, float delta) {
+		if (client.br$getScreen() == null && mode.get().showsInGame()) {
+			super.render(ctx, delta);
+		}
+	}
+
+	public void renderInGui(AxoRenderContext context, float delta) {
+		if (mode.get().showsInGui()) {
+			super.render(context, delta);
+		}
 	}
 
 	@Override
@@ -50,5 +69,42 @@ public class IconHud extends BoxHudEntry {
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext ctx, float delta) {
 		renderComponent(ctx, delta);
+	}
+
+	@Override
+	public List<Option<?>> getConfigurationOptions() {
+		var options = super.getConfigurationOptions();
+		options.add(mode);
+		return options;
+	}
+
+	private enum Mode {
+		IN_GAME(){
+			@Override
+			public boolean showsInGui() {
+				return false;
+			}
+		},
+		GUI(){
+			@Override
+			public boolean showsInGame() {
+				return false;
+			}
+		},
+		BOTH;
+
+		public boolean showsInGame() {
+			return true;
+		}
+
+		public boolean showsInGui() {
+			return true;
+		}
+
+
+		@Override
+		public String toString() {
+			return "iconhud.mode."+super.toString().toLowerCase(Locale.ROOT);
+		}
 	}
 }

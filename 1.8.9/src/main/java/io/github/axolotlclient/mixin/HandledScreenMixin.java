@@ -22,12 +22,16 @@
 
 package io.github.axolotlclient.mixin;
 
+import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
+import io.github.axolotlclient.modules.hud.HudManager;
+import io.github.axolotlclient.modules.hud.gui.hud.IconHud;
 import io.github.axolotlclient.modules.scrollableTooltips.ScrollableTooltips;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.menu.InventoryMenuScreen;
 import net.minecraft.inventory.slot.InventorySlot;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -37,6 +41,7 @@ public abstract class HandledScreenMixin {
 
 	@Shadow
 	private InventorySlot hoveredSlot;
+	@Unique
 	private InventorySlot cachedSlot;
 
 	@Shadow
@@ -61,5 +66,13 @@ public abstract class HandledScreenMixin {
 	@Inject(method = "mouseClicked", at = @At("RETURN"))
 	private void axolotlclient$mouseClickedTail(int mouseX, int mouseY, int mouseButton, CallbackInfo ci) {
 		moveHoveredSlotToHotbar(mouseButton - 100);
+	}
+
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/inventory/menu/InventoryMenuScreen;drawBackground(FII)V"))
+	private void renderIcon(int i, int j, float f, CallbackInfo ci) {
+		var hud = (IconHud) HudManager.getInstance().get(IconHud.ID);
+		if (hud != null && hud.isEnabled()) {
+			hud.renderInGui(AxoRenderContextImpl.getInstance(), f);
+		}
 	}
 }

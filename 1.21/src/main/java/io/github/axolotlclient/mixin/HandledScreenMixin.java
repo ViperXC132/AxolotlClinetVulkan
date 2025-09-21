@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.mixin;
 
+import io.github.axolotlclient.modules.hud.HudManager;
+import io.github.axolotlclient.modules.hud.gui.hud.IconHud;
 import io.github.axolotlclient.modules.scrollableTooltips.ScrollableTooltips;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
@@ -29,6 +31,7 @@ import net.minecraft.screen.slot.Slot;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -39,6 +42,7 @@ public abstract class HandledScreenMixin {
 	@Shadow
 	@Nullable
 	protected Slot focusedSlot;
+	@Unique
 	private Slot cachedSlot;
 
 	@Inject(method = "drawMouseoverTooltip", at = @At("HEAD"))
@@ -46,6 +50,14 @@ public abstract class HandledScreenMixin {
 		if (ScrollableTooltips.getInstance().enabled.get() && cachedSlot != focusedSlot) {
 			cachedSlot = focusedSlot;
 			ScrollableTooltips.getInstance().resetScroll();
+		}
+	}
+
+	@Inject(method = "renderBackground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/HandledScreen;drawBackground(Lnet/minecraft/client/gui/GuiGraphics;FII)V"))
+	private void renderIcon(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+		var hud = (IconHud) HudManager.getInstance().get(IconHud.ID);
+		if (hud != null && hud.isEnabled()) {
+			hud.renderInGui(guiGraphics, partialTick);
 		}
 	}
 }

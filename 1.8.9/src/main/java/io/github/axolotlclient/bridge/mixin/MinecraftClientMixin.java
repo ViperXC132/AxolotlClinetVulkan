@@ -158,4 +158,9 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	public void execute(@NotNull Runnable command) {
 		this.submit(command);
 	}
+
+	@Override
+	public Object br$getScreen() {
+		return screen;
+	}
 }

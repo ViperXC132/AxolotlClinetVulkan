@@ -23,6 +23,8 @@
 package io.github.axolotlclient.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
+import io.github.axolotlclient.modules.hud.HudManager;
+import io.github.axolotlclient.modules.hud.gui.hud.IconHud;
 import io.github.axolotlclient.modules.scrollableTooltips.ScrollableTooltips;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -44,6 +46,14 @@ public abstract class HandledScreenMixin {
 		if (ScrollableTooltips.getInstance().enabled.get() && cachedStack != stack) {
 			cachedStack = stack;
 			ScrollableTooltips.getInstance().resetScroll();
+		}
+	}
+
+	@Inject(method = "renderBackground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;renderBg(Lnet/minecraft/client/gui/GuiGraphics;FII)V"))
+	private void renderIcon(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+		var hud = (IconHud) HudManager.getInstance().get(IconHud.ID);
+		if (hud != null && hud.isEnabled()) {
+			hud.renderInGui(guiGraphics, partialTick);
 		}
 	}
 }

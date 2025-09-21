@@ -855,5 +855,9 @@
 	"skins.manage.equip.confirm": "Confirm Equipping",
 	"skins.manage.equip.download_current": "Your current skin is not downloaded and will get overridden by equipping a different one. Do you want to download your current skin before equipping this one?",
 	"gallery.error.loading": "Failed to load Gallery",
-	"gallery.reload": "Reload"
+	"gallery.reload": "Reload",
+	"iconhud.mode": "Icon Display Mode",
+	"iconhud.mode.in_game": "Only in-game",
+	"iconhud.mode.gui": "Only in GUIs",
+	"iconhud.mode.both": "In-game and in GUIs"
 }

@@ -155,4 +155,9 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	public AxoResourceManager br$getResourceManager() {
 		return getResourceManager();
 	}
+
+	@Override
+	public Object br$getScreen() {
+		return currentScreen;
+	}
 }
