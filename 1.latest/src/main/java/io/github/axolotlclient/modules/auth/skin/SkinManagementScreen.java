@@ -86,7 +86,7 @@ public class SkinManagementScreen extends Screen {
 	private boolean capesTab;
 	private SkinWidget current;
 	private final Watcher skinDirWatcher;
-	private final CompletableFuture<MSApi.MCProfile> refreshFuture;
+	private final CompletableFuture<MSApi.MCProfile> loadingFuture;
 
 	public SkinManagementScreen(Screen parent, Account account) {
 		super(Component.translatable("skins.manage"));
@@ -96,10 +96,9 @@ public class SkinManagementScreen extends Screen {
 			AxolotlClientCommon.getInstance().getLogger().info("Reloading screen as local files changed!");
 			loadSkinsList();
 		});
-		refreshFuture = (account.needsRefresh() ? account.refresh(Auth.getInstance().getMsApi())
+		loadingFuture = (account.needsRefresh() ? account.refresh(Auth.getInstance().getMsApi())
 			: CompletableFuture.completedFuture(null))
 			.thenComposeAsync(unused -> Auth.getInstance().getMsApi().getProfile(account));
-
 	}
 
 	@Override
@@ -195,25 +194,25 @@ public class SkinManagementScreen extends Screen {
 			return;
 		}
 
-		refreshFuture.thenAcceptAsync(profile -> {
-				cachedProfile = profile;
-				initDisplay();
-				addWidgets.run();
-			}).exceptionally(t -> {
-				if (t.getCause() instanceof CancellationException) {
-					minecraft.setScreen(parent);
-					return null;
-				}
-				AxolotlClientCommon.getInstance().getLogger().error("Failed to load skins!", t);
-				var error = Component.translatable("skins.error.failed_to_load");
-				var errorDesc = Component.translatable("skins.error.failed_to_load_desc");
-				clearWidgets();
-				addRenderableWidget(titleWidget);
-				addRenderableWidget(new StringWidget(width / 2 - getFont().width(error) / 2, height / 2 - getFont().lineHeight - 2, getFont().width(error), getFont().lineHeight, error, getFont()));
-				addRenderableWidget(new StringWidget(width / 2 - getFont().width(errorDesc) / 2, height / 2 + 1, getFont().width(errorDesc), getFont().lineHeight, errorDesc, getFont()));
-				addRenderableWidget(back);
+		loadingFuture.thenAcceptAsync(profile -> {
+			cachedProfile = profile;
+			initDisplay();
+			addWidgets.run();
+		}).exceptionally(t -> {
+			if (t.getCause() instanceof CancellationException) {
+				minecraft.setScreen(parent);
 				return null;
-			});
+			}
+			AxolotlClientCommon.getInstance().getLogger().error("Failed to load skins!", t);
+			var error = Component.translatable("skins.error.failed_to_load");
+			var errorDesc = Component.translatable("skins.error.failed_to_load_desc");
+			clearWidgets();
+			addRenderableWidget(titleWidget);
+			addRenderableWidget(new StringWidget(width / 2 - getFont().width(error) / 2, height / 2 - getFont().lineHeight - 2, getFont().width(error), getFont().lineHeight, error, getFont()));
+			addRenderableWidget(new StringWidget(width / 2 - getFont().width(errorDesc) / 2, height / 2 + 1, getFont().width(errorDesc), getFont().lineHeight, errorDesc, getFont()));
+			addRenderableWidget(back);
+			return null;
+		});
 	}
 
 	private void promptForSkinDownload() {
@@ -591,6 +590,7 @@ public class SkinManagementScreen extends Screen {
 					this.actionButtons.add(new SpriteButton(Component.translatable("skins.manage.delete"), btn -> {
 						btn.active = false;
 						minecraft.setScreen(new ConfirmScreen(confirmed -> {
+							minecraft.setScreen(new LoadingScreen(getTitle(), Component.translatable("menu.working")));
 							if (confirmed) {
 								try {
 									Files.delete(local.file());
@@ -636,20 +636,23 @@ public class SkinManagementScreen extends Screen {
 					equipping = true;
 					btn.setMessage(TEXT_EQUIPPING);
 					btn.active = false;
-					Consumer<CompletableFuture<MSApi.MCProfile>> consumer = f -> f.thenAcceptAsync(p -> {
-						cachedProfile = p;
-						if (minecraft.screen == SkinManagementScreen.this) {
-							refreshCurrentList();
-						} else {
-							minecraft.setScreen(SkinManagementScreen.this);
-						}
-					}).exceptionally(t -> {
-						AxolotlClientCommon.getInstance().getLogger().warn("Failed to equip asset!", t);
-						equipping = false;
-						return null;
-					});
+					Consumer<CompletableFuture<MSApi.MCProfile>> consumer = f -> {
+						f.thenAcceptAsync(p -> {
+							cachedProfile = p;
+							if (minecraft.screen == SkinManagementScreen.this) {
+								refreshCurrentList();
+							} else {
+								minecraft.execute(() -> minecraft.setScreen(SkinManagementScreen.this));
+							}
+						}).exceptionally(t -> {
+							AxolotlClientCommon.getInstance().getLogger().warn("Failed to equip asset!", t);
+							equipping = false;
+							return null;
+						});
+					};
 					if (asset instanceof Skin && !(current.getSkin() instanceof Skin.Local)) {
 						minecraft.setScreen(new ConfirmScreen(confirmed -> {
+							minecraft.setScreen(new LoadingScreen(getTitle(), TEXT_EQUIPPING));
 							if (confirmed) {
 								consumer.accept(download(current.getSkin()).thenCompose(a -> widget.equip()));
 							} else {

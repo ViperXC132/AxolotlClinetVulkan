@@ -85,7 +85,7 @@ public class SkinManagementScreen extends Screen {
 	private boolean capesTab;
 	private SkinWidget current;
 	private final Watcher skinDirWatcher;
-	private final CompletableFuture<?> refreshFuture;
+	private final CompletableFuture<MSApi.MCProfile> loadingFuture;
 
 	public SkinManagementScreen(Screen parent, Account account) {
 		super(Text.translatable("skins.manage"));
@@ -95,11 +95,9 @@ public class SkinManagementScreen extends Screen {
 			AxolotlClientCommon.getInstance().getLogger().info("Reloading screen as local files changed!");
 			loadSkinsList();
 		});
-		if (account.needsRefresh()) {
-			refreshFuture = account.refresh(Auth.getInstance().getMsApi());
-		} else {
-			refreshFuture = CompletableFuture.completedFuture(null);
-		}
+		loadingFuture = (account.needsRefresh() ? account.refresh(Auth.getInstance().getMsApi())
+			: CompletableFuture.completedFuture(null))
+			.thenComposeAsync(unused -> Auth.getInstance().getMsApi().getProfile(account));
 	}
 
 	@Override
@@ -193,8 +191,7 @@ public class SkinManagementScreen extends Screen {
 			addWidgets.run();
 			return;
 		}
-		refreshFuture.thenComposeAsync(unused -> Auth.getInstance().getMsApi().getProfile(account))
-			.thenAcceptAsync(profile -> {
+		loadingFuture.thenAcceptAsync(profile -> {
 				cachedProfile = profile;
 				initDisplay();
 				addWidgets.run();
@@ -597,6 +594,7 @@ public class SkinManagementScreen extends Screen {
 					this.actionButtons.add(new SpriteButton(Text.translatable("skins.manage.delete"), btn -> {
 						btn.active = false;
 						client.setScreen(new ConfirmScreen(confirmed -> {
+							client.setScreen(new LoadingScreen(getTitle(), Text.translatable("menu.working")));
 							if (confirmed) {
 								try {
 									Files.delete(local.file());
@@ -646,7 +644,7 @@ public class SkinManagementScreen extends Screen {
 						if (client.currentScreen == SkinManagementScreen.this) {
 							refreshCurrentList();
 						} else {
-							client.setScreen(SkinManagementScreen.this);
+							client.execute(() -> client.setScreen(SkinManagementScreen.this));
 						}
 					}).exceptionally(t -> {
 						AxolotlClientCommon.getInstance().getLogger().warn("Failed to equip asset!", t);
@@ -655,6 +653,7 @@ public class SkinManagementScreen extends Screen {
 					});
 					if (asset instanceof Skin && !(current.getSkin() instanceof Skin.Local)) {
 						client.setScreen(new ConfirmScreen(confirmed -> {
+							client.setScreen(new LoadingScreen(getTitle(), TEXT_EQUIPPING));
 							if (confirmed) {
 								consumer.accept(download(current.getSkin()).thenCompose(a -> widget.equip()));
 							} else {
