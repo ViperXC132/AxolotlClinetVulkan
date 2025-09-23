@@ -5,12 +5,12 @@ plugins {
 	id("io.github.p03w.machete")
 }
 
-val minecraft = "1.21.9-pre2"
+val minecraft = "1.21.9-pre4"
 val minecraftFriendly = "1.21.9"
 val parchmentMinecraft = "1.21.8"
 val parchment = "2025.07.18"
 val modmenu = "14.0.0-rc.2"
-val fapi = "0.133.9"
+val fapi = "0.133.11"
 group = project.property("maven_group") as String
 version = "${project.property("version")}+$minecraftFriendly"
 base.archivesName = "AxolotlClient"
