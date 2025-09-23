@@ -677,7 +677,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 						if (client.screen == SkinManagementScreen.this) {
 							refreshCurrentList();
 						} else {
-							client.execute(() -> client.openScreen(SkinManagementScreen.this));
+							client.submit(() -> client.openScreen(SkinManagementScreen.this));
 						}
 					}).exceptionally(t -> {
 						AxolotlClientCommon.getInstance().getLogger().warn("Failed to equip asset!", t);
