@@ -5,6 +5,7 @@
 - Implement more options for the Inventory HUD (#173)
 - Add Skin Manager (#176)
 - Add profile importing & exporting
+- Update to 1.21.9
 
 ### 3.1.5
 
