@@ -226,6 +226,16 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 
 	@Override
 	public AnchorPoint getAnchor() {
-		return (anchor.get());
+		return anchor.get();
+	}
+
+	@Override
+	public double getDefaultX() {
+		return 1.0;
+	}
+
+	@Override
+	public double getDefaultY() {
+		return 0.5;
 	}
 }

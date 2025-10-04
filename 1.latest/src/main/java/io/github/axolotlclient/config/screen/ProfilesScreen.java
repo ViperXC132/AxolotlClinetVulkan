@@ -193,7 +193,7 @@ public class ProfilesScreen extends Screen {
 
 				boolean current = Profiles.getInstance().getCurrent() == profile;
 				loadButton.setMessage(current ? CURRENT_TEXT : LOAD_BUTTON_TITLE);
-				loadButton.active = !current;
+				loadButton.active = removeButton.active = !current;
 				i -= loadButton.getWidth();
 				this.loadButton.setPosition(i, j);
 				this.loadButton.render(guiGraphics, mouseX, mouseY, partialTick);
@@ -222,7 +222,7 @@ public class ProfilesScreen extends Screen {
 
 			public NewEntry() {
 				this.addButton = Button.builder(Component.translatable("profiles.profile.add"), button -> {
-						@SuppressWarnings("unchecked") var entries = new ArrayList<>((List<Entry>) children());
+						var entries = new ArrayList<>(ProfilesList.this.children());
 						entries.add(Math.max(entries.indexOf(this) - 1, 0), new ProfileEntry(Profiles.getInstance().newProfile(I18n.get("profiles.profile.default_new_name"))));
 						replaceEntries(entries);
 						Profiles.getInstance().saveProfiles();

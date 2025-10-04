@@ -28,6 +28,7 @@ import java.util.List;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.DoubleOption;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
@@ -53,6 +54,7 @@ public abstract class AbstractHudEntry implements HudEntry {
 	protected final ForceableBooleanOption enabled = DefaultOptions.getEnabled();
 	protected final DoubleOption scale = DefaultOptions.getScale(this);
 	protected final AxoMinecraftClient client = AxoMinecraftClient.getInstance();
+	protected final BooleanOption hide = new BooleanOption("hud.hide", false);
 	private final DoubleOption x = DefaultOptions.getX(getDefaultX(), this);
 	private final DoubleOption y = DefaultOptions.getY(getDefaultY(), this);
 	@Setter
@@ -248,6 +250,7 @@ public abstract class AbstractHudEntry implements HudEntry {
 		List<Option<?>> options = new ArrayList<>();
 		options.add(enabled);
 		options.add(scale);
+		options.add(hide);
 		return options;
 	}
 
@@ -266,4 +269,8 @@ public abstract class AbstractHudEntry implements HudEntry {
 		enabled.set(value);
 	}
 
+	@Override
+	public boolean isHidden() {
+		return hide.get();
+	}
 }

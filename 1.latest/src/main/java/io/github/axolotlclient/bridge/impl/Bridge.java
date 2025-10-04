@@ -41,7 +41,7 @@ public class Bridge {
 		ClientTickEvents.END_CLIENT_TICK.register(minecraft -> Events.TICK.invoker().run());
 		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(ResourceLocation.fromNamespaceAndPath("axolotlclient", "bridge/resource_listener"),
 			(ResourceManagerReloadListener) resourceManager -> Events.END_RESOURCE_RELOAD.invoker().run());
-		ClientPlayConnectionEvents.INIT.register((clientPlayNetworkHandler, minecraftClient) -> Events.CONNECTION_PLAY_READY.invoker().run());
+		ClientPlayConnectionEvents.JOIN.register((clientPlayNetworkHandler, sender, minecraftClient) -> Events.CONNECTION_PLAY_READY.invoker().run());
 		ClientPlayConnectionEvents.DISCONNECT.register((clientPlayNetworkHandler, minecraftClient) -> Events.DISCONNECT.invoker().run());
 
 		ClientCommandRegistrationCallback.EVENT.register((commandDispatcher, commandBuildContext) ->

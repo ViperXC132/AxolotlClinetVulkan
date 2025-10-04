@@ -475,6 +475,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 	}
 
 	public void saveKeystrokes() {
+		if (keystrokes == null) return;
 		try {
 			var path = AxolotlClientCommon.resolveProfileConfigFile(KEYSTROKE_SAVE_FILE_NAME);
 			Files.createDirectories(path.getParent());
@@ -493,7 +494,11 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 				var loaded = entries.stream().map(e -> (Map<String, Object>) e)
 					.map(KeystrokeHud.this::deserializeKey)
 					.toList();
-				keystrokes.clear();
+				if (keystrokes == null) {
+					keystrokes = new ArrayList<>();
+				} else {
+					keystrokes.clear();
+				}
 				keystrokes.addAll(loaded);
 			} else {
 				saveKeystrokes();

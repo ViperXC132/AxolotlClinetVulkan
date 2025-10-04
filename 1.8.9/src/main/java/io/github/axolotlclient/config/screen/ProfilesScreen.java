@@ -161,7 +161,7 @@ public class ProfilesScreen extends io.github.axolotlclient.AxolotlClientConfig.
 
 				boolean current = Profiles.getInstance().getCurrent() == profile;
 				loadButton.setMessage(current ? CURRENT_TEXT : LOAD_BUTTON_TITLE);
-				loadButton.active = !current;
+				loadButton.active = removeButton.active = !current;
 				i -= loadButton.getWidth();
 				this.loadButton.setPosition(i, j);
 				this.loadButton.render(mouseX, mouseY, partialTick);

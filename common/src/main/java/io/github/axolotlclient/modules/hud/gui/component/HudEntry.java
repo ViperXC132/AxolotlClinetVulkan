@@ -66,4 +66,6 @@ public interface HudEntry extends Identifiable, Configurable, Positionable {
 	void setHovered(boolean hovered);
 
 	boolean isHovered();
+
+	boolean isHidden();
 }

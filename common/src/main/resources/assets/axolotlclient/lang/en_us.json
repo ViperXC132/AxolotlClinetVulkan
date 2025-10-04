@@ -860,5 +860,7 @@
 	"iconhud.mode": "Icon Display Mode",
 	"iconhud.mode.in_game": "Only in-game",
 	"iconhud.mode.gui": "Only in GUIs",
-	"iconhud.mode.both": "In-game and in GUIs"
+	"iconhud.mode.both": "In-game and in GUIs",
+	"hud.hide": "Hide HUD",
+	"hud.hide.tooltip": "Prevents this HUD from rendering completely."
 }
