@@ -27,10 +27,12 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.modules.AbstractModule;
+import lombok.Getter;
 import net.minecraft.client.gui.screen.Screen;
 
 public class ScrollableTooltips extends AbstractModule {
 
+	@Getter
 	private static final ScrollableTooltips Instance = new ScrollableTooltips();
 	public final BooleanOption enabled = new BooleanOption("enabled", false);
 	public final BooleanOption enableShiftHorizontalScroll = new BooleanOption("shiftHorizontalScroll", true);
@@ -39,10 +41,6 @@ public class ScrollableTooltips extends AbstractModule {
 	private final OptionCategory category = OptionCategory.create("scrollableTooltips");
 	public int tooltipOffsetX;
 	public int tooltipOffsetY;
-
-	public static ScrollableTooltips getInstance() {
-		return Instance;
-	}
 
 	@Override
 	public void init() {

@@ -35,7 +35,7 @@ public class AddSpecialKeystrokeScreen extends Screen {
 	private final Screen lastScreen;
 	public final KeystrokeHud hud;
 	private SpecialKeystrokeSelectionList keyBindsList;
-	public HeaderFooterLayoutWidget layout = new HeaderFooterLayoutWidget(this);
+	public final HeaderFooterLayoutWidget layout = new HeaderFooterLayoutWidget(this);
 
 	public AddSpecialKeystrokeScreen(Screen lastScreen, KeystrokeHud hud) {
 		super(TITLE);
@@ -62,6 +62,7 @@ public class AddSpecialKeystrokeScreen extends Screen {
 
 	@Override
 	public void closeScreen() {
+		//noinspection DataFlowIssue
 		client.setScreen(lastScreen);
 	}
 }

@@ -38,7 +38,7 @@ import lombok.Getter;
 /**
  * Based on <a href="https://github.com/DragonEggBedrockBreaking/AutoGG/blob/trunk/src/main/java/uk/debb/autogg/mixin/MixinChatHud.java">DragonEggBedrockBreaking's AutoGG Mod</a>
  *
- * @license MPL-2.0
+ * <p>License: MPL-2.0</p>
  */
 public class AutoGG implements AbstractHypixelMod {
 

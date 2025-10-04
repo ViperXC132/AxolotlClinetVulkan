@@ -67,7 +67,7 @@ import static io.github.axolotlclient.modules.hud.util.DrawUtil.*;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 
 public class KeystrokeHud extends TextHudEntry implements ProfileAware {
@@ -91,6 +91,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 	public KeystrokeHud() {
 		super(53, 61, true);
 		Events.KEYBIND_CHANGE.register(key -> {
+			//noinspection ConstantValue
 			if (Minecraft.getInstance().getWindow() != null) {
 				KeyMapping.releaseAll();
 				KeyMapping.setAll();
@@ -132,6 +133,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 	}
 
 	public void setKeystrokes() {
+		//noinspection ConstantValue
 		if (client.getWindow() == null) {
 			keystrokes = null;
 			return;

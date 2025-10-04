@@ -62,7 +62,7 @@ import org.joml.Matrix4fStack;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 
 public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositionable {
@@ -159,7 +159,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 	public void render(AxoRenderContext graphics, float delta) {
 	}
 
-	public void renderCrosshair(GuiGraphics graphics, float delta) {
+	public void renderCrosshair(GuiGraphics graphics) {
 		if (!client.options.getCameraType().isFirstPerson() && !showInF5.get()) {
 			return;
 		}
@@ -208,6 +208,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 
 			// Draw attack indicator
 			if (!customAttackIndicator.get() && indicator == AttackIndicatorStatus.CROSSHAIR) {
+				//noinspection DataFlowIssue
 				float progress = this.client.player.getAttackStrengthScale(0.0F);
 
 				// Whether a cross should be displayed under the indicator
@@ -231,6 +232,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			}
 		}
 		if (((type.get().equals(Crosshair.TEXTURE) || type.get().equals(Crosshair.CUSTOM)) ? customAttackIndicator.get() : true) && indicator == AttackIndicatorStatus.CROSSHAIR) {
+			//noinspection DataFlowIssue
 			float progress = this.client.player.getAttackStrengthScale(0.0F);
 			if (progress != 1.0F) {
 				fillRenderType(graphics, blend, getRawX() + (getWidth() / 2) - 6, getRawY() + (getHeight() / 2) + 9,
@@ -263,6 +265,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		} else if (hit.getType() == HitResult.Type.BLOCK) {
 			BlockPos blockPos = ((BlockHitResult) hit).getBlockPos();
 			Level world = this.client.level;
+			//noinspection DataFlowIssue
 			if (world.getBlockState(blockPos).getMenuProvider(world, blockPos) != null
 				|| world.getBlockState(blockPos).getBlock() instanceof AbstractChestBlock<?>) {
 				return containerColor.get();

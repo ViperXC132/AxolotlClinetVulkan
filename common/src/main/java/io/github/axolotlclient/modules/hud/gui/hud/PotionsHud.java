@@ -46,7 +46,7 @@ import io.github.axolotlclient.util.CommonUtil;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 public class PotionsHud extends TextHudEntry implements DynamicallyPositionable {
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "potionshud");

@@ -53,7 +53,7 @@ public class UserRequest {
 			return false;
 		}
 
-		String sanitized = API.getInstance().sanitizeUUID(uuid);
+		String sanitized = API.sanitizeUUID(uuid);
 
 		if (API.getInstance().getSelf() != null && sanitized.equals(API.getInstance().getSelf().getUuid())) {
 			return true;
@@ -89,7 +89,7 @@ public class UserRequest {
 	}
 
 	public static CompletableFuture<Optional<User>> get(String dUuid) {
-		final String uuid = API.getInstance().sanitizeUUID(dUuid);
+		final String uuid = API.sanitizeUUID(dUuid);
 		if (userCache.asMap().containsKey(uuid)) {
 			return CompletableFuture.completedFuture(userCache.asMap().get(uuid));
 		}

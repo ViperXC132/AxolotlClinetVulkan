@@ -47,7 +47,7 @@ import org.lwjgl.glfw.GLFW;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 
 public class HudEditScreen extends Screen {
@@ -160,6 +160,7 @@ public class HudEditScreen extends Screen {
 		super.removed();
 	}
 
+	@SuppressWarnings("DataFlowIssue")
 	@Override
 	public void init() {
 		mode = ModificationMode.NONE;
@@ -234,6 +235,7 @@ public class HudEditScreen extends Screen {
 		} else if (event.button() == 1) {
 			entry.ifPresent(abstractHudEntry -> {
 				Screen screen = ConfigStyles.createScreen(this, abstractHudEntry.getCategory());
+				//noinspection DataFlowIssue
 				minecraft.setScreen(screen);
 			});
 		}

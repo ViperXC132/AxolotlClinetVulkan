@@ -42,7 +42,7 @@ import net.minecraft.util.math.Quaternion;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 
 @SuppressWarnings("deprecation")
@@ -159,6 +159,7 @@ public class PlayerHud extends PlayerHudCommon {
 	private boolean isPerformingAction() {
 		// inspired by tr7zw's mod
 		ClientPlayerEntity player = MinecraftClient.getInstance().player;
+		//noinspection DataFlowIssue
 		return player.isSneaking() || player.isSprinting() || player.isFallFlying() || player.abilities.flying
 			|| player.isSubmergedInWater() || player.isInSwimmingPose() || player.hasVehicle()
 			|| player.isUsingItem() || player.handSwinging || player.hurtTime > 0 || player.isOnFire();

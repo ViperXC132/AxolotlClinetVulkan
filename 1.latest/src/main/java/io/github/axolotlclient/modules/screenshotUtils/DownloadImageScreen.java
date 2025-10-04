@@ -56,7 +56,7 @@ public class DownloadImageScreen extends Screen {
 		var hFL = new ImprovedHeaderAndFooterLayout(this);
 
 		hFL.addTitleHeader(getTitle(), font);
-		var urlBox = new EditBox(font, width / 2 - 100, height / 2 - 10, 200, 20, Component.translatable("urlBox"));
+		var urlBox = new EditBox(font, width / 2 - 100, height / 2 - 10, 200, 20, Component.translatable("pasteURL"));
 		urlBox.setSuggestion(I18n.get("pasteURL"));
 		urlBox.setResponder(s -> {
 			if (s.isEmpty()) {
@@ -74,6 +74,7 @@ public class DownloadImageScreen extends Screen {
 				if (url.isEmpty()) {
 					return;
 				}
+				//noinspection DataFlowIssue
 				minecraft.setScreen(ImageScreen.create(this, ImageShare.getInstance().downloadImage(url), true));
 			}, true)
 			.sprite(SPRITE, 20, 20)
@@ -88,6 +89,7 @@ public class DownloadImageScreen extends Screen {
 
 	@Override
 	public void onClose() {
+		//noinspection DataFlowIssue
 		minecraft.setScreen(parent);
 	}
 

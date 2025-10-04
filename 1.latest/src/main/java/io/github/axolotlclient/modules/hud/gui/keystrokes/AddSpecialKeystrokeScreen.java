@@ -35,7 +35,7 @@ public class AddSpecialKeystrokeScreen extends Screen {
 	private final Screen lastScreen;
 	public final KeystrokeHud hud;
 	private SpecialKeystrokeSelectionList keyBindsList;
-	public HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
+	public final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
 
 	public AddSpecialKeystrokeScreen(Screen lastScreen, KeystrokeHud hud) {
 		super(TITLE);
@@ -62,6 +62,7 @@ public class AddSpecialKeystrokeScreen extends Screen {
 
 	@Override
 	public void onClose() {
+		//noinspection DataFlowIssue
 		minecraft.setScreen(lastScreen);
 	}
 }

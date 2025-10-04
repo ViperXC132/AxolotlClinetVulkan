@@ -46,7 +46,7 @@ public class ChatScreen extends Screen implements ContextMenuScreen {
 	private TextFieldWidget input;
 
 	public ChatScreen(Screen parent, Channel channel) {
-		super(Text.translatable("api.screen.chat"));
+		super(Text.literal(channel.getName()));
 		this.channel = channel;
 		this.parent = parent;
 	}
@@ -70,6 +70,7 @@ public class ChatScreen extends Screen implements ContextMenuScreen {
 		users.setUsers(channel.getAllUsers(), channel);
 		addDrawableSelectableElement(users);
 
+		//noinspection DataFlowIssue
 		addDrawableSelectableElement(input = new TextFieldWidget(client.textRenderer, width / 2 - 150, height - 50,
 			300, 20, Text.translatable("api.chat.enterMessage")) {
 

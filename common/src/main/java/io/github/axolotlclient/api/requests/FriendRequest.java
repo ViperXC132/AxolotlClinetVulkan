@@ -64,7 +64,7 @@ public class FriendRequest {
 	}
 
 	public CompletableFuture<?> removeFriend(User user) {
-		return setRelation(api.sanitizeUUID(user.getUuid()), Relation.NONE).whenCompleteAsync((response, t) -> {
+		return setRelation(API.sanitizeUUID(user.getUuid()), Relation.NONE).whenCompleteAsync((response, t) -> {
 			if (!response.isError()) {
 				api.getNotificationProvider().addStatus("api.success.removeFriend", "api.success.removeFriend.desc", user.getName());
 				user.setRelation(Relation.NONE);
@@ -72,8 +72,8 @@ public class FriendRequest {
 		});
 	}
 
-	public CompletableFuture<?> blockUser(User user) {
-		return setRelation(user.getUuid(), Relation.BLOCKED).whenCompleteAsync((response, t) -> {
+	public void blockUser(User user) {
+		setRelation(user.getUuid(), Relation.BLOCKED).whenCompleteAsync((response, t) -> {
 			if (!response.isError()) {
 				api.getNotificationProvider().addStatus("api.success.blockUser", "api.success.blockUser.desc", user.getName());
 				user.setRelation(Relation.BLOCKED);

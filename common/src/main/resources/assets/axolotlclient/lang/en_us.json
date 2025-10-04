@@ -862,5 +862,7 @@
 	"iconhud.mode.gui": "Only in GUIs",
 	"iconhud.mode.both": "In-game and in GUIs",
 	"hud.hide": "Hide HUD",
-	"hud.hide.tooltip": "Prevents this HUD from rendering completely."
+	"hud.hide.tooltip": "Prevents this HUD from rendering completely.",
+	"keystrokes.stroke.move": "Edit Keystroke Positions",
+	"screenshot.gallery.view.error": "Failed to open image in gallery!"
 }

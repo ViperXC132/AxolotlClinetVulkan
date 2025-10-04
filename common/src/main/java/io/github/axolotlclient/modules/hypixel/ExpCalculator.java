@@ -78,7 +78,7 @@ public class ExpCalculator {
 
 		if (level > easyLevelsCount) {
 			float extraLevels = level - easyLevelsCount;
-			totalExp += (extraLevels * EXP_PER_LEVEL);
+			totalExp += (int) (extraLevels * EXP_PER_LEVEL);
 		}
 		return totalExp;
 	}

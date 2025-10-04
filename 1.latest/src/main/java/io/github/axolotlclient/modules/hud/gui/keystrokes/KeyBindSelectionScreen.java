@@ -35,7 +35,7 @@ public class KeyBindSelectionScreen extends Screen {
 	private final Screen lastScreen;
 	public final KeystrokeHud.Keystroke stroke;
 	private KeyBindSelectionList keyBindsList;
-	public HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
+	public final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this);
 
 	public KeyBindSelectionScreen(Screen lastScreen, KeystrokeHud.Keystroke stroke) {
 		super(TITLE);
@@ -46,9 +46,7 @@ public class KeyBindSelectionScreen extends Screen {
 	@Override
 	public void init() {
 		layout.addTitleHeader(getTitle(), getFont());
-		this.keyBindsList = this.layout.addToContents(new KeyBindSelectionList(this, this.minecraft, key -> {
-			stroke.setKey(key);
-		}));
+		this.keyBindsList = this.layout.addToContents(new KeyBindSelectionList(this, this.minecraft, stroke::setKey));
 
 		LinearLayout linearLayout = this.layout.addToFooter(LinearLayout.horizontal().spacing(8));
 		linearLayout.addChild(Button.builder(CommonComponents.GUI_DONE, button -> this.onClose()).build());
@@ -64,6 +62,7 @@ public class KeyBindSelectionScreen extends Screen {
 
 	@Override
 	public void onClose() {
+		//noinspection DataFlowIssue
 		minecraft.setScreen(lastScreen);
 	}
 }

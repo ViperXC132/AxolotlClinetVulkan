@@ -43,7 +43,7 @@ import net.ornithemc.osl.resource.loader.api.ResourceLoaderEvents;
  * This implementation of custom skies is based on the FabricSkyBoxes mod by AMereBagatelle
  * <a href="https://github.com/AMereBagatelle/FabricSkyBoxes">Github Link.</a>
  *
- * @license MIT
+ * <p>License: MIT</p>
  **/
 
 public class SkyResourceManager extends AbstractModule {
@@ -139,8 +139,8 @@ public class SkyResourceManager extends AbstractModule {
 			}
 
 			SkyboxManager.getInstance().addSkybox(new MCPSkyboxInstance(object));
-		} catch (Exception ignored) {
-			AxolotlClient.LOGGER.debug("Error while loading sky", ignored);
+		} catch (Exception e) {
+			AxolotlClient.LOGGER.debug("Error while loading sky", e);
 		}
 	}
 

@@ -78,7 +78,7 @@ public abstract class InGameHudMixin {
 			if (minecraft.gui.getDebugOverlay().showDebugScreen() && !hud.overridesF3()) {
 				return;
 			}
-			hud.renderCrosshair(graphics, tracker.getGameTimeDeltaTicks());
+			hud.renderCrosshair(graphics);
 			ci.cancel();
 		}
 	}
@@ -109,6 +109,7 @@ public abstract class InGameHudMixin {
 	@WrapOperation(method = "renderHearts", at = @At(value = "INVOKE",
 		target = "Lnet/minecraft/client/gui/Gui;renderHeart(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Gui$HeartType;IIZZZ)V"))
 	public void axolotlclient$displayHardcoreHearts(Gui instance, GuiGraphics graphics, Gui.HeartType type, int x, int y, boolean hardcore, boolean blinking, boolean half, Operation<Void> original) {
+		//noinspection OptionalGetWithoutIsPresent
 		boolean hardcoreMod = BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().inGame() &&
 			BedwarsMod.getInstance().hardcoreHearts.get() &&
 			!BedwarsMod.getInstance().getGame().get().getSelf().isBed();

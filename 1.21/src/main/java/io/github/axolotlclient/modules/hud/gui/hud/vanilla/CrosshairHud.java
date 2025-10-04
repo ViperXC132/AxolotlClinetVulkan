@@ -60,7 +60,7 @@ import static io.github.axolotlclient.modules.hud.util.DrawUtil.fillRect;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 
 public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositionable {
@@ -222,6 +222,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 
 			// Draw attack indicator
 			if (!customAttackIndicator.get() && indicator == AttackIndicator.CROSSHAIR) {
+				//noinspection DataFlowIssue
 				float progress = this.client.player.getAttackCooldownProgress(0.0F);
 
 				// Whether a cross should be displayed under the indicator
@@ -245,6 +246,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			}
 		}
 		if (((type.get().equals(Crosshair.TEXTURE) || type.get().equals(Crosshair.CUSTOM)) ? customAttackIndicator.get() : true) && indicator == AttackIndicator.CROSSHAIR) {
+			//noinspection DataFlowIssue
 			float progress = this.client.player.getAttackCooldownProgress(0.0F);
 			if (progress != 1.0F) {
 				RenderUtil.drawRectangle(graphics, getRawX() + (getWidth() / 2) - 6, getRawY() + (getHeight() / 2) + 9,
@@ -267,6 +269,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		} else if (hit.getType() == HitResult.Type.BLOCK) {
 			BlockPos blockPos = ((BlockHitResult) hit).getBlockPos();
 			World world = this.client.world;
+			//noinspection DataFlowIssue
 			if (world.getBlockState(blockPos).createScreenHandlerFactory(world, blockPos) != null
 				|| world.getBlockState(blockPos).getBlock() instanceof AbstractChestBlock<?>) {
 				return containerColor.get();

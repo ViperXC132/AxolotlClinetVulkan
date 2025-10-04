@@ -33,19 +33,23 @@ public class LoggerImpl implements Logger {
 	private static final String prefix = FabricLoader.getInstance().isDevelopmentEnvironment() ? "" : "(AxolotlClient) ";
 
 	public void info(String msg, Object... args) {
+		//noinspection StringConcatenationArgumentToLogCall
 		LOGGER.info(prefix + msg, args);
 	}
 
 	public void warn(String msg, Object... args) {
+		//noinspection StringConcatenationArgumentToLogCall
 		LOGGER.warn(prefix + msg, args);
 	}
 
 	public void error(String msg, Object... args) {
+		//noinspection StringConcatenationArgumentToLogCall
 		LOGGER.error(prefix + msg, args);
 	}
 
 	public void debug(String msg, Object... args) {
 		if (AxolotlClient.config().debugLogOutput.get()) {
+			//noinspection StringConcatenationArgumentToLogCall
 			LOGGER.info(prefix + "[DEBUG] " + msg, args);
 		}
 	}

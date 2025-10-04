@@ -70,6 +70,7 @@ public class Auth extends Accounts implements Module {
 		load();
 		this.msApi = new MSApi(this, () -> client.options.language);
 		if (isContained(client.getSession().getSessionId())) {
+			//noinspection DataFlowIssue
 			current = getAccounts().stream().filter(account -> account.getUuid()
 				.equals(UUIDHelper.toUndashed(client.getSession().getPlayerUuid()))).toList().get(0);
 			current.setAuthToken(client.getSession().getAccessToken());
@@ -78,6 +79,7 @@ public class Auth extends Accounts implements Module {
 				current.refresh(auth).thenRun(this::save);
 			}*/
 		} else {
+			//noinspection DataFlowIssue
 			current = new Account(client.getSession().getUsername(), UUIDHelper.toUndashed(client.getSession().getPlayerUuid()), client.getSession().getAccessToken());
 		}
 
@@ -118,7 +120,7 @@ public class Auth extends Accounts implements Module {
 				((MinecraftClientAccessor) client).axolotlclient$setChatReportingContext(ChatReportingContext.create(ReportEnvironment.createLocal(), service));
 				save();
 				current = account;
-				Notifications.getInstance().addStatus(Text.translatable("auth.notif.title"), Text.translatable("auth.notif.login.successful", (Object) current.getName()));
+				Notifications.getInstance().addStatus(Text.translatable("auth.notif.title"), Text.translatable("auth.notif.login.successful", current.getName()));
 				API.getInstance().startup(account);
 			} catch (Exception e) {
 				Notifications.getInstance().addStatus(Text.translatable("auth.notif.title"), Text.translatable("auth.notif.login.failed"));

@@ -52,7 +52,7 @@ import net.minecraft.util.Util;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 
 public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionable {
@@ -101,8 +101,10 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 	@Override
 	public void renderComponent(AxoRenderContext context, float delta) {
 		final var graphics = (GuiGraphics) context;
+		//noinspection DataFlowIssue
 		Scoreboard scoreboard = this.client.world.getScoreboard();
 		ScoreboardObjective scoreboardObjective = null;
+		//noinspection DataFlowIssue
 		Team team = scoreboard.getPlayerTeam(this.client.player.getProfileName());
 		if (team != null) {
 			int t = team.getColor().getColorIndex();

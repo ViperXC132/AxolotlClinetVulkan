@@ -44,6 +44,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ProfilesScreen extends Screen {
@@ -83,6 +84,7 @@ public class ProfilesScreen extends Screen {
 	@Override
 	public void onClose() {
 		Profiles.getInstance().saveProfiles();
+		//noinspection DataFlowIssue
 		minecraft.setScreen(parent);
 	}
 
@@ -122,7 +124,7 @@ public class ProfilesScreen extends Screen {
 		public static class SpacerEntry extends Entry {
 
 			@Override
-			public List<? extends NarratableEntry> narratables() {
+			public @NotNull List<? extends NarratableEntry> narratables() {
 				return List.of();
 			}
 
@@ -132,7 +134,7 @@ public class ProfilesScreen extends Screen {
 			}
 
 			@Override
-			public List<? extends GuiEventListener> children() {
+			public @NotNull List<? extends GuiEventListener> children() {
 				return List.of();
 			}
 
@@ -206,12 +208,12 @@ public class ProfilesScreen extends Screen {
 			}
 
 			@Override
-			public List<? extends GuiEventListener> children() {
+			public @NotNull List<? extends GuiEventListener> children() {
 				return List.of(profileName, exportButton, this.loadButton, duplicateButton, removeButton);
 			}
 
 			@Override
-			public List<? extends NarratableEntry> narratables() {
+			public @NotNull List<? extends NarratableEntry> narratables() {
 				return List.of(profileName, exportButton, this.loadButton, duplicateButton, removeButton);
 			}
 		}
@@ -234,7 +236,7 @@ public class ProfilesScreen extends Screen {
 			}
 
 			@Override
-			public List<? extends NarratableEntry> narratables() {
+			public @NotNull List<? extends NarratableEntry> narratables() {
 				return List.of(addButton);
 			}
 
@@ -249,7 +251,7 @@ public class ProfilesScreen extends Screen {
 			}
 
 			@Override
-			public List<? extends GuiEventListener> children() {
+			public @NotNull List<? extends GuiEventListener> children() {
 				return List.of(addButton, importButton);
 			}
 		}

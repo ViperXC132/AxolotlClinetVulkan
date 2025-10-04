@@ -66,28 +66,26 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 	public final BooleanOption lowShield = new BooleanOption("lowShield", false);
 	public final ColorOption hitColor = new ColorOption("hitColor", new Color(255, 0, 0, 77),
 		value -> {
-			try { // needed because apparently someone created a bug that makes this be called when the config is loaded. Will be fixed with the next release.
-				NativeImageBackedTexture texture = ((OverlayTextureAccessor) MinecraftClient.getInstance().gameRenderer.getOverlayTexture()).axolotlclient$getTexture();
-				NativeImage nativeImage = texture.getImage();
-				if (nativeImage != null) {
-					int color = 255 - value.getAlpha();
-					color = (color << 8) + value.getBlue();
-					color = (color << 8) + value.getGreen();
-					color = (color << 8) + value.getRed();
+			//noinspection resource
+			NativeImageBackedTexture texture = ((OverlayTextureAccessor) MinecraftClient.getInstance().gameRenderer.getOverlayTexture()).axolotlclient$getTexture();
+			NativeImage nativeImage = texture.getImage();
+			if (nativeImage != null) {
+				int color = 255 - value.getAlpha();
+				color = (color << 8) + value.getBlue();
+				color = (color << 8) + value.getGreen();
+				color = (color << 8) + value.getRed();
 
-					for (int i = 0; i < 8; ++i) {
-						for (int j = 0; j < 8; ++j) {
-							nativeImage.setPixelColor(j, i, color);
-						}
+				for (int i = 0; i < 8; ++i) {
+					for (int j = 0; j < 8; ++j) {
+						nativeImage.setPixelColor(j, i, color);
 					}
-
-					RenderSystem.activeTexture(33985);
-					texture.bindTexture();
-					nativeImage.upload(0, 0, 0, 0, 0,
-						nativeImage.getWidth(), nativeImage.getHeight(), false, true, false, false);
-					RenderSystem.activeTexture(33984);
 				}
-			} catch (Exception ignored) {
+
+				RenderSystem.activeTexture(33985);
+				texture.bindTexture();
+				nativeImage.upload(0, 0, 0, 0, 0,
+					nativeImage.getWidth(), nativeImage.getHeight(), false, true, false, false);
+				RenderSystem.activeTexture(33984);
 			}
 		});
 	public final BooleanOption minimalViewBob = new BooleanOption("minimalViewBob", false);

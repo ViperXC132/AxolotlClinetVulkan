@@ -41,6 +41,7 @@ import net.minecraft.text.CommonTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
+@SuppressWarnings("DataFlowIssue")
 public class DownloadImageScreen extends Screen {
 	private static final Identifier SPRITE = Identifier.of("axolotlclient", "go");
 
@@ -56,7 +57,7 @@ public class DownloadImageScreen extends Screen {
 		var hFL = new ImprovedHeaderAndFooterLayout(this);
 
 		hFL.addTitleHeader(getTitle(), textRenderer);
-		var urlBox = new TextFieldWidget(textRenderer, width / 2 - 100, height / 2 - 10, 200, 20, Text.translatable("urlBox"));
+		var urlBox = new TextFieldWidget(textRenderer, width / 2 - 100, height / 2 - 10, 200, 20, Text.translatable("pasteURL"));
 		urlBox.setSuggestion(I18n.translate("pasteURL"));
 		urlBox.setChangedListener(s -> {
 			if (s.isEmpty()) {

@@ -40,7 +40,7 @@ import net.minecraft.util.math.MathHelper;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 
 public class DrawUtil extends DrawableHelper {
@@ -384,6 +384,7 @@ public class DrawUtil extends DrawableHelper {
 		int g = color >> 8 & 255;
 		int b = color & 255;
 		int a = color >> 24 & 255;
+		//noinspection deprecation
 		GlStateManager.color4f(r, g, b, a);
 		Tessellator tessellator = Tessellator.getInstance();
 		BufferBuilder bufferBuilder = tessellator.getBuffer();

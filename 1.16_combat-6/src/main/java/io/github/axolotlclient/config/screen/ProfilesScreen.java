@@ -66,6 +66,7 @@ public class ProfilesScreen extends Screen {
 	@Override
 	public void onClose() {
 		Profiles.getInstance().saveProfiles();
+		//noinspection DataFlowIssue
 		client.openScreen(parent);
 	}
 

@@ -37,7 +37,7 @@ public abstract class ClientPlayerEntityMixin {
 	 * @param sprintKey the sprint key that the user has bound
 	 * @return whether or not the user should try to sprint
 	 * @author DragonEggBedrockBreaking
-	 * @license MPL-2.0
+	 * <p>License: MPL-2.0</p>
 	 */
 	@Redirect(method = "tickAi", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/options/KeyBinding;isPressed()Z"))
 	private boolean axolotlclient$alwaysPressed(KeyBinding sprintKey) {

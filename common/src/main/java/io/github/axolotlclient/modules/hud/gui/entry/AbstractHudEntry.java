@@ -47,7 +47,7 @@ import lombok.Setter;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 public abstract class AbstractHudEntry implements HudEntry {
 	@Getter
@@ -148,7 +148,7 @@ public abstract class AbstractHudEntry implements HudEntry {
 		return renderBounds;
 	}
 
-	public void setBounds(float scale) {
+	public void setBounds() {
 		final var window = AxoWindow.getWindow();
 
 		if (window == null) {
@@ -212,10 +212,6 @@ public abstract class AbstractHudEntry implements HudEntry {
 	@Override
 	public void onBoundsUpdate() {
 		setBounds();
-	}
-
-	public void setBounds() {
-		setBounds(getScale());
 	}
 
 	public OptionCategory getAllOptions() {

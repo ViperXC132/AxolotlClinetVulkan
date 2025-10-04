@@ -30,7 +30,7 @@ import java.util.function.Predicate;
  * This implementation of custom skies is based on the FabricSkyBoxes mod by AMereBagatelle
  * <a href="https://github.com/AMereBagatelle/FabricSkyBoxes">Github Link.</a>
  *
- * @license MIT
+ * <p>License: MIT</p>
  **/
 
 public class SkyboxManager {
@@ -52,6 +52,7 @@ public class SkyboxManager {
 
 	public void renderSkyboxes(float delta, float brightness) {
 		this.skyboxes.stream().filter(this.renderPredicate).forEach(this.active_skies::add);
+		//noinspection ComparatorMethodParameterNotUsed
 		this.active_skies.sort((skybox1, skybox2) -> skybox1.alpha >= skybox2.alpha ? 0 : 1);
 		this.active_skies.forEach(skyboxInstance -> skyboxInstance.render(delta, brightness));
 		this.active_skies.removeIf((skybox) -> skybox.alpha <= MINIMUM_ALPHA);

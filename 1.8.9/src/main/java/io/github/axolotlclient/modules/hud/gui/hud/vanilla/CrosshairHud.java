@@ -53,7 +53,7 @@ import net.minecraft.world.World;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 
 public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositionable {
@@ -161,6 +161,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			Minecraft.getInstance().getTextureManager().bind(GuiElement.ICONS_LOCATION);
 
 			// Draw crosshair
+			//noinspection DataFlowIssue
 			client.gui.drawTexture((int) (((Util.getWindow().getScaledWidth() / getScale()) - 14) / 2),
 				(int) (((Util.getWindow().getScaledHeight() / getScale()) - 14) / 2), 0, 0, 16, 16);
 		} else if (type.get().equals(Crosshair.CUSTOM)) {

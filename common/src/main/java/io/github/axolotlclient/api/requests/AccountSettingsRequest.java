@@ -41,17 +41,14 @@ public class AccountSettingsRequest {
 					response.getBodyOrElse("allow_friends_image_access", true)));
 	}
 
-	public static CompletableFuture<Void> update(AccountSettings settings) {
-		return API.getInstance().patch(Request.Route.ACCOUNT_SETTINGS.builder()
+	public static void update(AccountSettings settings) {
+		API.getInstance().patch(Request.Route.ACCOUNT_SETTINGS.builder()
 				.field("show_registered", settings.showRegistered())
 				.field("retain_usernames", settings.retainUsernames())
 				.field("show_last_online", settings.showLastOnline())
 				.field("show_activity", settings.showActivity())
 				.field("allow_friends_image_access", settings.allowFriendsImageAccess())
-				.build())
-			.thenAccept(response -> {
-
-			});
+				.build());
 	}
 
 	public static CompletableFuture<Boolean> deleteAccount() {

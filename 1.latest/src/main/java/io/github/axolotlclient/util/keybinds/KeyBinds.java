@@ -33,7 +33,7 @@ import net.minecraft.client.KeyMapping;
 import net.minecraft.resources.ResourceLocation;
 
 public class KeyBinds {
-	public static KeyMapping.Category CATEGORY_AXOLOTLCLIENT = KeyMapping.Category.register(ResourceLocation.fromNamespaceAndPath(AxolotlClientCommon.MODID, "title"));
+	public static final KeyMapping.Category CATEGORY_AXOLOTLCLIENT = KeyMapping.Category.register(ResourceLocation.fromNamespaceAndPath(AxolotlClientCommon.MODID, "title"));
 	@Getter
 	private final static KeyBinds instance = new KeyBinds();
 

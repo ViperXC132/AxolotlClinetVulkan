@@ -35,7 +35,7 @@ import org.apache.commons.lang3.mutable.MutableInt;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 
 // TODO: figure out how to implement this logic without exposing everything to bridge

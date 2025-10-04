@@ -46,7 +46,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 public class Util {
-	public static Color GlColor = new Color();
+	public static final Color GlColor = new Color();
 	public static String lastgame;
 	public static String game;
 
@@ -79,7 +79,7 @@ public class Util {
 			game = "Playing " + sidebar.get(0);
 		}
 
-		if (!Objects.equals(lastgame, game) && game.equals(""))
+		if (!Objects.equals(lastgame, game) && game.isEmpty())
 			game = lastgame;
 		else
 			lastgame = game;
@@ -163,10 +163,6 @@ public class Util {
 		return text;
 	}
 
-	public static void sendChatMessage(String msg) {
-		MinecraftClient.getInstance().player.sendChatMessage(msg);
-	}
-
 	public static void addMessageToChatHud(Text msg) {
 		MinecraftClient.getInstance().inGameHud.getChatHud().addMessage(msg);
 	}
@@ -175,6 +171,7 @@ public class Util {
 		return getTexture(option.get(), option.getName());
 	}
 
+	@SuppressWarnings("DataFlowIssue")
 	public static Identifier getTexture(Graphics graphics, String name) {
 		Identifier id = new Identifier("axolotlclient", "graphics_" + name.toLowerCase(Locale.ROOT));
 		try {
