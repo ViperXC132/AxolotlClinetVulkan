@@ -71,8 +71,8 @@ public class ToggleSprintHud extends SimpleTextHudEntry {
 
 	@Override
 	public void init() {
-		sprintToggle.br$registerOnConsumeClick(sprintToggled::toggle);
-		sneakToggle.br$registerOnConsumeClick(sneakToggled::toggle);
+		sprintToggle.br$registerOnConsumeClick(() -> sprintToggled.set(toggleSprint.get() && !sprintToggled.get()));
+		sneakToggle.br$registerOnConsumeClick(() -> sneakToggled.set(toggleSneak.get() && !sneakToggled.get()));
 	}
 
 	@Override
