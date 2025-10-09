@@ -34,6 +34,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.*;
+import io.github.axolotlclient.AxolotlClientConfig.impl.ui.RecreatableScreen;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.config.screen.CreditsScreen;
 import io.github.axolotlclient.config.screen.ProfilesScreen;
@@ -43,6 +44,7 @@ import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import io.github.axolotlclient.util.options.GenericOption;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.option.KeyBind;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 
@@ -152,7 +154,9 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 				general.add(configStyle = new StringArrayOption("configStyle", themes,
 					"configStyle." + ConfigUI.getInstance().getCurrentStyle().getName(), s -> {
 					ConfigUI.getInstance().setStyle(s.split("\\.")[1]);
-					MinecraftClient.getInstance().setScreen(null);
+
+					Screen newScreen = RecreatableScreen.tryRecreate(MinecraftClient.getInstance().currentScreen);
+					MinecraftClient.getInstance().setScreen(newScreen);
 				}));
 				AxolotlClient.getInstance().getConfigManager().load();
 				ConfigUI.getInstance().setStyle(configStyle.get().split("\\.")[1]);
