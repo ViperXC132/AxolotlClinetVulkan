@@ -71,6 +71,7 @@ public class HotbarHUD extends TextHudEntry {
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> list = new ArrayList<>();
 		list.add(enabled);
+		list.add(hide);
 		return list;
 	}
 }

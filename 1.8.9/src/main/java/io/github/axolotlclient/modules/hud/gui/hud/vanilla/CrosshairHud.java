@@ -105,6 +105,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
+		options.add(hide);
 		options.add(type);
 		options.add(customTextureGraphics);
 		options.add(showInF5);

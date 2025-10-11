@@ -153,6 +153,7 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
+		options.add(hide);
 		options.add(text);
 		options.add(bar);
 		options.add(anchor);

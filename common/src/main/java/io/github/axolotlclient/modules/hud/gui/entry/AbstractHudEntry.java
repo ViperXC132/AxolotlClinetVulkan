@@ -246,7 +246,6 @@ public abstract class AbstractHudEntry implements HudEntry {
 		List<Option<?>> options = new ArrayList<>();
 		options.add(enabled);
 		options.add(scale);
-		options.add(hide);
 		return options;
 	}
 

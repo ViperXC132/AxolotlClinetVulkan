@@ -140,7 +140,7 @@ public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		var options = super.getConfigurationOptions();
-		Collections.addAll(options, dynamic, itemBackground, itemBackgroundColor, alwaysShowItemBackgrounds);
+		Collections.addAll(options, hide, dynamic, itemBackground, itemBackgroundColor, alwaysShowItemBackgrounds);
 		return options;
 	}
 }

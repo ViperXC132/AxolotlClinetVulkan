@@ -133,6 +133,7 @@ public class DebugCountersHud extends TextHudEntry implements DynamicallyPositio
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
+		options.add(hide);
 		options.add(anchor);
 		options.add(showCCount);
 		options.add(showECount);

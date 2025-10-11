@@ -250,6 +250,7 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 		options.add(backgroundColor);
 		options.add(outline);
 		options.add(outlineColor);
+		options.add(hide);
 		options.add(topColor);
 		options.add(scores);
 		options.add(scoreColor);
