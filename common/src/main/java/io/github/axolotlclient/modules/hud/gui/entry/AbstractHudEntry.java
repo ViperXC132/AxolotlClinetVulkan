@@ -66,6 +66,7 @@ public abstract class AbstractHudEntry implements HudEntry {
 	@Setter
 	@Getter
 	protected boolean hovered = false;
+	protected boolean supportsScaling = true;
 	@Getter
 	private Rectangle trueBounds;
 	private Rectangle renderBounds;
@@ -267,5 +268,10 @@ public abstract class AbstractHudEntry implements HudEntry {
 	@Override
 	public boolean isHidden() {
 		return hide.get();
+	}
+
+	@Override
+	public boolean supportsScaling() {
+		return supportsScaling;
 	}
 }

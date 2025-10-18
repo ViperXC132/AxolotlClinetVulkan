@@ -125,19 +125,20 @@ public class HudEditScreen extends Screen {
 		if (entry.isPresent()) {
 			var bounds = entry.get().getTrueBounds();
 			if (mode == ModificationMode.NONE && bounds.isMouseOver(mouseX, mouseY)) {
+				var supportsScaling = entry.get().supportsScaling();
 				var xBound = Math.max(0, mouseX - bounds.x());
 				var yBound = Math.max(0, mouseY - bounds.y());
 				var tolerance = GRAB_TOLERANCE;
-				if (xBound < tolerance && yBound < tolerance) {
+				if (supportsScaling && xBound < tolerance && yBound < tolerance) {
 					// top-left
 					setCursor(NWSE_RESIZE_CURSOR);
-				} else if (Math.abs(xBound - bounds.width()) < tolerance && Math.abs(yBound - bounds.height()) < tolerance) {
+				} else if (supportsScaling && Math.abs(xBound - bounds.width()) < tolerance && Math.abs(yBound - bounds.height()) < tolerance) {
 					// bottom-right
 					setCursor(NWSE_RESIZE_CURSOR);
-				} else if (xBound < tolerance && Math.abs(yBound - bounds.height()) < tolerance) {
+				} else if (supportsScaling && xBound < tolerance && Math.abs(yBound - bounds.height()) < tolerance) {
 					// bottom-left
 					setCursor(NESW_RESIZE_CURSOR);
-				} else if (yBound < tolerance && Math.abs(xBound - bounds.width()) < tolerance) {
+				} else if (supportsScaling && yBound < tolerance && Math.abs(xBound - bounds.width()) < tolerance) {
 					// top-right
 					setCursor(NESW_RESIZE_CURSOR);
 				} else {

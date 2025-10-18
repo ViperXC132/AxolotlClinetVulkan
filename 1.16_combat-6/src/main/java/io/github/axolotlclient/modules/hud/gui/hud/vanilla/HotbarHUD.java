@@ -52,6 +52,7 @@ public class HotbarHUD extends TextHudEntry {
 
 	public HotbarHUD() {
 		super(182, 22, false);
+		supportsScaling = false;
 	}
 
 	@Override

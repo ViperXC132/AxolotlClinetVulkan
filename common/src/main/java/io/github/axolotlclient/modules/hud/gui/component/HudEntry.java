@@ -68,4 +68,6 @@ public interface HudEntry extends Identifiable, Configurable, Positionable {
 	boolean isHovered();
 
 	boolean isHidden();
+
+	boolean supportsScaling();
 }

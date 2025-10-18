@@ -135,7 +135,7 @@ public abstract class InGameHudMixin {
 	public void axolotlclient$customHotbar(GuiGraphics graphics, DeltaTracker tracker, Operation<Void> original) {
 		HotbarHUD hud = (HotbarHUD) HudManager.getInstance().get(HotbarHUD.ID);
 		graphics.getMatrices().push();
-		if (hud.isEnabled()) {
+		if (hud.isEnabled() && !hud.isHidden()) {
 			graphics.getMatrices().translate(-graphics.getScaledWindowWidth() / 2f + 182 / 2f, -graphics.getScaledWindowHeight() + 22, 0);
 			graphics.getMatrices().translate(hud.getX(), hud.getY(), 0);
 		}
