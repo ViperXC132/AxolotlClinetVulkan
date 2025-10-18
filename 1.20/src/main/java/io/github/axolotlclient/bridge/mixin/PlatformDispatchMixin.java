@@ -93,6 +93,7 @@ public abstract class PlatformDispatchMixin {
 							return clientConnection.isOpen();
 						}
 					};
+					clientConnection.setPacketListener(listener);
 					clientConnection.send(new HandshakeC2SPacket(address.getAddress(), address.getPort(),
 						NetworkState.STATUS));
 					clientConnection.send(new MetadataQueryC2SPacket());
