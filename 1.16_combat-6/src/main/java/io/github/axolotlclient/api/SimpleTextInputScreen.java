@@ -51,13 +51,17 @@ public class SimpleTextInputScreen extends Screen {
 
 		addButton(new ButtonWidget(width / 2 - 155, height - 50, 150, 20,
 			ScreenTexts.CANCEL, button -> client.openScreen(parent)));
-		addButton(new ButtonWidget(width / 2 + 5, height - 50, 150, 20,
+		var done = addButton(new ButtonWidget(width / 2 + 5, height - 50, 150, 20,
 			ScreenTexts.DONE, button -> {
-			if (!input.getText().isEmpty()) {
+			if (!input.getText().isBlank()) {
 				consumer.accept(input.getText());
-				client.openScreen(parent);
 			}
+			client.openScreen(parent);
 		}));
+		input.setChangedListener(s -> {
+			done.active = !s.isBlank();
+		});
+		done.active = false;
 	}
 
 	@Override

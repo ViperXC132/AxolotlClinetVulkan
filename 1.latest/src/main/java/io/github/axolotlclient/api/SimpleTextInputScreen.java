@@ -51,12 +51,16 @@ public class SimpleTextInputScreen extends Screen {
 
 		addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, button -> minecraft.setScreen(parent))
 			.bounds(width / 2 - 155, height - 50, 150, 20).build());
-		addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> {
-			if (!input.getValue().isEmpty()) {
+		var done = addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> {
+			if (!input.getValue().isBlank()) {
 				consumer.accept(input.getValue());
-				minecraft.setScreen(parent);
 			}
+			minecraft.setScreen(parent);
 		}).bounds(width / 2 + 5, height - 50, 150, 20).build());
+		input.setResponder(s -> {
+			done.active = !s.isBlank();
+		});
+		done.active = false;
 	}
 
 	@Override
