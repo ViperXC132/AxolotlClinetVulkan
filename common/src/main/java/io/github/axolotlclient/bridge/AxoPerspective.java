@@ -20,29 +20,21 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.bridge.key;
+package io.github.axolotlclient.bridge;
 
-import io.github.axolotlclient.bridge.internal.BridgeUtil;
-import io.github.axolotlclient.bridge.internal.RequiresImpl;
+import lombok.Getter;
 
-public interface AxoClientKeybinds {
-	@RequiresImpl
-	default AxoKeybinding br$getSprintKeybind() {
-		throw BridgeUtil.noImpl();
-	}
+@Getter
+public enum AxoPerspective {
+	FIRST_PERSON(true, false),
+	THIRD_PERSON_BACK(false, false),
+	THIRD_PERSON_FRONT(false, true);
 
-	@RequiresImpl
-	default AxoKeybinding br$getSneakKeybind() {
-		throw BridgeUtil.noImpl();
-	}
+	private final boolean firstPerson;
+	private final boolean mirrored;
 
-	@RequiresImpl
-	default AxoKeybinding br$getAttackKey() {
-		throw BridgeUtil.noImpl();
-	}
-
-	@RequiresImpl
-	default AxoKeybinding br$getUseKey() {
-		throw BridgeUtil.noImpl();
+	AxoPerspective(final boolean firstPerson, final boolean mirrored) {
+		this.firstPerson = firstPerson;
+		this.mirrored = mirrored;
 	}
 }

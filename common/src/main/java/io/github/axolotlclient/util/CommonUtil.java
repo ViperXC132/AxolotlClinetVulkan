@@ -22,6 +22,9 @@
 
 package io.github.axolotlclient.util;
 
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
 public class CommonUtil {
 	public static String toRoman(int number) {
 		if (number > 0) {
@@ -31,5 +34,14 @@ public class CommonUtil {
 				.replace("DD", "M").replace("DCD", "CM");
 		}
 		return "";
+	}
+
+	public static <T> T make(Supplier<T> factory) {
+		return factory.get();
+	}
+
+	public static <T> T make(T object, Consumer<T> initializer) {
+		initializer.accept(object);
+		return object;
 	}
 }

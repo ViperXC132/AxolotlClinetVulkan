@@ -32,11 +32,9 @@ import io.github.axolotlclient.modules.ModuleLoader;
 import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.blur.MenuBlur;
 import io.github.axolotlclient.modules.blur.MotionBlur;
-import io.github.axolotlclient.modules.freelook.Freelook;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import io.github.axolotlclient.modules.particles.Particles;
-import io.github.axolotlclient.modules.render.BeaconBeam;
 import io.github.axolotlclient.modules.rpc.DiscordRPC;
 import io.github.axolotlclient.modules.screenshotUtils.ScreenshotUtils;
 import io.github.axolotlclient.modules.scrollableTooltips.ScrollableTooltips;
@@ -45,6 +43,7 @@ import io.github.axolotlclient.modules.tablist.Tablist;
 import io.github.axolotlclient.modules.tnttime.TntTime;
 import io.github.axolotlclient.modules.zoom.Zoom;
 import io.github.axolotlclient.util.FeatureDisabler;
+import io.github.axolotlclient.util.FeatureDisablerCommon;
 import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.LoggerImpl;
 import io.github.axolotlclient.util.notifications.Notifications;
@@ -67,7 +66,6 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 		registerModule(MenuBlur.getInstance());
 		registerModule(ScrollableTooltips.getInstance());
 		registerModule(DiscordRPC.getInstance());
-		registerModule(Freelook.getInstance());
 		registerModule(TntTime.getInstance());
 		registerModule(Particles.getInstance());
 		registerModule(ScreenshotUtils.getInstance());
@@ -96,8 +94,8 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 	}
 
 	@Override
-	protected void initFeatureDisabler() {
-		FeatureDisabler.init();
+	protected FeatureDisablerCommon getFeatureDisabler() {
+		return FeatureDisabler.getInstance();
 	}
 
 	@Override

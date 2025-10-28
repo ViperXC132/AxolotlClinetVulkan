@@ -28,8 +28,9 @@ import java.util.Optional;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.AxoPlayerListEntry;
 import io.github.axolotlclient.bridge.AxoSession;
+import io.github.axolotlclient.bridge.entity.AxoEntity;
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
-import io.github.axolotlclient.bridge.key.AxoClientKeybinds;
+import io.github.axolotlclient.bridge.AxoGameOptions;
 import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.resource.AxoResourceManager;
 import io.github.axolotlclient.bridge.util.AxoText;
@@ -41,8 +42,10 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.render.WorldRenderer;
 import net.minecraft.client.util.Session;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.text.Text;
 import net.minecraft.util.thread.ReentrantThreadExecutor;
@@ -89,6 +92,14 @@ public abstract class MinecraftClientMixin extends ReentrantThreadExecutor<Runna
 	@Shadow
 	public abstract ResourceManager getResourceManager();
 
+	@Shadow
+	@Final
+	public WorldRenderer worldRenderer;
+
+	@Shadow
+	@Nullable
+	public Entity cameraEntity;
+
 	public MinecraftClientMixin(String string) {
 		super(string);
 	}
@@ -111,7 +122,7 @@ public abstract class MinecraftClientMixin extends ReentrantThreadExecutor<Runna
 
 	@Override
 
-	public AxoClientKeybinds br$getKeybinds() {
+	public AxoGameOptions br$getGameOptions() {
 		return options;
 	}
 
@@ -160,5 +171,15 @@ public abstract class MinecraftClientMixin extends ReentrantThreadExecutor<Runna
 	@Override
 	public Object br$getScreen() {
 		return currentScreen;
+	}
+
+	@Override
+	public void br$notifyLevelRenderer() {
+		worldRenderer.scheduleTerrainUpdate();
+	}
+
+	@Override
+	public AxoEntity axo$getCameraEntity() {
+		return cameraEntity;
 	}
 }

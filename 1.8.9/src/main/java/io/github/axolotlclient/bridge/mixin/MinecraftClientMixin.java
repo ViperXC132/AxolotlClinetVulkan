@@ -31,8 +31,9 @@ import com.google.common.util.concurrent.ListenableFuture;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.AxoPlayerListEntry;
 import io.github.axolotlclient.bridge.AxoSession;
+import io.github.axolotlclient.bridge.entity.AxoEntity;
 import io.github.axolotlclient.bridge.entity.AxoPlayer;
-import io.github.axolotlclient.bridge.key.AxoClientKeybinds;
+import io.github.axolotlclient.bridge.AxoGameOptions;
 import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.resource.AxoResourceManager;
 import io.github.axolotlclient.bridge.util.AxoText;
@@ -45,8 +46,10 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.ServerListEntry;
 import net.minecraft.client.render.TextRenderer;
+import net.minecraft.client.render.world.WorldRenderer;
 import net.minecraft.client.resource.manager.ResourceManager;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -90,6 +93,12 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	@Shadow
 	public abstract ListenableFuture<Object> submit(Runnable runnable);
 
+	@Shadow
+	public WorldRenderer worldRenderer;
+
+	@Shadow
+	private Entity camera;
+
 	@Override
 	public @Nullable AxoPlayer br$getPlayer() {
 		return player;
@@ -107,7 +116,7 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 
 	@Override
 
-	public AxoClientKeybinds br$getKeybinds() {
+	public AxoGameOptions br$getGameOptions() {
 		return options;
 	}
 
@@ -162,5 +171,15 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	@Override
 	public Object br$getScreen() {
 		return screen;
+	}
+
+	@Override
+	public void br$notifyLevelRenderer() {
+		worldRenderer.onViewChanged();
+	}
+
+	@Override
+	public AxoEntity axo$getCameraEntity() {
+		return camera;
 	}
 }

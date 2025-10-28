@@ -20,16 +20,40 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.bridge.key;
+package io.github.axolotlclient.bridge;
 
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
+import io.github.axolotlclient.bridge.key.AxoKeybinding;
 
-public class AxoKeys {
-	public static final AxoKey KEY_UNKNOWN = BridgeUtil.noImplValue();
-	public static final AxoKey KEY_K = BridgeUtil.noImplValue();
-	public static final AxoKey KEY_I = BridgeUtil.noImplValue();
-	public static final AxoKey KEY_V = BridgeUtil.noImplValue();
-	public static final AxoKey MOUSE_LEFT = BridgeUtil.noImplValue();
-	public static final AxoKey MOUSE_RIGHT = BridgeUtil.noImplValue();
-	public static final AxoKey KEY_RSHIFT = BridgeUtil.noImplValue();
+public interface AxoGameOptions {
+	@RequiresImpl
+	default AxoKeybinding br$getSprintKeybind() {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default AxoKeybinding br$getSneakKeybind() {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default AxoKeybinding br$getAttackKey() {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default AxoKeybinding br$getUseKey() {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default AxoPerspective br$getCameraType() {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default void br$setCameraType(AxoPerspective perspective) {
+		throw BridgeUtil.noImpl();
+	}
 }
