@@ -45,6 +45,7 @@ import io.github.axolotlclient.config.profiles.ProfileAware;
 import io.github.axolotlclient.config.profiles.Profiles;
 import io.github.axolotlclient.modules.Module;
 import io.github.axolotlclient.modules.hud.ClickInputTracker;
+import io.github.axolotlclient.modules.render.BeaconBeam;
 import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.OSUtil;
 import io.github.axolotlclient.util.notifications.NotificationProvider;
@@ -121,6 +122,7 @@ public abstract class AxolotlClientCommon {
 
 	private void addBuiltinCommonModules() {
 		registerModule(ClickInputTracker.getInstance());
+		registerModule(BeaconBeam.getInstance());
 	}
 
 	// init logic

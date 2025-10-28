@@ -34,7 +34,7 @@ import io.github.axolotlclient.modules.freelook.Freelook;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import io.github.axolotlclient.modules.particles.Particles;
-import io.github.axolotlclient.modules.renderOptions.BeaconBeam;
+import io.github.axolotlclient.modules.render.BeaconBeam;
 import io.github.axolotlclient.modules.rpc.DiscordRPC;
 import io.github.axolotlclient.modules.screenshotUtils.ScreenshotUtils;
 import io.github.axolotlclient.modules.scrollableTooltips.ScrollableTooltips;
@@ -66,7 +66,6 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 		registerModule(TntTime.getInstance());
 		registerModule(Particles.getInstance());
 		registerModule(ScreenshotUtils.getInstance());
-		registerModule(BeaconBeam.getInstance());
 		registerModule(Tablist.getInstance());
 		registerModule(Auth.getInstance());
 		registerModule(APIOptions.getInstance());
