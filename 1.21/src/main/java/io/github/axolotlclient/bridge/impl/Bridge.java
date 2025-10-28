@@ -56,7 +56,7 @@ public class Bridge {
 		});
 
 		ClientPlayConnectionEvents.INIT.register((handler, client) ->
-			Events.JOIN.invoker().accept(new Events.ServerJoinInfo(Objects.requireNonNull(handler.getServerInfo()).address)));
+			Events.BEGIN_JOIN_SERVER.invoker().accept(new Events.ServerJoinInfo(Objects.requireNonNull(handler.getServerInfo()).address)));
 		ClientPlayConnectionEvents.JOIN.register((clientPlayNetworkHandler, sender, minecraftClient) -> Events.CONNECTION_PLAY_READY.invoker().run());
 		ClientPlayConnectionEvents.DISCONNECT.register((clientPlayNetworkHandler, minecraftClient) -> Events.DISCONNECT.invoker().run());
 

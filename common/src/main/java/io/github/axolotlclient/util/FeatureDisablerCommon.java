@@ -68,7 +68,7 @@ public abstract class FeatureDisablerCommon {
 		setServers(Freelook.getInstance().enabled, () -> Freelook.getInstance().needsDisabling(), "hypixel", "mineplex", "gommehd", "nucleoid", "mccisland");
 		setServers(((ToggleSprintHud) HudManagerCommon.getInstance().get(ToggleSprintHud.ID)).toggleSneak, NONE, "hypixel");
 
-		Events.JOIN.register(info -> {
+		Events.BEGIN_JOIN_SERVER.register(info -> {
 			if (info.address() != null) {
 				onServerJoin(info.address());
 			}

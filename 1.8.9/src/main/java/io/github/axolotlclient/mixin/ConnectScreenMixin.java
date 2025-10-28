@@ -35,6 +35,6 @@ public abstract class ConnectScreenMixin {
 	@Inject(method = "connect", at = @At("HEAD"))
 	private void axolotlclient$onServerJoin(String address, int port, CallbackInfo ci) {
 		// TODO: the semantics for this event isn't super clear
-		Events.JOIN.invoker().accept(new Events.ServerJoinInfo(address));
+		Events.BEGIN_JOIN_SERVER.invoker().accept(new Events.ServerJoinInfo(address));
 	}
 }

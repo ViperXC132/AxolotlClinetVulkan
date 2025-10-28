@@ -56,7 +56,7 @@ public class Events {
 	public record ServerJoinInfo(@Nullable String address) {
 	}
 
-	public static final EventBus<Consumer<ServerJoinInfo>> JOIN = EventBus.broadcast1();
+	public static final EventBus<Consumer<ServerJoinInfo>> BEGIN_JOIN_SERVER = EventBus.broadcast1();
 	public static final EventBus<Runnable> DISCONNECT = EventBus.broadcast0();
 
 	public static final EventBus<Consumer<ReceiveChatMessageEvent>> RECEIVE_CHAT_MESSAGE = EventBus.broadcast1();
