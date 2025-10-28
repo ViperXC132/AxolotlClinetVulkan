@@ -38,7 +38,6 @@ import io.github.axolotlclient.modules.rpc.DiscordRPC;
 import io.github.axolotlclient.modules.screenshotUtils.ScreenshotUtils;
 import io.github.axolotlclient.modules.scrollableTooltips.ScrollableTooltips;
 import io.github.axolotlclient.modules.tablist.Tablist;
-import io.github.axolotlclient.modules.tnttime.TntTime;
 import io.github.axolotlclient.modules.zoom.Zoom;
 import io.github.axolotlclient.util.FeatureDisabler;
 import io.github.axolotlclient.util.FeatureDisablerCommon;
@@ -62,7 +61,7 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 		registerModule(MotionBlur.getInstance());
 		registerModule(ScrollableTooltips.getInstance());
 		registerModule(DiscordRPC.getInstance());
-		registerModule(TntTime.getInstance());
+
 		registerModule(Particles.getInstance());
 		registerModule(ScreenshotUtils.getInstance());
 		registerModule(Tablist.getInstance());

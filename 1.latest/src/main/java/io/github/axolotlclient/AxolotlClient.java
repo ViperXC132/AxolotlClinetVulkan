@@ -30,7 +30,6 @@ import io.github.axolotlclient.api.StatusUpdateProviderImpl;
 import io.github.axolotlclient.bridge.impl.Bridge;
 import io.github.axolotlclient.modules.ModuleLoader;
 import io.github.axolotlclient.modules.auth.Auth;
-import io.github.axolotlclient.modules.freelook.Freelook;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import io.github.axolotlclient.modules.particles.Particles;
@@ -62,7 +61,6 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 		//registerModule(MotionBlur.getInstance()); // TODO this is broken since 1.21.2
 		registerModule(ScrollableTooltips.getInstance());
 		registerModule(DiscordRPC.getInstance());
-		registerModule(TntTime.getInstance());
 		registerModule(Particles.getInstance());
 		registerModule(ScreenshotUtils.getInstance());
 		registerModule(Tablist.getInstance());
