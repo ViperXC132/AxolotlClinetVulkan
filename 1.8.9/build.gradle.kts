@@ -21,6 +21,12 @@ loom {
 	}
 }
 
+repositories {
+	exclusiveContent { forRepository { mavenCentral() }
+		filter { includeGroup("org.lwjgl") }
+	}
+}
+
 dependencies {
 	minecraft("com.mojang:minecraft:${project.property("minecraft_18")}")
 	mappings("net.ornithemc:feather:${project.property("mappings_18")}")

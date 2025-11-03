@@ -22,16 +22,21 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import io.github.axolotlclient.util.OSUtil;
 import net.minecraft.client.main.Main;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(Main.class)
 public abstract class MinecraftClientMainMixin {
 
-	@Redirect(method = "<clinit>", at = @At(value = "INVOKE", target = "Ljava/lang/System;setProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"))
-	private static String axolotlclient$noHeadless(String key, String value) {
+	@WrapOperation(method = "<clinit>", at = @At(value = "INVOKE", target = "Ljava/lang/System;setProperty(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"))
+	private static String axolotlclient$noHeadless(String key, String value, Operation<String> original) {
+		if (OSUtil.getOS() != OSUtil.OperatingSystem.WINDOWS) {
+			return original.call(key, value);
+		}
 		return "";
 	}
 }
