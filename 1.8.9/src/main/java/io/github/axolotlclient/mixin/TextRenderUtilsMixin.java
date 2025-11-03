@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import net.minecraft.client.render.TextRenderUtils;
 import net.minecraft.client.render.TextRenderer;
@@ -44,7 +45,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(TextRenderUtils.class)
-public class TextRenderUtilsMixin {
+public abstract class TextRenderUtilsMixin {
 
 	@Unique
 	private static final Map<Character, Formatting> formattingCodes;
@@ -100,16 +101,29 @@ public class TextRenderUtilsMixin {
 
 	@Unique
 	private static Text format(Text text) {
-		var reformatted = formatFromCodes(text.getStyle().asString()+text.getContent());
-		var s = text.getStyle();
-		var rS = reformatted.getStyle();
-		rS.setClickEvent(s.getClickEvent());
-		rS.setHoverEvent(s.getHoverEvent());
-		rS.setInsertion(s.getInsertion());
-		for (Text sib : text.getSiblings()) {
-			reformatted.append(format(sib));
+		Text n = null;
+		for (var t : text) {
+			if (!t.getContent().contains("§")) {
+				var r = new LiteralText(t.getContent());
+				r.setStyle(t.getStyle());
+				if (n == null) {
+					n = r;
+				} else {
+					n.append(r);
+					t.getStyle().setParent(n.getStyle());
+				}
+			} else {
+				var formatted = formatFromCodes(t.getContent());
+				formatted.setStyle(t.getStyle());
+				if (n == null) {
+					n = formatted;
+				} else {
+					n.append(formatted);
+					formatted.getStyle().setParent(n.getStyle());
+				}
+			}
 		}
-		return reformatted;
+		return n;
 	}
 
 	@Unique
@@ -119,6 +133,7 @@ public class TextRenderUtilsMixin {
 
 		List<Formatting> modifiers = new ArrayList<>();
 		Formatting color = null;
+		Integer br$color = null;
 		for (int i = 0, length = arr.length; i < length; i++) {
 			String s = arr[i];
 			if (s.isEmpty()) {
@@ -128,28 +143,37 @@ public class TextRenderUtilsMixin {
 				continue;
 			}
 			Formatting formatting = byCodeOfFirstChar(s);
-			if (formatting == null) {
-				text.append(s);
-				continue;
-			}
-
 			Text part;
 			int pL = s.length();
-			if (formatting.equals(Formatting.RESET)) {
-				modifiers.clear();
-				color = null;
-			} else if (formatting.isModifier()) {
-				modifiers.add(formatting);
+			int formatLength = 1;
+			if (formatting == null) {
+				if (s.toLowerCase(Locale.ROOT).charAt(0) == '#') {
+					br$color = Color.parse(s.substring(0, 7)).toInt();
+					formatLength = 7;
+				} else {
+					text.append(s);
+					continue;
+				}
 			} else {
-				color = formatting;
+				if (formatting.equals(Formatting.RESET)) {
+					modifiers.clear();
+					color = null;
+				} else if (formatting.isModifier()) {
+					modifiers.add(formatting);
+				} else {
+					color = formatting;
+				}
 			}
 			if (pL == 1) {
 				continue;
 			}
-			part = new LiteralText(s.substring(1));
+			part = new LiteralText(s.substring(formatLength));
 
 			if (color != null) {
-				part.getStyle().setColor(color);
+				part.setStyle(part.getStyle().setColor(color));
+			}
+			if (br$color != null) {
+				part.br$setStyle(part.getStyle().br$color(br$color));
 			}
 
 			if (!modifiers.isEmpty()) {

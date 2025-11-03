@@ -29,22 +29,20 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.modules.AbstractModule;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
+import lombok.Getter;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 public class TntTime extends AbstractModule {
 
+	@Getter
 	private static final TntTime Instance = new TntTime();
 	public final ForceableBooleanOption enabled = new ForceableBooleanOption("enabled", false);
 	private final OptionCategory category = OptionCategory.create("tnttime");
 	private final IntegerOption decimalPlaces = new IntegerOption("decimalplaces", 2, 0, 6);
 	private DecimalFormat format;
 	private int decimals;
-
-	public static TntTime getInstance() {
-		return Instance;
-	}
 
 	@Override
 	public void init() {
@@ -58,9 +56,7 @@ public class TntTime extends AbstractModule {
 			StringBuilder string = new StringBuilder("#0");
 			if (decimalPlaces.get() > 0) {
 				string.append(".");
-				for (int i = 0; i < decimalPlaces.get(); i++) {
-					string.append("0");
-				}
+				string.append("0".repeat(Math.max(0, decimalPlaces.get())));
 			}
 			format = new DecimalFormat(string.toString());
 			decimals = decimalPlaces.get();

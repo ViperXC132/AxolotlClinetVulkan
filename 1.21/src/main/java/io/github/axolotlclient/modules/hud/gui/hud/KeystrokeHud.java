@@ -68,7 +68,7 @@ import static io.github.axolotlclient.modules.hud.util.DrawUtil.*;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 
 public class KeystrokeHud extends TextHudEntry implements ProfileAware {
@@ -477,6 +477,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 	}
 
 	public void saveKeystrokes() {
+		if (keystrokes == null) return;
 		try {
 			var path = AxolotlClientCommon.resolveProfileConfigFile(KEYSTROKE_SAVE_FILE_NAME);
 			Files.createDirectories(path.getParent());
@@ -495,7 +496,11 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 				var loaded = entries.stream().map(e -> (Map<String, Object>) e)
 					.map(KeystrokeHud.this::deserializeKey)
 					.toList();
-				keystrokes.clear();
+				if (keystrokes == null) {
+					keystrokes = new ArrayList<>();
+				} else {
+					keystrokes.clear();
+				}
 				keystrokes.addAll(loaded);
 			} else {
 				saveKeystrokes();

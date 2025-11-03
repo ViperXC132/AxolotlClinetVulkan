@@ -52,7 +52,7 @@ public class Bridge {
 				return Identifier.of("axolotlclient", "bridge/resource_listener");
 			}
 		});
-		ClientPlayConnectionEvents.INIT.register((clientPlayNetworkHandler, minecraftClient) -> Events.CONNECTION_PLAY_READY.invoker().run());
+		ClientPlayConnectionEvents.JOIN.register((clientPlayNetworkHandler, sender, minecraftClient) -> Events.CONNECTION_PLAY_READY.invoker().run());
 		ClientPlayConnectionEvents.DISCONNECT.register((clientPlayNetworkHandler, minecraftClient) -> Events.DISCONNECT.invoker().run());
 
 		ClientCommandRegistrationCallback.EVENT.register((commandDispatcher, commandBuildContext) ->

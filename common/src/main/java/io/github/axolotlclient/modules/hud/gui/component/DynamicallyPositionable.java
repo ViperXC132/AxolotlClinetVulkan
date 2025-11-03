@@ -28,7 +28,7 @@ import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  * <p>
  * Represents an object that width/height can change and it can react accordingly
  */

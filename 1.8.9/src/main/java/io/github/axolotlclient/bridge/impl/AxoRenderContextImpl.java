@@ -142,7 +142,7 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 	public void br$renderGuiItemModel(AxoItemStack stack, int x, int y) {
 		final var vanilla = Bridge.unwrapStack(stack);
 
-		if(vanilla != null) {
+		if (vanilla != null) {
 			ItemUtil.renderGuiItemModel(vanilla, x, y);
 		}
 	}

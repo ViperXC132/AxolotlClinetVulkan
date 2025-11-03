@@ -45,7 +45,6 @@ public class ChatScreen extends Screen implements ContextMenuScreen {
 	private ChatListWidget chatListWidget;
 	private ChatUserListWidget users;
 	private TextFieldWidget input;
-	private final String title = I18n.translate("api.screen.chat");
 
 	public ChatScreen(Screen parent, Channel channel) {
 		super();

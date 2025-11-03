@@ -43,7 +43,7 @@ import lombok.Getter;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 
 public class ToggleSprintHud extends SimpleTextHudEntry {
@@ -54,8 +54,8 @@ public class ToggleSprintHud extends SimpleTextHudEntry {
 	private final BooleanOption randomPlaceholder = new BooleanOption("randomPlaceholder", false);
 	private final StringOption placeholder = new StringOption("placeholder", "No keys pressed");
 
-	private final AxoKeybinding sprintToggle = AxoKeybinding.create(AxoKeys.KEY_K, "key.toggleSprint", "category.axolotlclient");
-	private final AxoKeybinding sneakToggle = AxoKeybinding.create(AxoKeys.KEY_I, "key.toggleSneak", "category.axolotlclient");
+	private final AxoKeybinding sprintToggle = AxoKeybinding.create(AxoKeys.KEY_K, "key.toggleSprint");
+	private final AxoKeybinding sneakToggle = AxoKeybinding.create(AxoKeys.KEY_I, "key.toggleSneak");
 
 	@Getter
 	private final BooleanOption sprintToggled = new BooleanOption("sprintToggled", false);
@@ -71,8 +71,8 @@ public class ToggleSprintHud extends SimpleTextHudEntry {
 
 	@Override
 	public void init() {
-		sprintToggle.br$registerOnConsumeClick(sprintToggled::toggle);
-		sneakToggle.br$registerOnConsumeClick(sneakToggled::toggle);
+		sprintToggle.br$registerOnConsumeClick(() -> sprintToggled.set(toggleSprint.get() && !sprintToggled.get()));
+		sneakToggle.br$registerOnConsumeClick(() -> sneakToggled.set(toggleSneak.get() && !sneakToggled.get()));
 	}
 
 	@Override

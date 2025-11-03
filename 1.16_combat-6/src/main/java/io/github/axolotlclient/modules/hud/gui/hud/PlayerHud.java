@@ -23,9 +23,9 @@
 package io.github.axolotlclient.modules.hud.gui.hud;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.axolotlclient.bridge.events.Events;
+import io.github.axolotlclient.bridge.events.types.PlayerDirectionChangeEvent;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.util.events.Events;
-import io.github.axolotlclient.util.events.impl.PlayerDirectionChangeEvent;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -42,7 +42,7 @@ import net.minecraft.util.math.Quaternion;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 
 @SuppressWarnings("deprecation")
@@ -58,7 +58,7 @@ public class PlayerHud extends PlayerHudCommon {
 	}
 
 	public void onPlayerDirectionChange(PlayerDirectionChangeEvent event) {
-		yawOffset += (event.getYaw() - event.getPrevYaw()) / 2;
+		yawOffset += (event.yaw() - event.prevYaw()) / 2;
 	}
 
 	@Override
@@ -159,6 +159,7 @@ public class PlayerHud extends PlayerHudCommon {
 	private boolean isPerformingAction() {
 		// inspired by tr7zw's mod
 		ClientPlayerEntity player = MinecraftClient.getInstance().player;
+		//noinspection DataFlowIssue
 		return player.isSneaking() || player.isSprinting() || player.isFallFlying() || player.abilities.flying
 			|| player.isSubmergedInWater() || player.isInSwimmingPose() || player.hasVehicle()
 			|| player.isUsingItem() || player.handSwinging || player.hurtTime > 0 || player.isOnFire();

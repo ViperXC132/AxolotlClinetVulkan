@@ -47,7 +47,7 @@ public interface ResourceManagerMixin extends AxoResourceManager {
 	@Override
 	default Map<AxoIdentifier, AxoResource> br$listResources(String namespace, String prefix, Predicate<AxoIdentifier> filter) {
 		// this cast is maybe not ideal
-		return (Map<AxoIdentifier, AxoResource>) (Object) ((SearchableResourceManager)this).findResources(namespace, prefix, filter::test);
+		return (Map<AxoIdentifier, AxoResource>) (Object) ((SearchableResourceManager) this).findResources(namespace, prefix, filter::test);
 	}
 
 	@Override

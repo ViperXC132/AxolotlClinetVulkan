@@ -69,7 +69,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 
 @SuppressWarnings("OverwriteModifiers")
 @Mixin(value = PlatformImplInternal.class, remap = false)
-public class PlatformImplInternalMixin {
+public abstract class PlatformImplInternalMixin {
 	/**
 	 * @author Flowey
 	 * @reason Implement bridge platform.
@@ -147,9 +147,9 @@ public class PlatformImplInternalMixin {
 	 * @reason Implement bridge platform.
 	 */
 	@Overwrite
-	public static AxoKeybinding createKeyBinding(AxoKey defaultKey, String name, String category) {
+	public static AxoKeybinding createKeyBinding(AxoKey defaultKey, String name) {
 		int code = ((InputUtil.Key) Objects.requireNonNullElse(defaultKey, AxoKeys.KEY_UNKNOWN)).getCode();
-		final var binding = new KeyBinding(name, code, category);
+		final var binding = new KeyBinding(name, code, "category.axolotlclient");
 		KeyBindingHelper.registerKeyBinding(binding);
 		return binding;
 	}

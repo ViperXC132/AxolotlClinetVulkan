@@ -42,10 +42,9 @@ dependencies {
 
 	modApi(include("io.github.moehreag:search-in-resources:1.0.6+1.8.9")!!)
 
-	val lwjglVersion = "3.3.5"
+	val lwjglVersion = "3.3.6"
 	api("org.lwjgl:lwjgl-nanovg:$lwjglVersion")
 	runtimeOnly("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-linux")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-linux-arm64")
 	runtimeOnly("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-windows")
 	runtimeOnly("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-windows-arm64")
 	runtimeOnly("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-macos")
@@ -59,15 +58,14 @@ dependencies {
 	localRuntime("org.slf4j:slf4j-jdk14:1.7.36")
 
 	compileOnly("org.lwjgl:lwjgl-glfw:${lwjglVersion}")
+	compileOnly("org.lwjgl:lwjgl-sdl:3.4.0-SNAPSHOT")
 
-	modCompileOnly("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}")
-	modLocalRuntime("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}:all-remapped")
+	modImplementation("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}")
 
 	include(implementation("org.lwjgl", "lwjgl-tinyfd", lwjglVersion))
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-linux"))
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-windows"))
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-macos"))
-	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-linux-arm64"))
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-windows-arm64"))
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-macos-arm64"))
 
@@ -79,6 +77,7 @@ dependencies {
 }
 
 configurations.configureEach {
+	exclude("org.lwjgl.lwjgl")
 	resolutionStrategy {
 		dependencySubstitution {
 			substitute(module("io.netty:netty-all:4.0.23.Final")).using(module("io.netty:netty-all:4.0.56.Final"))
@@ -102,6 +101,7 @@ tasks.runClient {
 		jvmArgs("-Dorg.lwjgl.glfw.libname=$glfwPath")
 	}
 	classpath(sourceSets.getByName("test").runtimeClasspath)
+	jvmArgs("-XX:+AllowEnhancedClassRedefinition", "-XX:+IgnoreUnrecognizedVMOptions")
 }
 
 tasks.withType(JavaCompile::class).configureEach {

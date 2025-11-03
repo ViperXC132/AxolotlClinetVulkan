@@ -35,6 +35,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.mixin.ParticleAccessor;
 import io.github.axolotlclient.modules.AbstractModule;
 import io.github.axolotlclient.util.ClientColors;
+import lombok.Getter;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.particle.ParticleType;
 import net.minecraft.particle.ParticleTypes;
@@ -43,6 +44,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class Particles extends AbstractModule {
 
+	@Getter
 	private static final Particles Instance = new Particles();
 
 	public final HashMap<ParticleType<?>, HashMap<String, Option<?>>> particleOptions = new HashMap<>();
@@ -50,10 +52,6 @@ public class Particles extends AbstractModule {
 
 	private final OptionCategory cat = OptionCategory.create("particles");
 	private final BooleanOption enabled = new BooleanOption("enabled", false);
-
-	public static Particles getInstance() {
-		return Instance;
-	}
 
 	@Override
 	public void init() {
@@ -66,6 +64,7 @@ public class Particles extends AbstractModule {
 	private void addParticleOptions() {
 		for (ParticleType<?> type : Registries.PARTICLE_TYPE.stream().sorted(new AlphabeticalComparator()).toList()) {
 			if (Registries.PARTICLE_TYPE.getId(type) != null) {
+				//noinspection DataFlowIssue
 				OptionCategory category = OptionCategory.create(
 					Arrays.stream(Registries.PARTICLE_TYPE.getId(type).getPath().split("_"))
 						.map(StringUtils::capitalize).collect(Collectors.joining(" ")));
@@ -145,6 +144,7 @@ public class Particles extends AbstractModule {
 
 		private String getName(ParticleType<?> type) {
 			if (Registries.PARTICLE_TYPE.getId(type) != null) {
+				//noinspection DataFlowIssue
 				return Registries.PARTICLE_TYPE.getId(type).getPath();
 			}
 			return "";

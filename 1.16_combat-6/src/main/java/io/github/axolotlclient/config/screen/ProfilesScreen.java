@@ -66,6 +66,7 @@ public class ProfilesScreen extends Screen {
 	@Override
 	public void onClose() {
 		Profiles.getInstance().saveProfiles();
+		//noinspection DataFlowIssue
 		client.openScreen(parent);
 	}
 
@@ -114,14 +115,13 @@ public class ProfilesScreen extends Screen {
 
 		@Environment(EnvType.CLIENT)
 		public class ProfileEntry extends Entry {
+			private static final Text EXPORT_BUTTON_TITLE = new TranslatableText("profiles.profile.export");
 			private static final Text CURRENT_TEXT = new TranslatableText("profiles.profile.current");
 			private static final Text LOAD_BUTTON_TITLE = new TranslatableText("profiles.profile.load");
 			private static final Text DUPLICATE_BUTTON_TITLE = new TranslatableText("profiles.profile.duplicate");
 			private static final Text REMOVE_BUTTON_TITLE = new TranslatableText("profiles.profile.remove");
 			private final TextFieldWidget profileName;
-			private final ButtonWidget loadButton;
-			private final ButtonWidget duplicateButton;
-			private final ButtonWidget removeButton;
+			private final ButtonWidget exportButton, loadButton, duplicateButton, removeButton;
 			private final Profiles.Profile profile;
 
 			ProfileEntry(Profiles.Profile profile) {
@@ -129,6 +129,8 @@ public class ProfilesScreen extends Screen {
 				profileName = new TextFieldWidget(textRenderer, 0, 0, 150, 20, LiteralText.EMPTY);
 				profileName.setText(profile.name());
 				profileName.setChangedListener(profile::setName);
+				exportButton = new ButtonWidget(0, 0, 50, 20, EXPORT_BUTTON_TITLE, btn ->
+					Profiles.getInstance().exportProfile(profile));
 				loadButton = new ButtonWidget(0, 0, 50, 20, LOAD_BUTTON_TITLE, btn ->
 					Profiles.getInstance().switchTo(profile));
 				duplicateButton = new ButtonWidget(0, 0, 50, 20, DUPLICATE_BUTTON_TITLE, b -> {
@@ -160,11 +162,15 @@ public class ProfilesScreen extends Screen {
 
 				boolean current = Profiles.getInstance().getCurrent() == profile;
 				loadButton.setMessage(current ? CURRENT_TEXT : LOAD_BUTTON_TITLE);
-				loadButton.active = !current;
+				loadButton.active = removeButton.active = !current;
 				i -= loadButton.getWidth();
 				this.loadButton.x = i;
 				loadButton.y = j;
 				this.loadButton.render(guiGraphics, mouseX, mouseY, partialTick);
+				i -= exportButton.getWidth();
+				exportButton.x = i;
+				exportButton.y = j;
+				exportButton.render(guiGraphics, mouseX, mouseY, partialTick);
 				profileName.setWidth(i - left - 4);
 				profileName.x = left;
 				profileName.y = j;
@@ -179,7 +185,7 @@ public class ProfilesScreen extends Screen {
 
 		public class NewEntry extends Entry {
 
-			private final ButtonWidget addButton;
+			private final ButtonWidget addButton, importButton;
 
 			public NewEntry() {
 				this.addButton = new ButtonWidget(0, 0, 150, 20, new TranslatableText("profiles.profile.add"), button -> {
@@ -188,20 +194,25 @@ public class ProfilesScreen extends Screen {
 					Profiles.getInstance().saveProfiles();
 					setScrollAmount(Math.max(0, getMaxPosition() - (bottom - top - 4)));
 				});
+				this.importButton = new ButtonWidget(0, 0, 150, 20, new TranslatableText("profiles.profile.import"), btn ->
+					Profiles.getInstance().importProfiles().thenRun(ProfilesList.this::reload));
 			}
 
 			@Override
 			public void render(MatrixStack guiGraphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
-				int i = getScrollbarPositionX() - width / 2 - 10 - addButton.getWidth() / 2;
+				int i = getScrollbarPositionX() - width / 2 - 10 - addButton.getWidth() + 2;
 				int j = top - 2;
 				this.addButton.x = i;
 				addButton.y = j;
 				this.addButton.render(guiGraphics, mouseX, mouseY, partialTick);
+				this.importButton.x = addButton.x + addButton.getWidth() + 2;
+				this.importButton.y = j;
+				this.importButton.render(guiGraphics, mouseX, mouseY, partialTick);
 			}
 
 			@Override
 			public List<? extends Element> children() {
-				return List.of(addButton);
+				return List.of(addButton, importButton);
 			}
 		}
 	}

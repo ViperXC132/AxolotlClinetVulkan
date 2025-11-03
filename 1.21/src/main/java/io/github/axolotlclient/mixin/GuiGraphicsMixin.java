@@ -31,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(GuiGraphics.class)
-public class GuiGraphicsMixin {
+public abstract class GuiGraphicsMixin {
 
 	@ModifyVariable(method = "drawTooltip(Lnet/minecraft/client/font/TextRenderer;Ljava/util/List;IILnet/minecraft/client/gui/tooltip/TooltipPositioner;)V",
 		at = @At("STORE"), index = 11)

@@ -80,7 +80,7 @@ public class Bridge {
 		ClientConnectionEvents.DISCONNECT.register(mc -> Events.DISCONNECT.invoker().run());
 	}
 
-    public static void postInit() {
+	public static void postInit() {
 		Events.COMMAND_REGISTER.invoker().accept(CommandsImpl.getInstance());
-    }
+	}
 }

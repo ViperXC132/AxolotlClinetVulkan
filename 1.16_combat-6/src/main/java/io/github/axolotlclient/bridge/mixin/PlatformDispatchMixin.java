@@ -57,7 +57,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(value = PlatformDispatch.class, remap = false)
-public class PlatformDispatchMixin {
+public abstract class PlatformDispatchMixin {
 	@Unique
 	private static void getRealTimeServerPing(ServerInfo server, MutableInt currentServerPing) {
 		ThreadExecuter.scheduleTask(() -> {
@@ -124,7 +124,7 @@ public class PlatformDispatchMixin {
 		final var minecraft = MinecraftClient.getInstance();
 		final var serverEntry = minecraft.getCurrentServerEntry();
 
-		final var img = NativeImage.read(Objects.requireNonNull(serverEntry == null ? minecraft.getServer().getServerMetadata().getFavicon() : serverEntry.getIcon()));
+		final var img = NativeImage.read(Objects.requireNonNull(serverEntry == null ? minecraft.getServer().getServerMetadata().getFavicon().substring("data:image/png;base64,".length()) : serverEntry.getIcon()));
 		final var icon = new NativeImageBackedTexture(img);
 		final var iconId = new Identifier("axolotlclient",
 			serverEntry == null ? "worlds/" + Hashing.sha1().hashUnencodedChars(((MinecraftServerAccessor) minecraft.getServer()).getStorageSource().getDirectoryName()) + "/icon" :
@@ -137,7 +137,7 @@ public class PlatformDispatchMixin {
 			@Override
 			public void draw(MinecraftClient client, MatrixStack stack, int sX, int sY, int sW, int sH) {
 				client.getTextureManager().bindTexture(iconId);
-				DrawUtil.drawTexture(stack, sX, sY, 0, 0, sW, sH,  sW, sH);
+				DrawUtil.drawTexture(stack, sX, sY, 0, 0, sW, sH, sW, sH);
 			}
 
 			@Override

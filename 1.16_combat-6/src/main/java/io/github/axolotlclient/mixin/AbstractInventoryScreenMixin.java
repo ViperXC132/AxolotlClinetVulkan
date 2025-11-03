@@ -29,7 +29,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 @Mixin(AbstractInventoryScreen.class)
-public class AbstractInventoryScreenMixin {
+public abstract class AbstractInventoryScreenMixin {
 
 	@WrapWithCondition(method = "applyStatusEffectOffset", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/screen/ingame/AbstractInventoryScreen;x:I"))
 	private boolean noInventoryShift(AbstractInventoryScreen<?> instance, int value) {

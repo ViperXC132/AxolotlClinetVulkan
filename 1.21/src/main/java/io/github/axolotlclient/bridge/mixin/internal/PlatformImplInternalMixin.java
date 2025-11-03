@@ -68,24 +68,24 @@ import org.spongepowered.asm.mixin.Overwrite;
 
 @SuppressWarnings("OverwriteModifiers")
 @Mixin(value = PlatformImplInternal.class, remap = false)
-public class PlatformImplInternalMixin {
-    /**
-     * @author Flowey
-     * @reason Implement bridge platform.
-     */
-    @Overwrite
-    public static @Nullable AxoWindow getWindow() {
-        return MinecraftClient.getInstance().getWindow();
-    }
+public abstract class PlatformImplInternalMixin {
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static @Nullable AxoWindow getWindow() {
+		return MinecraftClient.getInstance().getWindow();
+	}
 
-    /**
-     * @author Flowey
-     * @reason Implement bridge platform.
-     */
-    @Overwrite
-    public static AxoMinecraftClient getMinecraftClientInstance() {
-        return MinecraftClient.getInstance();
-    }
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static AxoMinecraftClient getMinecraftClientInstance() {
+		return MinecraftClient.getInstance();
+	}
 
 	/**
 	 * @author moehreag
@@ -96,71 +96,71 @@ public class PlatformImplInternalMixin {
 		return MinecraftClient.getInstance().getProfiler();
 	}
 
-    /**
-     * @author Flowey
-     * @reason Implement bridge platform.
-     */
-    @Overwrite
-    public static String getTranslatedString(String nameKey, Object[] args) {
-        return I18n.translate(nameKey, args);
-    }
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static String getTranslatedString(String nameKey, Object[] args) {
+		return I18n.translate(nameKey, args);
+	}
 
-    /**
-     * @author Flowey
-     * @reason Implement bridge platform.
-     */
-    @Overwrite
-    public static AxoItemStack createItemStack(AxoItem item, int count) {
-        return new ItemStack((Item) item, count);
-    }
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static AxoItemStack createItemStack(AxoItem item, int count) {
+		return new ItemStack((Item) item, count);
+	}
 
-    /**
-     * @author Flowey
-     * @reason Implement bridge platform.
-     */
-    @Overwrite
-    public static long getMeasuringTimeMs() {
-        return Util.getMeasuringTimeMs();
-    }
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static long getMeasuringTimeMs() {
+		return Util.getMeasuringTimeMs();
+	}
 
-    /**
-     * @author Flowey
-     * @reason Implement bridge platform.
-     */
-    @Overwrite
-    public static AxolotlClientConfigCommon getConfig() {
-        return AxolotlClient.config();
-    }
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static AxolotlClientConfigCommon getConfig() {
+		return AxolotlClient.config();
+	}
 
-    /**
-     * @author Flowey
-     * @reason Implement bridge platform.
-     */
-    @Overwrite
-    public static int getCurrentFps() {
-        return MinecraftClientAccessor.axolotlclient$getCurrentFps();
-    }
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static int getCurrentFps() {
+		return MinecraftClientAccessor.axolotlclient$getCurrentFps();
+	}
 
-    /**
-     * @author Flowey
-     * @reason Implement bridge platform.
-     */
-    @Overwrite
-    public static AxoKeybinding createKeyBinding(AxoKey defaultKey, String name, String category) {
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static AxoKeybinding createKeyBinding(AxoKey defaultKey, String name) {
 		int code = ((InputUtil.Key) Objects.requireNonNullElse(defaultKey, AxoKeys.KEY_UNKNOWN)).getKeyCode();
-		final var binding = new KeyBind(name, code, category);
+		final var binding = new KeyBind(name, code, "category.axolotlclient");
 		KeyBinds.getInstance().register(binding);
 		return binding;
 	}
 
-    /**
-     * @author Flowey
-     * @reason Implement bridge platform.
-     */
-    @Overwrite
-    public static AxoIdentifier createIdentifier(String ns, String path) {
-        return Identifier.of(ns, path);
-    }
+	/**
+	 * @author Flowey
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static AxoIdentifier createIdentifier(String ns, String path) {
+		return Identifier.of(ns, path);
+	}
 
 	/**
 	 * @author Flowey

@@ -35,7 +35,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = AxoKeys.class, remap = false)
-public class AxoKeysMixin {
+public abstract class AxoKeysMixin {
 
 	@Mutable
 	@Shadow

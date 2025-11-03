@@ -26,9 +26,9 @@ import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import io.github.axolotlclient.modules.hud.gui.hud.PackDisplayHud;
 import io.github.axolotlclient.modules.hud.gui.hud.PlayerHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
 import io.github.axolotlclient.modules.hud.gui.hud.simple.ComboHud;
 import io.github.axolotlclient.modules.hud.gui.hud.simple.ReachHud;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 
@@ -36,7 +36,7 @@ import net.minecraft.client.MinecraftClient;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 public class HudManager extends HudManagerCommon {
 	@Getter
@@ -67,7 +67,7 @@ public class HudManager extends HudManagerCommon {
 	public void render(AxoRenderContext context, float delta) {
 		final var mc = ((MinecraftClient) client);
 		mc.getProfiler().push("Hud render");
-		if(!(mc.currentScreen instanceof HudEditScreen)) {
+		if (!(mc.currentScreen instanceof HudEditScreen)) {
 			super.render(context, delta);
 		}
 		mc.getProfiler().pop();

@@ -35,6 +35,7 @@ import io.github.axolotlclient.api.requests.ChannelRequest;
 import io.github.axolotlclient.api.types.Channel;
 import io.github.axolotlclient.api.types.User;
 import io.github.axolotlclient.api.util.AlphabeticalComparator;
+import lombok.Getter;
 import net.minecraft.client.gui.AbstractParentElement;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
@@ -50,6 +51,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.glfw.GLFW;
 
+@SuppressWarnings("deprecation")
 public class ChatsSidebar extends Screen implements ContextMenuScreen {
 
 	private static final int ANIM_STEP = 8;
@@ -182,6 +184,7 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 	}
 
 	private void close() {
+		//noinspection DataFlowIssue
 		client.openScreen(parent);
 		if (chatWidget != null) {
 			chatWidget.remove();
@@ -219,9 +222,11 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 		int w;
 		if (channel.isDM()) {
 			User chatUser = ((Channel.DM) channel).getReceiver();
+			//noinspection DataFlowIssue
 			w = Math.max(client.textRenderer.getWidth(chatUser.getStatus().getTitle() + ": " + chatUser.getStatus().getDescription()) + 5,
 				client.textRenderer.getWidth(channel.getName()));
 		} else {
+			//noinspection DataFlowIssue
 			w = client.textRenderer.getWidth(channel.getName());
 		}
 		sidebarWidth = Math.min(Math.max(width * 5 / 12, w + 5), width / 2);
@@ -271,6 +276,7 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 		private final int height;
 		private final int entryHeight = 25;
 		protected boolean hovered;
+		@Getter
 		private int x;
 		private int scrollAmount;
 		private boolean visible;
@@ -328,10 +334,6 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 		@Override
 		public boolean isMouseOver(double mouseX, double mouseY) {
 			return hovered = visible && mouseX >= (double) this.x && mouseY >= (double) this.y && mouseX < (double) (this.x + this.width) && mouseY < (double) (this.y + this.height);
-		}
-
-		public int getX() {
-			return x;
 		}
 
 		public void setX(int x) {

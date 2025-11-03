@@ -40,7 +40,7 @@ import net.minecraft.util.Identifier;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 
 public class ActionBarHud extends TextHudEntry {
@@ -106,6 +106,7 @@ public class ActionBarHud extends TextHudEntry {
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
+		options.add(hide);
 		options.add(timeShown);
 		options.add(customTextColor);
 		return options;

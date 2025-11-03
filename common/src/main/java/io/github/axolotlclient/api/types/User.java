@@ -44,7 +44,7 @@ public class User {
 	private PkSystem system;
 
 	public User(String uuid, String name, Relation relation, Instant registered, Status status, List<OldUsername> previousUsernames) {
-		this.uuid = API.getInstance().sanitizeUUID(uuid);
+		this.uuid = API.sanitizeUUID(uuid);
 		this.status = status;
 		this.name = name;
 		this.relation = relation;
@@ -83,6 +83,7 @@ public class User {
 		if (!isSystem()) {
 			return getName();
 		}
+		//noinspection DataFlowIssue
 		return getSystem().getProxy(message).orElse(getName());
 	}
 

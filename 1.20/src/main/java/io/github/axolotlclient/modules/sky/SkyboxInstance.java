@@ -46,7 +46,7 @@ import org.lwjgl.opengl.GL14;
  * This implementation of custom skies is based on the FabricSkyBoxes mod by AMereBagatelle
  * <a href="https://github.com/AMereBagatelle/FabricSkyBoxes">Github Link.</a>
  *
- * @license MIT
+ * <p>License: MIT</p>
  **/
 
 // TODO fix rotation & blending issues with shooting stars, implement more missing features like worlds, weather, biomes...
@@ -180,6 +180,7 @@ public abstract class SkyboxInstance {
 	}
 
 	public void render(MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta, Runnable runnable) {
+		//noinspection DataFlowIssue
 		float brightness = MinecraftClient.getInstance().world.getRainGradient(tickDelta);
 		matrices.push();
 		RenderSystem.setShader(GameRenderer::getPositionTexShader);
@@ -248,6 +249,7 @@ public abstract class SkyboxInstance {
 			matrices.multiply(Axis.Y_POSITIVE.rotationDegrees(rotationAxis[1]));
 			matrices.multiply(Axis.Z_POSITIVE.rotationDegrees(rotationAxis[2]));
 			matrices.multiply(Axis.Y_POSITIVE.rotationDegrees(-90.0F));
+			//noinspection DataFlowIssue
 			matrices.multiply(Axis.X_NEGATIVE.rotationDegrees(
 				MinecraftClient.getInstance().world.getSkyAngle(delta) * 360F * rotationSpeed));
 			matrices.multiply(Axis.Z_NEGATIVE.rotationDegrees(rotationAxis[0]));
@@ -277,6 +279,7 @@ public abstract class SkyboxInstance {
 			GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 
 		matrices.push();
+		//noinspection DataFlowIssue
 		float i = 1.0F - MinecraftClient.getInstance().world.getRainGradient(delta);
 		RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, i);
 		matrices.multiply(Axis.Y_POSITIVE.rotationDegrees(-90.0F));
@@ -319,7 +322,9 @@ public abstract class SkyboxInstance {
 			if (u > 0.0F) {
 				RenderSystem.setShaderColor(u, u, u, u);
 				BackgroundRenderer.clearFog();
+				//noinspection resource
 				worldRendererAccessor.axolotlclient$getStarsBuffer().bind();
+				//noinspection resource
 				worldRendererAccessor.axolotlclient$getStarsBuffer().draw(matrices.peek().getModel(), projectionMatrix,
 					GameRenderer.getPositionShader());
 				VertexBuffer.unbind();

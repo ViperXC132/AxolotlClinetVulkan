@@ -46,7 +46,7 @@ import net.minecraft.util.Identifier;
  * This implementation of custom skies is based on the FabricSkyBoxes mod by AMereBagatelle
  * <a href="https://github.com/AMereBagatelle/FabricSkyBoxes">Github Link.</a>
  *
- * @license MIT
+ * <p>License: MIT</p>
  **/
 
 public class SkyResourceManager extends AbstractModule implements SimpleSynchronousResourceReloadListener {

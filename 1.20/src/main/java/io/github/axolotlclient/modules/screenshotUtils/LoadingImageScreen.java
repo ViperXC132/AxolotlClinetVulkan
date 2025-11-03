@@ -87,10 +87,10 @@ public class LoadingImageScreen extends Screen {
 	private void drawHorizontalGradient(GuiGraphics guiGraphics, int x1, int y1, int y2, int x2) {
 		VertexConsumer consumer = client.getBufferBuilders().getEntityVertexConsumers().getBuffer(RenderLayer.getGui());
 		Matrix4f matrix4f = guiGraphics.getMatrices().peek().getModel();
-		consumer.vertex(matrix4f, x1, y1, 0).color(LoadingImageScreen.bgColor);
-		consumer.vertex(matrix4f, x1, y2, 0).color(LoadingImageScreen.bgColor);
-		consumer.vertex(matrix4f, x2, y2, 0).color(LoadingImageScreen.accent);
-		consumer.vertex(matrix4f, x2, y1, 0).color(LoadingImageScreen.accent);
+		consumer.vertex(matrix4f, x1, y1, 0).color(LoadingImageScreen.bgColor).next();
+		consumer.vertex(matrix4f, x1, y2, 0).color(LoadingImageScreen.bgColor).next();
+		consumer.vertex(matrix4f, x2, y2, 0).color(LoadingImageScreen.accent).next();
+		consumer.vertex(matrix4f, x2, y1, 0).color(LoadingImageScreen.accent).next();
 	}
 
 	private double easeInOutCubic(double x) {

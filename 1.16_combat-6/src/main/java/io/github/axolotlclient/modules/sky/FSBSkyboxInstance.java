@@ -40,9 +40,10 @@ import net.minecraft.util.math.Matrix4f;
  * This implementation of custom skies is based on the FabricSkyBoxes mod by AMereBagatelle
  * <a href="https://github.com/AMereBagatelle/FabricSkyBoxes">Github Link.</a>
  *
- * @license MIT
+ * <p>License: GPL-3.0</p>
  **/
 
+@SuppressWarnings("deprecation")
 public class FSBSkyboxInstance extends SkyboxInstance {
 
 	public FSBSkyboxInstance(JsonObject json) {

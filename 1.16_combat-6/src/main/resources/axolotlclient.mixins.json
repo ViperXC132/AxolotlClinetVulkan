@@ -17,6 +17,7 @@
 		"ClientPlayerEntityMixin",
 		"ClientPlayNetworkHandlerMixin",
 		"ClientWorldMixin",
+		"ConfigVanillaButtonWidgetMixin",
 		"DebugHudMixin",
 		"DownloadingTerrainScreenMixin",
 		"EmitterParticleMixin",
@@ -62,6 +63,7 @@
 		"WorldRendererAccessor",
 		"WorldRendererMixin",
 		"api.JoinMulitplayerScreenMixin",
+		"skins.PlayerSkinTextureAccessor",
 		"translation.LanguageMixin"
 	],
 	"injectors": {

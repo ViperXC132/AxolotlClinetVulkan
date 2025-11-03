@@ -26,6 +26,7 @@ import java.util.List;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
+import lombok.Getter;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -69,6 +70,7 @@ public class AccountsListWidget extends AlwaysSelectedEntryListWidget<AccountsLi
 		private static final Identifier warningSign = new Identifier("axolotlclient", "textures/warning.png");
 
 		private final AccountsScreen screen;
+		@Getter
 		private final Account account;
 		private final MinecraftClient client;
 		private long time;
@@ -81,6 +83,7 @@ public class AccountsListWidget extends AlwaysSelectedEntryListWidget<AccountsLi
 
 		@Override
 		public void render(MatrixStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			//noinspection deprecation
 			GlStateManager.color4f(1, 1, 1, 1);
 			if (Auth.getInstance().getCurrent().equals(account)) {
 				client.getTextureManager().bindTexture(checkmark);
@@ -113,8 +116,5 @@ public class AccountsListWidget extends AlwaysSelectedEntryListWidget<AccountsLi
 			return false;
 		}
 
-		public Account getAccount() {
-			return account;
-		}
 	}
 }

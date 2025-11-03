@@ -22,19 +22,15 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud;
 
-import com.mojang.blaze3d.lighting.DiffuseLighting;
-import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.axolotlclient.bridge.events.Events;
+import io.github.axolotlclient.bridge.events.types.PlayerDirectionChangeEvent;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.util.events.Events;
-import io.github.axolotlclient.util.events.impl.PlayerDirectionChangeEvent;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.Axis;
 import net.minecraft.util.math.MathHelper;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -43,7 +39,7 @@ import org.joml.Vector3f;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 
 public class PlayerHud extends PlayerHudCommon {
@@ -58,7 +54,7 @@ public class PlayerHud extends PlayerHudCommon {
 	}
 
 	public void onPlayerDirectionChange(PlayerDirectionChangeEvent event) {
-		yawOffset += (event.getYaw() - event.getPrevYaw()) / 2;
+		yawOffset += (event.yaw() - event.prevYaw()) / 2;
 	}
 
 	@Override
@@ -81,8 +77,7 @@ public class PlayerHud extends PlayerHudCommon {
 			float pitch = k * (-90.0F - client.player.getPitch()) + 90;
 			float height = client.player.getHeight();
 			// sin = opposite / hypotenuse
-			float offset = (float) (Math.sin(Math.toRadians(pitch)) * height) * 50;
-			yOffset = 35 - offset;
+			yOffset = (float) (Math.sin(Math.toRadians(pitch)) * height);
 			if (pitch < 0) {
 				yOffset -= (float) (((1 / (1 + Math.exp(-pitch / 4))) - .5) * 20);
 			}
@@ -112,56 +107,34 @@ public class PlayerHud extends PlayerHudCommon {
 
 		float lerpY = (lastYOffset + ((yOffset - lastYOffset) * delta));
 
-		MatrixStack matrixStack = RenderSystem.getModelViewStack();
-		matrixStack.push();
-		matrixStack.translate(x, y - lerpY, 1050);
-		matrixStack.scale(1, 1, -1);
-
-		RenderSystem.applyModelViewMatrix();
-		MatrixStack nextStack = new MatrixStack();
-		nextStack.translate(0, 0, 1000);
 		float scale = getScale() * 40;
-		nextStack.scale(scale, scale, scale);
 
-		Quaternionf quaternion = Axis.Z_POSITIVE.rotationDegrees(180.0F);
+		Quaternionf quaternion = new Quaternionf().rotateZ((float) Math.PI);
 
-		nextStack.multiply(quaternion);
 		// Rotate to whatever is wanted. Also make sure to offset the yaw
 		float deltaYaw = client.player.getYaw(delta);
 		if (dynamicRotation.get()) {
 			deltaYaw -= (lastYawOffset + ((yawOffset - lastYawOffset) * delta));
 		}
-		nextStack.multiply(new Quaternionf().fromAxisAngleDeg(new Vector3f(0, 1, 0), deltaYaw - 180 + rotation.get().floatValue()));
 
-		// Save these to set them back later
-		float pastYaw = client.player.getYaw();
-		float pastPrevYaw = client.player.prevYaw;
-
-		DiffuseLighting.setupInventoryEntityLighting();
-		EntityRenderDispatcher renderer = client.getEntityRenderDispatcher();
-		renderer.setRotation(quaternion);
-		renderer.setRenderShadows(false);
-
-		VertexConsumerProvider.Immediate immediate = MinecraftClient.getInstance().getBufferBuilders()
-			.getEntityVertexConsumers();
+		Quaternionf quaternionf2 = new Quaternionf().fromAxisAngleDeg(new Vector3f(0, 1, 0), deltaYaw - 180 + rotation.get().floatValue());
+		quaternion.mul(quaternionf2);
 
 		currentlyRendering = true;
-		renderer.render(client.player, 0, 0, 0, 0, delta, nextStack, immediate, 0xF000F0);
-		immediate.draw();
+		InventoryScreen.drawEntity((GuiGraphics) ctx,
+			(int) (x + getTrueWidth() / 2f),
+			(int) (y + getTrueHeight() * client.player.getHeight() / 2f - lerpY),
+			(int) scale,
+			quaternion,
+			quaternionf2,
+			client.player);
 		currentlyRendering = false;
-		renderer.setRenderShadows(true);
-		matrixStack.pop();
-
-		client.player.setYaw(pastYaw);
-		client.player.prevYaw = pastPrevYaw;
-
-		RenderSystem.applyModelViewMatrix();
-		DiffuseLighting.setup3DGuiLighting();
 	}
 
 	private boolean isPerformingAction() {
 		// inspired by tr7zw's mod
 		ClientPlayerEntity player = MinecraftClient.getInstance().player;
+		//noinspection DataFlowIssue
 		return player.isSneaking() || player.isSprinting() || player.isFallFlying() || player.getAbilities().flying
 			|| player.isSubmergedInWater() || player.isInSwimmingPose() || player.hasVehicle()
 			|| player.isUsingItem() || player.handSwinging || player.hurtTime > 0 || player.isOnFire();

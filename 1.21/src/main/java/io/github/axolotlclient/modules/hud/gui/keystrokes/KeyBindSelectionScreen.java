@@ -35,7 +35,7 @@ public class KeyBindSelectionScreen extends Screen {
 	private final Screen lastScreen;
 	public final KeystrokeHud.Keystroke stroke;
 	private KeyBindSelectionList keyBindsList;
-	public HeaderFooterLayoutWidget layout = new HeaderFooterLayoutWidget(this);
+	public final HeaderFooterLayoutWidget layout = new HeaderFooterLayoutWidget(this);
 
 	public KeyBindSelectionScreen(Screen lastScreen, KeystrokeHud.Keystroke stroke) {
 		super(TITLE);
@@ -46,9 +46,7 @@ public class KeyBindSelectionScreen extends Screen {
 	@Override
 	public void init() {
 		layout.addToHeader(getTitle(), textRenderer);
-		this.keyBindsList = this.layout.addToContents(new KeyBindSelectionList(this, this.client, key -> {
-			stroke.setKey(key);
-		}));
+		this.keyBindsList = this.layout.addToContents(new KeyBindSelectionList(this, this.client, stroke::setKey));
 
 		LinearLayoutWidget linearLayout = this.layout.addToFooter(LinearLayoutWidget.createHorizontal().setSpacing(8));
 		linearLayout.add(ButtonWidget.builder(CommonTexts.DONE, button -> this.closeScreen()).build());
@@ -64,6 +62,7 @@ public class KeyBindSelectionScreen extends Screen {
 
 	@Override
 	public void closeScreen() {
+		//noinspection DataFlowIssue
 		client.setScreen(lastScreen);
 	}
 }

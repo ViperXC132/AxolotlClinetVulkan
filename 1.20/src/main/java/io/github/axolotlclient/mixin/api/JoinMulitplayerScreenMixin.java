@@ -40,12 +40,10 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(MultiplayerScreen.class)
-public class JoinMulitplayerScreenMixin extends Screen {
+public abstract class JoinMulitplayerScreenMixin extends Screen {
 
 	@Shadow
 	@Final
@@ -65,7 +63,7 @@ public class JoinMulitplayerScreenMixin extends Screen {
 			}).position(this.width / 2 - 102, 32).width(100).build()).active = false;
 			ButtonWidget friendsCountButton = addDrawableChild(ButtonWidget.builder(Text.translatable("api.servers.friends", "..."), button -> {
 				client.setScreen(new FriendsMultiplayerScreen(this.parent));
-			}).positionAndSize(width/2+2, 32, 100, 20).build());
+			}).positionAndSize(width / 2 + 2, 32, 100, 20).build());
 			FriendRequest.getInstance().getOnlineFriendCount().thenAccept(count -> friendsCountButton.setMessage(Text.translatable("api.servers.friends", count)));
 		}
 	}
@@ -73,16 +71,18 @@ public class JoinMulitplayerScreenMixin extends Screen {
 	@WrapOperation(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/multiplayer/MultiplayerServerListWidget;updateSize(IIII)V"))
 	private void increaseHeaderSize(MultiplayerServerListWidget instance, int width, int height, int top, int bottom, Operation<Void> original) {
 		if (API.getInstance().isAuthenticated() && !WORLD_HOST_INSTALLED) {
-			top += 32 - 60;
+			top -= 32;
+			top += 60;
 		}
 		original.call(instance, width, height, top, bottom);
 	}
 
-	@ModifyArgs(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/multiplayer/MultiplayerServerListWidget;<init>(Lnet/minecraft/client/gui/screen/multiplayer/MultiplayerScreen;Lnet/minecraft/client/MinecraftClient;IIIII)V"))
-	private void increaseHeaderSize$2(Args args) {
+	@ModifyArg(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/multiplayer/MultiplayerServerListWidget;<init>(Lnet/minecraft/client/gui/screen/multiplayer/MultiplayerScreen;Lnet/minecraft/client/MinecraftClient;IIIII)V"), index = 4)
+	private int increaseHeaderSize$2(int par3) {
 		if (API.getInstance().isAuthenticated() && !WORLD_HOST_INSTALLED) {
-			args.set(4, ((Integer)args.get(4)) - 32 + 60);
+			par3 = par3 - 32 + 60;
 		}
+		return par3;
 	}
 
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawCenteredShadowedText(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)V"), index = 3)

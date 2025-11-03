@@ -23,9 +23,13 @@
 package io.github.axolotlclient.config.profiles;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -39,10 +43,18 @@ import com.google.gson.stream.JsonWriter;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.bridge.util.AxoI18n;
 import io.github.axolotlclient.util.GsonHelper;
+import io.github.axolotlclient.util.ThreadExecuter;
 import lombok.Setter;
+import net.fabricmc.loader.api.FabricLoader;
+import org.jetbrains.annotations.NotNull;
+import org.lwjgl.system.MemoryStack;
+import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 public class Profiles {
 	private static final Path PROFILES_CONFIG = AxolotlClientCommon.resolveConfigFile("profiles").resolve("profiles.json");
+	private static final String PROFILE_EXPORT_FILE_EXTENSION = ".axoprofile";
+	private static final DateTimeFormatter EXPORT_TIME_FORMAT = new DateTimeFormatterBuilder().appendPattern("yyyy_MM_dd-HH_mm_ss").toFormatter();
+	private static final String PROFILE_INFO_FILE = "profile_info.json";
 
 	public static Profiles getInstance() {
 		return INSTANCE;
@@ -131,6 +143,111 @@ public class Profiles {
 		return duplicate;
 	}
 
+	public void exportProfile(Profile profile) {
+		ThreadExecuter.scheduleTask(() -> {
+			try (MemoryStack stack = MemoryStack.stackPush()) {
+				var pointers = stack.mallocPointer(1);
+				pointers.put(stack.UTF8("*" + PROFILE_EXPORT_FILE_EXTENSION));
+				pointers.flip();
+				var out = TinyFileDialogs.tinyfd_saveFileDialog("Choose export destination",
+					FabricLoader.getInstance().getGameDir()
+						.resolve(LocalDateTime.now().format(EXPORT_TIME_FORMAT) + "_" + profile.name() + PROFILE_EXPORT_FILE_EXTENSION).toString(),
+					pointers, null);
+				if (out == null) {
+					return;
+				}
+				if (!out.endsWith(PROFILE_EXPORT_FILE_EXTENSION)) {
+					AxolotlClientCommon.getInstance().getNotificationProvider()
+						.addStatus("profiles.profile.export.notification.failed",
+							"profiles.profile.export.notification.failed.invalid_destination");
+					return;
+				}
+				var outPath = Path.of(out);
+				Files.deleteIfExists(outPath);
+				try (var fs = FileSystems.newFileSystem(outPath, Map.of("create", "true"))) {
+					var realRoot = profile.getPath();
+					Files.walkFileTree(realRoot, new SimpleFileVisitor<>() {
+						@Override
+						public @NotNull FileVisitResult visitFile(@NotNull Path file, @NotNull BasicFileAttributes attrs) throws IOException {
+							var zipped = fs.getPath("profile").resolve(realRoot.relativize(file).toString());
+							Files.createDirectories(zipped.getParent());
+							Files.copy(file, zipped);
+							return super.visitFile(file, attrs);
+						}
+					});
+					Files.writeString(fs.getPath(PROFILE_INFO_FILE), GsonHelper.GSON.toJson(new ProfileInfo(profile)));
+				}
+				AxolotlClientCommon.getInstance().getNotificationProvider()
+					.addStatus("profiles.profile.export.notification.success",
+						"profiles.profile.export.notification.success.desc", profile.name(), FabricLoader.getInstance().getGameDir().relativize(outPath));
+			} catch (IOException e) {
+				AxolotlClientCommon.getInstance().getLogger().info("Failed to export profile", e);
+				AxolotlClientCommon.getInstance().getNotificationProvider()
+					.addStatus("profiles.profile.export.notification.failed",
+						"profiles.profile.export.notification.failed.generic");
+			}
+		});
+	}
+
+	public CompletableFuture<List<Profile>> importProfiles() {
+		return CompletableFuture.supplyAsync(() -> {
+			try (MemoryStack stack = MemoryStack.stackPush()) {
+				var pointers = stack.mallocPointer(1);
+				pointers.put(stack.UTF8("*" + PROFILE_EXPORT_FILE_EXTENSION));
+				pointers.flip();
+				var files = TinyFileDialogs.tinyfd_openFileDialog("Import Profile",
+					FabricLoader.getInstance().getGameDir().toString(),
+					pointers,
+					null, true
+				);
+				if (files == null) return Collections.emptyList();
+				var imported = Arrays.stream(files.split("\\|")).map(Path::of)
+					.map(p -> {
+						try (var fs = FileSystems.newFileSystem(p)) {
+							var profileInfoPath = fs.getPath(PROFILE_INFO_FILE);
+							if (!Files.exists(profileInfoPath)) {
+								AxolotlClientCommon.getInstance().getLogger().warn("Skipping bad profile file at {}", p);
+								AxolotlClientCommon.getInstance().getNotificationProvider().addStatus("profiles.profile.import.notification.failed", "profiles.profile.import.notification.malformed_profile", p.getFileName());
+								return null;
+							}
+							var profileInfo = GsonHelper.GSON.fromJson(Files.readString(profileInfoPath), ProfileInfo.class);
+							var newProfile = newProfile(profileInfo.name());
+							Files.createDirectories(newProfile.getPath());
+							var fakeRoot = fs.getPath("/profile");
+							Files.walkFileTree(fakeRoot, new SimpleFileVisitor<>() {
+								@Override
+								public @NotNull FileVisitResult visitFile(@NotNull Path file, @NotNull BasicFileAttributes attrs) throws IOException {
+									Files.copy(file, newProfile.getPath().resolve(fakeRoot.relativize(file).toString()));
+									return super.visitFile(file, attrs);
+								}
+							});
+							return newProfile;
+						} catch (Exception e) {
+							AxolotlClientCommon.getInstance().getLogger().warn("Failed to import profile from {}", p, e);
+							AxolotlClientCommon.getInstance().getNotificationProvider()
+								.addStatus("profiles.profile.import.notification.failed",
+									"profiles.profile.import.notification.failed.generic");
+							return null;
+						}
+					}).filter(Objects::nonNull).toList();
+				saveProfiles();
+				if (!imported.isEmpty()) {
+					var count = imported.size();
+					if (count == 1) {
+						AxolotlClientCommon.getInstance().getNotificationProvider()
+							.addStatus("profiles.profile.import.notification.success",
+								"profiles.profile.import.notification.success.desc.one");
+					} else {
+						AxolotlClientCommon.getInstance().getNotificationProvider()
+							.addStatus("profiles.profile.import.notification.success",
+								"profiles.profile.import.notification.success.desc.more", count);
+					}
+				}
+				return imported;
+			}
+		}, ThreadExecuter.service());
+	}
+
 	public static final class Profile {
 		@Setter
 		private String name;
@@ -151,20 +268,6 @@ public class Profiles {
 
 		public String id() {
 			return id;
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj == this) return true;
-			if (obj == null || obj.getClass() != this.getClass()) return false;
-			var that = (Profile) obj;
-			return Objects.equals(this.name, that.name) &&
-				Objects.equals(this.id, that.id);
-		}
-
-		@Override
-		public int hashCode() {
-			return Objects.hash(name, id);
 		}
 
 		@Override
@@ -233,6 +336,37 @@ public class Profiles {
 				.map(e -> new Profile(e.get("name"), e.get("id"))).toList();
 			Map<String, Profile> profiles = available.stream().collect(Collectors.toMap(Profile::id, Function.identity()));
 			return new ProfileStorage(profiles.get((String) obj.get("current")), available);
+		}
+	}
+
+	@JsonAdapter(ProfileInfo.ProfileInfoAdapter.class)
+	public record ProfileInfo(String name, String id) {
+		public ProfileInfo(Profile p) {
+			this(p.name(), p.id());
+		}
+
+		public static class ProfileInfoAdapter extends TypeAdapter<ProfileInfo> {
+
+			@Override
+			public void write(JsonWriter jsonWriter, ProfileInfo profileInfo) throws IOException {
+				if (profileInfo == null) {
+					jsonWriter.nullValue();
+					return;
+				}
+				jsonWriter.beginObject();
+				jsonWriter.name("name").value(profileInfo.name())
+					.name("id").value(profileInfo.id());
+				jsonWriter.endObject();
+			}
+
+			@Override
+			public ProfileInfo read(JsonReader jsonReader) throws IOException {
+				if (jsonReader.peek() == JsonToken.NULL) return null;
+
+				@SuppressWarnings("unchecked") var map = (Map<String, String>) GsonHelper.read(jsonReader);
+				if (map == null) return null;
+				return new ProfileInfo(map.get("name"), map.get("id"));
+			}
 		}
 	}
 }

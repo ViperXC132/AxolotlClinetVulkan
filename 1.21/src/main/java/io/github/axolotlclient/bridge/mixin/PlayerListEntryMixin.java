@@ -32,7 +32,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(PlayerListEntry.class)
-public class PlayerListEntryMixin implements AxoPlayerListEntry {
+public abstract class PlayerListEntryMixin implements AxoPlayerListEntry {
 	@Shadow
 	@Final
 	private GameProfile profile;

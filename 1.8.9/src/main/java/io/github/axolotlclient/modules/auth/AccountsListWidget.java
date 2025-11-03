@@ -27,6 +27,7 @@ import java.util.List;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import lombok.Getter;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -95,6 +96,7 @@ public class AccountsListWidget extends EntryListWidget {
 		private static final Identifier warningSign = new Identifier("axolotlclient", "textures/warning.png");
 
 		private final AccountsScreen screen;
+		@Getter
 		private final Account account;
 		private final Minecraft client;
 		private long time;
@@ -150,8 +152,5 @@ public class AccountsListWidget extends EntryListWidget {
 
 		}
 
-		public Account getAccount() {
-			return account;
-		}
 	}
 }

@@ -156,4 +156,9 @@ public abstract class MinecraftClientMixin extends ReentrantThreadExecutor<Runna
 	public AxoResourceManager br$getResourceManager() {
 		return getResourceManager();
 	}
+
+	@Override
+	public Object br$getScreen() {
+		return currentScreen;
+	}
 }

@@ -23,6 +23,8 @@
 package io.github.axolotlclient.bridge.mixin.util;
 
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.bridge.util.AxoText;
 import net.minecraft.text.Formatting;
@@ -31,6 +33,7 @@ import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -55,6 +58,13 @@ public abstract class StyleMixin implements AxoText.Style {
 
 	@Shadow
 	private Style parent;
+
+	@Shadow
+	protected abstract Style getParent();
+
+	@Shadow
+	@Final
+	private static Style ROOT;
 
 	@Override
 	public AxoText.Style br$color(AxoText.Color color) {
@@ -85,9 +95,18 @@ public abstract class StyleMixin implements AxoText.Style {
 		return copy;
 	}
 
+	@Unique
+	private Integer axolotlclient$getColor() {
+		if (((Object) this) == ROOT) return null;
+		if (axolotlclient$color == null) {
+			return ((StyleMixin) (Object) getParent()).axolotlclient$getColor();
+		}
+		return axolotlclient$color;
+	}
+
 	@ModifyReturnValue(method = "copy", at = @At("RETURN"))
 	public Style copyColor(Style original) {
-		((StyleMixin) (Object) original).axolotlclient$color = axolotlclient$color;
+		((StyleMixin) (Object) original).axolotlclient$color = axolotlclient$getColor();
 		return original;
 	}
 
@@ -104,16 +123,15 @@ public abstract class StyleMixin implements AxoText.Style {
 
 	@Inject(method = "asString", at = @At(value = "INVOKE", target = "Lnet/minecraft/text/Style;isBold()Z"))
 	private void formatColorCode(CallbackInfoReturnable<String> cir, @Local StringBuilder sb) {
-		Integer color = null;
-		StyleMixin s = this;
-
-		while (s != null && color == null) {
-			color = s.axolotlclient$color;
-			s = (StyleMixin) (Object) s.parent;
-		}
+		Integer color = axolotlclient$getColor();
 
 		if (color != null) {
 			sb.append("§#").append(StringUtils.leftPad(Integer.toUnsignedString(color & 0xffffff, 16), 6, "0"));
 		}
+	}
+
+	@WrapMethod(method = "isEmpty")
+	private boolean isEmptyColor(Operation<Boolean> original) {
+		return original.call() && axolotlclient$color == null;
 	}
 }

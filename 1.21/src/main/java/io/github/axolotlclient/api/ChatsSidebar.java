@@ -33,6 +33,7 @@ import io.github.axolotlclient.api.requests.ChannelRequest;
 import io.github.axolotlclient.api.types.Channel;
 import io.github.axolotlclient.api.types.User;
 import io.github.axolotlclient.api.util.AlphabeticalComparator;
+import lombok.Getter;
 import net.minecraft.client.gui.*;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
@@ -75,6 +76,7 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 		graphics.getMatrices().translate(0, 0, 1000);
 		graphics.fill(sidebarAnimX, 0, sidebarWidth + sidebarAnimX, height, 0x99000000);
 
+		//noinspection DataFlowIssue
 		graphics.drawShadowedText(client.textRenderer, Text.translatable("api.chats"), 10 + sidebarAnimX, 10, -1);
 
 		if (hasChat) {
@@ -166,6 +168,7 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 	}
 
 	private void close() {
+		//noinspection DataFlowIssue
 		client.setScreen(parent);
 		if (chatWidget != null) {
 			chatWidget.remove();
@@ -203,9 +206,11 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 		int w;
 		if (channel.isDM()) {
 			User chatUser = ((Channel.DM) channel).getReceiver();
+			//noinspection DataFlowIssue
 			w = Math.max(client.textRenderer.getWidth(I18n.translate(chatUser.getStatus().getTitle()) + ":" + I18n.translate(chatUser.getStatus().getDescription())),
 				client.textRenderer.getWidth(channel.getName()));
 		} else {
+			//noinspection DataFlowIssue
 			w = client.textRenderer.getWidth(channel.getName());
 		}
 		sidebarWidth = Math.min(Math.max(width * 5 / 12, w + 5), width / 2);
@@ -255,6 +260,7 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 		private final int height;
 		private final int entryHeight = 25;
 		protected boolean hovered;
+		@Getter
 		private int x;
 		private int scrollAmount;
 		private boolean visible;
@@ -312,10 +318,6 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 		@Override
 		public boolean isMouseOver(double mouseX, double mouseY) {
 			return hovered = visible && mouseX >= (double) this.x && mouseY >= (double) this.y && mouseX < (double) (this.x + this.width) && mouseY < (double) (this.y + this.height);
-		}
-
-		public int getX() {
-			return x;
 		}
 
 		public void setX(int x) {

@@ -25,6 +25,7 @@ package io.github.axolotlclient.modules.auth;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import lombok.Getter;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -70,6 +71,7 @@ public class AccountsListWidget extends AlwaysSelectedEntryListWidget<AccountsLi
 		private static final Identifier warningSign = Identifier.of("axolotlclient", "textures/warning.png");
 
 		private final AccountsScreen screen;
+		@Getter
 		private final Account account;
 		private final MinecraftClient client;
 		private long time;
@@ -114,8 +116,5 @@ public class AccountsListWidget extends AlwaysSelectedEntryListWidget<AccountsLi
 			return false;
 		}
 
-		public Account getAccount() {
-			return account;
-		}
 	}
 }

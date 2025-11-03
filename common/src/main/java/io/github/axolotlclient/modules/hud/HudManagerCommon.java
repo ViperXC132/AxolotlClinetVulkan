@@ -62,15 +62,15 @@ import lombok.Getter;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 public abstract class HudManagerCommon extends AbstractCommonModule implements ProfileAware {
 	@Getter
 	private static HudManagerCommon instance;
 
 	private final static String CUSTOM_MODULE_SAVE_FILE_NAME = "custom_hud.json";
-	private final AxoKeybinding key = AxoKeybinding.create(AxoKeys.KEY_RSHIFT, "key.openHud", "category.axolotlclient");
-	private final AxoKeybinding toggleHud = AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "key.toggle_hud", "category.axolotlclient");
+	private final AxoKeybinding key = AxoKeybinding.create(AxoKeys.KEY_RSHIFT, "key.openHud");
+	private final AxoKeybinding toggleHud = AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "key.toggle_hud");
 	private final OptionCategory hudCategory = OptionCategory.create("hud");
 	private final BooleanOption enabled = new BooleanOption("enabled", true);
 	private final Map<AxoIdentifier, HudEntry> entries;
@@ -216,6 +216,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 		return this;
 	}
 
+	@SuppressWarnings("UnusedReturnValue")
 	public final HudManagerCommon addNonConfigured(AbstractHudEntry entry) {
 		entries.put(entry.getId(), entry);
 		return this;
@@ -252,7 +253,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 	public void render(AxoRenderContext context, float delta) {
 		if (!hudsEnabled()) return;
 		for (HudEntry hud : getEntries()) {
-			if (hud.isEnabled()) {
+			if (hud.isEnabled() && !hud.isHidden()) {
 				hud.render(context, delta);
 			}
 		}

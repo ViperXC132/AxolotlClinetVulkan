@@ -51,7 +51,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(MinecraftClient.class)
-public abstract class MinecraftClientMixin implements AxoMinecraftClient{
+public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	@Final
 	@Shadow
 	public TextRenderer textRenderer;
@@ -89,9 +89,10 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient{
 	public abstract ResourceManager getResourceManager();
 
 	@Override
-	public@Nullable AxoPlayer br$getPlayer() {
+	public @Nullable AxoPlayer br$getPlayer() {
 		return player;
 	}
+
 	@Override
 
 	public AxoWorld br$getWorld() {
@@ -145,12 +146,17 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient{
 	@Override
 	public void br$reinitScreen() {
 		if (currentScreen != null) {
-			currentScreen.init((MinecraftClient) (Object)this, currentScreen.width, currentScreen.height);
+			currentScreen.init((MinecraftClient) (Object) this, currentScreen.width, currentScreen.height);
 		}
 	}
 
 	@Override
 	public AxoResourceManager br$getResourceManager() {
 		return getResourceManager();
+	}
+
+	@Override
+	public Object br$getScreen() {
+		return currentScreen;
 	}
 }

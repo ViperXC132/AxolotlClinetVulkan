@@ -27,5 +27,5 @@ import net.minecraft.client.util.InputUtil;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(InputUtil.Key.class)
-public class KeyMixin implements AxoKey {
+public abstract class KeyMixin implements AxoKey {
 }

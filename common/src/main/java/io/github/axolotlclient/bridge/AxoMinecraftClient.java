@@ -120,4 +120,12 @@ public interface AxoMinecraftClient extends Executor {
 	default AxoResourceManager br$getResourceManager() {
 		throw BridgeUtil.noImpl();
 	}
+
+	/*
+	 * Return type is an opaque object because we do not have a gui bridge currently.
+	 */
+	@RequiresImpl
+	default Object br$getScreen() {
+		throw BridgeUtil.noImpl();
+	}
 }

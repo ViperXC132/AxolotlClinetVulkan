@@ -32,6 +32,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.FloatOption;
 import io.github.axolotlclient.mixin.ShaderEffectAccessor;
 import io.github.axolotlclient.modules.AbstractModule;
+import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderEffect;
 import net.minecraft.client.gl.Uniform;
@@ -43,6 +44,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class MotionBlur extends AbstractModule {
 
+	@Getter
 	private static final MotionBlur Instance = new MotionBlur();
 	public final BooleanOption enabled = new BooleanOption("enabled", false);
 	public final FloatOption strength = new FloatOption("strength", 50F, 1F, 99F);
@@ -58,10 +60,6 @@ public class MotionBlur extends AbstractModule {
 
 	private static float getBlur() {
 		return MotionBlur.getInstance().strength.get() / 100F;
-	}
-
-	public static MotionBlur getInstance() {
-		return Instance;
 	}
 
 	@Override
@@ -140,7 +138,7 @@ public class MotionBlur extends AbstractModule {
 		}
 
 		@Override
-		public void close() throws IOException {
+		public void close() {
 
 		}
 	}

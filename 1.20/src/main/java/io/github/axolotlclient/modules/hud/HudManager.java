@@ -34,7 +34,7 @@ import net.minecraft.client.MinecraftClient;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 public class HudManager extends HudManagerCommon {
 	@Getter
@@ -62,7 +62,7 @@ public class HudManager extends HudManagerCommon {
 	public void render(AxoRenderContext context, float delta) {
 		final var mc = ((MinecraftClient) client);
 		mc.getProfiler().push("Hud render");
-		if(!(mc.currentScreen instanceof HudEditScreen)) {
+		if (!(mc.currentScreen instanceof HudEditScreen)) {
 			super.render(context, delta);
 		}
 		mc.getProfiler().pop();

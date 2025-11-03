@@ -250,6 +250,7 @@ public class CreditsScreen extends Screen {
 	private class SpacerTitle extends Entry {
 
 		private final String name;
+
 		public SpacerTitle(String name) {
 			this.name = name;
 		}

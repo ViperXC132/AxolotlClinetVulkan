@@ -34,7 +34,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = AxoStatusEffects.class, remap = false)
-public class AxoStatusEffectsMixin {
+public abstract class AxoStatusEffectsMixin {
 	@Mutable
 	@Shadow
 	@Final

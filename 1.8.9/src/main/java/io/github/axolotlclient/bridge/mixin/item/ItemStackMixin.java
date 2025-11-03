@@ -39,7 +39,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(ItemStack.class)
-public abstract class ItemStackMixin implements AxoItemStack{
+public abstract class ItemStackMixin implements AxoItemStack {
 	@Shadow
 	public abstract Item getItem();
 
@@ -97,7 +97,8 @@ public abstract class ItemStackMixin implements AxoItemStack{
 	}
 
 
-	@Override	public int br$getMaxDamage() {
+	@Override
+	public int br$getMaxDamage() {
 		return getMaxDamage();
 	}
 

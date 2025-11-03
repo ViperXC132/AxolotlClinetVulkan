@@ -168,7 +168,7 @@ public abstract class InGameHudMixin {
 	@Redirect(method = "renderExperienceBar", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/hud/InGameHud;scaledHeight:I"))
 	public int axolotlclient$moveXPBarHeight(InGameHud instance) {
 		HotbarHUD hud = (HotbarHUD) HudManager.getInstance().get(HotbarHUD.ID);
-		if (HudManager.getInstance().hudsEnabled() && hud != null &&hud.isEnabled()) {
+		if (HudManager.getInstance().hudsEnabled() && hud != null && hud.isEnabled()) {
 			return hud.getY() + 22;
 		}
 		return scaledHeight;
@@ -177,7 +177,7 @@ public abstract class InGameHudMixin {
 	@Redirect(method = "renderExperienceBar", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/hud/InGameHud;scaledWidth:I"))
 	public int axolotlclient$moveXPBarWidth(InGameHud instance) {
 		HotbarHUD hud = (HotbarHUD) HudManager.getInstance().get(HotbarHUD.ID);
-		if (HudManager.getInstance().hudsEnabled() && hud != null &&hud.isEnabled()) {
+		if (HudManager.getInstance().hudsEnabled() && hud != null && hud.isEnabled()) {
 			return hud.getX() * 2 + hud.getWidth();
 		}
 		return scaledWidth;
@@ -186,7 +186,7 @@ public abstract class InGameHudMixin {
 	@Redirect(method = "renderStatusBars", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/hud/InGameHud;scaledHeight:I"))
 	public int axolotlclient$moveStatusBarsHeight(InGameHud instance) {
 		HotbarHUD hud = (HotbarHUD) HudManager.getInstance().get(HotbarHUD.ID);
-		if (HudManager.getInstance().hudsEnabled() && hud != null &&hud.isEnabled()) {
+		if (HudManager.getInstance().hudsEnabled() && hud != null && hud.isEnabled()) {
 			return hud.getY() + 22;
 		}
 		return scaledHeight;
@@ -195,7 +195,7 @@ public abstract class InGameHudMixin {
 	@Redirect(method = "renderStatusBars", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/hud/InGameHud;scaledWidth:I"))
 	public int axolotlclient$moveStatusBarsWidth(InGameHud instance) {
 		HotbarHUD hud = (HotbarHUD) HudManager.getInstance().get(HotbarHUD.ID);
-		if (HudManager.getInstance().hudsEnabled() && hud != null &&hud.isEnabled()) {
+		if (HudManager.getInstance().hudsEnabled() && hud != null && hud.isEnabled()) {
 			return hud.getX() * 2 + hud.getWidth();
 		}
 		return scaledWidth;

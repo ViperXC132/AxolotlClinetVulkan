@@ -36,6 +36,7 @@ public class SimpleTextInputScreen extends Screen {
 	private final String title;
 	private final Consumer<String> consumer;
 	private TextFieldWidget input;
+	private ButtonWidget done;
 
 	public SimpleTextInputScreen(Screen parent, String title, String inputLabel, Consumer<String> consumer) {
 		super();
@@ -50,12 +51,14 @@ public class SimpleTextInputScreen extends Screen {
 		input = new TextFieldWidget(3, textRenderer, width / 2 - 100, height / 2 - 10, 200, 20);
 
 		buttons.add(new ButtonWidget(0, width / 2 - 155, height - 50, 150, 20, I18n.translate("gui.cancel")));
-		buttons.add(new ButtonWidget(1, width / 2 + 5, height - 50, 150, 20, I18n.translate("gui.done")));
+		buttons.add(done = new ButtonWidget(1, width / 2 + 5, height - 50, 150, 20, I18n.translate("gui.done")));
+		done.active = false;
 	}
 
 	@Override
 	public void tick() {
 		input.tick();
+		done.active = !input.getText().isBlank();
 	}
 
 	@Override
@@ -86,10 +89,10 @@ public class SimpleTextInputScreen extends Screen {
 				minecraft.openScreen(parent);
 				break;
 			case 1:
-				if (!input.getText().isEmpty()) {
+				if (!input.getText().isBlank()) {
 					consumer.accept(input.getText());
-					minecraft.openScreen(parent);
 				}
+				minecraft.openScreen(parent);
 				break;
 		}
 	}

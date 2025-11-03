@@ -46,6 +46,7 @@ public class HotbarHUD extends TextHudEntry {
 
 	public HotbarHUD() {
 		super(182, 22, false);
+		supportsScaling = false;
 	}
 
 	@Override
@@ -113,6 +114,7 @@ public class HotbarHUD extends TextHudEntry {
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> list = new ArrayList<>();
 		list.add(enabled);
+		list.add(hide);
 		list.add(shadow);
 		return list;
 	}

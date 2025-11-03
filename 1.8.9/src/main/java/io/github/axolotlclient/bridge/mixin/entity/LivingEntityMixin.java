@@ -34,7 +34,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(LivingEntity.class)
-public class LivingEntityMixin implements AxoLivingEntity {
+public abstract class LivingEntityMixin implements AxoLivingEntity {
 	@Shadow
 	@Final
 	private Map<Integer, StatusEffectInstance> statusEffects;

@@ -30,6 +30,7 @@ import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import org.jetbrains.annotations.ApiStatus;
 
+@SuppressWarnings("unused")
 public interface AxoRenderContext {
 	// Matrix management
 	@RequiresImpl
@@ -95,9 +96,24 @@ public interface AxoRenderContext {
 		throw BridgeUtil.noImpl();
 	}
 
+	@ApiStatus.NonExtendable
+	default int br$drawString(String value, int x, int y, int color) {
+		return br$drawString(value, x, y, color, true);
+	}
+
 	@RequiresImpl
 	default int br$drawString(AxoText value, int x, int y, int color, boolean shadow) {
 		throw BridgeUtil.noImpl();
+	}
+
+	@ApiStatus.NonExtendable
+	default int br$drawString(AxoText value, int x, int y, int color) {
+		return br$drawString(value, x, y, color, true);
+	}
+
+	@ApiStatus.NonExtendable
+	default int br$drawString(AxoText value, int x, int y, Color color) {
+		return br$drawString(value, x, y, color, true);
 	}
 
 	@ApiStatus.NonExtendable
@@ -106,13 +122,28 @@ public interface AxoRenderContext {
 	}
 
 	@ApiStatus.NonExtendable
+	default int br$drawString(String value, int x, int y, Color color) {
+		return br$drawString(value, x, y, color, true);
+	}
+
+	@ApiStatus.NonExtendable
 	default void br$drawCenteredString(String value, int x, int y, int color, boolean shadow) {
 		br$drawString(value, x - br$getFont().br$getWidth(value) / 2, y, color, shadow);
 	}
 
 	@ApiStatus.NonExtendable
+	default void br$drawCenteredString(String value, int x, int y, int color) {
+		br$drawCenteredString(value, x, y, color, true);
+	}
+
+	@ApiStatus.NonExtendable
 	default void br$drawCenteredString(String value, int x, int y, Color color, boolean shadow) {
 		br$drawCenteredString(value, x, y, color.toInt(), shadow);
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawCenteredString(String value, int x, int y, Color color) {
+		br$drawCenteredString(value, x, y, color, true);
 	}
 
 	@ApiStatus.NonExtendable
@@ -128,6 +159,11 @@ public interface AxoRenderContext {
 	@ApiStatus.NonExtendable
 	default void br$drawCenteredString(AxoText value, int x, int y, Color color, boolean shadow) {
 		br$drawCenteredString(value, x, y, color.toInt(), shadow);
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawCenteredString(AxoText value, int x, int y, Color color) {
+		br$drawCenteredString(value, x, y, color, true);
 	}
 
 	// fillRect overloads

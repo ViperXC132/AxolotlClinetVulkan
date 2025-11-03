@@ -33,6 +33,7 @@ import net.minecraft.client.gui.screen.ScreenTexts;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import org.lwjgl.glfw.GLFW;
 
@@ -47,7 +48,7 @@ public class ChatScreen extends Screen implements ContextMenuScreen {
 	private TextFieldWidget input;
 
 	public ChatScreen(Screen parent, Channel channel) {
-		super(new TranslatableText("api.screen.chat"));
+		super(new LiteralText(channel.getName()));
 		this.channel = channel;
 		this.parent = parent;
 	}
@@ -82,6 +83,7 @@ public class ChatScreen extends Screen implements ContextMenuScreen {
 		users.setUsers(channel.getAllUsers(), channel);
 		addChild(users);
 
+		//noinspection DataFlowIssue
 		addButton(input = new TextFieldWidget(client.textRenderer, width / 2 - 150, height - 50,
 			300, 20, new TranslatableText("api.chat.enterMessage")) {
 

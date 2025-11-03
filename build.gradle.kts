@@ -54,6 +54,11 @@ allprojects {
 		}
 		mavenLocal()
 		mavenCentral()
+		maven("https://central.sonatype.com/repository/maven-snapshots")
+	}
+
+	tasks.withType<AbstractTestTask>().configureEach {
+		failOnNoDiscoveredTests = false
 	}
 }
 
@@ -61,7 +66,7 @@ subprojects {
 	apply(plugin = "java")
 	apply(plugin = "maven-publish")
 	apply(plugin = "io.freefair.lombok")
-	apply(plugin = "com.modrinth.minotaur")
+	if (project.name != "common") apply(plugin = "com.modrinth.minotaur")
 	apply(plugin = "dev.yumi.gradle.licenser")
 
 	extensions.getByType(JavaPluginExtension::class).withSourcesJar()
@@ -91,7 +96,7 @@ subprojects {
 					return@forEach
 				}
 				val oldName = old.fileName.toString()
-				val oldVer = oldName.substring(0, oldName.indexOf("+"))
+				val oldVer = oldName.substringBefore("+")
 				val mcVer = oldName.substring(oldName.indexOf("+") + 1, oldName.length - 4).removeSuffix("-sources")
 				if (!project.version.toString().contains(mcVer)) {
 					return@forEach
@@ -131,7 +136,7 @@ tasks.register("generateVersionChangelog") {
 
 		val out = project.layout.buildDirectory.file("changelog").get().asFile.toPath()
 		if (matcher != null) {
-			var changelogContent = matcher.groups[1]?.value
+			var changelogContent = matcher.groups[1]?.value!!
 
 			val changelogLines = changelogText.split("\n")
 			val linkRefRegex = "^\\[([A-z0-9 _\\-/+.]+)]: ".toRegex()
@@ -141,7 +146,7 @@ tasks.register("generateVersionChangelog") {
 				else break
 			}
 
-			out.writeText(changelogContent.toString())
+			out.writeText(changelogContent)
 		} else {
 			out.writeText("")
 		}

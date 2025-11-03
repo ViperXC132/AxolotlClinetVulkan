@@ -60,7 +60,7 @@ import net.minecraft.util.Pair;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 
 public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionable {
@@ -250,6 +250,7 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 		options.add(backgroundColor);
 		options.add(outline);
 		options.add(outlineColor);
+		options.add(hide);
 		options.add(topColor);
 		options.add(scores);
 		options.add(scoreColor);
@@ -268,5 +269,15 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 	@Override
 	public AnchorPoint getAnchor() {
 		return anchor.get();
+	}
+
+	@Override
+	public double getDefaultX() {
+		return 1.0;
+	}
+
+	@Override
+	public double getDefaultY() {
+		return 0.5;
 	}
 }

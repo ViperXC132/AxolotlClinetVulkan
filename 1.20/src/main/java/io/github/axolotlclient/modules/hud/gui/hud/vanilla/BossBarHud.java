@@ -50,7 +50,7 @@ import net.minecraft.util.math.MathHelper;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 
 public class BossBarHud extends TextHudEntry implements DynamicallyPositionable {
@@ -146,6 +146,7 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
+		options.add(hide);
 		options.add(text);
 		options.add(bar);
 		options.add(anchor);

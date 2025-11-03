@@ -28,6 +28,7 @@ import java.util.List;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.DoubleOption;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
@@ -46,13 +47,14 @@ import lombok.Setter;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 public abstract class AbstractHudEntry implements HudEntry {
 	@Getter
 	protected final ForceableBooleanOption enabled = DefaultOptions.getEnabled();
 	protected final DoubleOption scale = DefaultOptions.getScale(this);
 	protected final AxoMinecraftClient client = AxoMinecraftClient.getInstance();
+	protected final BooleanOption hide = new BooleanOption("hud.hide", false);
 	private final DoubleOption x = DefaultOptions.getX(getDefaultX(), this);
 	private final DoubleOption y = DefaultOptions.getY(getDefaultY(), this);
 	@Setter
@@ -64,6 +66,7 @@ public abstract class AbstractHudEntry implements HudEntry {
 	@Setter
 	@Getter
 	protected boolean hovered = false;
+	protected boolean supportsScaling = true;
 	@Getter
 	private Rectangle trueBounds;
 	private Rectangle renderBounds;
@@ -146,7 +149,7 @@ public abstract class AbstractHudEntry implements HudEntry {
 		return renderBounds;
 	}
 
-	public void setBounds(float scale) {
+	public void setBounds() {
 		final var window = AxoWindow.getWindow();
 
 		if (window == null) {
@@ -212,10 +215,6 @@ public abstract class AbstractHudEntry implements HudEntry {
 		setBounds();
 	}
 
-	public void setBounds() {
-		setBounds(getScale());
-	}
-
 	public OptionCategory getAllOptions() {
 		if (category == null) {
 			List<Option<?>> options = getSaveOptions();
@@ -266,4 +265,13 @@ public abstract class AbstractHudEntry implements HudEntry {
 		enabled.set(value);
 	}
 
+	@Override
+	public boolean isHidden() {
+		return hide.get();
+	}
+
+	@Override
+	public boolean supportsScaling() {
+		return supportsScaling;
+	}
 }

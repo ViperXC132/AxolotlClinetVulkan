@@ -53,7 +53,7 @@ public class DownloadImageScreen extends Screen {
 
 	@Override
 	protected void init() {
-		var urlBox = new TextFieldWidget(textRenderer, width / 2 - 100, height / 2 - 10, 200, 20, Text.translatable("urlBox"));
+		var urlBox = new TextFieldWidget(textRenderer, width / 2 - 100, height / 2 - 10, 200, 20, Text.translatable("pasteURL"));
 		urlBox.setSuggestion(I18n.translate("pasteURL"));
 		urlBox.setChangedListener(s -> {
 			if (s.isEmpty()) {
@@ -69,6 +69,7 @@ public class DownloadImageScreen extends Screen {
 			if (url.isEmpty()) {
 				return;
 			}
+			//noinspection DataFlowIssue
 			client.setScreen(ImageScreen.create(this, ImageShare.getInstance().downloadImage(url), true));
 		}, Supplier::get) {
 			@Override
@@ -90,6 +91,7 @@ public class DownloadImageScreen extends Screen {
 
 	@Override
 	public void closeScreen() {
+		//noinspection DataFlowIssue
 		client.setScreen(parent);
 	}
 }

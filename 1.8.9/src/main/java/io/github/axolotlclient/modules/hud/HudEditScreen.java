@@ -36,18 +36,17 @@ import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
 import io.github.axolotlclient.modules.hud.snapping.SnappingHelper;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
-import io.github.axolotlclient.util.GLFWUtil;
+import io.github.axolotlclient.util.WindowAccess;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import org.lwjgl.glfw.GLFW;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 
 public class HudEditScreen extends Screen {
@@ -55,10 +54,10 @@ public class HudEditScreen extends Screen {
 	private static final BooleanOption snapping = new BooleanOption("snapping", true);
 	private static final OptionCategory hudEditScreenCategory = OptionCategory.create("hudEditScreen");
 	private static final int GRAB_TOLERANCE = 5;
-	private static final long MOVE_CURSOR = GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_ALL_CURSOR);
-	private static final long DEFAULT_CURSOR = GLFW.glfwCreateStandardCursor(GLFW.GLFW_ARROW_CURSOR);
-	private static final long NWSE_RESIZE_CURSOR = GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_NWSE_CURSOR),
-		NESW_RESIZE_CURSOR = GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_NESW_CURSOR);
+	private final long MOVE_CURSOR = WindowAccess.getInstance().createCursor(WindowAccess.Cursor.RESIZE_ALL);
+	private final long DEFAULT_CURSOR = WindowAccess.getInstance().createCursor(WindowAccess.Cursor.ARROW);
+	private final long NWSE_RESIZE_CURSOR = WindowAccess.getInstance().createCursor(WindowAccess.Cursor.RESIZE_NWSE),
+		NESW_RESIZE_CURSOR = WindowAccess.getInstance().createCursor(WindowAccess.Cursor.RESIZE_NESW);
 
 	public static boolean isSnappingEnabled() {
 		return snapping.get();
@@ -106,7 +105,7 @@ public class HudEditScreen extends Screen {
 	private void setCursor(long cursor) {
 		if (cursor > 0 && cursor != currentCursor) {
 			currentCursor = cursor;
-			GLFWUtil.runUsingGlfwHandle(ctx -> GLFW.glfwSetCursor(ctx, cursor));
+			WindowAccess.getInstance().setCursor(cursor);
 		}
 	}
 
@@ -134,19 +133,20 @@ public class HudEditScreen extends Screen {
 		if (entry.isPresent()) {
 			var bounds = entry.get().getTrueBounds();
 			if (mode == ModificationMode.NONE && bounds.isMouseOver(mouseX, mouseY)) {
+				var supportsScaling = entry.get().supportsScaling();
 				var xBound = Math.max(0, mouseX - bounds.x());
 				var yBound = Math.max(0, mouseY - bounds.y());
 				var tolerance = GRAB_TOLERANCE;
-				if (xBound < tolerance && yBound < tolerance) {
+				if (supportsScaling && xBound < tolerance && yBound < tolerance) {
 					// top-left
 					setCursor(NWSE_RESIZE_CURSOR);
-				} else if (Math.abs(xBound - bounds.width()) < tolerance && Math.abs(yBound - bounds.height()) < tolerance) {
+				} else if (supportsScaling && Math.abs(xBound - bounds.width()) < tolerance && Math.abs(yBound - bounds.height()) < tolerance) {
 					// bottom-right
 					setCursor(NWSE_RESIZE_CURSOR);
-				} else if (xBound < tolerance && Math.abs(yBound - bounds.height()) < tolerance) {
+				} else if (supportsScaling && xBound < tolerance && Math.abs(yBound - bounds.height()) < tolerance) {
 					// bottom-left
 					setCursor(NESW_RESIZE_CURSOR);
-				} else if (yBound < tolerance && Math.abs(xBound - bounds.width()) < tolerance) {
+				} else if (supportsScaling && yBound < tolerance && Math.abs(xBound - bounds.width()) < tolerance) {
 					// top-right
 					setCursor(NESW_RESIZE_CURSOR);
 				} else {
@@ -287,27 +287,28 @@ public class HudEditScreen extends Screen {
 		super.removed();
 		setCursor(DEFAULT_CURSOR);
 		mode = ModificationMode.NONE;
+		WindowAccess.getInstance().destroyStandardCursor(DEFAULT_CURSOR, NWSE_RESIZE_CURSOR, NESW_RESIZE_CURSOR, MOVE_CURSOR);
 	}
 
 	@Override
 	protected void buttonClicked(ButtonWidget button) {
 		switch (button.id) {
-		case 3:
-			snapping.toggle();
-			button.message = I18n.translate("hud.snapping") + ": "
-				+ I18n.translate(snapping.get() ? "options.on" : "options.off");
-			AxolotlClient.getInstance().getConfigManager().save();
-			break;
-		case 1:
-			Screen screen = ConfigStyles.createScreen(this, AxolotlClient.getInstance().getConfigManager().getRoot());
-			Minecraft.getInstance().openScreen(screen);
-			break;
-		case 0:
-			Minecraft.getInstance().openScreen(parent);
-			break;
-		case 2:
-			Minecraft.getInstance().openScreen(null);
-			break;
+			case 3:
+				snapping.toggle();
+				button.message = I18n.translate("hud.snapping") + ": "
+					+ I18n.translate(snapping.get() ? "options.on" : "options.off");
+				AxolotlClient.getInstance().getConfigManager().save();
+				break;
+			case 1:
+				Screen screen = ConfigStyles.createScreen(this, AxolotlClient.getInstance().getConfigManager().getRoot());
+				Minecraft.getInstance().openScreen(screen);
+				break;
+			case 0:
+				Minecraft.getInstance().openScreen(parent);
+				break;
+			case 2:
+				Minecraft.getInstance().openScreen(null);
+				break;
 		}
 	}
 

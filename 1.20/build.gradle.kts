@@ -47,7 +47,6 @@ dependencies {
 
 	api("org.lwjgl:lwjgl-nanovg:3.3.2")
 	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.2:natives-linux")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.2:natives-linux-arm64")
 	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.2:natives-windows")
 	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.2:natives-windows-arm64")
 	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.2:natives-macos")
@@ -87,6 +86,7 @@ java {
 
 tasks.runClient {
 	classpath(sourceSets.getByName("test").runtimeClasspath)
+	jvmArgs("-XX:+AllowEnhancedClassRedefinition", "-XX:+IgnoreUnrecognizedVMOptions")
 }
 
 // Configure the maven publication

@@ -30,6 +30,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.FloatOption;
 import io.github.axolotlclient.modules.AbstractModule;
 import io.github.axolotlclient.util.Util;
 import io.github.axolotlclient.util.keybinds.KeyBinds;
+import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBind;
 
@@ -46,6 +47,7 @@ public class Zoom extends AbstractModule {
 	public static final BooleanOption zoomScrolling = new BooleanOption("zoomScrolling", false);
 	public static final BooleanOption decreaseSensitivity = new BooleanOption("decreaseSensitivity", true);
 	public static final BooleanOption smoothCamera = new BooleanOption("smoothCamera", false);
+	@Getter
 	private static final Zoom Instance = new Zoom();
 	public static boolean active;
 	private static Double originalSensitivity;
@@ -56,10 +58,6 @@ public class Zoom extends AbstractModule {
 	private static float animatedFactor = 1;
 	private static double lastReturnedFov;
 	public final OptionCategory zoom = OptionCategory.create("zoom");
-
-	public static Zoom getInstance() {
-		return Instance;
-	}
 
 	public static double getFov(double current, float tickDelta) {
 		double result = current
@@ -165,6 +163,6 @@ public class Zoom extends AbstractModule {
 
 	public void tick() {
 		lastAnimatedFactor = animatedFactor;
-		animatedFactor += (targetFactor - animatedFactor) * (zoomSpeed.get() / 10F);
+		animatedFactor += (float) ((targetFactor - animatedFactor) * (zoomSpeed.get() / 10F));
 	}
 }

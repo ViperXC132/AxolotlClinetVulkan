@@ -56,7 +56,7 @@ import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(value = PlatformDispatch.class, remap = false)
-public class PlatformDispatchMixin {
+public abstract class PlatformDispatchMixin {
 	@Unique
 	private static void getRealTimeServerPing(ServerInfo server, MutableInt currentServerPing) {
 		ThreadExecuter.scheduleTask(() -> {
@@ -93,6 +93,7 @@ public class PlatformDispatchMixin {
 							return clientConnection.isOpen();
 						}
 					};
+					clientConnection.setPacketListener(listener);
 					clientConnection.send(new HandshakeC2SPacket(address.getAddress(), address.getPort(),
 						NetworkState.STATUS));
 					clientConnection.send(new MetadataQueryC2SPacket());

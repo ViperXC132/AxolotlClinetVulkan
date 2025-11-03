@@ -116,14 +116,13 @@ public class ProfilesScreen extends io.github.axolotlclient.AxolotlClientConfig.
 
 		@Environment(EnvType.CLIENT)
 		public class ProfileEntry extends Entry {
+			private static final String EXPORT_BUTTON_TITLE = I18n.translate("profiles.profile.export");
 			private static final String CURRENT_TEXT = I18n.translate("profiles.profile.current");
 			private static final String LOAD_BUTTON_TITLE = I18n.translate("profiles.profile.load");
 			private static final String DUPLICATE_BUTTON_TITLE = I18n.translate("profiles.profile.duplicate");
 			private static final String REMOVE_BUTTON_TITLE = I18n.translate("profiles.profile.remove");
 			private final TextFieldWidget profileName;
-			private final ButtonWidget loadButton;
-			private final ButtonWidget duplicateButton;
-			private final ButtonWidget removeButton;
+			private final ButtonWidget exportButton, loadButton, duplicateButton, removeButton;
 			private final Profiles.Profile profile;
 
 			ProfileEntry(Profiles.Profile profile) {
@@ -131,6 +130,8 @@ public class ProfilesScreen extends io.github.axolotlclient.AxolotlClientConfig.
 				profileName = new TextFieldWidget(textRenderer, 0, 0, 150, 20, "");
 				profileName.setText(profile.name());
 				profileName.setChangedListener(profile::setName);
+				exportButton = new VanillaButtonWidget(0, 0, 50, 20, EXPORT_BUTTON_TITLE, btn ->
+					Profiles.getInstance().exportProfile(profile));
 				loadButton = new VanillaButtonWidget(0, 0, 50, 20, LOAD_BUTTON_TITLE, btn ->
 					Profiles.getInstance().switchTo(profile));
 				duplicateButton = new VanillaButtonWidget(0, 0, 50, 20, DUPLICATE_BUTTON_TITLE, b -> {
@@ -160,10 +161,13 @@ public class ProfilesScreen extends io.github.axolotlclient.AxolotlClientConfig.
 
 				boolean current = Profiles.getInstance().getCurrent() == profile;
 				loadButton.setMessage(current ? CURRENT_TEXT : LOAD_BUTTON_TITLE);
-				loadButton.active = !current;
+				loadButton.active = removeButton.active = !current;
 				i -= loadButton.getWidth();
 				this.loadButton.setPosition(i, j);
 				this.loadButton.render(mouseX, mouseY, partialTick);
+				i -= exportButton.getWidth();
+				exportButton.setPosition(i, j);
+				exportButton.render(mouseX, mouseY, partialTick);
 				profileName.setWidth(i - left - 4);
 				profileName.setPosition(left, j);
 				profileName.render(mouseX, mouseY, partialTick);
@@ -177,7 +181,7 @@ public class ProfilesScreen extends io.github.axolotlclient.AxolotlClientConfig.
 
 		public class NewEntry extends Entry {
 
-			private final ButtonWidget addButton;
+			private final ButtonWidget addButton, importButton;
 
 			public NewEntry() {
 				this.addButton = new VanillaButtonWidget(0, 0, 150, 20, I18n.translate("profiles.profile.add"), button -> {
@@ -186,19 +190,23 @@ public class ProfilesScreen extends io.github.axolotlclient.AxolotlClientConfig.
 					Profiles.getInstance().saveProfiles();
 					setScrollAmount(getMaxScroll());
 				});
+				this.importButton = new VanillaButtonWidget(0, 0, 150, 20, I18n.translate("profiles.profile.import"), btn ->
+					Profiles.getInstance().importProfiles().thenRun(ProfilesList.this::reload));
 			}
 
 			@Override
 			public void render(int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
-				int i = getScrollbarPositionX() - width / 2 - 10 - addButton.getWidth() / 2;
+				int i = getScrollbarPositionX() - width / 2 - 10 - addButton.getWidth() + 2;
 				int j = top - 2;
 				this.addButton.setPosition(i, j);
 				this.addButton.render(mouseX, mouseY, partialTick);
+				this.importButton.setPosition(addButton.getX() + addButton.getWidth() + 2, j);
+				this.importButton.render(mouseX, mouseY, partialTick);
 			}
 
 			@Override
 			public List<? extends Element> children() {
-				return List.of(addButton);
+				return List.of(addButton, importButton);
 			}
 		}
 	}

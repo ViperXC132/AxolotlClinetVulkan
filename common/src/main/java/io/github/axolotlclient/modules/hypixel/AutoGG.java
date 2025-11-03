@@ -38,7 +38,7 @@ import lombok.Getter;
 /**
  * Based on <a href="https://github.com/DragonEggBedrockBreaking/AutoGG/blob/trunk/src/main/java/uk/debb/autogg/mixin/MixinChatHud.java">DragonEggBedrockBreaking's AutoGG Mod</a>
  *
- * @license MPL-2.0
+ * <p>License: MPL-2.0</p>
  */
 public class AutoGG implements AbstractHypixelMod {
 
@@ -159,7 +159,7 @@ public class AutoGG implements AbstractHypixelMod {
 
 	private void onMessage(ReceiveChatMessageEvent event) {
 		String message = event.getOriginalMessage();
-		if (client.br$isLocalServer()) {
+		if (!client.br$isLocalServer()) {
 			serverMap.keySet().forEach(s -> {
 				if (serverMap.get(s).get() && client.br$getServerAddress().contains(s)) {
 					if (gf.get()) {

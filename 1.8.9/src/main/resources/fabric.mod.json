@@ -113,16 +113,17 @@
 			"net/minecraft/unmapped/C_8525326": [
 				"io/github/axolotlclient/bridge/util/AxoProfiler"
 			]
-		},
-		"depends": {
-			"fabricloader": ">=0.15.0",
-			"minecraft": "1.8.9",
-			"osl-resource-loader": "*",
-			"osl-lifecycle-events": "*",
-			"osl-keybinds": "*",
-			"osl-entrypoints": "*",
-			"axolotlclientconfig": "*",
-			"axolotlclient-common": "*"
 		}
+	},
+	"depends": {
+		"fabricloader": ">=0.15.0",
+		"minecraft": "1.8.9",
+		"osl-resource-loader": "*",
+		"osl-lifecycle-events": "*",
+		"osl-keybinds": "*",
+		"osl-entrypoints": "*",
+		"axolotlclientconfig": "*",
+		"axolotlclient-common": "*",
+		"legacy-lwjgl3": ">1.2.8"
 	}
 }

@@ -25,9 +25,9 @@ package io.github.axolotlclient.modules.hud.gui.hud;
 import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
+import io.github.axolotlclient.bridge.events.Events;
+import io.github.axolotlclient.bridge.events.types.PlayerDirectionChangeEvent;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.util.events.Events;
-import io.github.axolotlclient.util.events.impl.PlayerDirectionChangeEvent;
 import lombok.Getter;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
@@ -39,7 +39,7 @@ import net.minecraft.resource.Identifier;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 
 public class PlayerHud extends PlayerHudCommon {
@@ -54,7 +54,7 @@ public class PlayerHud extends PlayerHudCommon {
 	}
 
 	public void onPlayerDirectionChange(PlayerDirectionChangeEvent event) {
-		yawOffset += (event.getYaw() - event.getPrevYaw()) / 2;
+		yawOffset += (event.yaw() - event.prevYaw()) / 2;
 	}
 
 	@Override

@@ -65,7 +65,7 @@ import static net.minecraft.client.gui.DrawableHelper.drawTexture;
  * This implementation of Hud modules is based on KronHUD.
  * <a href="https://github.com/DarkKronicle/KronHUD">Github Link.</a>
  *
- * @license GPL-3.0
+ * <p>License: GPL-3.0</p>
  */
 
 public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositionable {
@@ -121,6 +121,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
+		options.add(hide);
 		options.add(type);
 		options.add(customTextureGraphics);
 		options.add(showInF5);
@@ -150,6 +151,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		return 0.5;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void render(AxoRenderContext context, float delta) {
 		MatrixStack matrices = (MatrixStack) context;
@@ -226,6 +228,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 				// Draw attack indicator
 				x = (int) ((client.getWindow().getScaledWidth() / getScale()) / 2 - 8);
 				y = (int) ((client.getWindow().getScaledHeight() / getScale()) / 2 - 7 + 16);
+				//noinspection DataFlowIssue
 				ItemStack itemStack = this.client.player.getStackInHand(Hand.OFF_HAND);
 				boolean bl = this.client.options.field_26808 == class_5512.field_26811;
 				if (bl && itemStack.getItem() == Items.SHIELD && this.client.player.method_31233(itemStack)) {
@@ -236,6 +239,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 					float f = this.client.player.getAttackCooldownProgress(0.0F);
 					boolean bl2 = false;
 					if (this.client.targetedEntity != null && this.client.targetedEntity instanceof LivingEntity && f >= 2.0F) {
+						//noinspection DataFlowIssue
 						bl2 = ((EntityHitResult) this.client.crosshairTarget).method_31252() <= this.client.player.method_31239(0.0F);
 						bl2 &= this.client.targetedEntity.isAlive();
 					}
@@ -252,6 +256,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			}
 		}
 		if (((type.get().equals(Crosshair.TEXTURE) || type.get().equals(Crosshair.CUSTOM)) ? customAttackIndicator.get() : true) && indicator == AttackIndicator.CROSSHAIR) {
+			//noinspection DataFlowIssue
 			float progress = this.client.player.getAttackCooldownProgress(0.0F) / 2;
 			if (progress != 1.0F) {
 				RenderUtil.drawRectangle(matrices, getRawX() + (getWidth() / 2) - 6, getRawY() + (getHeight() / 2) + 9,
@@ -268,11 +273,13 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		HitResult hit = client.crosshairTarget;
 		if (hit == null || hit.getType() == null) {
 			return defaultColor.get();
-		} else if (hit.getType() == HitResult.Type.ENTITY && ((EntityHitResult) this.client.crosshairTarget).method_31252() <= this.client.player.method_31239(0.0F)) {
+		} else //noinspection DataFlowIssue
+			if (hit.getType() == HitResult.Type.ENTITY && ((EntityHitResult) this.client.crosshairTarget).method_31252() <= this.client.player.method_31239(0.0F)) {
 			return entityColor.get();
 		} else if (hit.getType() == HitResult.Type.BLOCK) {
 			BlockPos blockPos = ((BlockHitResult) hit).getBlockPos();
 			World world = this.client.world;
+			//noinspection DataFlowIssue
 			if (world.getBlockState(blockPos).createScreenHandlerFactory(world, blockPos) != null
 				|| world.getBlockState(blockPos).getBlock() instanceof AbstractChestBlock<?>) {
 				return containerColor.get();

@@ -45,7 +45,7 @@ import org.lwjgl.opengl.GL14;
  * This implementation of custom skies is based on the FabricSkyBoxes mod by AMereBagatelle
  * <a href="https://github.com/AMereBagatelle/FabricSkyBoxes">Github Link.</a>
  *
- * @license MIT
+ * <p>License: MIT</p>
  **/
 
 // TODO fix rotation & blending issues with shooting stars, implement more missing features like worlds, weather, biomes...
@@ -142,29 +142,21 @@ public abstract class SkyboxInstance {
 		if (str == null) {
 			return 1;
 		} else {
-			switch (str.toLowerCase(Locale.ENGLISH).trim()) {
-				case "alpha":
-					return 0;
-				case "add":
-					return 1;
-				case "subtract":
-					return 2;
-				case "multiply":
-					return 3;
-				case "dodge":
-					return 4;
-				case "burn":
-					return 5;
-				case "screen":
-					return 6;
-				case "overlay":
-					return 7;
-				case "replace":
-					return 8;
-				default:
+			return switch (str.toLowerCase(Locale.ENGLISH).trim()) {
+				case "alpha" -> 0;
+				case "add" -> 1;
+				case "subtract" -> 2;
+				case "multiply" -> 3;
+				case "dodge" -> 4;
+				case "burn" -> 5;
+				case "screen" -> 6;
+				case "overlay" -> 7;
+				case "replace" -> 8;
+				default -> {
 					AxolotlClient.LOGGER.warn("Unknown blend: " + str);
-					return 1;
-			}
+					yield 1;
+				}
+			};
 		}
 	}
 

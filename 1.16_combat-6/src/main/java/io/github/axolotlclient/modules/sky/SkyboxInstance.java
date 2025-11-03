@@ -48,11 +48,12 @@ import org.lwjgl.opengl.GL14;
  * This implementation of custom skies is based on the FabricSkyBoxes mod by AMereBagatelle
  * <a href="https://github.com/AMereBagatelle/FabricSkyBoxes">Github Link.</a>
  *
- * @license MIT
+ * <p>License: MIT</p>
  **/
 
 // TODO fix rotation & blending issues with shooting stars, implement more missing features like worlds, weather, biomes...
 
+@SuppressWarnings("deprecation")
 public abstract class SkyboxInstance {
 
 	protected final Identifier MOON_PHASES = new Identifier("textures/environment/moon_phases.png");
@@ -145,33 +146,26 @@ public abstract class SkyboxInstance {
 		if (str == null) {
 			return 1;
 		} else {
-			switch (str.toLowerCase(Locale.ENGLISH).trim()) {
-				case "alpha":
-					return 0;
-				case "add":
-					return 1;
-				case "subtract":
-					return 2;
-				case "multiply":
-					return 3;
-				case "dodge":
-					return 4;
-				case "burn":
-					return 5;
-				case "screen":
-					return 6;
-				case "overlay":
-					return 7;
-				case "replace":
-					return 8;
-				default:
+			return switch (str.toLowerCase(Locale.ENGLISH).trim()) {
+				case "alpha" -> 0;
+				case "add" -> 1;
+				case "subtract" -> 2;
+				case "multiply" -> 3;
+				case "dodge" -> 4;
+				case "burn" -> 5;
+				case "screen" -> 6;
+				case "overlay" -> 7;
+				case "replace" -> 8;
+				default -> {
 					AxolotlClient.LOGGER.warn("Unknown blend: " + str);
-					return 1;
-			}
+					yield 1;
+				}
+			};
 		}
 	}
 
 	public void render(MatrixStack matrices, float tickDelta) {
+		//noinspection DataFlowIssue
 		float brightness = MinecraftClient.getInstance().world.getRainGradient(tickDelta);
 		matrices.push();
 		setupBlend(brightness);
@@ -255,6 +249,7 @@ public abstract class SkyboxInstance {
 			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(rotationAxis[1]));
 			matrices.multiply(Vector3f.POSITIVE_Z.getDegreesQuaternion(rotationAxis[2]));
 			matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
+			//noinspection DataFlowIssue
 			matrices.multiply(Vector3f.NEGATIVE_X.getDegreesQuaternion(
 				MinecraftClient.getInstance().world.getSkyAngle(delta) * 360F * rotationSpeed));
 			matrices.multiply(Vector3f.NEGATIVE_Z.getDegreesQuaternion(rotationAxis[0]));
@@ -285,6 +280,7 @@ public abstract class SkyboxInstance {
 			GlStateManager.SrcFactor.ONE, GlStateManager.DstFactor.ZERO);
 
 		matrices.push();
+		//noinspection DataFlowIssue
 		float i = 1.0F - MinecraftClient.getInstance().world.getRainGradient(delta);
 		RenderSystem.color4f(1.0F, 1.0F, 1.0F, i);
 		matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-90.0F));
