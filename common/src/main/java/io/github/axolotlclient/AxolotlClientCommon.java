@@ -47,6 +47,7 @@ import io.github.axolotlclient.modules.Module;
 import io.github.axolotlclient.modules.freelook.Freelook;
 import io.github.axolotlclient.modules.hud.ClickInputTracker;
 import io.github.axolotlclient.modules.render.BeaconBeam;
+import io.github.axolotlclient.modules.rpc.DiscordRPC;
 import io.github.axolotlclient.modules.tnttime.TntTime;
 import io.github.axolotlclient.util.FeatureDisablerCommon;
 import io.github.axolotlclient.util.Logger;
@@ -128,6 +129,7 @@ public abstract class AxolotlClientCommon {
 		registerModule(BeaconBeam.getInstance());
 		registerModule(Freelook.getInstance());
 		registerModule(TntTime.getInstance());
+		registerModule(DiscordRPC.getInstance());
 	}
 
 	// init logic

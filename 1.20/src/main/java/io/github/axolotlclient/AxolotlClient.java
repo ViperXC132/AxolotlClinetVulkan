@@ -35,7 +35,6 @@ import io.github.axolotlclient.modules.blur.MotionBlur;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import io.github.axolotlclient.modules.particles.Particles;
-import io.github.axolotlclient.modules.rpc.DiscordRPC;
 import io.github.axolotlclient.modules.screenshotUtils.ScreenshotUtils;
 import io.github.axolotlclient.modules.scrollableTooltips.ScrollableTooltips;
 import io.github.axolotlclient.modules.sky.SkyResourceManager;
@@ -64,7 +63,6 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 		registerModule(MotionBlur.getInstance());
 		registerModule(MenuBlur.getInstance());
 		registerModule(ScrollableTooltips.getInstance());
-		registerModule(DiscordRPC.getInstance());
 
 		registerModule(Particles.getInstance());
 		registerModule(ScreenshotUtils.getInstance());

@@ -77,19 +77,19 @@ public class Freelook extends AbstractCommonModule {
 		tickSet(toggleAlt, KEY_ALT, AxoPerspectiveAlt, activeAlt);
 	}
 
-	private void tickSet(BooleanOption toggle, AxoKeybinding key, EnumOption<AxoPerspective> AxoPerspective, WrappedValue active) {
+	private void tickSet(BooleanOption toggle, AxoKeybinding key, EnumOption<AxoPerspective> perspective, WrappedValue active) {
 		if (toggle.get()) {
 			if (key.br$consumeClick()) {
 				if (active.val) {
 					stop(active);
 				} else {
-					start(AxoPerspective.get(), active);
+					start(perspective.get(), active);
 				}
 			}
 		} else {
 			if (key.br$isPressed()) {
 				if (!active.val) {
-					start(AxoPerspective.get(), active);
+					start(perspective.get(), active);
 				}
 			} else if (active.val) {
 				stop(active);
@@ -108,7 +108,7 @@ public class Freelook extends AbstractCommonModule {
 		active.val = true;
 		setAxoPerspective(AxoPerspective);
 
-		AxoEntity camera = client.axo$getCameraEntity();
+		AxoEntity camera = client.br$getCameraEntity();
 
 		if (camera == null) camera = client.br$getPlayer();
 		if (camera == null) return;

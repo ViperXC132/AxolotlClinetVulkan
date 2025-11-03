@@ -23,6 +23,7 @@
 package io.github.axolotlclient.bridge;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.Executor;
 
 import io.github.axolotlclient.bridge.entity.AxoEntity;
@@ -79,6 +80,11 @@ public interface AxoMinecraftClient extends Executor {
 	}
 
 	@RequiresImpl
+	default String br$getServerName() {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
 	default boolean br$isLocalServer() {
 		throw BridgeUtil.noImpl();
 	}
@@ -130,12 +136,17 @@ public interface AxoMinecraftClient extends Executor {
 	}
 
 	@RequiresImpl
-	default AxoEntity axo$getCameraEntity() {
+	default AxoEntity br$getCameraEntity() {
 		throw BridgeUtil.noImpl();
 	}
 
 	@RequiresImpl
 	default void br$notifyLevelRenderer() {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default List<String> br$getSidebar() {
 		throw BridgeUtil.noImpl();
 	}
 }
