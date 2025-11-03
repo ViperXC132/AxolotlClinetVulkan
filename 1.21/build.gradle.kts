@@ -42,7 +42,6 @@ dependencies {
 
 	api("org.lwjgl:lwjgl-nanovg:3.3.3")
 	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.3:natives-linux")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.3:natives-linux-arm64")
 	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.3:natives-windows")
 	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.3:natives-windows-arm64")
 	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.3:natives-macos")

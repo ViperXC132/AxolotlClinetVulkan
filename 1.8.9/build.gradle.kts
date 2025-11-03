@@ -21,12 +21,6 @@ loom {
 	}
 }
 
-repositories {
-	exclusiveContent { forRepository { mavenCentral() }
-		filter { includeGroup("org.lwjgl") }
-	}
-}
-
 dependencies {
 	minecraft("com.mojang:minecraft:${project.property("minecraft_18")}")
 	mappings("net.ornithemc:feather:${project.property("mappings_18")}")
@@ -48,10 +42,9 @@ dependencies {
 
 	modApi(include("io.github.moehreag:search-in-resources:1.0.6+1.8.9")!!)
 
-	val lwjglVersion = "3.3.5"
+	val lwjglVersion = "3.3.6"
 	api("org.lwjgl:lwjgl-nanovg:$lwjglVersion")
 	runtimeOnly("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-linux")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-linux-arm64")
 	runtimeOnly("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-windows")
 	runtimeOnly("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-windows-arm64")
 	runtimeOnly("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-macos")
@@ -67,14 +60,14 @@ dependencies {
 	compileOnly("org.lwjgl:lwjgl-glfw:${lwjglVersion}")
 	compileOnly("org.lwjgl:lwjgl-sdl:3.4.0-SNAPSHOT")
 
-	modImplementation("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}")
-	//modLocalRuntime("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}:all-remapped")
+	modImplementation("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}") {
+		exclude("org.lwjgl")
+	}
 
 	include(implementation("org.lwjgl", "lwjgl-tinyfd", lwjglVersion))
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-linux"))
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-windows"))
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-macos"))
-	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-linux-arm64"))
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-windows-arm64"))
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-macos-arm64"))
 
