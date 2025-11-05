@@ -90,6 +90,7 @@ tasks.shadowJar {
 java {
 	sourceCompatibility = JavaVersion.VERSION_17
 	targetCompatibility = JavaVersion.VERSION_17
+	withSourcesJar()
 }
 
 publishing {
@@ -97,6 +98,7 @@ publishing {
 		create("shadow", MavenPublication::class) {
 			artifactId = base.archivesName.get()
 			from(components["shadow"])
+			artifact(tasks.sourcesJar)
 		}
 	}
 	repositories {
