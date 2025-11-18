@@ -173,7 +173,7 @@ public abstract class MinecraftClientMixin {
 		}
 	}
 
-	@Inject(method = "updateWindow", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;onResolutionChanged(II)V"))
+	@Inject(method = "onResolutionChanged()V", at = @At(value = "TAIL"))
 	public void axolotlclient$onResize(CallbackInfo ci) {
 		Util.window = null;
 		HudManager.getInstance().refreshAllBounds();

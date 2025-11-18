@@ -67,7 +67,7 @@ public class DiscordRPC extends RPCCommon {
 			details = "";
 		}
 
-		setRichPresence(createRichPresence(AxolotlClient.VERSION, state, details));
+		setRichPresence(createRichPresence(state, details));
 	}
 
 	public void init() {

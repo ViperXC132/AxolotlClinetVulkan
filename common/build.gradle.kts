@@ -28,7 +28,7 @@ dependencies {
 	testRuntimeOnly(compileOnly("org.lwjgl:lwjgl-tinyfd:3.2.2")!!)
 	testRuntimeOnly(compileOnly("org.lwjgl:lwjgl-sdl:3.4.0-SNAPSHOT")!!)
 
-	shadow(implementation("io.github.CDAGaming:DiscordIPC:0.10.2") {
+	shadow(implementation("io.github.cdagaming:DiscordIPC:0.11.0") {
 		isTransitive = false
 	})
 	shadow(implementation("com.kohlschutter.junixsocket:junixsocket-common:2.10.1")!!)

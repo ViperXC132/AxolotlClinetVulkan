@@ -27,10 +27,8 @@ import java.time.Instant;
 import com.google.gson.JsonObject;
 import com.jagrosh.discordipc.IPCClient;
 import com.jagrosh.discordipc.IPCListener;
-import com.jagrosh.discordipc.entities.ActivityType;
-import com.jagrosh.discordipc.entities.Packet;
-import com.jagrosh.discordipc.entities.RichPresence;
-import com.jagrosh.discordipc.entities.User;
+import com.jagrosh.discordipc.entities.*;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringArrayOption;
@@ -89,14 +87,15 @@ public abstract class RPCCommon implements Module {
 		}
 	}
 
-	protected RichPresence createRichPresence(String gameVersion, String state, String details) {
+	protected RichPresence createRichPresence(String state, String details) {
 		RichPresence.Builder builder = new RichPresence.Builder();
-		builder.setLargeImage("icon", "AxolotlClient " + gameVersion);
+		builder.setLargeImageWithTooltip("icon", "AxolotlClient " + AxolotlClientCommon.VERSION+"+"+AxolotlClientCommon.GAME_VERSION);
 		if (showTime.get()) {
 			builder.setStartTimestamp(time.getEpochSecond());
 		}
 		builder.setState(state)
 			.setDetails(details);
+		builder.setStatusDisplayType(StatusDisplayType.Name);
 		builder.setActivityType(ActivityType.Playing);
 		return builder.build();
 	}
@@ -165,6 +164,7 @@ public abstract class RPCCommon implements Module {
 				logger.info("Started RPC");
 				running = true;
 			} catch (Exception e) {
+				logger.warn("Failed to start RPC", e);
 				enabled.set(false);
 			}
 		}
