@@ -23,9 +23,12 @@
 package io.github.axolotlclient.util.options.rounded;
 
 import java.util.Base64;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Graphics;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.ui.Element;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.rounded.screen.GraphicsEditorScreen;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.rounded.widgets.GraphicsWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.rounded.widgets.RoundedButtonWidget;
@@ -33,6 +36,7 @@ import io.github.axolotlclient.util.notifications.Notifications;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resource.language.I18n;
 
+@SuppressWarnings("unused")
 public class AxoGraphicsWidget extends GraphicsWidget {
 	private final GraphicsOption option;
 
@@ -58,21 +62,25 @@ public class AxoGraphicsWidget extends GraphicsWidget {
 		public void init() {
 			super.init();
 
-			int buttonX = gridX + maxGridWidth + 10;
-			int buttonY = gridY + 60;
-			var back = (RoundedButtonWidget) children().get(children().size() - 1);
-			remove(back);
-			addDrawableChild(new RoundedButtonWidget(buttonX, buttonY + 25, I18n.translate("graphics.copy_text"),
-				btn -> setClipboard(Base64.getEncoder().encodeToString(graphics.getPixelData())))).setWidth(100);
-			addDrawableChild(new RoundedButtonWidget(buttonX, buttonY + 50, I18n.translate("graphics.paste_text"),
+			var clear = (RoundedButtonWidget) children().get(children().size() - 1);
+			var buttonX = clear.getX();
+			var buttonY = clear.getY();
+			var buttonWidth = clear.getWidth();
+			addDrawableChild(new RoundedButtonWidget(buttonX, buttonY + 24, I18n.translate("graphics.copy_text"),
+				btn -> setClipboard(Base64.getEncoder().encodeToString(graphics.getPixelData())))).setWidth(buttonWidth);
+			addDrawableChild(new RoundedButtonWidget(buttonX, buttonY + 48, I18n.translate("graphics.paste_text"),
 				btn -> {
 					try {
 						graphics.setPixelData(Base64.getDecoder().decode(getClipboard()));
 					} catch (IllegalArgumentException e) {
 						Notifications.getInstance().addStatus("graphics.paste_text.failed", "graphics.paste_text.failed.desc");
 					}
-				})).setWidth(100);
-			addDrawableChild(back);
+				})).setWidth(buttonWidth);
+		}
+
+		@Override
+		protected int getCurrentHeight() {
+			return super.getCurrentHeight() - 24 * 2;
 		}
 	}
 }

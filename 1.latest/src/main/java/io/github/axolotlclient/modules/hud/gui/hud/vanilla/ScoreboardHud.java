@@ -39,14 +39,14 @@ import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.numbers.NumberFormat;
 import net.minecraft.network.chat.numbers.StyledFormat;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.scores.*;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
@@ -60,7 +60,7 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionable {
 
-	public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("kronhud", "scoreboardhud");
+	public static final Identifier ID = Identifier.fromNamespaceAndPath("kronhud", "scoreboardhud");
 	public static final Objective placeholder = Util.make(() -> {
 		Scoreboard placeScore = new Scoreboard();
 		Objective objective =
@@ -230,7 +230,7 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 	}
 
 	@Override
-	public ResourceLocation getId() {
+	public Identifier getId() {
 		return ID;
 	}
 

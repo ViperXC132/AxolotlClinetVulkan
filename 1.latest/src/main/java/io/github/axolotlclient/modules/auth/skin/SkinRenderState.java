@@ -25,12 +25,12 @@ package io.github.axolotlclient.modules.auth.skin;
 import io.github.axolotlclient.util.IdentifiablePiPRenderState;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 public record SkinRenderState(boolean classicVariant,
-							  ResourceLocation skinTexture,
-							  @Nullable ResourceLocation cape,
+							  Identifier skinTexture,
+							  @Nullable Identifier cape,
 							  float rotationX,
 							  float rotationY,
 							  float pivotY,
@@ -44,8 +44,8 @@ public record SkinRenderState(boolean classicVariant,
 							  SkinRenderer renderer) implements PictureInPictureRenderState, IdentifiablePiPRenderState<SkinRenderer> {
 
 	public SkinRenderState(boolean classicVariant,
-						   ResourceLocation skinTexture,
-						   @Nullable ResourceLocation cape,
+						   Identifier skinTexture,
+						   @Nullable Identifier cape,
 						   float rotationX,
 						   float rotationY,
 						   float pivotY,

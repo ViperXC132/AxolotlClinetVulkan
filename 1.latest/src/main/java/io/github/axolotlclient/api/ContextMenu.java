@@ -40,7 +40,8 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
+import net.minecraft.network.chat.ComponentUtils;
+import net.minecraft.network.chat.Style;
 import org.jetbrains.annotations.Nullable;
 
 public class ContextMenu implements ContainerEventHandler, Renderable, NarratableEntry {
@@ -211,7 +212,7 @@ public class ContextMenu implements ContainerEventHandler, Renderable, Narratabl
 		private final Minecraft client = Minecraft.getInstance();
 
 		public ContextMenuEntry(Component content) {
-			super(0, 0, Minecraft.getInstance().font.width(content), 11, content);
+			super(0, 0, Minecraft.getInstance().font.width(content), 11, content.copy().withColor(0xFFDDDDDD));
 		}
 
 		@Override
@@ -220,8 +221,8 @@ public class ContextMenu implements ContainerEventHandler, Renderable, Narratabl
 		}
 
 		@Override
-		public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-			graphics.drawCenteredString(client.font, getMessage(), getX() + getWidth() / 2, getY(), 0xFFDDDDDD);
+		public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+			renderDefaultLabel(graphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
 		}
 
 		@Override
@@ -238,20 +239,25 @@ public class ContextMenu implements ContainerEventHandler, Renderable, Narratabl
 	public static class ContextMenuEntryWithAction extends Button {
 
 		private final Minecraft client = Minecraft.getInstance();
+		private final Component inactiveMessage = ComponentUtils.mergeStyles(getMessage(), Style.EMPTY.withColor(0xFFA0A0A0));
 
 		public ContextMenuEntryWithAction(Component message, OnPress onPress) {
 			super(0, 0, Minecraft.getInstance().font.width(message) + 4, 11, message, onPress, DEFAULT_NARRATION);
 		}
 
 		@Override
-		public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+		public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 
 			if (isHoveredOrFocused()) {
 				graphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x55ffffff);
 			}
 
-			int i = this.active ? -1 : 0xFFA0A0A0;
-			this.renderString(graphics, client.font, i | Mth.ceil(this.alpha * 255.0F) << 24);
+			renderDefaultLabel(graphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
+		}
+
+		@Override
+		public Component getMessage() {
+			return active ? super.getMessage() : inactiveMessage;
 		}
 	}
 }

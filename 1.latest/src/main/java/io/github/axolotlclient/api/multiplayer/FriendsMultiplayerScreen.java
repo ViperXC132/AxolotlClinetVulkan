@@ -28,10 +28,8 @@ import io.github.axolotlclient.api.requests.FriendRequest;
 import lombok.Getter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.layouts.EqualSpacingLayout;
-import net.minecraft.client.gui.layouts.FrameLayout;
-import net.minecraft.client.gui.layouts.LinearLayout;
-import net.minecraft.client.gui.layouts.SpacerElement;
+import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.layouts.*;
 import net.minecraft.client.gui.screens.ConnectScreen;
 import net.minecraft.client.gui.screens.DirectJoinServerScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -53,8 +51,8 @@ public class FriendsMultiplayerScreen extends Screen {
 	private final Button friendsCountButton = Button.builder(Component.translatable("api.servers.friends", "..."), button -> {
 	}).build();
 	private ServerData editingServer;
-	private boolean initialized;
 	private static final Component NO_ONLINE_FRIENDS = Component.translatable("api.servers.friends.no_online_friends");
+	private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this, 60, 60);
 
 	public FriendsMultiplayerScreen(Screen lastScreen) {
 		super(Component.translatable("api.servers.friends.title"));
@@ -63,47 +61,53 @@ public class FriendsMultiplayerScreen extends Screen {
 
 	@Override
 	protected void init() {
-		if (this.initialized) {
-			this.serverSelectionList.setRectangle(this.width, this.height - 64 - 60, 0, 60);
-		} else {
-			this.serverSelectionList = new FriendsMultiplayerSelectionList(this, this.minecraft, this.width, this.height - 64 - 60, 60, 36);
-		}
-		StatusUpdateHandler.addUpdateListener("friends_multiplayer_screen", serverSelectionList::updateEntry);
 
-		this.addRenderableWidget(this.serverSelectionList);
-		addRenderableWidget(Button.builder(Component.translatable("api.servers"), button ->
-			minecraft.setScreen(new JoinMultiplayerScreen(lastScreen))).pos(this.width / 2 - 102, 32).width(100).build());
-		addRenderableWidget(friendsCountButton).setRectangle(100, 20, width / 2 + 2, 32);
+		var header = this.layout.addToHeader(LinearLayout.vertical()).spacing(8);
+		header.addChild(new StringWidget(getTitle(), getFont()), LayoutSettings::alignHorizontallyCenter);
+		var headerRow = header.addChild(LinearLayout.horizontal()).spacing(4);
+		headerRow.defaultCellSetting().alignHorizontallyCenter();
+		headerRow.addChild(Button.builder(Component.translatable("api.servers"), button ->
+			minecraft.setScreen(new JoinMultiplayerScreen(lastScreen))).width(100).build());
+		headerRow.addChild(friendsCountButton);
+		friendsCountButton.setWidth(100);
 		friendsCountButton.active = false;
 
-		if (!initialized) {
-			initialized = true;
-			FriendRequest.getInstance().getFriends().thenAccept(friends -> {
-				friendsCountButton.setMessage(Component.translatable("api.servers.friends", friends.stream().filter(u -> u.getStatus().isOnline()).count()));
-				this.serverSelectionList.updateList(friends);
-			});
-		}
 
-		this.selectButton = this.addRenderableWidget(
-			Button.builder(Component.translatable("selectServer.select"), buttonx -> this.joinSelectedServer()).width(100).build()
-		);
-		Button directConnect = this.addRenderableWidget(Button.builder(Component.translatable("selectServer.direct"), buttonx -> {
+		this.serverSelectionList = this.layout.addToContents(new FriendsMultiplayerSelectionList(this, this.minecraft, this.width, this.layout.getContentHeight(), layout.getHeaderHeight(), 36));
+		FriendRequest.getInstance().getFriends().thenAccept(friends -> {
+			friendsCountButton.setMessage(Component.translatable("api.servers.friends", friends.stream().filter(u -> u.getStatus().isOnline()).count()));
+			this.serverSelectionList.updateList(friends);
+		});
+		StatusUpdateHandler.addUpdateListener("friends_multiplayer_screen", serverSelectionList::updateEntry);
+
+		/*addRenderableWidget(Button.builder(Component.translatable("api.servers"), button ->
+			minecraft.setScreen(new JoinMultiplayerScreen(lastScreen))).pos(this.width / 2 - 102, 32).width(100).build());
+		addRenderableWidget(friendsCountButton).setRectangle(100, 20, width / 2 + 2, 32);
+		friendsCountButton.active = false;*/
+
+		LinearLayout linearLayout = this.layout.addToFooter(LinearLayout.vertical().spacing(4));
+		linearLayout.defaultCellSetting().alignHorizontallyCenter();
+		LinearLayout linearLayout2 = linearLayout.addChild(LinearLayout.horizontal().spacing(4));
+		LinearLayout linearLayout3 = linearLayout.addChild(LinearLayout.horizontal().spacing(4));
+
+		this.selectButton = linearLayout2.addChild(Button.builder(Component.translatable("selectServer.select"), buttonx -> this.joinSelectedServer()).width(100).build());
+		Button directConnect = linearLayout2.addChild(Button.builder(Component.translatable("selectServer.direct"), buttonx -> {
 			this.editingServer = new ServerData(I18n.get("selectServer.defaultName"), "", ServerData.Type.OTHER);
 			this.minecraft.setScreen(new DirectJoinServerScreen(this, this::directJoinCallback, this.editingServer));
 		}).width(100).build());
-		Button friends = this.addRenderableWidget(Button.builder(Component.translatable("api.friends"), buttonx ->
+		Button friends = linearLayout2.addChild(Button.builder(Component.translatable("api.friends"), buttonx ->
 			this.minecraft.setScreen(new FriendsScreen(this))).width(100).build());
-		Button editButton = this.addRenderableWidget(Button.builder(Component.translatable("selectServer.edit"), buttonx -> {
+		Button editButton = linearLayout3.addChild(Button.builder(Component.translatable("selectServer.edit"), buttonx -> {
 		}).width(74).build());
 		editButton.active = false;
-		Button deleteButton = this.addRenderableWidget(Button.builder(Component.translatable("selectServer.delete"), buttonx -> {
+		Button deleteButton = linearLayout3.addChild(Button.builder(Component.translatable("selectServer.delete"), buttonx -> {
 		}).width(74).build());
 		deleteButton.active = false;
-		Button refreshList = this.addRenderableWidget(
+		Button refreshList = linearLayout3.addChild(
 			Button.builder(Component.translatable("selectServer.refresh"), buttonx -> this.refreshServerList()).width(74).build()
 		);
-		Button back = this.addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, buttonx -> this.onClose()).width(74).build());
-		LinearLayout linearLayout = LinearLayout.vertical();
+		Button back = linearLayout3.addChild(Button.builder(CommonComponents.GUI_BACK, buttonx -> this.onClose()).width(74).build());
+		/*LinearLayout linearLayout = LinearLayout.vertical();
 		EqualSpacingLayout equalSpacingLayout = linearLayout.addChild(new EqualSpacingLayout(308, 20, EqualSpacingLayout.Orientation.HORIZONTAL));
 		equalSpacingLayout.addChild(this.selectButton);
 		equalSpacingLayout.addChild(directConnect);
@@ -115,8 +119,18 @@ public class FriendsMultiplayerScreen extends Screen {
 		equalSpacingLayout2.addChild(refreshList);
 		equalSpacingLayout2.addChild(back);
 		linearLayout.arrangeElements();
-		FrameLayout.centerInRectangle(linearLayout, 0, this.height - 64, this.width, 64);
+		FrameLayout.centerInRectangle(linearLayout, 0, this.height - 64, this.width, 64);*/
+		layout.visitWidgets(this::addRenderableWidget);
+		this.repositionElements();
 		this.onSelectedChange();
+	}
+
+	@Override
+	protected void repositionElements() {
+		this.layout.arrangeElements();
+		if (this.serverSelectionList != null) {
+			this.serverSelectionList.updateSize(this.width, this.layout);
+		}
 	}
 
 	@Override
@@ -126,7 +140,6 @@ public class FriendsMultiplayerScreen extends Screen {
 
 	@Override
 	public void tick() {
-		super.tick();
 		this.pinger.tick();
 	}
 
@@ -139,7 +152,6 @@ public class FriendsMultiplayerScreen extends Screen {
 	@Override
 	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 		super.render(guiGraphics, mouseX, mouseY, partialTick);
-		guiGraphics.drawCenteredString(font, getTitle(), width / 2, 15, -1);
 
 		if (serverSelectionList.children().isEmpty()) {
 			guiGraphics.drawCenteredString(font, NO_ONLINE_FRIENDS, width / 2, height / 2 - font.lineHeight / 2, -1);
@@ -169,7 +181,9 @@ public class FriendsMultiplayerScreen extends Screen {
 
 	public void joinSelectedServer() {
 		FriendsMultiplayerSelectionList.Entry entry = this.serverSelectionList.getSelected();
-		this.join(entry.getServerData());
+		if (entry != null) {
+			this.join(entry.getServerData());
+		}
 	}
 
 	private void join(ServerData server) {

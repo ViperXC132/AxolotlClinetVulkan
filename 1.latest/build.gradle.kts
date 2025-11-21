@@ -5,12 +5,12 @@ plugins {
 	id("io.github.p03w.machete")
 }
 
-val minecraft = "1.21.10"
-val minecraftFriendly = "1.21.10"
-val parchmentMinecraft = "1.21.9"
-val parchment = "2025.10.05"
-val modmenu = "16.0.0-rc.1"
-val fapi = "0.135.0"
+val minecraft = "1.21.11-pre1"
+val minecraftFriendly = "1.21.11"
+val parchmentMinecraft = "1.21.10"
+val parchment = "2025.10.12"
+val modmenu = "17.0.0-alpha.1"
+val fapi = "0.139.1"
 group = project.property("maven_group") as String
 version = "${project.property("version")}+$minecraftFriendly"
 base.archivesName = "AxolotlClient"
@@ -51,6 +51,7 @@ dependencies {
 	}
 	include("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+$minecraftFriendly")
 	modImplementation("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:${project.property("config")}")
+	modImplementation(include("io.github.axolotlclient:AxolotlClient-config-rounded:${project.property("config")}+$minecraftFriendly")!!)
 
 	modCompileOnly("com.terraformersmc:modmenu:$modmenu")
 

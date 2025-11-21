@@ -48,6 +48,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Scoreboard;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -133,7 +134,7 @@ public abstract class PlayerListHudMixin {
 	}
 
 	@Inject(method = "render", at = @At(value = "FIELD",
-		target = "Lnet/minecraft/client/gui/components/PlayerTabOverlay;header:Lnet/minecraft/network/chat/Component;"))
+		target = "Lnet/minecraft/client/gui/components/PlayerTabOverlay;header:Lnet/minecraft/network/chat/Component;", opcode = Opcodes.GETFIELD))
 	private void axolotlclient$setRenderHeaderFooter(GuiGraphics graphics, int scaledWindowWidth, Scoreboard scoreboard, Objective objective, CallbackInfo ci) {
 		if (!Tablist.getInstance().showHeader.get()) {
 			header = null;
@@ -144,7 +145,7 @@ public abstract class PlayerListHudMixin {
 	}
 
 	@ModifyArg(method = "render", at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/client/gui/components/PlayerFaceRenderer;draw(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/resources/ResourceLocation;IIIZZI)V"),
+		target = "Lnet/minecraft/client/gui/components/PlayerFaceRenderer;draw(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/resources/Identifier;IIIZZI)V"),
 		index = 5)
 	private boolean axolotlclient$renderHatLayer(boolean drawHat) {
 		return drawHat || Tablist.getInstance().alwaysShowHeadLayer.get();

@@ -40,11 +40,11 @@ import io.netty.buffer.ByteBuf;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class FeatureDisabler {
 
@@ -53,7 +53,7 @@ public class FeatureDisabler {
 
 	private static final Supplier<Boolean> NONE = () -> true;
 	private static final CustomPacketPayload.Type<FeaturePayload> channelId =
-		new CustomPacketPayload.Type<>(ResourceLocation.fromNamespaceAndPath("axolotlclient", "block_mods"));
+		new CustomPacketPayload.Type<>(Identifier.fromNamespaceAndPath("axolotlclient", "block_mods"));
 	// Features that can be disabled on the server's behalf
 	// If something should be added here, feel free to ping us via your favorite way.
 	private static final HashMap<String, ForceableBooleanOption> features = Util.make(() -> {

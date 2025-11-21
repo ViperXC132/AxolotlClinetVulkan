@@ -36,7 +36,7 @@ import io.github.axolotlclient.modules.AbstractModule;
 import lombok.Getter;
 import net.minecraft.client.renderer.LevelTargetBundle;
 import net.minecraft.client.renderer.PostChain;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class MotionBlur extends AbstractModule {
 
@@ -46,7 +46,7 @@ public class MotionBlur extends AbstractModule {
 	public final FloatOption strength = new FloatOption("strength", 50F, 1F, 99F);
 	public final BooleanOption inGuis = new BooleanOption("inGuis", false);
 	public final OptionCategory category = OptionCategory.create("motionBlur");
-	private final ResourceLocation postChainId = ResourceLocation.fromNamespaceAndPath("axolotlclient", "motion_blur");
+	private final Identifier postChainId = Identifier.fromNamespaceAndPath("axolotlclient", "motion_blur");
 	private GpuBuffer uniformBuffer;
 
 	private static float getBlur() {

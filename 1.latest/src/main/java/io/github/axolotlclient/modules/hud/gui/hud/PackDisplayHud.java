@@ -42,7 +42,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.IoSupplier;
 
@@ -50,7 +50,7 @@ import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawString;
 
 public class PackDisplayHud extends TextHudEntry {
 
-	public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("axolotlclient", "packdisplayhud");
+	public static final Identifier ID = Identifier.fromNamespaceAndPath("axolotlclient", "packdisplayhud");
 	public final List<PackWidget> widgets = new ArrayList<>();
 	private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
 	private PackWidget placeholder;
@@ -120,7 +120,7 @@ public class PackDisplayHud extends TextHudEntry {
 		IoSupplier<InputStream> supplier = pack.getRootResource("pack.png");
 		assert supplier != null;
 		InputStream stream = supplier.get();
-		ResourceLocation id = ResourceLocation.fromNamespaceAndPath(ID.getNamespace(), ID.getPath() + "/" + pack.packId());
+		Identifier id = Identifier.fromNamespaceAndPath(ID.getNamespace(), ID.getPath() + "/" + pack.packId());
 		client.getTextureManager().register(id, new DynamicTexture(id::toString, NativeImage.read(stream)));
 		stream.close();
 		return new PackWidget(displayName, id);
@@ -158,7 +158,7 @@ public class PackDisplayHud extends TextHudEntry {
 	}
 
 	@Override
-	public ResourceLocation getId() {
+	public Identifier getId() {
 		return ID;
 	}
 
@@ -171,9 +171,9 @@ public class PackDisplayHud extends TextHudEntry {
 
 		@Getter
 		public final String name;
-		private final ResourceLocation texture;
+		private final Identifier texture;
 
-		public PackWidget(Component name, ResourceLocation id) {
+		public PackWidget(Component name, Identifier id) {
 			this.name = name.getString();
 			texture = id;
 		}

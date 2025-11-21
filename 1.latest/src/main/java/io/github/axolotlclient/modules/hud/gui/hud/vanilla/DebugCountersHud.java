@@ -35,10 +35,10 @@ import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class DebugCountersHud extends TextHudEntry implements DynamicallyPositionable {
-	public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("axolotlclient", "debugcountershud");
+	public static final Identifier ID = Identifier.fromNamespaceAndPath("axolotlclient", "debugcountershud");
 	private final EnumOption<AnchorPoint> anchor = new EnumOption<>("anchorpoint", AnchorPoint.class,
 		AnchorPoint.TOP_LEFT);
 	private final BooleanOption showCCount = new BooleanOption("debugcounters.ccount", true);
@@ -126,7 +126,7 @@ public class DebugCountersHud extends TextHudEntry implements DynamicallyPositio
 	}
 
 	@Override
-	public ResourceLocation getId() {
+	public Identifier getId() {
 		return ID;
 	}
 

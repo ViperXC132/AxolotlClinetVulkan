@@ -45,7 +45,7 @@ import org.spongepowered.asm.mixin.Shadow;
 public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	@Shadow
 	@Final
-	private Minecraft minecraft;
+	Minecraft minecraft;
 
 	@Shadow
 	@Final

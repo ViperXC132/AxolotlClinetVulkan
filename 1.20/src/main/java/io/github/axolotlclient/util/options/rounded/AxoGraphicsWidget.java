@@ -34,6 +34,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.text.Text;
 
+@SuppressWarnings("unused")
 public class AxoGraphicsWidget extends GraphicsWidget {
 	private final GraphicsOption option;
 
@@ -59,21 +60,25 @@ public class AxoGraphicsWidget extends GraphicsWidget {
 		public void init() {
 			super.init();
 
-			int buttonX = gridX + maxGridWidth + 10;
-			int buttonY = gridY + 60;
-			var back = (RoundedButtonWidget) children().get(children().size() - 1);
-			remove(back);
-			addDrawableChild(new RoundedButtonWidget(buttonX, buttonY + 25, Text.translatable("graphics.copy_text"),
-				btn -> client.keyboard.setClipboard(Base64.getEncoder().encodeToString(graphics.getPixelData())))).setWidth(100);
-			addDrawableChild(new RoundedButtonWidget(buttonX, buttonY + 50, Text.translatable("graphics.paste_text"),
+			var clear = (RoundedButtonWidget) children().get(children().size() - 1);
+			var buttonX = clear.getX();
+			var buttonY = clear.getY();
+			var buttonWidth = clear.getWidth();
+			addDrawableChild(new RoundedButtonWidget(buttonX, buttonY + 24, Text.translatable("graphics.copy_text"),
+				btn -> client.keyboard.setClipboard(Base64.getEncoder().encodeToString(graphics.getPixelData())))).setWidth(buttonWidth);
+			addDrawableChild(new RoundedButtonWidget(buttonX, buttonY + 48, Text.translatable("graphics.paste_text"),
 				btn -> {
 					try {
 						graphics.setPixelData(Base64.getDecoder().decode(client.keyboard.getClipboard()));
 					} catch (IllegalArgumentException e) {
 						Notifications.getInstance().addStatus("graphics.paste_text.failed", "graphics.paste_text.failed.desc");
 					}
-				})).setWidth(100);
-			addDrawableChild(back);
+				})).setWidth(buttonWidth);
+		}
+
+		@Override
+		protected int getCurrentHeight() {
+			return super.getCurrentHeight() - 24*2;
 		}
 	}
 }

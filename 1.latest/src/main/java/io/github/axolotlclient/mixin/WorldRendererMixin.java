@@ -36,11 +36,11 @@ import org.spongepowered.asm.mixin.injection.At;
 public abstract class WorldRendererMixin {
 
 	@WrapOperation(method = "renderBlockOutline", at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/client/renderer/LevelRenderer;renderHitOutline(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;DDDLnet/minecraft/client/renderer/state/BlockOutlineRenderState;I)V", ordinal = 1))
-	private void axolotlclient$customOutlineColor(LevelRenderer instance, PoseStack poseStack, VertexConsumer vertexConsumer, double d, double e, double f, BlockOutlineRenderState blockOutlineRenderState, int i, Operation<Void> original) {
+		target = "Lnet/minecraft/client/renderer/LevelRenderer;renderHitOutline(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;DDDLnet/minecraft/client/renderer/state/BlockOutlineRenderState;IF)V", ordinal = 1))
+	private void axolotlclient$customOutlineColor(LevelRenderer instance, PoseStack poseStack, VertexConsumer vertexConsumer, double d, double e, double f, BlockOutlineRenderState blockOutlineRenderState, int i, float g, Operation<Void> original) {
 		if (AxolotlClient.config().enableCustomOutlines.get()) {
 			i = AxolotlClient.config().outlineColor.get().toInt();
 		}
-		original.call(instance, poseStack, vertexConsumer, d, e, f, blockOutlineRenderState, i);
+		original.call(instance, poseStack, vertexConsumer, d, e, f, blockOutlineRenderState, i, g);
 	}
 }

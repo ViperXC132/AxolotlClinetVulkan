@@ -46,13 +46,13 @@ import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.LoggerImpl;
 import io.github.axolotlclient.util.notifications.Notifications;
 import net.fabricmc.api.ClientModInitializer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 
 public class AxolotlClient extends AxolotlClientCommon implements ClientModInitializer {
 
-	public static final HashMap<ResourceLocation, Resource> runtimeResources = new HashMap<>();
-	public static final ResourceLocation badgeIcon = ResourceLocation.fromNamespaceAndPath(MODID, "textures/badge.png");
+	public static final HashMap<Identifier, Resource> runtimeResources = new HashMap<>();
+	public static final Identifier badgeIcon = Identifier.fromNamespaceAndPath(MODID, "textures/badge.png");
 	public static final Logger LOGGER = new LoggerImpl();
 
 	private void addBuiltinModules() {

@@ -37,7 +37,8 @@ import io.github.axolotlclient.api.requests.UserRequest;
 import io.github.axolotlclient.util.HorizontalGradientRectangleRenderState;
 import io.github.axolotlclient.util.Watcher;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.Util;
+import net.minecraft.client.gui.ActiveTextCollector;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.Font;
@@ -261,10 +262,10 @@ public class GalleryScreen extends Screen {
 		}
 
 		@Override
-		protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+		protected void renderContents(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 			if (load().isDone() && load().join() != null) {
 				guiGraphics.blit(RenderPipelines.GUI_TEXTURED, load().join().id(), getX(), getY(), 0, 0, getWidth(), getHeight() - font.lineHeight - 2, getWidth(), getHeight() - font.lineHeight - 2);
-				renderString(guiGraphics, font, -1);
+				renderDefaultLabel(guiGraphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
 			} else {
 				float delta = (float) easeInOutCubic((Util.getMillis() - loadStart) % 1000f / 1000f);
 
@@ -295,10 +296,10 @@ public class GalleryScreen extends Screen {
 		}
 
 		@Override
-		protected void renderScrollingString(GuiGraphics guiGraphics, Font font, int width, int color) {
-			int i = this.getX() + width;
-			int j = this.getX() + this.getWidth() - width;
-			renderScrollingString(guiGraphics, font, this.getMessage(), i, this.getY() + getHeight() - font.lineHeight - 1, j, this.getY() + this.getHeight(), color);
+		protected void renderScrollingStringOverContents(ActiveTextCollector activeTextCollector, Component component, int i) {
+			activeTextCollector.acceptScrollingWithDefaultCenter(component, this.getX() + i,
+				this.getX() + this.getWidth() - i, this.getY() + getHeight() - font.lineHeight - 1,
+				this.getY() + this.getHeight());
 		}
 	}
 

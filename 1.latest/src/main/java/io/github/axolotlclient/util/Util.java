@@ -37,13 +37,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringUtil;
 import net.minecraft.world.scores.*;
 import org.apache.commons.lang3.StringUtils;
 
 public class Util {
-	private static final Map<ResourceLocation, DynamicTexture> textures = new HashMap<>();
+	private static final Map<Identifier, DynamicTexture> textures = new HashMap<>();
 	public static String lastgame;
 	public static String game;
 
@@ -166,12 +166,12 @@ public class Util {
 		Minecraft.getInstance().gui.getChat().addMessage(msg);
 	}
 
-	public static ResourceLocation getTexture(GraphicsOption option) {
+	public static Identifier getTexture(GraphicsOption option) {
 		return getTexture(option.get(), option.getName());
 	}
 
-	public static ResourceLocation getTexture(Graphics graphics, String name) {
-		ResourceLocation id = ResourceLocation.fromNamespaceAndPath("axolotlclient", "graphics_" + name.toLowerCase(Locale.ROOT));
+	public static Identifier getTexture(Graphics graphics, String name) {
+		Identifier id = Identifier.fromNamespaceAndPath("axolotlclient", "graphics_" + name.toLowerCase(Locale.ROOT));
 		try {
 			DynamicTexture texture;
 			if (!textures.containsKey(id)) {

@@ -39,7 +39,7 @@ import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class UserListWidget extends ObjectSelectionList<UserListWidget.UserListEntry> {
 
@@ -149,7 +149,7 @@ public class UserListWidget extends ObjectSelectionList<UserListWidget.UserListE
 				);
 			}
 
-			ResourceLocation texture = Auth.getInstance().getSkinTexture(user.getUuid());
+			Identifier texture = Auth.getInstance().getSkinTexture(user.getUuid());
 			PlayerFaceRenderer.draw(graphics, texture, x - 1, y - 1, 33, true, false, -1);
 		}
 

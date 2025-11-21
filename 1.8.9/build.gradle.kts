@@ -33,6 +33,7 @@ dependencies {
 	}
 	include("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+${project.property("minecraft_18")}")
 	modImplementation("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:${project.property("config")}")
+	modImplementation(include("io.github.axolotlclient:AxolotlClient-config-rounded:${project.property("config")}+${project.property("minecraft_18")}")!!)
 
 	ploceus.dependOsl(project.property("osl") as String)
 

@@ -37,7 +37,7 @@ import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.util.GsonHelper;
 import io.github.axolotlclient.util.notifications.Notifications;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;

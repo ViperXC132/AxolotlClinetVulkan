@@ -33,7 +33,7 @@ import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 
 /**
@@ -45,7 +45,7 @@ import net.minecraft.util.ARGB;
 
 public class ActionBarHud extends TextHudEntry {
 
-	public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("kronhud", "actionbarhud");
+	public static final Identifier ID = Identifier.fromNamespaceAndPath("kronhud", "actionbarhud");
 
 	public final IntegerOption timeShown = new IntegerOption("timeshown", 60, 40, 300);
 	public final BooleanOption customTextColor = new BooleanOption("customtextcolor", false);
@@ -81,7 +81,7 @@ public class ActionBarHud extends TextHudEntry {
 	}
 
 	@Override
-	public ResourceLocation getId() {
+	public Identifier getId() {
 		return ID;
 	}
 

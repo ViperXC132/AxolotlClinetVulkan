@@ -119,9 +119,9 @@ public class ConfigureKeyBindScreen extends Screen {
 				}).width(58).build());
 				synchronizeButton.active = s.getKey() != null;
 				label.setEditable(!s.isSynchronizeLabel());
-				labelLayout.addChild(CycleButton.<Justification>builder(j -> Component.translatable(j.toString())).withValues(Justification.values())
-					.withInitialValue(s.getJustification()).create(0, 0, 58, 20,
-						Component.translatable("justification"), (btn, val) -> s.setJustification(val)));
+				labelLayout.addChild(CycleButton.<Justification>builder(j -> Component.translatable(j.toString()), s::getJustification).withValues(Justification.values())
+					.create(0, 0, 58, 20, Component.translatable("justification"),
+						(btn, val) -> s.setJustification(val)));
 			}
 		}
 		names.addChild(new StringWidget(150, 20, Component.translatable("keystrokes.stroke.width"), font));

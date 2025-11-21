@@ -33,7 +33,7 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 
 public class DeviceCodeDisplayScreen extends Screen {
@@ -43,7 +43,7 @@ public class DeviceCodeDisplayScreen extends Screen {
 	private int ticksLeft;
 	private Component status;
 	private boolean working;
-	private final ResourceLocation qrCode;
+	private final Identifier qrCode;
 	private final DeviceFlowData data;
 
 	public DeviceCodeDisplayScreen(Screen parent, DeviceFlowData data) {

@@ -52,12 +52,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import org.lwjgl.glfw.GLFW;
 
@@ -73,7 +73,7 @@ import static io.github.axolotlclient.modules.hud.util.DrawUtil.*;
 public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 
 	private static final String KEYSTROKE_SAVE_FILE_NAME = "keystrokes.json";
-	public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("kronhud", "keystrokehud");
+	public static final Identifier ID = Identifier.fromNamespaceAndPath("kronhud", "keystrokehud");
 
 	private final Minecraft client = (Minecraft) super.client;
 
@@ -224,7 +224,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 	}
 
 	@Override
-	public ResourceLocation getId() {
+	public Identifier getId() {
 		return ID;
 	}
 

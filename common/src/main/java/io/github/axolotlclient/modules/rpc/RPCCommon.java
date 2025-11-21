@@ -41,7 +41,7 @@ import io.github.axolotlclient.util.options.ForceableBooleanOption;
 public abstract class RPCCommon implements Module {
 
 	private static final long CLIENT_ID = 875835666729152573L;
-	private static boolean running;
+	private static boolean running, starting;
 	public final OptionCategory category = OptionCategory.create("rpc");
 	public final BooleanOption showActivity = new BooleanOption("showActivity", true);
 	public final ForceableBooleanOption enabled = new ForceableBooleanOption("enabled", false, value -> {
@@ -71,7 +71,7 @@ public abstract class RPCCommon implements Module {
 	}
 
 	public void tick() {
-		if (!running && enabled.get()) {
+		if (!running && !starting && enabled.get()) {
 			ThreadExecuter.scheduleTask(this::initRPC);
 		}
 
@@ -112,8 +112,9 @@ public abstract class RPCCommon implements Module {
 		createRichPresence();
 	}
 
-	public void initRPC() {
-		if (enabled.get()) {
+	private synchronized void initRPC() {
+		if (enabled.get() && !starting) {
+			starting = true;
 			if (client == null) {
 				client = new IPCClient(CLIENT_ID);
 				client.setListener(new IPCListener() {
@@ -167,6 +168,7 @@ public abstract class RPCCommon implements Module {
 				logger.warn("Failed to start RPC", e);
 				enabled.set(false);
 			}
+			starting = false;
 		}
 	}
 
