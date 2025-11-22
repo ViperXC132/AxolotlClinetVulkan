@@ -1,5 +1,11 @@
 ## Changelog:
 
+### 3.1.7
+
+- Update to 1.21.11 (in favor of 1.21.10)
+- Implement new config library style
+- fix bugs: https://github.com/AxolotlClient/AxolotlClient-mod/issues/185 and others
+
 ### 3.1.6
 
 - Implement more options for the Inventory HUD (#173)

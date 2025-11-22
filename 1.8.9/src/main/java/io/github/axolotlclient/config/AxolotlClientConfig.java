@@ -30,11 +30,9 @@ import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
-import io.github.axolotlclient.AxolotlClientConfig.api.ui.screen.ConfigScreen;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.*;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.RecreatableScreen;
-import io.github.axolotlclient.AxolotlClientConfig.impl.util.ConfigStyles;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.config.screen.CreditsScreen;
 import io.github.axolotlclient.config.screen.ProfilesScreen;
@@ -61,7 +59,7 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 
 	public final ForceableBooleanOption timeChangerEnabled = new ForceableBooleanOption("enabled", false);
 	public final IntegerOption customTime = new IntegerOption("time", 0, 0, 24000);
-	public final BooleanOption customSky = new BooleanOption("customSky", true);
+	public final BooleanOption customSky = new BooleanOption("customSky", false);
 	public final IntegerOption cloudHeight = new IntegerOption("cloudHeight", 128, 100, 512);
 	public final BooleanOption dynamicFOV = new BooleanOption("dynamicFov", true);
 	public final ForceableBooleanOption fullBright = new ForceableBooleanOption("fullBright", false);

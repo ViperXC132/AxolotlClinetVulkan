@@ -60,7 +60,7 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 
 	public final ForceableBooleanOption timeChangerEnabled = new ForceableBooleanOption("enabled", false);
 	public final IntegerOption customTime = new IntegerOption("time", 0, 0, 24000);
-	public final BooleanOption customSky = new BooleanOption("customSky", true);
+	public final BooleanOption customSky = new BooleanOption("customSky", false);
 	public final BooleanOption dynamicFOV = new BooleanOption("dynamicFov", true);
 	public final ForceableBooleanOption fullBright = new ForceableBooleanOption("fullBright", false);
 	public final BooleanOption removeVignette = new BooleanOption("removeVignette", false);
