@@ -6,6 +6,8 @@ jobs:
   build:
     if: "!startsWith(github.event.head_commit.message, '[skip]')"
     runs-on: docker
+    container:
+      image: ghcr.io/catthehacker/ubuntu:act-24.04
     steps:
       - uses: https://data.forgejo.org/actions/checkout@v5
       - uses: https://github.com/gradle/actions/wrapper-validation@v4
