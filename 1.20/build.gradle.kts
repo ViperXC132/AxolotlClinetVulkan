@@ -46,13 +46,6 @@ dependencies {
 
 	implementation(include(project(path = ":common", configuration = "shadow"))!!)
 
-	api("org.lwjgl:lwjgl-nanovg:3.3.2")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.2:natives-linux")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.2:natives-windows")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.2:natives-windows-arm64")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.2:natives-macos")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.2:natives-macos-arm64")
-
 	val noxesiumVersion = "1.0.3"
 	modCompileOnly("maven.modrinth:noxesium:$noxesiumVersion")
 	//modImplementation("com.noxcrew.noxesium:api:$noxesiumVersion")

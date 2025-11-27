@@ -169,7 +169,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 			setKeystrokes();
 		}
 		for (Keystroke stroke : keystrokes) {
-			stroke.render();
+			stroke.render(context);
 		}
 	}
 
@@ -214,6 +214,8 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 		options.add(outline);
 		options.add(outlineColor);
 		options.add(pressedOutlineColor);
+		options.add(roundBackground);
+		options.add(backgroundRounding);
 		options.add(animationTime);
 		options.add(keystrokesOption);
 		options.add(configurePositions);
@@ -280,21 +282,29 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 			return start == -1 ? 1 : MathHelper.clamp((float) (System.currentTimeMillis() - start) / getAnimTime(), 0, 1);
 		}
 
-		public void render() {
-			renderStroke();
+		public void render(AxoRenderContext ctx) {
+			renderStroke(ctx);
 			render.render(this);
 		}
 
-		public void renderStroke() {
+		public void renderStroke(AxoRenderContext matrices) {
 			if (isKeyDown() != wasPressed) {
 				start = System.currentTimeMillis();
 			}
 			Rectangle rect = getRenderPosition();
 			if (background.get()) {
-				DrawUtil.fillRect(rect, getColor());
+				if (roundBackground.get()) {
+					matrices.br$fillRectRound(rect, getColor(), Math.min(rect.height()/2f, backgroundRounding.get()));
+				} else {
+					matrices.br$fillRect(rect, getColor());
+				}
 			}
 			if (outline.get()) {
-				DrawUtil.outlineRect(rect, getOutlineColor());
+				if (roundBackground.get()) {
+					matrices.br$outlineRectRound(rect, getOutlineColor(), Math.min(rect.height()/2f, backgroundRounding.get()));
+				} else {
+					matrices.br$outlineRect(rect, getOutlineColor());
+				}
 			}
 			if ((float) (System.currentTimeMillis() - start) / getAnimTime() >= 1) {
 				start = -1;

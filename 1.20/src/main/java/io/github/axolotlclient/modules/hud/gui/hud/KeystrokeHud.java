@@ -220,6 +220,8 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 		options.add(outline);
 		options.add(outlineColor);
 		options.add(pressedOutlineColor);
+		options.add(roundBackground);
+		options.add(backgroundRounding);
 		options.add(animationTime);
 		options.add(keystrokesOption);
 		options.add(configurePositions);
@@ -297,10 +299,18 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 			}
 			Rectangle rect = getRenderPosition();
 			if (background.get()) {
-				DrawUtil.fillRect(matrices, rect, getColor());
+				if (roundBackground.get()) {
+					matrices.br$fillRectRound(rect, getColor(), Math.min(rect.height()/2f, backgroundRounding.get()));
+				} else {
+					matrices.br$fillRect(rect, getColor());
+				}
 			}
 			if (outline.get()) {
-				DrawUtil.outlineRect(matrices, rect, getOutlineColor());
+				if (roundBackground.get()) {
+					matrices.br$outlineRectRound(rect, getOutlineColor(), Math.min(rect.height()/2f, backgroundRounding.get()));
+				} else {
+					matrices.br$outlineRect(rect, getOutlineColor());
+				}
 			}
 			if ((float) (Util.getMeasuringTimeMs() - start) / getAnimTime() >= 1) {
 				start = -1;

@@ -114,6 +114,16 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 	}
 
 	@Override
+	public void br$fillRectRound(int x, int y, int width, int height, int color, float rounding) {
+		io.github.axolotlclient.rendering.DrawUtil.get().axolotlclient_rendering$roundedRect(x, y, x + width, y + height, color, rounding);
+	}
+
+	@Override
+	public void br$outlineRectRound(int x, int y, int width, int height, int color, float rounding) {
+		io.github.axolotlclient.rendering.DrawUtil.get().axolotlclient_rendering$outlineRoundedRect(x, y, x + width, y + height, color, rounding, 0.5f);
+	}
+
+	@Override
 	public void br$drawTexture(int x, int y, int width, int height, AxoSprite sprite) {
 		((AxoSpriteImpl) sprite).draw(client, x, y, width, height);
 	}

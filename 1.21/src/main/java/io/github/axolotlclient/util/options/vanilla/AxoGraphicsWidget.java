@@ -24,7 +24,6 @@ package io.github.axolotlclient.util.options.vanilla;
 
 import java.util.Base64;
 
-import io.github.axolotlclient.AxolotlClientConfig.api.util.Graphics;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.screen.GraphicsEditorScreen;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.GraphicsWidget;
@@ -34,6 +33,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.button.ButtonWidget;
 import net.minecraft.text.Text;
 
+@SuppressWarnings("unused")
 public class AxoGraphicsWidget extends GraphicsWidget {
 	private final GraphicsOption option;
 
@@ -48,11 +48,9 @@ public class AxoGraphicsWidget extends GraphicsWidget {
 	}
 
 	public static class AxoGraphicsEditorScreen extends GraphicsEditorScreen {
-		private final Graphics graphics;
 
 		public AxoGraphicsEditorScreen(Screen parent, GraphicsOption option) {
 			super(parent, option);
-			this.graphics = option.get();
 		}
 
 		@Override
@@ -64,12 +62,12 @@ public class AxoGraphicsWidget extends GraphicsWidget {
 			var back = (ButtonWidget) children().getLast();
 			remove(back);
 			addDrawableSelectableElement(ButtonWidget.builder(Text.translatable("graphics.copy_text"),
-					btn -> client.keyboard.setClipboard(Base64.getEncoder().encodeToString(graphics.getPixelData())))
+					btn -> client.keyboard.setClipboard(Base64.getEncoder().encodeToString(option.get().getPixelData())))
 				.position(buttonX, buttonY + 25).width(100).build());
 			addDrawableSelectableElement(ButtonWidget.builder(Text.translatable("graphics.paste_text"),
 					btn -> {
 						try {
-							graphics.setPixelData(Base64.getDecoder().decode(client.keyboard.getClipboard()));
+							option.get().setPixelData(Base64.getDecoder().decode(client.keyboard.getClipboard()));
 						} catch (IllegalArgumentException e) {
 							Notifications.getInstance().addStatus("graphics.paste_text.failed", "graphics.paste_text.failed.desc");
 						}

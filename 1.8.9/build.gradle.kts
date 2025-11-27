@@ -44,12 +44,6 @@ dependencies {
 	modApi(include("io.github.moehreag:search-in-resources:1.0.6+1.8.9")!!)
 
 	val lwjglVersion = "3.3.6"
-	api("org.lwjgl:lwjgl-nanovg:$lwjglVersion")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-linux")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-windows")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-windows-arm64")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-macos")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-macos-arm64")
 
 	include("org.apache.logging.log4j:log4j-slf4j-impl:2.0-beta9") {
 		exclude(group = "org.apache.logging.log4j", module = "log4j-api")

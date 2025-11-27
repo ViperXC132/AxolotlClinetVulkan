@@ -31,6 +31,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.ButtonWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.Element;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.ElementListWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.VanillaButtonWidget;
+import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -130,7 +131,7 @@ public class KeyBindsList extends ElementListWidget<KeyBindsList.Entry> {
 			GlStateManager.translatef(left, top, 0);
 			GlStateManager.scalef(scale, scale, 1);
 			GlStateManager.translatef(-rect.x(), -rect.y(), 0);
-			key.render();
+			key.render(AxoRenderContextImpl.getInstance());
 			GlStateManager.popMatrix();
 			client.textRenderer.drawWithShadow(name, left + width / 2f - client.textRenderer.getWidth(name) / 2f, top + height / 2f - 9 / 2f, Colors.GRAY.toInt());
 		}

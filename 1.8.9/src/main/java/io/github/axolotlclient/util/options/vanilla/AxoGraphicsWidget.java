@@ -24,7 +24,6 @@ package io.github.axolotlclient.util.options.vanilla;
 
 import java.util.Base64;
 
-import io.github.axolotlclient.AxolotlClientConfig.api.util.Graphics;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.screen.GraphicsEditorScreen;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.GraphicsWidget;
@@ -33,6 +32,7 @@ import io.github.axolotlclient.util.notifications.Notifications;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resource.language.I18n;
 
+@SuppressWarnings("unused")
 public class AxoGraphicsWidget extends GraphicsWidget {
 	private final GraphicsOption option;
 
@@ -47,11 +47,9 @@ public class AxoGraphicsWidget extends GraphicsWidget {
 	}
 
 	public static class AxoGraphicsEditorScreen extends GraphicsEditorScreen {
-		private final Graphics graphics;
 
 		public AxoGraphicsEditorScreen(Screen parent, GraphicsOption option) {
 			super(parent, option);
-			this.graphics = option.get();
 		}
 
 		@Override
@@ -62,11 +60,11 @@ public class AxoGraphicsWidget extends GraphicsWidget {
 			var back = (VanillaButtonWidget) children().get(children().size() - 1);
 			remove(back);
 			addDrawableChild(new VanillaButtonWidget(buttonX, buttonY + 25, 100, 20, I18n.translate("graphics.copy_text"),
-				btn -> setClipboard(Base64.getEncoder().encodeToString(graphics.getPixelData()))));
+				btn -> setClipboard(Base64.getEncoder().encodeToString(option.get().getPixelData()))));
 			addDrawableChild(new VanillaButtonWidget(buttonX, buttonY + 50, 100, 20, I18n.translate("graphics.paste_text"),
 				btn -> {
 					try {
-						graphics.setPixelData(Base64.getDecoder().decode(getClipboard()));
+						option.get().setPixelData(Base64.getDecoder().decode(getClipboard()));
 					} catch (IllegalArgumentException e) {
 						Notifications.getInstance().addStatus("graphics.paste_text.failed", "graphics.paste_text.failed.desc");
 					}

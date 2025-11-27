@@ -24,7 +24,6 @@ package io.github.axolotlclient.util.options.rounded;
 
 import java.util.Base64;
 
-import io.github.axolotlclient.AxolotlClientConfig.api.util.Graphics;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.rounded.screen.GraphicsEditorScreen;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.rounded.widgets.GraphicsWidget;
@@ -49,11 +48,9 @@ public class AxoGraphicsWidget extends GraphicsWidget {
 	}
 
 	public static class AxoGraphicsEditorScreen extends GraphicsEditorScreen {
-		private final Graphics graphics;
 
 		public AxoGraphicsEditorScreen(Screen parent, GraphicsOption option) {
 			super(parent, option);
-			this.graphics = option.get();
 		}
 
 		@Override
@@ -65,11 +62,11 @@ public class AxoGraphicsWidget extends GraphicsWidget {
 			var buttonY = clear.getY();
 			var buttonWidth = clear.getWidth();
 			addDrawableChild(new RoundedButtonWidget(buttonX, buttonY + 24, Text.translatable("graphics.copy_text"),
-				btn -> client.keyboard.setClipboard(Base64.getEncoder().encodeToString(graphics.getPixelData())))).setWidth(buttonWidth);
+				btn -> client.keyboard.setClipboard(Base64.getEncoder().encodeToString(option.get().getPixelData())))).setWidth(buttonWidth);
 			addDrawableChild(new RoundedButtonWidget(buttonX, buttonY + 48, Text.translatable("graphics.paste_text"),
 				btn -> {
 					try {
-						graphics.setPixelData(Base64.getDecoder().decode(client.keyboard.getClipboard()));
+						option.get().setPixelData(Base64.getDecoder().decode(client.keyboard.getClipboard()));
 					} catch (IllegalArgumentException e) {
 						Notifications.getInstance().addStatus("graphics.paste_text.failed", "graphics.paste_text.failed.desc");
 					}

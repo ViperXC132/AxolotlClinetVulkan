@@ -28,6 +28,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.util.ClientColors;
 
@@ -47,6 +48,9 @@ public abstract class BoxHudEntry extends AbstractHudEntry {
 	protected BooleanOption outline = new BooleanOption("outline", false);
 	protected ColorOption outlineColor = new ColorOption("outlinecolor", ClientColors.WHITE);
 
+	protected BooleanOption roundBackground = new BooleanOption("round_background", false);
+	protected IntegerOption backgroundRounding = new IntegerOption("background_rounding", 10, 1, 20);
+
 	public BoxHudEntry(int width, int height, boolean backgroundAllowed) {
 		super(width, height);
 		this.backgroundAllowed = backgroundAllowed;
@@ -55,6 +59,8 @@ public abstract class BoxHudEntry extends AbstractHudEntry {
 			backgroundColor = null;
 			outline = null;
 			outlineColor = null;
+			roundBackground = null;
+			backgroundRounding = null;
 		}
 	}
 
@@ -66,6 +72,8 @@ public abstract class BoxHudEntry extends AbstractHudEntry {
 			options.add(backgroundColor);
 			options.add(outline);
 			options.add(outlineColor);
+			options.add(roundBackground);
+			options.add(backgroundRounding);
 		}
 		return options;
 	}
@@ -76,10 +84,18 @@ public abstract class BoxHudEntry extends AbstractHudEntry {
 		scale(ctx);
 		if (backgroundAllowed) {
 			if (background.get() && backgroundColor.get().getAlpha() > 0) {
-				ctx.br$fillRect(getBounds(), backgroundColor.get());
+				if (roundBackground.get()) {
+					ctx.br$fillRectRound(getBounds(), backgroundColor.get(), Math.min(getHeight()/2f, backgroundRounding.get()));
+				} else {
+					ctx.br$fillRect(getBounds(), backgroundColor.get());
+				}
 			}
 			if (outline.get() && outlineColor.get().getAlpha() > 0) {
-				ctx.br$outlineRect(getBounds(), outlineColor.get());
+				if (roundBackground.get()) {
+					ctx.br$outlineRectRound(getBounds(), outlineColor.get(), Math.min(getHeight()/2f, backgroundRounding.get()));
+				} else {
+					ctx.br$outlineRect(getBounds(), outlineColor.get());
+				}
 			}
 		}
 		renderComponent(ctx, delta);

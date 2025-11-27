@@ -69,8 +69,6 @@ public abstract class SimpleTextHudEntry extends TextHudEntry implements Dynamic
 	@Override
 	public void renderComponent(AxoRenderContext render, float delta) {
 		render.br$glEnableBlend();
-		// render.blendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		// render.glDisableTexture();
 		DrawPosition pos = getPos();
 		String value = wrapWithBrackets(getValue());
 
@@ -106,8 +104,6 @@ public abstract class SimpleTextHudEntry extends TextHudEntry implements Dynamic
 		render.br$drawString(value,
 			pos.x() + justification.get().getXOffset(valueWidth, getWidth() - 4) + 2,
 			pos.y() + (Math.round((float) getHeight() / 2)) - 4, getTextColor().toInt(), shadow.get());
-		// render.glEnableTexture();
-		// render.glDisableBlend();
 	}
 
 	@Override

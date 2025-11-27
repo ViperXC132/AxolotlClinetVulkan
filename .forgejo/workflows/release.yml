@@ -19,11 +19,18 @@ jobs:
       - uses: https://github.com/actions-ecosystem/action-get-latest-tag@v1
         id: get-latest-tag
 
+      - uses: https://github.com/gradle/actions/wrapper-validation@v5.0.0
+
       - uses: https://github.com/actions/setup-java@v4
         if: "github.ref == 'refs/tags/${{ steps.get-latest-tag.outputs.tag }}'"
         with:
           distribution: "temurin"
           java-version: 21
+
+      - name: Setup Gradle
+        uses: https://github.com/gradle/actions/setup-gradle@v5.0.0
+        with:
+          cache-read-only: true
 
       - name: Build
         run: ./gradlew build collectBuilds

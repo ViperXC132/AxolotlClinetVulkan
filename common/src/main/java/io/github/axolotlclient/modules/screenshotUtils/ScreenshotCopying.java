@@ -57,7 +57,7 @@ public class ScreenshotCopying {
 		boolean wayland = false;
 		if (!sdl) {
 			try {
-				wayland = GLFW.glfwGetPlatform() == GLFW.GLFW_PLATFORM_WAYLAND;
+				wayland = GLFW.glfwGetPlatform() == GLFW.GLFW_PLATFORM_WAYLAND || System.getenv("WAYLAND_DISPLAY") != null;
 			} catch (Throwable ignored) {
 			}
 		}

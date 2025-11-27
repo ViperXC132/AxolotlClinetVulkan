@@ -57,13 +57,6 @@ dependencies {
 
 	implementation(include(project(path = ":common", configuration = "shadow"))!!)
 
-	api("org.lwjgl:lwjgl-nanovg:3.3.3")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.3:natives-linux")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.3:natives-windows")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.3:natives-windows-arm64")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.3:natives-macos")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.3:natives-macos-arm64")
-
 	modCompileOnly("maven.modrinth:world-host:0.5.0+1.21.3-fabric")
 	//implementation("org.quiltmc.parsers:json:0.3.0")
 	//implementation("org.semver4j:semver4j:5.3.0")

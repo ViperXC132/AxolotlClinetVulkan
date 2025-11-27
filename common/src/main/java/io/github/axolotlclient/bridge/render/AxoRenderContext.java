@@ -187,6 +187,26 @@ public interface AxoRenderContext {
 		throw BridgeUtil.noImpl();
 	}
 
+	@ApiStatus.NonExtendable
+	default void br$fillRectRound(Rectangle rect, Color color, float rounding) {
+		br$fillRectRound(rect.x, rect.y, rect.width, rect.height, color.toInt(), rounding);
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$fillRectRound(Rectangle rect, int color, float rounding) {
+		br$fillRectRound(rect.x, rect.y, rect.width, rect.height, color, rounding);
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$fillRectRound(int x, int y, int width, int height, Color color, float rounding) {
+		br$fillRectRound(x, y, width, height, color.toInt(), rounding);
+	}
+
+	@RequiresImpl
+	default void br$fillRectRound(int x, int y, int width, int height, int color, float rounding) {
+		throw BridgeUtil.noImpl();
+	}
+
 	// outlineRect overloads
 	@ApiStatus.NonExtendable
 	default void br$outlineRect(Rectangle rect, Color color) {
@@ -203,8 +223,22 @@ public interface AxoRenderContext {
 		throw BridgeUtil.noImpl();
 	}
 
-	// texture drawing
+	@ApiStatus.NonExtendable
+	default void br$outlineRectRound(Rectangle rect, Color color, float rounding) {
+		br$outlineRectRound(rect.x, rect.y, rect.width, rect.height, color.toInt(), rounding);
+	}
 
+	@ApiStatus.NonExtendable
+	default void br$outlineRectRound(int x, int y, int width, int height, Color color, float rounding) {
+		br$outlineRectRound(x, y, width, height, color.toInt(), rounding);
+	}
+
+	@RequiresImpl
+	default void br$outlineRectRound(int x, int y, int width, int height, int color, float rounding) {
+		throw BridgeUtil.noImpl();
+	}
+
+	// texture drawing
 	@ApiStatus.NonExtendable
 	default void br$drawTexture(Rectangle coords, AxoSprite texture) {
 		br$drawTexture(coords.x, coords.y, coords.width, coords.height, texture);
