@@ -59,8 +59,8 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 	}
 
 	@Override
-	public void br$scaleMatrix(float sx, float sy, float sz) {
-		GlStateManager.scalef(sx, sy, sz);
+	public void br$scaleMatrix(float sx, float sy) {
+		GlStateManager.scalef(sx, sy, 1);
 	}
 
 	@Override

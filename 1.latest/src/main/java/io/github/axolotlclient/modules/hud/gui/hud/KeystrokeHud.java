@@ -52,13 +52,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.ChatFormatting;
-import net.minecraft.util.Util;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Util;
 import org.lwjgl.glfw.GLFW;
 
 import static io.github.axolotlclient.modules.hud.util.DrawUtil.*;
@@ -114,7 +114,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 	}
 
 	public void setDefaultKeystrokes() {
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 		// LMB
 		keystrokes.add(createFromKey(new Rectangle(0, 36, 26, 17), pos, client.options.keyAttack));
 		// RMB
@@ -188,7 +188,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 
 	@Override
 	public void tick() {
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 		if (keystrokes == null) {
 			setKeystrokes();
 		}
@@ -297,14 +297,14 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 			Rectangle rect = getRenderPosition();
 			if (background.get()) {
 				if (roundBackground.get()) {
-					matrices.br$fillRectRound(rect, getColor(), Math.min(rect.height()/2f, backgroundRounding.get()));
+					matrices.br$fillRectRound(rect, getColor(), Math.min(Math.min(rect.height(), rect.width()) / 2f, backgroundRounding.get()));
 				} else {
 					matrices.br$fillRect(rect, getColor());
 				}
 			}
 			if (outline.get()) {
 				if (roundBackground.get()) {
-					matrices.br$outlineRectRound(rect, getOutlineColor(), Math.min(rect.height()/2f, backgroundRounding.get()));
+					matrices.br$outlineRectRound(rect, getOutlineColor(), Math.min(Math.min(rect.height(), rect.width()) / 2f, backgroundRounding.get()));
 				} else {
 					matrices.br$outlineRect(rect, getOutlineColor());
 				}
@@ -353,10 +353,10 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 		if ("option".equals(json.get("type"))) {
 			KeyMapping key = KeyMapping.get((String) json.getOrDefault("key_name", json.get("option")));
 			return new CustomRenderKeystroke(SpecialKeystroke.byId.get(((String) json.get("special_name")).toLowerCase(Locale.ROOT)),
-				getRectangle((Map<String, ?>) json.get("bounds")), getPos(), key);
+				getRectangle((Map<String, ?>) json.get("bounds")), getContentPos(), key);
 		} else {
 			var key = KeyMapping.get((String) json.get("key_name"));
-			return new LabelKeystroke(getRectangle((Map<String, ?>) json.get("bounds")), getPos(), key, (String) json.get("label"), (boolean) json.get("synchronize_label"),
+			return new LabelKeystroke(getRectangle((Map<String, ?>) json.get("bounds")), getContentPos(), key, (String) json.get("label"), (boolean) json.get("synchronize_label"),
 				Justification.valueOf((String) json.getOrDefault("justification", "CENTER")));
 		}
 	}
@@ -377,7 +377,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 		}
 
 		public CustomRenderKeystroke(SpecialKeystroke stroke) {
-			this(stroke, stroke.getRect().copy(), KeystrokeHud.this.getPos(), stroke.getKey());
+			this(stroke, stroke.getRect().copy(), KeystrokeHud.this.getContentPos(), stroke.getKey());
 		}
 
 		@Override
@@ -410,7 +410,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 	}
 
 	public LabelKeystroke newStroke() {
-		return new LabelKeystroke(new Rectangle(0, 0, 17, 17), getPos(), null, "", false, Justification.CENTER);
+		return new LabelKeystroke(new Rectangle(0, 0, 17, 17), getContentPos(), null, "", false, Justification.CENTER);
 	}
 
 	@Setter

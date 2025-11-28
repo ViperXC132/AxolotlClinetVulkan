@@ -30,7 +30,10 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.modules.hud.util.DrawPosition;
+import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.util.ClientColors;
+import lombok.Getter;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
@@ -48,8 +51,18 @@ public abstract class BoxHudEntry extends AbstractHudEntry {
 	protected BooleanOption outline = new BooleanOption("outline", false);
 	protected ColorOption outlineColor = new ColorOption("outlinecolor", ClientColors.WHITE);
 
-	protected BooleanOption roundBackground = new BooleanOption("round_background", false);
-	protected IntegerOption backgroundRounding = new IntegerOption("background_rounding", 10, 1, 20);
+	protected IntegerOption backgroundPadding = new IntegerOption("hud.background_padding", 0, val -> {
+		setWidth(getContentWidth() + val * 2);
+		setHeight(getContentHeight() + val * 2);
+		onBoundsUpdate();
+	}, 0, 15);
+	protected BooleanOption roundBackground = new BooleanOption("hud.round_background", false);
+	protected IntegerOption backgroundRounding = new IntegerOption("hud.background_rounding", 10, 1, 20);
+
+	@Getter
+	private Rectangle contentBounds = new Rectangle(0, 0, 0, 0);
+	@Getter
+	private DrawPosition contentPos = new DrawPosition(0, 0);
 
 	public BoxHudEntry(int width, int height, boolean backgroundAllowed) {
 		super(width, height);
@@ -72,6 +85,7 @@ public abstract class BoxHudEntry extends AbstractHudEntry {
 			options.add(backgroundColor);
 			options.add(outline);
 			options.add(outlineColor);
+			options.add(backgroundPadding);
 			options.add(roundBackground);
 			options.add(backgroundRounding);
 		}
@@ -83,23 +97,102 @@ public abstract class BoxHudEntry extends AbstractHudEntry {
 		ctx.br$pushMatrix();
 		scale(ctx);
 		if (backgroundAllowed) {
+			var bounds = getBounds();
 			if (background.get() && backgroundColor.get().getAlpha() > 0) {
 				if (roundBackground.get()) {
-					ctx.br$fillRectRound(getBounds(), backgroundColor.get(), Math.min(getHeight()/2f, backgroundRounding.get()));
+					ctx.br$fillRectRound(bounds, backgroundColor.get(), Math.min(Math.min(getHeight(), getWidth()) / 2f, backgroundRounding.get()));
 				} else {
-					ctx.br$fillRect(getBounds(), backgroundColor.get());
+					ctx.br$fillRect(bounds, backgroundColor.get());
 				}
 			}
 			if (outline.get() && outlineColor.get().getAlpha() > 0) {
 				if (roundBackground.get()) {
-					ctx.br$outlineRectRound(getBounds(), outlineColor.get(), Math.min(getHeight()/2f, backgroundRounding.get()));
+					ctx.br$outlineRectRound(bounds, outlineColor.get(), Math.min(Math.min(getHeight(), getWidth()) / 2f, backgroundRounding.get()));
 				} else {
-					ctx.br$outlineRect(getBounds(), outlineColor.get());
+					ctx.br$outlineRect(bounds, outlineColor.get());
 				}
 			}
 		}
 		renderComponent(ctx, delta);
 		ctx.br$popMatrix();
+	}
+
+	@Override
+	public void setBounds() {
+		super.setBounds();
+		var bounds = getBounds();
+		var padding = backgroundPadding.get();
+		if (padding == 0) {
+			contentBounds = bounds.copy();
+			contentPos = new DrawPosition(bounds.x(), bounds.y());
+		} else {
+			contentBounds = new Rectangle(bounds.x() + padding, bounds.y() + padding, bounds.width() - padding * 2, bounds.height() - padding * 2);
+			contentPos = new DrawPosition(bounds.x() + padding, bounds.y() + padding);
+		}
+	}
+
+	public int getContentX() {
+		return contentPos.x();
+	}
+
+	public int getContentY() {
+		return contentPos.y();
+	}
+
+	public void setContentX(int x) {
+		var padding = backgroundPadding.get();
+		if (padding == 0) setX(x);
+		else setX(x - padding);
+	}
+
+	public void setContentY(int y) {
+		var padding = backgroundPadding.get();
+		if (padding == 0) setY(y);
+		else setY(y - padding);
+	}
+
+	public int getContentWidth() {
+		return contentBounds.width();
+	}
+
+	public int getContentHeight() {
+		return contentBounds.height();
+	}
+
+	public void setContentWidth(int width) {
+		var padding = backgroundPadding.get();
+		if (padding == 0) setWidth(width);
+		else setWidth(width + padding * 2);
+	}
+
+	public void setContentHeight(int height) {
+		var padding = backgroundPadding.get();
+		if (padding == 0) setHeight(height);
+		else setHeight(height + padding * 2);
+	}
+
+	public int getTrueContentX() {
+		var padding = backgroundPadding.get();
+		if (padding == 0) return getTrueX();
+		return getTrueX() + (int) (padding * getScale());
+	}
+
+	public int getTrueContentY() {
+		var padding = backgroundPadding.get();
+		if (padding == 0) return getTrueY();
+		return getTrueY() + (int) (padding * getScale());
+	}
+
+	public int getTrueContentWidth() {
+		var padding = backgroundPadding.get();
+		if (padding == 0) return getTrueWidth();
+		return getTrueWidth() + (int) (padding * getScale() * 2);
+	}
+
+	public int getTrueContentHeight() {
+		var padding = backgroundPadding.get();
+		if (padding == 0) return getTrueHeight();
+		return getTrueHeight() + (int) (padding * getScale() * 2);
 	}
 
 	public abstract void renderComponent(AxoRenderContext ctx, float delta);

@@ -73,9 +73,9 @@ public class ActionBarHud extends TextHudEntry {
 			if (shadow.get()) {
 				client.textRenderer
 					.drawWithShadow(actionBar,
-						(float) getPos().x() + Math.round((float) getWidth() / 2)
+						(float) getContentPos().x() + Math.round((float) getContentWidth() / 2)
 							- (float) client.textRenderer.getWidth(actionBar) / 2,
-						(float) getPos().y() + 3,
+						(float) getContentPos().y() + 3,
 						customTextColor.get()
 							? (textColor.get().getAlpha() == 255
 							? new Color(textColor.get().getRed(), textColor.get().getGreen(),
@@ -85,9 +85,9 @@ public class ActionBarHud extends TextHudEntry {
 			} else {
 				client.textRenderer
 					.draw(actionBar,
-						(float) getPos().x() + Math.round((float) getWidth() / 2)
+						(float) getContentPos().x() + Math.round((float) getContentWidth() / 2)
 							- ((float) client.textRenderer.getWidth(actionBar) / 2),
-						(float) getPos().y() + 3,
+						(float) getContentPos().y() + 3,
 						customTextColor.get()
 							? (textColor.get().getAlpha() == 255
 							? new Color(textColor.get().getRed(), textColor.get().getGreen(),
@@ -105,9 +105,9 @@ public class ActionBarHud extends TextHudEntry {
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
 		client.textRenderer.draw(placeholder,
-			(float) getPos().x() + Math.round((float) getWidth() / 2)
+			(float) getContentPos().x() + Math.round((float) getContentWidth() / 2)
 				- (float) client.textRenderer.getWidth(placeholder) / 2,
-			(float) getPos().y() + 3, -1, shadow.get());
+			(float) getContentPos().y() + 3, -1, shadow.get());
 	}
 
 	@Override

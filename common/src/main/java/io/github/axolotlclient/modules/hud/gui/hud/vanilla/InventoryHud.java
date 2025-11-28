@@ -31,6 +31,7 @@ import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoItems;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
@@ -65,6 +66,8 @@ public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable
 
 	public InventoryHud() {
 		super(164, 56, true);
+		int max = (ITEM_TILE_SIZE +2) / 2;
+		backgroundRounding = new IntegerOption("background_rounding", max, 1, max);
 	}
 
 	@Override
@@ -104,7 +107,7 @@ public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable
 	}
 
 	private void render(AxoRenderContext graphics, List<? extends AxoItemStack> inventorySlots) {
-		var pos = getPos();
+		var pos = getContentPos();
 		int x = pos.x() + 2;
 		int y = pos.y() + 2;
 
@@ -119,7 +122,11 @@ public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable
 	private void renderStack(AxoRenderContext graphics, int x, int y, AxoItemStack itemStack) {
 		var empty = itemStack == null || itemStack.br$isEmpty();
 		if ((!empty || alwaysShowItemBackgrounds.get()) && itemBackground.get() && itemBackgroundColor.get().getAlpha() > 0) {
-			graphics.br$fillRect(x, y, ITEM_TILE_SIZE, ITEM_TILE_SIZE, itemBackgroundColor.get().toInt());
+			if (roundBackground.get()) {
+				graphics.br$fillRectRound(x, y, ITEM_TILE_SIZE, ITEM_TILE_SIZE, itemBackgroundColor.get(), Math.min(backgroundRounding.get(), ITEM_TILE_SIZE/2f));
+			} else {
+				graphics.br$fillRect(x, y, ITEM_TILE_SIZE, ITEM_TILE_SIZE, itemBackgroundColor.get().toInt());
+			}
 		}
 		if (empty) return;
 

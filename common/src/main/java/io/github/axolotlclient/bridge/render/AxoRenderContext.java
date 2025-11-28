@@ -44,7 +44,7 @@ public interface AxoRenderContext {
 	}
 
 	@RequiresImpl
-	default void br$scaleMatrix(float sx, float sy, float sz) {
+	default void br$scaleMatrix(float sx, float sy) {
 		throw BridgeUtil.noImpl();
 	}
 

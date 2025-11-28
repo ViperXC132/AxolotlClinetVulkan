@@ -75,7 +75,7 @@ public class StatsOverlay extends TextHudEntry implements DynamicallyPositionabl
 
 		private final Map<String, PlayerData.Bedwars> stats;
 		private final Map<BedwarsTeam, List<String>> playersByTeam;
-		private int xCursor = getPos().x + padding.get();
+		private int xCursor = getContentPos().x + padding.get();
 		private int yFinal = 0;
 
 		private RenderHelper(Map<String, PlayerData.Bedwars> stats, Map<BedwarsTeam, List<String>> playersByTeam) {
@@ -86,7 +86,7 @@ public class StatsOverlay extends TextHudEntry implements DynamicallyPositionabl
 		private void renderColumn(AxoRenderContext ctx, Entry renderEntry) {
 			final var dy = AxoMinecraftClient.getInstance().br$getFont().br$getFontHeight() + rowMargin.get();
 
-			int currY = getPos().y + padding.get();
+			int currY = getContentPos().y + padding.get();
 			int newXCursor = ctx.br$drawString(AxoI18n.translate(renderEntry.name), xCursor, currY, 0xffffffff, shadow.get());
 
 			currY += dy;
@@ -118,13 +118,13 @@ public class StatsOverlay extends TextHudEntry implements DynamicallyPositionabl
 			}
 
 			// don't multiply the padding by two, since it's already accounted for by the cursors
-			int newWidth = xCursor - getPos().x + padding.get() - columnMargin.get();
-			int newHeight = yFinal - getPos().y + padding.get() - rowMargin.get();
+			int newWidth = xCursor - getContentPos().x + padding.get() - columnMargin.get();
+			int newHeight = yFinal - getContentPos().y + padding.get() - rowMargin.get();
 
-			boolean dirty = newWidth != getWidth() || newHeight != getHeight();
+			boolean dirty = newWidth != getContentWidth() || newHeight != getContentHeight();
 
-			setWidth(newWidth);
-			setHeight(newHeight);
+			setContentWidth(newWidth);
+			setContentHeight(newHeight);
 
 			if (dirty) {
 				onBoundsUpdate();
@@ -206,7 +206,7 @@ public class StatsOverlay extends TextHudEntry implements DynamicallyPositionabl
 				e.forEach(entry ->
 					api.getAsync(entry.br$getId().toString())
 						.whenCompleteAsync((playerData, throwable) -> {
-							if (playerData == null || playerData.isEmpty()) {
+							if (playerData.isEmpty()) {
 								return;
 							}
 
@@ -223,7 +223,7 @@ public class StatsOverlay extends TextHudEntry implements DynamicallyPositionabl
 	@Override
 	public void render(AxoRenderContext ctx, float delta) {
 		if (errorMessage != null) {
-			ctx.br$drawString(AxoText.Color.RED + errorMessage, getPos().x, getPos().y, 0xffffffff, shadow.get());
+			ctx.br$drawString(AxoText.Color.RED + errorMessage, getContentPos().x, getContentPos().y, 0xffffffff, shadow.get());
 		}
 
 		if (mod.inGame() && shouldRender) {

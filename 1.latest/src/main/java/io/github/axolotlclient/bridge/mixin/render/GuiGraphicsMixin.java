@@ -83,7 +83,7 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	}
 
 	@Override
-	public void br$scaleMatrix(float sx, float sy, float sz) {
+	public void br$scaleMatrix(float sx, float sy) {
 		pose.scale(sx, sy);
 	}
 

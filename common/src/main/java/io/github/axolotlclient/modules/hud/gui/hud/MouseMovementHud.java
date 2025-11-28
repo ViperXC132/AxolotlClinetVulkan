@@ -78,7 +78,7 @@ public class MouseMovementHud extends BoxHudEntry {
 		mouseX += (event.yaw() - event.prevYaw()) / 7F;
 		mouseY += (event.pitch() - event.prevPitch()) / 7F;
 		// 0, 0 will be the center of the HUD element
-		float halfWidth = getWidth() / 2f;
+		float halfWidth = getContentWidth() / 2f;
 		mouseX = MathUtil.clamp(mouseX, -halfWidth + 4, halfWidth - 4);
 		mouseY = MathUtil.clamp(mouseY, -13, 13);
 	}
@@ -87,16 +87,16 @@ public class MouseMovementHud extends BoxHudEntry {
 	public void renderComponent(AxoRenderContext context, float delta) {
 		context.br$glColor4(1, 1, 1, 1);
 		context.br$glEnableBlend();
-		int spaceY = getRawY();
-		int spaceX = getRawX();
+		int spaceY = getContentY();
+		int spaceX = getContentX();
 
 		float calculatedMouseX = (lastMouseX + ((mouseX - lastMouseX) * delta)) - 5;
 		float calculatedMouseY = (lastMouseY + ((mouseY - lastMouseY) * delta)) - 5;
 
-		context.br$drawTexture(spaceX + (width / 2) - 7 / 2 - 1, spaceY + 17 - (7 / 2), 7, 7, Platform.createTexture(mouseMovementIndicatorInner));
+		context.br$drawTexture(spaceX + (getContentWidth() / 2) - 7 / 2 - 1, spaceY + 17 - (7 / 2), 7, 7, Platform.createTexture(mouseMovementIndicatorInner));
 		// Woah KodeToad, good use of translate
 		context.br$translateMatrix(calculatedMouseX, calculatedMouseY, 0);
-		context.br$drawTexture(spaceX + (width / 2) - 1, spaceY + 17, 11, 11, Platform.createTexture(mouseMovementIndicatorOuter));
+		context.br$drawTexture(spaceX + (getContentWidth() / 2) - 1, spaceY + 17, 11, 11, Platform.createTexture(mouseMovementIndicatorOuter));
 	}
 
 	@Override

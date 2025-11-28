@@ -59,25 +59,25 @@ public class PackDisplayHud extends TextHudEntry {
 
 	@Override
 	public void renderComponent(AxoRenderContext graphics, float f) {
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 
 		if (widgets.isEmpty())
 			init();
 
 		if (background.get()) {
-			fillRect((GuiGraphics) graphics, getBounds(), backgroundColor.get());
+			fillRect((GuiGraphics) graphics, getContentBounds(), backgroundColor.get());
 		}
 
 		if (outline.get())
-			outlineRect((GuiGraphics) graphics, getBounds(), outlineColor.get());
+			outlineRect((GuiGraphics) graphics, getContentBounds(), outlineColor.get());
 
 		int y = pos.y() + 1;
 		for (int i = widgets.size() - 1; i >= 0; i--) { // Badly reverse the order (I'm sure there are better ways to do this)
 			widgets.get(i).render((GuiGraphics) graphics, pos.x() + 1, y);
 			y += 18;
 		}
-		if (y - pos.y() + 1 != getHeight()) {
-			setHeight(y - pos.y() - 1);
+		if (y - pos.y() + 1 != getContentHeight()) {
+			setContentHeight(y - pos.y() - 1);
 			onBoundsUpdate();
 		}
 	}
@@ -104,9 +104,9 @@ public class PackDisplayHud extends TextHudEntry {
 			if (textW > w.get())
 				w.set(textW);
 		});
-		setWidth(w.get());
+		setContentWidth(w.get());
 
-		setHeight(widgets.size() * 18);
+		setContentHeight(widgets.size() * 18);
 		onBoundsUpdate();
 	}
 
@@ -125,12 +125,12 @@ public class PackDisplayHud extends TextHudEntry {
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float f) {
 		boolean updateBounds = false;
-		if (getHeight() < 18) {
-			setHeight(18);
+		if (getContentHeight() < 18) {
+			setContentHeight(18);
 			updateBounds = true;
 		}
-		if (getWidth() < 56) {
-			setWidth(56);
+		if (getContentWidth() < 56) {
+			setContentWidth(56);
 			updateBounds = true;
 		}
 		if (updateBounds) {
@@ -142,7 +142,7 @@ public class PackDisplayHud extends TextHudEntry {
 			} catch (Exception ignored) {
 			}
 		} else {
-			placeholder.render((GuiGraphics) graphics, getPos().x() + 1, getPos().y() + 1);
+			placeholder.render((GuiGraphics) graphics, getContentPos().x() + 1, getContentPos().y() + 1);
 		}
 	}
 

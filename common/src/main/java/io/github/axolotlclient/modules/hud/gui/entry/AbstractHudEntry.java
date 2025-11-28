@@ -102,7 +102,7 @@ public abstract class AbstractHudEntry implements HudEntry {
 
 	public void scale(AxoRenderContext context) {
 		float scale = getScale();
-		context.br$scaleMatrix(scale, scale, 1);
+		context.br$scaleMatrix(scale, scale);
 	}
 
 	@Override

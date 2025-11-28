@@ -232,6 +232,9 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
+		options.remove(backgroundPadding);
+		options.remove(backgroundRounding);
+		options.remove(roundBackground);
 		options.set(options.indexOf(super.backgroundColor), backgroundColor);
 		options.add(hide);
 		options.add(topColor);

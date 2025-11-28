@@ -865,6 +865,7 @@
 	"hud.hide.tooltip": "Prevents this HUD from rendering completely.",
 	"keystrokes.stroke.move": "Edit Keystroke Positions",
 	"screenshot.gallery.view.error": "Failed to open image in gallery!",
-	"round_background": "Round Background",
-	"background_rounding": "Background Rounding"
+	"hud.round_background": "Round Background",
+	"hud.background_rounding": "Background Rounding",
+	"hud.background_padding": "Background Padding"
 }

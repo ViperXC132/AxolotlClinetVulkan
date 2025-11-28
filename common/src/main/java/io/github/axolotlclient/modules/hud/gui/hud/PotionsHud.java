@@ -86,12 +86,12 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 		int calcWidth = noEffects ? 0 : calculateWidth(effects);
 		int calcHeight = noEffects ? 0 : calculateHeight(effects);
 		boolean changed = false;
-		if (calcWidth != width) {
-			setWidth(calcWidth);
+		if (calcWidth != getContentWidth()) {
+			setContentWidth(calcWidth);
 			changed = true;
 		}
-		if (calcHeight != height) {
-			setHeight(calcHeight);
+		if (calcHeight != getContentHeight()) {
+			setContentHeight(calcHeight);
 			changed = true;
 		}
 		if (changed) {
@@ -103,7 +103,7 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 		int lastPos = 0;
 		CardinalOrder direction = order.get();
 
-		Rectangle bounds = getBounds();
+		Rectangle bounds = getContentBounds();
 		int x = bounds.x();
 		int y = bounds.y();
 		for (int i = 0; i < effects.size(); i++) {
