@@ -16,13 +16,9 @@ jobs:
     steps:
       - uses: https://data.forgejo.org/actions/checkout@v5
 
-      - uses: https://github.com/actions-ecosystem/action-get-latest-tag@v1
-        id: get-latest-tag
-
       - uses: https://github.com/gradle/actions/wrapper-validation@v5.0.0
 
       - uses: https://github.com/actions/setup-java@v4
-        if: "github.ref == 'refs/tags/${{ steps.get-latest-tag.outputs.tag }}'"
         with:
           distribution: "temurin"
           java-version: 21
@@ -38,9 +34,9 @@ jobs:
       - name: Generate Version Changelog
         run: ./gradlew generateVersionChangelog
 
-      - name: Release
-        uses: https://github.com/Kira-NT/mc-publish@v3.3
+      - name: Create Release
+        uses: https://code.forgejo.org/crueter/forgejo-release@05d41bd91513e4e02b6f6b7167706c31373ffbd6
         with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
-          changelog-file: "build/changelog"
-          files: builds/*.jar
+            direction: upload
+            release-dir: builds/
+            release-notes-file: build/changelog
