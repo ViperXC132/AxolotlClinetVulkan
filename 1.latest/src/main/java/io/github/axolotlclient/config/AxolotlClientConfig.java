@@ -85,6 +85,7 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 		});
 	public final BooleanOption minimalViewBob = new BooleanOption("minimalViewBob", false);
 	public final BooleanOption noHurtCam = new BooleanOption("noHurtCam", false);
+	public final BooleanOption hideChat = new BooleanOption("hide_chat", false);
 
 	public final ColorOption loadingScreenColor = new ColorOption("loadingBgColor", new Color(239, 50, 61, 255));
 	public final BooleanOption customWindowTitle = new BooleanOption("customWindowTitle", true);
@@ -162,7 +163,8 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 			lowShield,
 			hitColor,
 			minimalViewBob,
-			noHurtCam);
+			noHurtCam,
+			hideChat);
 
 		timeChanger.add(timeChangerEnabled);
 		timeChanger.add(customTime);
@@ -180,5 +182,8 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 
 		var toggleFullbright = new KeyMapping("toggle_fullbright", -1, KeyBinds.CATEGORY_AXOLOTLCLIENT);
 		KeyBinds.getInstance().registerWithSimpleAction(toggleFullbright, fullBright::toggle);
+
+		var toggleHideChat = new KeyMapping("toggle_hide_chat", -1, KeyBinds.CATEGORY_AXOLOTLCLIENT);
+		KeyBinds.getInstance().registerWithSimpleAction(toggleHideChat, hideChat::toggle);
 	}
 }

@@ -5,6 +5,8 @@
 - Update to 1.21.11 (in favor of 1.21.10)
 - Implement new config library style
 - fix bugs: https://github.com/AxolotlClient/AxolotlClient-mod/issues/185 and others
+- Add additional options for HUD backgrounds (rounding, padding)
+- Add option + keybind to hide the chat hud (https://discord.com/channels/872856682567454720/1432431388354941029)
 
 ### 3.1.6
 

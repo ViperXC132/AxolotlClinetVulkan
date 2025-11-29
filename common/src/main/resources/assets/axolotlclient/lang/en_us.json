@@ -867,5 +867,7 @@
 	"screenshot.gallery.view.error": "Failed to open image in gallery!",
 	"hud.round_background": "Round Background",
 	"hud.background_rounding": "Background Rounding",
-	"hud.background_padding": "Background Padding"
+	"hud.background_padding": "Background Padding",
+	"hide_chat": "Hide Chat",
+	"toggle_hide_chat": "Toggle Hide Chat"
 }

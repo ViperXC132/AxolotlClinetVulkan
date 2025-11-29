@@ -79,8 +79,9 @@ public class MouseMovementHud extends BoxHudEntry {
 		mouseY += (event.pitch() - event.prevPitch()) / 7F;
 		// 0, 0 will be the center of the HUD element
 		float halfWidth = getContentWidth() / 2f;
-		mouseX = MathUtil.clamp(mouseX, -halfWidth + 4, halfWidth - 4);
-		mouseY = MathUtil.clamp(mouseY, -13, 13);
+		var halfHeight = getContentHeight() / 2f;
+		mouseX = MathUtil.clamp(mouseX, -halfWidth + 2, halfWidth - 2);
+		mouseY = MathUtil.clamp(mouseY, -halfHeight + 2, halfHeight - 2);
 	}
 
 	@Override
@@ -93,10 +94,10 @@ public class MouseMovementHud extends BoxHudEntry {
 		float calculatedMouseX = (lastMouseX + ((mouseX - lastMouseX) * delta)) - 5;
 		float calculatedMouseY = (lastMouseY + ((mouseY - lastMouseY) * delta)) - 5;
 
-		context.br$drawTexture(spaceX + (getContentWidth() / 2) - 7 / 2 - 1, spaceY + 17 - (7 / 2), 7, 7, Platform.createTexture(mouseMovementIndicatorInner));
+		context.br$drawTexture(spaceX + (getContentWidth() / 2) - 7 / 2 - 1, spaceY + getContentHeight() / 2 - (7 / 2), 7, 7, Platform.createTexture(mouseMovementIndicatorInner));
 		// Woah KodeToad, good use of translate
 		context.br$translateMatrix(calculatedMouseX, calculatedMouseY, 0);
-		context.br$drawTexture(spaceX + (getContentWidth() / 2) - 1, spaceY + 17, 11, 11, Platform.createTexture(mouseMovementIndicatorOuter));
+		context.br$drawTexture(spaceX + (getContentWidth() / 2) - 1, spaceY + getContentHeight() / 2, 11, 11, Platform.createTexture(mouseMovementIndicatorOuter));
 	}
 
 	@Override

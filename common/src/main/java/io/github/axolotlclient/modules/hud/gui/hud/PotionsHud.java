@@ -71,14 +71,35 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 
 	@Override
 	public void renderComponent(AxoRenderContext graphics, float delta) {
+		renderEffects(graphics, client.br$getPlayer().br$getStatusEffects());
+	}
+
+	@Override
+	public void render(AxoRenderContext ctx, float delta) {
 		final var player = client.br$getPlayer();
 		if(player == null) {
 			return;
 		}
-
-		final var effects = player.br$getStatusEffects();
-
-		renderEffects(graphics, effects);
+		var effects = player.br$getStatusEffects();
+		boolean noEffects = effects.isEmpty();
+		int calcWidth = noEffects ? 0 : calculateWidth(effects);
+		int calcHeight = noEffects ? 0 : calculateHeight(effects);
+		boolean changed = false;
+		if (calcWidth != getContentWidth()) {
+			setContentWidth(calcWidth);
+			changed = true;
+		}
+		if (calcHeight != getContentHeight()) {
+			setContentHeight(calcHeight);
+			changed = true;
+		}
+		if (changed) {
+			onBoundsUpdate();
+		}
+		if (noEffects) {
+			return;
+		}
+		super.render(ctx, delta);
 	}
 
 	private void renderEffects(AxoRenderContext graphics, List<AxoStatusEffectInstance> effects) {

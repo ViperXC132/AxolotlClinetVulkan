@@ -24,6 +24,7 @@ package io.github.axolotlclient.mixin;
 
 import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.AxolotlClient;
@@ -40,6 +41,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -142,5 +144,10 @@ public abstract class InGameHudMixin {
 			return;
 		}
 		original.call(graphics, player, y, uncappedMaxHealth, cappedMaxHealth, x);
+	}
+
+	@WrapWithCondition(method = "renderChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/ChatComponent;render(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;IIIZZ)V"))
+	private boolean hideChat(ChatComponent instance, GuiGraphics guiGraphics, Font font, int i, int j, int k, boolean bl, boolean bl2) {
+		return !AxolotlClient.config().hideChat.get();
 	}
 }

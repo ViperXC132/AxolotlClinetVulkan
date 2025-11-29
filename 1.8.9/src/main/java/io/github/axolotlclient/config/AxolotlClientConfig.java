@@ -70,6 +70,7 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 	public final BooleanOption noHurtCam = new BooleanOption("noHurtCam", false);
 	public final BooleanOption flatItems = new BooleanOption("flatItems", false);
 	public final BooleanOption inventoryPotionEffectOffset = new BooleanOption("inventory.potion_effect_offset", true);
+	public final BooleanOption hideChat = new BooleanOption("hide_chat", false);
 
 	public final ColorOption loadingScreenColor = new ColorOption("loadingBgColor", new Color(-1));
 	public final BooleanOption nightMode = new BooleanOption("nightMode", false);
@@ -158,7 +159,8 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 			minimalViewBob,
 			flatItems,
 			noHurtCam,
-			inventoryPotionEffectOffset);
+			inventoryPotionEffectOffset,
+			hideChat);
 
 		timeChanger.add(timeChangerEnabled);
 		timeChanger.add(customTime);
@@ -194,10 +196,17 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 			Minecraft.getInstance().openScreen(new ProfilesScreen(Minecraft.getInstance().screen))), false);
 
 		var toggleFullbright = new KeyBinding("toggle_fullbright", 0, "category.axolotlclient");
-		KeyBindingEvents.REGISTER_KEYBINDS.register(reg -> reg.register(toggleFullbright));
+		var toggleHideChat = new KeyBinding("toggle_hide_chat", 0, "category.axolotlclient");
+		KeyBindingEvents.REGISTER_KEYBINDS.register(reg -> {
+			reg.register(toggleFullbright);
+			reg.register(toggleHideChat);
+		});
 		MinecraftClientEvents.TICK_END.register(minecraft -> {
 			if (toggleFullbright.consumeClick()) {
 				fullBright.toggle();
+			}
+			if (toggleHideChat.consumeClick()) {
+				hideChat.toggle();
 			}
 		});
 	}
