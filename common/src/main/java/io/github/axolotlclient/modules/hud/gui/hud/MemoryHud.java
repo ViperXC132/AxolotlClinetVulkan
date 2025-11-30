@@ -64,7 +64,7 @@ public class MemoryHud extends TextHudEntry implements DynamicallyPositionable {
 		);
 
 		private long used() {
-			return max - free;
+			return total - free;
 		}
 
 		private float usage() {
@@ -105,10 +105,10 @@ public class MemoryHud extends TextHudEntry implements DynamicallyPositionable {
 	}
 
 	private void doRender(AxoRenderContext context, MemoryInfo info) {
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 
 		if (showGraph.get()) {
-			graph.setData(pos.x() + 5, pos.y() + 5, getBounds().width - 10, getBounds().height - 10);
+			graph.setData(pos.x() + 5, pos.y() + 5, getContentWidth() - 10, getContentHeight() - 10);
 			final int usagePx = (int) (graph.width * info.usage());
 			context.br$fillRect(graph.x, graph.y, usagePx, graph.height, graphUsedColor.get().toInt());
 			context.br$fillRect(graph.x + usagePx, graph.y, graph.width - usagePx, graph.height,
@@ -121,8 +121,8 @@ public class MemoryHud extends TextHudEntry implements DynamicallyPositionable {
 
 			context.br$drawString(
 				mem,
-				pos.x() + justification.get().getXOffset(context.br$getFont().br$getWidth(mem), getWidth() - 4) + 2,
-				pos.y() + (Math.round((float) height / 2) - 4) - (showAllocated.get() ? 4 : 0),
+				pos.x() + justification.get().getXOffset(context.br$getFont().br$getWidth(mem), getContentWidth() - 4) + 2,
+				pos.y() + (Math.round((float) getContentHeight() / 2) - 4) - (showAllocated.get() ? 4 : 0),
 				textColor.get().toInt(),
 				shadow.get()
 			);
@@ -132,8 +132,8 @@ public class MemoryHud extends TextHudEntry implements DynamicallyPositionable {
 				context.br$drawString(
 					alloc,
 					pos.x() + justification.get().getXOffset(context.br$getFont().br$getWidth(alloc),
-						getWidth() - 4) + 2,
-					pos.y() + (Math.round((float) height / 2) - 4) + 4,
+						getContentWidth() - 4) + 2,
+					pos.y() + (Math.round((float) getContentHeight() / 2) - 4) + 4,
 					textColor.get().toInt(),
 					shadow.get()
 				);

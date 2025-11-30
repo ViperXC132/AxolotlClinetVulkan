@@ -39,10 +39,10 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class DownloadImageScreen extends Screen {
-	private static final ResourceLocation SPRITE = ResourceLocation.fromNamespaceAndPath("axolotlclient", "go");
+	private static final Identifier SPRITE = Identifier.fromNamespaceAndPath("axolotlclient", "go");
 
 	private final Screen parent;
 
@@ -74,7 +74,6 @@ public class DownloadImageScreen extends Screen {
 				if (url.isEmpty()) {
 					return;
 				}
-				//noinspection DataFlowIssue
 				minecraft.setScreen(ImageScreen.create(this, ImageShare.getInstance().downloadImage(url), true));
 			}, true)
 			.sprite(SPRITE, 20, 20)
@@ -89,7 +88,6 @@ public class DownloadImageScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		//noinspection DataFlowIssue
 		minecraft.setScreen(parent);
 	}
 

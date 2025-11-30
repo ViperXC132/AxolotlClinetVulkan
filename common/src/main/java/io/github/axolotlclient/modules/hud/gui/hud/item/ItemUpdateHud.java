@@ -123,7 +123,7 @@ public class ItemUpdateHud extends TextHudEntry {
 		final AxoText closingBracket = AxoText.literal("]").br$color(bracketColor.get().toInt());
 		final int deltaY = context.br$getFont().br$getFontHeight() + 2;
 
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 		int lastY = 1;
 		int entryCount = 0;
 

@@ -28,7 +28,7 @@ dependencies {
 	testRuntimeOnly(compileOnly("org.lwjgl:lwjgl-tinyfd:3.2.2")!!)
 	testRuntimeOnly(compileOnly("org.lwjgl:lwjgl-sdl:3.4.0-SNAPSHOT")!!)
 
-	shadow(implementation("io.github.CDAGaming:DiscordIPC:0.10.2") {
+	shadow(implementation("io.github.cdagaming:DiscordIPC:0.11.0") {
 		isTransitive = false
 	})
 	shadow(implementation("com.kohlschutter.junixsocket:junixsocket-common:2.10.1")!!)
@@ -90,6 +90,7 @@ tasks.shadowJar {
 java {
 	sourceCompatibility = JavaVersion.VERSION_17
 	targetCompatibility = JavaVersion.VERSION_17
+	withSourcesJar()
 }
 
 publishing {
@@ -97,6 +98,7 @@ publishing {
 		create("shadow", MavenPublication::class) {
 			artifactId = base.archivesName.get()
 			from(components["shadow"])
+			artifact(tasks.sourcesJar)
 		}
 	}
 	repositories {

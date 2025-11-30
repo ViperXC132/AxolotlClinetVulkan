@@ -135,6 +135,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 
 	@Override
 	public void lateInit() {
+		entries.values().forEach(HudEntry::postConfigLoad);
 		if (AxoWindow.getWindow() == null) {
 			Events.CLIENT_READY.register(this::refreshAllBounds);
 		} else {

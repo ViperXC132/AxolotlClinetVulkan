@@ -25,6 +25,7 @@ package io.github.axolotlclient.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.bridge.AxoPerspective;
 import io.github.axolotlclient.modules.hud.gui.hud.PlayerHud;
@@ -37,10 +38,7 @@ import net.minecraft.client.render.entity.LivingEntityRenderer;
 import net.minecraft.entity.living.LivingEntity;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -79,6 +77,14 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 			}
 		}
 		return orig;
+	}
+
+	@WrapOperation(method = "renderNameTag(Lnet/minecraft/entity/living/LivingEntity;DDD)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferBuilder;vertex(DDD)Lcom/mojang/blaze3d/vertex/BufferBuilder;"))
+	public BufferBuilder axolotlclient$noBg(BufferBuilder instance, double d, double e, double f, Operation<BufferBuilder> original) {
+		if (AxolotlClient.config().nametagBackground.get()) {
+			original.call(instance, d, e, f);
+		}
+		return instance;
 	}
 
 	@ModifyConstant(method = "setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;FZ)Z", constant = @Constant(floatValue = 1.0f, ordinal = 0))

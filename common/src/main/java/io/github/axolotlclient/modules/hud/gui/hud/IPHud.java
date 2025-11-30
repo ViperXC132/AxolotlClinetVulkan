@@ -84,20 +84,20 @@ public class IPHud extends TextHudEntry implements DynamicallyPositionable {
 	}
 
 	private void updateSize(AxoRenderContext graphics) {
-		int w = getWidth();
-		int h = getHeight();
+		int w = getContentWidth();
+		int h = getContentHeight();
 		int hNew = height.get();
 		boolean updated = false;
 		if (h != hNew) {
-			setHeight(hNew);
+			setContentHeight(hNew);
 			updated = true;
 		}
 		int req = graphics.br$getFont().br$getWidth(getValue()) + 4;
 		if (showIcon.get() && sprite != null) {
-			req += getHeight() + 1;
+			req += getContentHeight() + 1;
 		}
 		if (w != req) {
-			setWidth(req);
+			setContentWidth(req);
 			updated = true;
 		}
 		if (updated) {
@@ -117,16 +117,16 @@ public class IPHud extends TextHudEntry implements DynamicallyPositionable {
 	@Override
 	public void renderComponent(AxoRenderContext graphics, float delta) {
 		updateSize(graphics);
-		DrawPosition pos = getPos();
-		int textX = pos.x() + getWidth() / 2;
+		DrawPosition pos = getContentPos();
+		int textX = pos.x() + getContentWidth() / 2;
 
 		if (showIcon.get() && sprite != null) {
-			int imageSize = getHeight() - 2;
+			int imageSize = getContentHeight() - 2;
 			textX += imageSize / 2;
 			graphics.br$drawTexture(pos.x() + 1, pos.y() + 1, imageSize, imageSize, sprite);
 		}
 
-		graphics.br$drawCenteredString(getValue(), textX, pos.y() + getHeight() / 2 - client.br$getFont().br$getFontHeight() / 2, textColor.get().toInt(), true);
+		graphics.br$drawCenteredString(getValue(), textX, pos.y() + getContentHeight() / 2 - client.br$getFont().br$getFontHeight() / 2, textColor.get().toInt(), true);
 	}
 
 	@Override

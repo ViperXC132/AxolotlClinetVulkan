@@ -40,7 +40,13 @@ public class UUIDHelper {
 
 	private static CachedAPI<String, String> create(String endpoint, String jsonKey, String log) {
 		return new CachedAPI<>(val -> {
-			HttpRequest req = HttpRequest.newBuilder(URI.create(endpoint + val))
+			URI uri;
+			try {
+				uri = new URI(endpoint+val);
+			} catch (Exception e) {
+				return CompletableFuture.completedFuture(Optional.empty());
+			}
+			HttpRequest req = HttpRequest.newBuilder(uri)
 				.GET()
 				.build();
 
@@ -76,6 +82,9 @@ public class UUIDHelper {
 	}
 
 	public static CompletableFuture<Optional<String>> ensureUuidOpt(String nameOrUuid) {
+		if (nameOrUuid == null || nameOrUuid.isBlank()) {
+			return CompletableFuture.completedFuture(Optional.empty());
+		}
 		try {
 			return CompletableFuture.completedFuture(Optional.of(API.sanitizeUUID(nameOrUuid)));
 		} catch (IllegalArgumentException e) {

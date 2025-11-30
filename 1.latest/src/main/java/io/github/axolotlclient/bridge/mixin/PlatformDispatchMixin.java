@@ -39,6 +39,7 @@ import net.minecraft.client.gui.screens.FaviconTexture;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerStatusPinger;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.server.network.EventLoopGroupHolder;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -54,7 +55,8 @@ public abstract class PlatformDispatchMixin {
 		ThreadExecuter.scheduleTask(() -> {
 			try {
 				axo$pinger.pingServer(server, () -> {
-				}, () -> currentServerPing.setValue(server.ping));
+					}, () -> currentServerPing.setValue(server.ping),
+					EventLoopGroupHolder.remote(Minecraft.getInstance().options.useNativeTransport()));
 			} catch (Exception ignored) {
 			}
 		});

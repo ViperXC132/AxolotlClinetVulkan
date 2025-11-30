@@ -42,7 +42,7 @@ import io.github.axolotlclient.util.ThreadExecuter;
 import io.github.axolotlclient.util.notifications.Notifications;
 import io.github.axolotlclient.util.options.GenericOption;
 import lombok.Getter;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.User;
 import net.minecraft.client.gui.screens.ConfirmScreen;
@@ -53,7 +53,7 @@ import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
 import net.minecraft.client.multiplayer.chat.report.ReportingContext;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class Auth extends Accounts implements Module {
 
@@ -64,7 +64,7 @@ public class Auth extends Accounts implements Module {
 	private final Minecraft mc = Minecraft.getInstance();
 	private final GenericOption viewAccounts = new GenericOption("viewAccounts", "clickToOpen", () -> mc.setScreen(new AccountsScreen(mc.screen)));
 	private final Set<String> loadingTexture = new HashSet<>();
-	private final Map<String, ResourceLocation> textures = new WeakHashMap<>();
+	private final Map<String, Identifier> textures = new WeakHashMap<>();
 	@Getter
 	private final SkinManager skinManager = new SkinManager();
 
@@ -164,15 +164,15 @@ public class Auth extends Accounts implements Module {
 		}
 	}
 
-	public ResourceLocation getSkinTexture(Account account) {
+	public Identifier getSkinTexture(Account account) {
 		return getSkinTexture(account.getUuid());
 	}
 
-	public ResourceLocation getSkinTexture(io.github.axolotlclient.api.types.User user) {
+	public Identifier getSkinTexture(io.github.axolotlclient.api.types.User user) {
 		return getSkinTexture(user.getUuid());
 	}
 
-	public ResourceLocation getSkinTexture(String uuid) {
+	public Identifier getSkinTexture(String uuid) {
 		if (!textures.containsKey(uuid)) {
 			loadTexture(uuid);
 			return Objects.requireNonNullElseGet(textures.get(uuid), () -> DefaultPlayerSkin.get(UUIDHelper.fromUndashed(uuid)).body().texturePath());

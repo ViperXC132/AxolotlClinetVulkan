@@ -26,7 +26,8 @@ import io.github.axolotlclient.util.options.GenericOption;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
 
-public class GenericWidget extends Button {
+@SuppressWarnings("unused")
+public class GenericWidget extends Button.Plain {
 	public GenericWidget(int x, int y, int width, int height, GenericOption option) {
 		super(x, y, width, height, Component.translatable(option.getLabel()), w -> option.get().onClick(),
 			DEFAULT_NARRATION

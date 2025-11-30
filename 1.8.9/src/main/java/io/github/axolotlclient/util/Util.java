@@ -50,7 +50,6 @@ import org.jetbrains.annotations.ApiStatus;
 
 public class Util {
 
-	public static final Util.GlColor GlColor = new GlColor();
 	public static String lastgame;
 	public static String game;
 
@@ -274,24 +273,6 @@ public class Util {
 	public static void bindTexture(GraphicsOption option) {
 		Identifier id = getTexture(option);
 		Minecraft.getInstance().getTextureManager().bind(id);
-	}
-
-	public static class GlColor {
-
-		public float red = 1.0F;
-		public float green = 1.0F;
-		public float blue = 1.0F;
-		public float alpha = 1.0F;
-
-		public GlColor() {
-		}
-
-		public GlColor(float red, float green, float blue, float alpha) {
-			this.red = red;
-			this.green = green;
-			this.blue = blue;
-			this.alpha = alpha;
-		}
 	}
 
 	public static String getFormatCode(Color color) {

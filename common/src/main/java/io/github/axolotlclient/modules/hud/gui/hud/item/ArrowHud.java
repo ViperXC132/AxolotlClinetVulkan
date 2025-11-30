@@ -89,14 +89,14 @@ public class ArrowHud extends TextHudEntry {
 
 	@Override
 	public void renderComponent(AxoRenderContext graphics, float delta) {
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 		graphics.br$renderGuiItemModel(currentArrow, pos.x() + 2, pos.y() + 2);
 		graphics.br$renderGuiItemOverlay(currentArrow, pos.x() + 2, pos.y() + 2, String.valueOf(arrows));
 	}
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 		graphics.br$renderGuiItemModel(DUMMY, pos.x() + 2, pos.y() + 2);
 		graphics.br$renderGuiItemOverlay(DUMMY, pos.x() + 2, pos.y() + 2, "64");
 	}

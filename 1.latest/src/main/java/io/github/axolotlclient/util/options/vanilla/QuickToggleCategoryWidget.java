@@ -28,11 +28,13 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.Boole
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.CategoryWidget;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
+import net.minecraft.network.chat.Component;
 
+@SuppressWarnings("unused")
 public class QuickToggleCategoryWidget extends CategoryWidget {
 	private BooleanWidget enabledButton;
 
@@ -59,8 +61,8 @@ public class QuickToggleCategoryWidget extends CategoryWidget {
 	}
 
 	@Override
-	public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		super.renderWidget(graphics, mouseX, mouseY, delta);
+	public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+		super.renderContents(graphics, mouseX, mouseY, delta);
 
 		if (enabledButton != null) {
 			enabledButton.setY(getY() + 2);
@@ -70,13 +72,13 @@ public class QuickToggleCategoryWidget extends CategoryWidget {
 	}
 
 	@Override
-	protected void renderScrollingString(GuiGraphics graphics, Font textRenderer, int i, int j) {
-		int k = this.getX() + i;
-		int l = this.getX() + this.getWidth() - i;
+	protected void renderScrollingStringOverContents(ActiveTextCollector activeTextCollector, Component component, int i) {
+		int j = this.getX() + i;
+		int k = this.getX() + this.getWidth() - i;
 		if (enabledButton != null) {
-			l -= enabledButton.getWidth() + 4;
+			k -= enabledButton.getWidth() + 4;
 		}
-		renderScrollingString(graphics, textRenderer, this.getMessage(), k, this.getY(), l, this.getY() + this.getHeight(), j);
+		activeTextCollector.acceptScrollingWithDefaultCenter(component, j, k, this.getY(), this.getY() + this.getHeight());
 	}
 
 	@Override

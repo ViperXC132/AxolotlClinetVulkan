@@ -29,6 +29,8 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.*;
+import io.github.axolotlclient.bridge.key.AxoKeybinding;
+import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import net.fabricmc.loader.api.FabricLoader;
 
@@ -78,6 +80,7 @@ public abstract class AxolotlClientConfigCommon {
 
 	public final BooleanOption minimalViewBob = new BooleanOption("minimalViewBob", false);
 	public final BooleanOption noHurtCam = new BooleanOption("noHurtCam", false);
+	public final BooleanOption hideChat = new BooleanOption("hide_chat", false);
 
 	public final BooleanOption enableCustomOutlines = new BooleanOption("enabled", false);
 	public final ColorOption outlineColor = new ColorOption("color", Color.parse("#DD000000"));
@@ -142,10 +145,13 @@ public abstract class AxolotlClientConfigCommon {
 			lowFire,
 			minimalViewBob,
 			noHurtCam,
-			noRain
+			noRain,
+			hideChat
 		);
 
 		hidden.add(creditsBGM, someNiceBackground);
+
+		AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "toggle_hide_chat").br$registerOnConsumeClick(hideChat::toggle);
 	}
 
 	public DateTimeFormatter getDateTimeFormatter() {

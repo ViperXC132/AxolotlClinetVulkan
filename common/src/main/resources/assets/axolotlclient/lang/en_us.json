@@ -864,5 +864,10 @@
 	"hud.hide": "Hide HUD",
 	"hud.hide.tooltip": "Prevents this HUD from rendering completely.",
 	"keystrokes.stroke.move": "Edit Keystroke Positions",
-	"screenshot.gallery.view.error": "Failed to open image in gallery!"
+	"screenshot.gallery.view.error": "Failed to open image in gallery!",
+	"hud.round_background": "Round Background",
+	"hud.background_rounding": "Background Rounding",
+	"hud.background_padding": "Background Padding",
+	"hide_chat": "Hide Chat",
+	"toggle_hide_chat": "Toggle Hide Chat"
 }

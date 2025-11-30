@@ -41,7 +41,7 @@ import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class ChannelSettingsScreen extends Screen {
 	private final Screen parent;
@@ -76,7 +76,7 @@ public class ChannelSettingsScreen extends Screen {
 
 		AtomicReference<Consumer<Boolean>> countDisabler = new AtomicReference<>();
 		AtomicReference<Consumer<Boolean>> durationDisabler = new AtomicReference<>();
-		var persistence = CycleButton.<Persistence.Type>builder(type -> Component.translatable("api.chat.persistence." + type.getId()))
+		var persistence = CycleButton.builder(type -> Component.translatable("api.chat.persistence." + type.getId()), Persistence.Type.CHANNEL)
 			.withValues(Persistence.Type.values()).displayOnlyValue().create(Component.empty(), (cyclingButtonWidget, object) -> {
 				switch (object) {
 					case COUNT_DURATION -> {
@@ -163,7 +163,7 @@ public class ChannelSettingsScreen extends Screen {
 			}
 			slider.visible = !slider.visible;
 			text.visible = !slider.visible;
-		}, true).sprite(ResourceLocation.fromNamespaceAndPath("axolotlclient", "cursor"), 8, 8).size(20, 20).build();
+		}, true).sprite(Identifier.fromNamespaceAndPath("axolotlclient", "cursor"), 8, 8).size(20, 20).build();
 		LinearLayout assembly = LinearLayout.horizontal().spacing(2);
 		assembly.addChild(slider);
 		assembly.addChild(textButton);

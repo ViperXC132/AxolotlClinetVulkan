@@ -74,9 +74,9 @@ public class ActionBarHud extends TextHudEntry {
 		Color vanillaColor = new Color(color);
 		if (this.actionBar != null) {
 			graphics.drawText(client.textRenderer, actionBar,
-				(int) ((float) getPos().x() + Math.round((float) getWidth() / 2)
+				(int) ((float) getContentPos().x() + Math.round((float) getContentWidth() / 2)
 					- (float) client.textRenderer.getWidth(actionBar) / 2),
-				(int) ((float) getPos().y() + 3),
+				(int) ((float) getContentPos().y() + 3),
 				customTextColor.get()
 					? (textColor.get().getAlpha() == 255
 					? new Color(textColor.get().getRed(), textColor.get().getGreen(),
@@ -91,8 +91,8 @@ public class ActionBarHud extends TextHudEntry {
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
-		((GuiGraphics) graphics).drawText(client.textRenderer, placeholder, (int) ((float) getPos().x() + Math.round((float) getWidth() / 2)
-			- (float) client.textRenderer.getWidth(placeholder) / 2), (int) ((float) getPos().y() + 3), -1, false);
+		((GuiGraphics) graphics).drawText(client.textRenderer, placeholder, (int) ((float) getContentPos().x() + Math.round((float) getContentWidth() / 2)
+			- (float) client.textRenderer.getWidth(placeholder) / 2), (int) ((float) getContentPos().y() + 3), -1, false);
 	}
 
 	@Override

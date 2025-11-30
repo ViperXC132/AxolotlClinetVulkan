@@ -24,7 +24,6 @@ package io.github.axolotlclient.util.options.vanilla;
 
 import java.util.Base64;
 
-import io.github.axolotlclient.AxolotlClientConfig.api.util.Graphics;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.screen.GraphicsEditorScreen;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.GraphicsWidget;
@@ -34,7 +33,9 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("unused")
 public class AxoGraphicsWidget extends GraphicsWidget {
 	private final GraphicsOption option;
 
@@ -44,16 +45,14 @@ public class AxoGraphicsWidget extends GraphicsWidget {
 	}
 
 	@Override
-	public void onPress(InputWithModifiers mods) {
+	public void onPress(@NotNull InputWithModifiers mods) {
 		Minecraft.getInstance().setScreen(new AxoGraphicsEditorScreen(Minecraft.getInstance().screen, this.option));
 	}
 
 	public static class AxoGraphicsEditorScreen extends GraphicsEditorScreen {
-		private final Graphics graphics;
 
 		public AxoGraphicsEditorScreen(Screen parent, GraphicsOption option) {
 			super(parent, option);
-			this.graphics = option.get();
 		}
 
 		@Override
@@ -65,12 +64,12 @@ public class AxoGraphicsWidget extends GraphicsWidget {
 			var back = (Button) children().getLast();
 			removeWidget(back);
 			addRenderableWidget(Button.builder(Component.translatable("graphics.copy_text"),
-					btn -> minecraft.keyboardHandler.setClipboard(Base64.getEncoder().encodeToString(graphics.getPixelData())))
+					btn -> minecraft.keyboardHandler.setClipboard(Base64.getEncoder().encodeToString(option.get().getPixelData())))
 				.pos(buttonX, buttonY + 25).width(100).build());
 			addRenderableWidget(Button.builder(Component.translatable("graphics.paste_text"),
 					btn -> {
 						try {
-							graphics.setPixelData(Base64.getDecoder().decode(minecraft.keyboardHandler.getClipboard()));
+							option.get().setPixelData(Base64.getDecoder().decode(minecraft.keyboardHandler.getClipboard()));
 						} catch (IllegalArgumentException e) {
 							Notifications.getInstance().addStatus("graphics.paste_text.failed", "graphics.paste_text.failed.desc");
 						}

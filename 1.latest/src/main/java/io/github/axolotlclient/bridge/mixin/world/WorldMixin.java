@@ -57,9 +57,9 @@ public abstract class WorldMixin implements AxoWorld, LevelAccessor {
 		if (biome == null) {
 			return I18n.get("coordshud.unknown_biome");
 		}
-		String path = biome.location().getPath();
-		if (!biome.location().getNamespace().equals("minecraft")) {
-			String namespace = biome.location().getNamespace();
+		String path = biome.identifier().getPath();
+		if (!biome.identifier().getNamespace().equals("minecraft")) {
+			String namespace = biome.identifier().getNamespace();
 			path += " (" + Character.toTitleCase(namespace.charAt(0)) + namespace.substring(1) + ")";
 		}
 		final String str = path.replace("_", " ");

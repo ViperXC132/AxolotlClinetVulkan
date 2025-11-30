@@ -37,13 +37,13 @@ import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.BossEvent;
 
@@ -56,33 +56,33 @@ import net.minecraft.world.BossEvent;
 
 public class BossBarHud extends TextHudEntry implements DynamicallyPositionable {
 
-	public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("kronhud", "bossbarhud");
-	private static final ResourceLocation[] BAR_BACKGROUND_SPRITES =
-		new ResourceLocation[]{ResourceLocation.withDefaultNamespace("boss_bar/pink_background"),
-			ResourceLocation.withDefaultNamespace("boss_bar/blue_background"),
-			ResourceLocation.withDefaultNamespace("boss_bar/red_background"),
-			ResourceLocation.withDefaultNamespace("boss_bar/green_background"),
-			ResourceLocation.withDefaultNamespace("boss_bar/yellow_background"),
-			ResourceLocation.withDefaultNamespace("boss_bar/purple_background"),
-			ResourceLocation.withDefaultNamespace("boss_bar/white_background")};
-	private static final ResourceLocation[] BAR_PROGRESS_SPRITES =
-		new ResourceLocation[]{ResourceLocation.withDefaultNamespace("boss_bar/pink_progress"),
-			ResourceLocation.withDefaultNamespace("boss_bar/blue_progress"),
-			ResourceLocation.withDefaultNamespace("boss_bar/red_progress"),
-			ResourceLocation.withDefaultNamespace("boss_bar/green_progress"),
-			ResourceLocation.withDefaultNamespace("boss_bar/yellow_progress"),
-			ResourceLocation.withDefaultNamespace("boss_bar/purple_progress"),
-			ResourceLocation.withDefaultNamespace("boss_bar/white_progress")};
-	private static final ResourceLocation[] OVERLAY_BACKGROUND_SPRITES =
-		new ResourceLocation[]{ResourceLocation.withDefaultNamespace("boss_bar/notched_6_background"),
-			ResourceLocation.withDefaultNamespace("boss_bar/notched_10_background"),
-			ResourceLocation.withDefaultNamespace("boss_bar/notched_12_background"),
-			ResourceLocation.withDefaultNamespace("boss_bar/notched_20_background")};
-	private static final ResourceLocation[] OVERLAY_PROGRESS_SPRITES =
-		new ResourceLocation[]{ResourceLocation.withDefaultNamespace("boss_bar/notched_6_progress"),
-			ResourceLocation.withDefaultNamespace("boss_bar/notched_10_progress"),
-			ResourceLocation.withDefaultNamespace("boss_bar/notched_12_progress"),
-			ResourceLocation.withDefaultNamespace("boss_bar/notched_20_progress")};
+	public static final Identifier ID = Identifier.fromNamespaceAndPath("kronhud", "bossbarhud");
+	private static final Identifier[] BAR_BACKGROUND_SPRITES =
+		new Identifier[]{Identifier.withDefaultNamespace("boss_bar/pink_background"),
+			Identifier.withDefaultNamespace("boss_bar/blue_background"),
+			Identifier.withDefaultNamespace("boss_bar/red_background"),
+			Identifier.withDefaultNamespace("boss_bar/green_background"),
+			Identifier.withDefaultNamespace("boss_bar/yellow_background"),
+			Identifier.withDefaultNamespace("boss_bar/purple_background"),
+			Identifier.withDefaultNamespace("boss_bar/white_background")};
+	private static final Identifier[] BAR_PROGRESS_SPRITES =
+		new Identifier[]{Identifier.withDefaultNamespace("boss_bar/pink_progress"),
+			Identifier.withDefaultNamespace("boss_bar/blue_progress"),
+			Identifier.withDefaultNamespace("boss_bar/red_progress"),
+			Identifier.withDefaultNamespace("boss_bar/green_progress"),
+			Identifier.withDefaultNamespace("boss_bar/yellow_progress"),
+			Identifier.withDefaultNamespace("boss_bar/purple_progress"),
+			Identifier.withDefaultNamespace("boss_bar/white_progress")};
+	private static final Identifier[] OVERLAY_BACKGROUND_SPRITES =
+		new Identifier[]{Identifier.withDefaultNamespace("boss_bar/notched_6_background"),
+			Identifier.withDefaultNamespace("boss_bar/notched_10_background"),
+			Identifier.withDefaultNamespace("boss_bar/notched_12_background"),
+			Identifier.withDefaultNamespace("boss_bar/notched_20_background")};
+	private static final Identifier[] OVERLAY_PROGRESS_SPRITES =
+		new Identifier[]{Identifier.withDefaultNamespace("boss_bar/notched_6_progress"),
+			Identifier.withDefaultNamespace("boss_bar/notched_10_progress"),
+			Identifier.withDefaultNamespace("boss_bar/notched_12_progress"),
+			Identifier.withDefaultNamespace("boss_bar/notched_20_progress")};
 	private final BossEvent placeholder = new CustomBossBar(Component.literal("Boss bar"), BossEvent.BossBarColor.WHITE,
 		BossEvent.BossBarOverlay.PROGRESS
 	);
@@ -110,12 +110,12 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 		if (bossBars == null || this.bossBars.isEmpty()) {
 			return;
 		}
-		DrawPosition scaledPos = getPos();
+		DrawPosition scaledPos = getContentPos();
 		int by = 12;
 		for (LerpingBossEvent bossBar : bossBars.values()) {
 			renderBossBar((GuiGraphics) graphics, scaledPos.x(), by + scaledPos.y(), bossBar);
 			by = by + 19;
-			if (by > getHeight()) {
+			if (by > getContentHeight()) {
 				break;
 			}
 		}
@@ -130,7 +130,7 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 				return;
 			}
 			// Update height
-			setHeight(12 + prevLength * 19);
+			setContentHeight(12 + prevLength * 19);
 			onBoundsUpdate();
 		}
 	}
@@ -145,13 +145,13 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 		}
 		if (text.get()) {
 			Component text = bossBar.getName();
-			float textX = x + ((float) getWidth() / 2) - ((float) client.font.width(text) / 2);
+			float textX = x + ((float) getContentWidth() / 2) - ((float) client.font.width(text) / 2);
 			float textY = y - 9;
 			graphics.drawString(client.font, text, (int) textX, (int) textY, textColor.get().toInt(), shadow.get());
 		}
 	}
 
-	private void drawBar(GuiGraphics graphics, int x, int y, BossEvent bar, int width, ResourceLocation[] textures, ResourceLocation[] alternativeTextures) {
+	private void drawBar(GuiGraphics graphics, int x, int y, BossEvent bar, int width, Identifier[] textures, Identifier[] alternativeTextures) {
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, textures[bar.getColor().ordinal()], 182, 5, 0, 0, x, y, width, 5);
 		if (bar.getOverlay() != BossEvent.BossBarOverlay.PROGRESS) {
 			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, alternativeTextures[bar.getOverlay().ordinal() - 1], 182, 5, 0,
@@ -162,13 +162,13 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 		renderBossBar((GuiGraphics) graphics, pos.x(), pos.y() + 12, placeholder);
 		renderBossBar((GuiGraphics) graphics, pos.x(), pos.y() + 31, placeholder2);
 	}
 
 	@Override
-	public ResourceLocation getId() {
+	public Identifier getId() {
 		return ID;
 	}
 

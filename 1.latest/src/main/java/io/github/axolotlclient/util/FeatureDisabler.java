@@ -35,7 +35,7 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
 
 public class FeatureDisabler extends FeatureDisablerCommon {
@@ -43,7 +43,7 @@ public class FeatureDisabler extends FeatureDisablerCommon {
 	private static final FeatureDisablerCommon instance = new FeatureDisabler();
 
 	private static final CustomPacketPayload.Type<FeaturePayload> CHANNEL_ID =
-		new CustomPacketPayload.Type<>((ResourceLocation) CHANNEL_NAME);
+		new CustomPacketPayload.Type<>((Identifier) CHANNEL_NAME);
 
 	@Override
 	protected void registerChannel() {

@@ -63,7 +63,7 @@ public class PackDisplayHud extends TextHudEntry {
 
 	@Override
 	public void renderComponent(AxoRenderContext context, float f) {
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 
 		if (widgets.isEmpty())
 			init();
@@ -73,8 +73,8 @@ public class PackDisplayHud extends TextHudEntry {
 			widgets.get(i).render(pos.x + 1, y);
 			y += 18;
 		}
-		if (y - pos.y + 1 != getHeight()) {
-			setHeight(y - pos.y - 1);
+		if (y - pos.y + 1 != getContentHeight()) {
+			setContentHeight(y - pos.y - 1);
 			onBoundsUpdate();
 		}
 	}
@@ -103,21 +103,21 @@ public class PackDisplayHud extends TextHudEntry {
 			if (textW > w.get())
 				w.set(textW);
 		});
-		setWidth(w.get());
+		setContentWidth(w.get());
 
-		setHeight(widgets.size() * 18);
+		setContentHeight(widgets.size() * 18);
 		onBoundsUpdate();
 	}
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
 		boolean updateBounds = false;
-		if (getHeight() < 18) {
-			setHeight(18);
+		if (getContentHeight() < 18) {
+			setContentHeight(18);
 			updateBounds = true;
 		}
-		if (getWidth() < 56) {
-			setWidth(56);
+		if (getContentWidth() < 56) {
+			setContentWidth(56);
 			updateBounds = true;
 		}
 		if (updateBounds) {
@@ -126,7 +126,7 @@ public class PackDisplayHud extends TextHudEntry {
 		if (placeholder == null) {
 			placeholder = new PackWidget(Minecraft.getInstance().getResourcePacks().defaultPack);
 		}
-		placeholder.render(getPos().x + 1, getPos().y + 1);
+		placeholder.render(getContentPos().x + 1, getContentPos().y + 1);
 	}
 
 	@Override

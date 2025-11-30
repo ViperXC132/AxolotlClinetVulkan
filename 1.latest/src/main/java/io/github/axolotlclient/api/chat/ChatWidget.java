@@ -51,7 +51,7 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 
 public class ChatWidget extends ObjectSelectionList<ChatWidget.ChatLine> {
@@ -257,7 +257,7 @@ public class ChatWidget extends ObjectSelectionList<ChatWidget.ChatLine> {
 		@Override
 		protected void renderExtras(GuiGraphics graphics, int x, int y, int mouseX, int mouseY) {
 			graphics.pose().pushMatrix();
-			ResourceLocation texture =
+			Identifier texture =
 				Auth.getInstance().getSkinTexture(getOrigin().sender().getUuid());
 			PlayerFaceRenderer.draw(graphics, texture, x - 22, y, 18, true, false, -1);
 			graphics.drawString(client.font, formattedTime, client.font.width(getContent()) + x + 5, y,

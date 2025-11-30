@@ -29,7 +29,7 @@ import io.github.axolotlclient.bridge.render.AxoSprites;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Mutable;
@@ -62,16 +62,16 @@ public abstract class AxoSpritesMixin {
 
 	@Inject(method = "<clinit>", at = @At("HEAD"), cancellable = true)
 	private static void setStaticValues(CallbackInfo info) {
-		record Simple(ResourceLocation id, int x, int y, int width, int height) implements AxoSpriteImpl {
+		record Simple(Identifier id, int x, int y, int width, int height) implements AxoSpriteImpl {
 			@Override
 			public void draw(Minecraft client, GuiGraphics stack, int sX, int sY, int sW, int sH) {
 				stack.blit(RenderPipelines.GUI_TEXTURED, id, sX, sY, x, y, sW, sH, width, height);
 			}
 		}
-		BADGE = new Simple((ResourceLocation) AxolotlClientCommon.BADGE_PATH, 0, 0, 16, 16);
-		BARRIER_ITEM_ICON = new Simple(ResourceLocation.withDefaultNamespace("textures/item/barrier.png"), 0, 0, 16, 16);
-		FURNACE_OFF = new Simple(ResourceLocation.withDefaultNamespace("textures/block/furnace_front.png"), 0, 0, 16, 16);
-		FURNACE_ON = new Simple(ResourceLocation.withDefaultNamespace("textures/block/furnace_front_on.png"), 0, 0, 16, 16);
+		BADGE = new Simple((Identifier) AxolotlClientCommon.BADGE_PATH, 0, 0, 16, 16);
+		BARRIER_ITEM_ICON = new Simple(Identifier.withDefaultNamespace("textures/item/barrier.png"), 0, 0, 16, 16);
+		FURNACE_OFF = new Simple(Identifier.withDefaultNamespace("textures/block/furnace_front.png"), 0, 0, 16, 16);
+		FURNACE_ON = new Simple(Identifier.withDefaultNamespace("textures/block/furnace_front_on.png"), 0, 0, 16, 16);
 		info.cancel();
 	}
 }

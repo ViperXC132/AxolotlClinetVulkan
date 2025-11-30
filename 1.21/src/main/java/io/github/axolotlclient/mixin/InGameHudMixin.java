@@ -24,6 +24,7 @@ package io.github.axolotlclient.mixin;
 
 import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -42,6 +43,7 @@ import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.hud.chat.ChatHud;
 import net.minecraft.client.gui.hud.in_game.InGameHud;
 import net.minecraft.client.render.DeltaTracker;
 import net.minecraft.entity.Entity;
@@ -181,5 +183,11 @@ public abstract class InGameHudMixin {
 			return;
 		}
 		original.call(graphics, player, y, uncappedMaxHealth, cappedMaxHealth, x);
+	}
+
+
+	@WrapWithCondition(method = "renderChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/chat/ChatHud;render(Lnet/minecraft/client/gui/GuiGraphics;IIIZ)V"))
+	private boolean hideChat(ChatHud instance, GuiGraphics graphics, int tickDelta, int mouseX, int mouseY, boolean chatScreenOpen) {
+		return !AxolotlClient.config().hideChat.get();
 	}
 }

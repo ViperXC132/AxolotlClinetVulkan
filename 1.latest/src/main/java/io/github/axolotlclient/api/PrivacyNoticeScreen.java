@@ -26,13 +26,13 @@ import java.net.URI;
 import java.util.concurrent.CompletableFuture;
 
 import io.github.axolotlclient.util.OSUtil;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.MultiLineLabel;
+import net.minecraft.client.gui.components.MultiLineTextWidget;
+import net.minecraft.client.gui.components.StringWidget;
+import net.minecraft.client.gui.layouts.FrameLayout;
+import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
 
 public class PrivacyNoticeScreen extends Screen {
 
@@ -40,7 +40,6 @@ public class PrivacyNoticeScreen extends Screen {
 
 	private final Screen parent;
 	private final CompletableFuture<Boolean> accepted;
-	private MultiLineLabel message;
 
 	protected PrivacyNoticeScreen(Screen parent, CompletableFuture<Boolean> accepted) {
 		super(Component.translatable("api.privacyNotice"));
@@ -49,53 +48,29 @@ public class PrivacyNoticeScreen extends Screen {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		super.render(graphics, mouseX, mouseY, delta);
-		graphics.drawCenteredString(this.font, this.title, this.width / 2, getTitleY(), -1);
-		message.render(graphics, MultiLineLabel.Align.CENTER, width / 2, getMessageY(), 10, true, -1);
-	}
-
-	@Override
-	public Component getNarrationMessage() {
-		return CommonComponents.joinForNarration(super.getNarrationMessage(),
-			Component.translatable("api.privacyNotice.description")
-		);
-	}
-
-	@Override
 	protected void init() {
 
-		message = MultiLineLabel.create(font, Component.translatable("api.privacyNotice.description"), width - 50);
-		int y = Mth.clamp(this.getMessageY() + this.getMessagesHeight() + 20, this.height / 6 + 96, this.height - 24);
-		this.addButtons(y);
-	}
-
-	private void addButtons(int y) {
-		addRenderableWidget(Button.builder(Component.translatable("api.privacyNotice.accept"), buttonWidget -> {
+		var frame = new FrameLayout(width, height);
+		var layout = frame.addChild(LinearLayout.vertical()).spacing(20);
+		layout.defaultCellSetting().alignHorizontallyCenter();
+		layout.addChild(new StringWidget(getTitle(), getFont()));
+		layout.addChild(new MultiLineTextWidget(Component.translatable("api.privacyNotice.description"), getFont()))
+			.setCentered(true).setMaxWidth(width - 50);
+		var buttons = layout.addChild(LinearLayout.horizontal()).spacing(4);
+		buttons.addChild(Button.builder(Component.translatable("api.privacyNotice.accept"), buttonWidget -> {
 			minecraft.setScreen(parent);
 			APIOptions.getInstance().privacyAccepted.set(Options.PrivacyPolicyState.ACCEPTED);
 			accepted.complete(true);
-		}).bounds(width / 2 - 50, y, 100, 20).build());
-		addRenderableWidget(Button.builder(Component.translatable("api.privacyNotice.deny"), buttonWidget -> {
+		}).width(100).build());
+		buttons.addChild(Button.builder(Component.translatable("api.privacyNotice.deny"), buttonWidget -> {
 			minecraft.setScreen(parent);
 			APIOptions.getInstance().enabled.set(false);
 			APIOptions.getInstance().privacyAccepted.set(Options.PrivacyPolicyState.DENIED);
 			accepted.complete(false);
-		}).bounds(width / 2 - 50 + 105, y, 100, 20).build());
-		addRenderableWidget(Button.builder(Component.translatable("api.privacyNotice.openPolicy"),
-			buttonWidget -> OSUtil.getOS().open(TERMS_URI)).bounds(width / 2 - 50 - 105, y, 100, 20).build());
-	}
-
-	private int getTitleY() {
-		int i = (this.height - this.getMessagesHeight()) / 2;
-		return Mth.clamp(i - 20 - 9, 10, 80);
-	}
-
-	private int getMessageY() {
-		return this.getTitleY() + 20;
-	}
-
-	private int getMessagesHeight() {
-		return this.message.getLineCount() * 9;
+		}).width(100).build());
+		buttons.addChild(Button.builder(Component.translatable("api.privacyNotice.openPolicy"),
+			buttonWidget -> OSUtil.getOS().open(TERMS_URI)).width(100).build());
+		frame.arrangeElements();
+		frame.visitWidgets(this::addRenderableWidget);
 	}
 }

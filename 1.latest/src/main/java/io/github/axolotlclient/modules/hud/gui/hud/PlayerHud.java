@@ -128,8 +128,8 @@ public class PlayerHud extends PlayerHudCommon {
 		renderEntityInInventory(graphics,
 			(int) (x),
 			(int) (y),
-			(int) (x + getWidth() * getScale()),
-			(int) (y + getHeight() * getScale()),
+			(int) (x + getContentWidth() * getScale()),
+			(int) (y + getContentHeight() * getScale()),
 			scale / client.player.getScale(),
 			new Vector3f(0, client.player.getBbHeight() / 2f - lerpY * client.player.getScale(), 0),
 			quaternion,
@@ -160,7 +160,6 @@ public class PlayerHud extends PlayerHudCommon {
 		}
 		entityRenderer.extractRenderState(livingEntity, reusedPlayerRendererState, 1.0f);
 		reusedPlayerRendererState.nameTag = null;
-		reusedPlayerRendererState.hitboxesRenderState = null;
 		((GuiGraphicsAccessor) guiGraphics).getGuiRenderState().submitPicturesInPictureState(new PlayerHudEntityRenderState(reusedPlayerRendererState, vector3f, quaternionf, quaternionf2, i, j, k, l, f, ((GuiGraphicsAccessor) guiGraphics).getScissorStack().peek(), renderer));
 	}
 

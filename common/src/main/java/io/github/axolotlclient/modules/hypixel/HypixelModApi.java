@@ -22,8 +22,11 @@
 
 package io.github.axolotlclient.modules.hypixel;
 
+import java.util.Arrays;
+
 import io.github.axolotlclient.api.Request;
 import io.github.axolotlclient.api.requests.StatusUpdate;
+import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.events.Events;
 import net.hypixel.data.type.ServerType;
 import net.hypixel.modapi.HypixelModAPI;
@@ -44,7 +47,14 @@ public class HypixelModApi {
 
 	private void init0() {
 		HypixelModAPI.getInstance().createHandler(ClientboundLocationPacket.class, packet -> current = packet);
-		Events.CONNECTION_PLAY_READY.register(() -> HypixelModAPI.getInstance().subscribeToEventPacket(ClientboundLocationPacket.class));
+		Events.CONNECTION_PLAY_READY.register(() -> {
+			var address = AxoMinecraftClient.getInstance().br$getServerAddress();
+			if (address != null && Arrays.stream(StatusUpdate.SupportedServer.values())
+				.filter(s -> s.getAddress().matcher(address).matches())
+				.anyMatch(s -> s.equals(StatusUpdate.SupportedServer.HYPIXEL))) {
+					HypixelModAPI.getInstance().subscribeToEventPacket(ClientboundLocationPacket.class);
+				}
+		});
 	}
 
 	public Request getStatus() {

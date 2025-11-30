@@ -30,10 +30,10 @@ import io.github.axolotlclient.AxolotlClientCommon;
 import lombok.Getter;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class KeyBinds {
-	public static final KeyMapping.Category CATEGORY_AXOLOTLCLIENT = KeyMapping.Category.register(ResourceLocation.fromNamespaceAndPath(AxolotlClientCommon.MODID, "title"));
+	public static final KeyMapping.Category CATEGORY_AXOLOTLCLIENT = KeyMapping.Category.register(Identifier.fromNamespaceAndPath(AxolotlClientCommon.MODID, "title"));
 	@Getter
 	private final static KeyBinds instance = new KeyBinds();
 

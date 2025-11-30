@@ -24,7 +24,6 @@ package io.github.axolotlclient.util.options.rounded;
 
 import java.util.Base64;
 
-import io.github.axolotlclient.AxolotlClientConfig.api.util.Graphics;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.rounded.screen.GraphicsEditorScreen;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.rounded.widgets.GraphicsWidget;
@@ -35,6 +34,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.InputWithModifiers;
 import net.minecraft.network.chat.Component;
 
+@SuppressWarnings("unused")
 public class AxoGraphicsWidget extends GraphicsWidget {
 	private final GraphicsOption option;
 
@@ -49,32 +49,34 @@ public class AxoGraphicsWidget extends GraphicsWidget {
 	}
 
 	public static class AxoGraphicsEditorScreen extends GraphicsEditorScreen {
-		private final Graphics graphics;
 
 		public AxoGraphicsEditorScreen(Screen parent, GraphicsOption option) {
 			super(parent, option);
-			this.graphics = option.get();
 		}
 
 		@Override
 		public void init() {
 			super.init();
 
-			int buttonX = gridX + maxGridWidth + 10;
-			int buttonY = gridY + 60;
-			var back = (RoundedButtonWidget) children().getLast();
-			removeWidget(back);
-			addRenderableWidget(new RoundedButtonWidget(buttonX, buttonY + 25, Component.translatable("graphics.copy_text"),
-				btn -> minecraft.keyboardHandler.setClipboard(Base64.getEncoder().encodeToString(graphics.getPixelData())))).setWidth(100);
-			addRenderableWidget(new RoundedButtonWidget(buttonX, buttonY + 50, Component.translatable("graphics.paste_text"),
+			var clear = (RoundedButtonWidget) children().getLast();
+			var buttonX = clear.getX();
+			var buttonY = clear.getY();
+			var buttonWidth = clear.getWidth();
+			addRenderableWidget(new RoundedButtonWidget(buttonX, buttonY + 24, Component.translatable("graphics.copy_text"),
+				btn -> minecraft.keyboardHandler.setClipboard(Base64.getEncoder().encodeToString(option.get().getPixelData())))).setWidth(buttonWidth);
+			addRenderableWidget(new RoundedButtonWidget(buttonX, buttonY + 48, Component.translatable("graphics.paste_text"),
 				btn -> {
 					try {
-						graphics.setPixelData(Base64.getDecoder().decode(minecraft.keyboardHandler.getClipboard()));
+						option.get().setPixelData(Base64.getDecoder().decode(minecraft.keyboardHandler.getClipboard()));
 					} catch (IllegalArgumentException e) {
 						Notifications.getInstance().addStatus("graphics.paste_text.failed", "graphics.paste_text.failed.desc");
 					}
-				})).setWidth(100);
-			addRenderableWidget(back);
+				})).setWidth(buttonWidth);
+		}
+
+		@Override
+		protected int getCurrentHeight() {
+			return super.getCurrentHeight() - 24 * 2;
 		}
 	}
 }

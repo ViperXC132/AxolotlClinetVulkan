@@ -45,7 +45,7 @@ import org.spongepowered.asm.mixin.Shadow;
 public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	@Shadow
 	@Final
-	private Minecraft minecraft;
+	Minecraft minecraft;
 
 	@Shadow
 	@Final
@@ -83,7 +83,7 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	}
 
 	@Override
-	public void br$scaleMatrix(float sx, float sy, float sz) {
+	public void br$scaleMatrix(float sx, float sy) {
 		pose.scale(sx, sy);
 	}
 
@@ -146,6 +146,16 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	@Override
 	public void br$outlineRect(int x, int y, int width, int height, int color) {
 		DrawUtil.outlineRect((GuiGraphics) (Object) this, x, y, width, height, color);
+	}
+
+	@Override
+	public void br$fillRectRound(int x, int y, int width, int height, int color, float rounding) {
+		((GuiGraphics) (Object) this).axolotlclient_rendering$roundedRect(x, y, x + width, y + height, color, rounding);
+	}
+
+	@Override
+	public void br$outlineRectRound(int x, int y, int width, int height, int color, float rounding) {
+		((GuiGraphics) (Object) this).axolotlclient_rendering$outlineRoundedRect(x, y, x + width, y + height, color, rounding, 0.5f);
 	}
 
 	@Override

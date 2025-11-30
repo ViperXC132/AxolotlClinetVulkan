@@ -22,7 +22,7 @@
 
 package io.github.axolotlclient.mixin;
 
-import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.bridge.events.Events;
@@ -34,6 +34,7 @@ import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GameGui;
+import net.minecraft.client.gui.chat.ChatGui;
 import net.minecraft.client.render.TextRenderer;
 import net.minecraft.client.render.Window;
 import net.minecraft.entity.Entity;
@@ -213,7 +214,7 @@ public abstract class InGameHudMixin {
 	private float titleScale, subtitleScale;
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;scalef(FFF)V", ordinal = 0))
-	private void scaleTitle(float f, CallbackInfo ci, @Local(ordinal = 1) int width, @Local(ordinal = 2) int height) {
+	private void scaleTitle(float f, CallbackInfo ci) {
 		if (!AxolotlClient.config().scaleTitles.get()) {
 			return;
 		}
@@ -221,7 +222,7 @@ public abstract class InGameHudMixin {
 	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;scalef(FFF)V", ordinal = 1))
-	private void scaleSubtitle(float f, CallbackInfo ci, @Local(ordinal = 1) int width, @Local(ordinal = 2) int height) {
+	private void scaleSubtitle(float f, CallbackInfo ci) {
 		if (!AxolotlClient.config().scaleTitles.get()) {
 			return;
 		}
@@ -250,5 +251,10 @@ public abstract class InGameHudMixin {
 				subtitleScale = 1 / scale;
 			}
 		}
+	}
+
+	@WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/chat/ChatGui;render(I)V"))
+	private boolean hideChat(ChatGui instance, int i) {
+		return !AxolotlClient.config().hideChat.get();
 	}
 }

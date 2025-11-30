@@ -82,12 +82,12 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 		if (bossBars == null || this.bossBars.isEmpty()) {
 			return;
 		}
-		DrawPosition scaledPos = getPos();
+		DrawPosition scaledPos = getContentPos();
 		int by = 12;
 		for (ClientBossBar bossBar : bossBars.values()) {
 			renderBossBar((GuiGraphics) graphics, scaledPos.x(), by + scaledPos.y(), bossBar);
 			by = by + 19;
-			if (by > getHeight()) {
+			if (by > getContentHeight()) {
 				break;
 			}
 		}
@@ -102,7 +102,8 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 				return;
 			}
 			// Update height
-			setHeight(12 + prevLength * 19);
+			setContentHeight(12 + prevLength * 19);
+			onBoundsUpdate();
 		}
 	}
 
@@ -125,7 +126,7 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 		}
 		if (text.get()) {
 			Text text = bossBar.getName();
-			float textX = x + ((float) getWidth() / 2) - ((float) client.textRenderer.getWidth(text) / 2);
+			float textX = x + ((float) getContentWidth() / 2) - ((float) client.textRenderer.getWidth(text) / 2);
 			float textY = y - 9;
 			graphics.drawText(client.textRenderer, text, (int) textX, (int) textY, textColor.get().toInt(), shadow.get());
 		}
@@ -133,7 +134,7 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 		renderBossBar((GuiGraphics) graphics, pos.x(), pos.y() + 12, placeholder);
 		renderBossBar((GuiGraphics) graphics, pos.x(), pos.y() + 31, placeholder2);
 	}

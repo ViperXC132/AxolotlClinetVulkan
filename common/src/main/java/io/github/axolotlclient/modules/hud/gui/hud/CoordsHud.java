@@ -129,7 +129,7 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 	}
 
 	private void doRender(AxoRenderContext context, double yaw, Vec3 playerPos, String biomeName) {
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 		String fx = format.format(playerPos.x());
 		String fy = format.format(playerPos.y());
 		String fz = format.format(playerPos.z());
@@ -196,13 +196,13 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 
 		boolean changed = false;
 
-		if (getWidth() != width) {
-			setWidth(width);
+		if (getContentWidth() != width) {
+			setContentWidth(width);
 			changed = true;
 		}
 
-		if (getHeight() != height) {
-			setHeight(height);
+		if (getContentHeight() != height) {
+			setContentHeight(height);
 			changed = true;
 		}
 

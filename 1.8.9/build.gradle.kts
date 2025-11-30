@@ -33,6 +33,7 @@ dependencies {
 	}
 	include("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+${project.property("minecraft_18")}")
 	modImplementation("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:${project.property("config")}")
+	modImplementation(include("io.github.axolotlclient:AxolotlClient-config-rounded:${project.property("config")}+${project.property("minecraft_18")}")!!)
 
 	ploceus.dependOsl(project.property("osl") as String)
 
@@ -42,14 +43,7 @@ dependencies {
 
 	modApi(include("io.github.moehreag:search-in-resources:1.0.6+1.8.9")!!)
 
-	val lwjglVersion = "3.3.5"
-	api("org.lwjgl:lwjgl-nanovg:$lwjglVersion")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-linux")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-linux-arm64")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-windows")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-windows-arm64")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-macos")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:${lwjglVersion}:natives-macos-arm64")
+	val lwjglVersion = "3.3.6"
 
 	include("org.apache.logging.log4j:log4j-slf4j-impl:2.0-beta9") {
 		exclude(group = "org.apache.logging.log4j", module = "log4j-api")
@@ -62,13 +56,11 @@ dependencies {
 	compileOnly("org.lwjgl:lwjgl-sdl:3.4.0-SNAPSHOT")
 
 	modImplementation("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}")
-	//modLocalRuntime("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}:all-remapped")
 
 	include(implementation("org.lwjgl", "lwjgl-tinyfd", lwjglVersion))
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-linux"))
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-windows"))
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-macos"))
-	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-linux-arm64"))
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-windows-arm64"))
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-macos-arm64"))
 

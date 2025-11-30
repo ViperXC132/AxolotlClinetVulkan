@@ -51,12 +51,16 @@ public class SimpleTextInputScreen extends Screen {
 
 		addDrawableChild(new ButtonWidget.Builder(CommonTexts.CANCEL, button -> client.setScreen(parent))
 			.positionAndSize(width / 2 - 155, height - 50, 150, 20).build());
-		addDrawableChild(new ButtonWidget.Builder(CommonTexts.DONE, button -> {
-			if (!input.getText().isEmpty()) {
+		var done = addDrawableChild(new ButtonWidget.Builder(CommonTexts.DONE, button -> {
+			if (!input.getText().isBlank()) {
 				consumer.accept(input.getText());
-				client.setScreen(parent);
 			}
+			client.setScreen(parent);
 		}).positionAndSize(width / 2 + 5, height - 50, 150, 20).build());
+		input.setChangedListener(s -> {
+			done.active = !s.isBlank();
+		});
+		done.active = false;
 	}
 
 	@Override

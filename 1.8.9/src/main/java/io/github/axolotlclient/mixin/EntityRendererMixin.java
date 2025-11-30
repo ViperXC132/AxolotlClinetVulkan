@@ -46,7 +46,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityRenderer.class)
@@ -125,10 +124,10 @@ public abstract class EntityRendererMixin<T extends Entity> {
 			AxolotlClient.config().useShadows.get());
 	}
 
-	@Redirect(method = "renderNameTag(Lnet/minecraft/entity/Entity;Ljava/lang/String;DDDI)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferBuilder;vertex(DDD)Lcom/mojang/blaze3d/vertex/BufferBuilder;"))
-	public BufferBuilder axolotlclient$noBg(BufferBuilder instance, double d, double e, double f) {
+	@WrapOperation(method = "renderNameTag(Lnet/minecraft/entity/Entity;Ljava/lang/String;DDDI)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferBuilder;vertex(DDD)Lcom/mojang/blaze3d/vertex/BufferBuilder;"))
+	public BufferBuilder axolotlclient$noBg(BufferBuilder instance, double d, double e, double f, Operation<BufferBuilder> original) {
 		if (AxolotlClient.config().nametagBackground.get()) {
-			instance.vertex(d, e, f);
+			original.call(instance, d, e, f);
 		}
 		return instance;
 	}

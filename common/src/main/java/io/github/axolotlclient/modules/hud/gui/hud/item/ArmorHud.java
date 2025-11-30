@@ -120,20 +120,20 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 				}).mapToInt(Integer::intValue).max().orElse(0) : 0;
 
 		width += labelWidth;
-		if (width != getWidth()) {
-			setWidth(width);
+		if (width != getContentWidth()) {
+			setContentWidth(width);
 			boundsChanged = true;
 		}
 
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 		MainHandItemPosition mhPos = mainHandItemPosition.get();
 
 		if (mhPos == MainHandItemPosition.DISABLED) {
 			height -= 20;
 		}
 
-		if (height != getHeight()) {
-			setHeight(height);
+		if (height != getContentHeight()) {
+			setContentHeight(height);
 			boundsChanged = true;
 		}
 		if (boundsChanged) {

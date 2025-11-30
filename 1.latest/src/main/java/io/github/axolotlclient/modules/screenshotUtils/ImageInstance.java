@@ -32,11 +32,11 @@ import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public interface ImageInstance {
 
-	ResourceLocation id();
+	Identifier id();
 
 	NativeImage image();
 
@@ -62,13 +62,13 @@ public interface ImageInstance {
 		}
 	}
 
-	private static void register(ResourceLocation id, NativeImage img) {
+	private static void register(Identifier id, NativeImage img) {
 		Minecraft.getInstance().execute(() -> Minecraft.getInstance().getTextureManager().register(id, new DynamicTexture(id::toString, img)));
 	}
 
-	record LocalImpl(ResourceLocation id, NativeImage image, String filename, Path location) implements Local {
+	record LocalImpl(Identifier id, NativeImage image, String filename, Path location) implements Local {
 		public LocalImpl(NativeImage image, String filename, Path location) {
-			this(ResourceLocation.fromNamespaceAndPath("axolotlclient", "gallery_local_" + Hashing.sha256().hashUnencodedChars(location.toString().toLowerCase(Locale.ROOT).replaceAll("[./]", "_"))),
+			this(Identifier.fromNamespaceAndPath("axolotlclient", "gallery_local_" + Hashing.sha256().hashUnencodedChars(location.toString().toLowerCase(Locale.ROOT).replaceAll("[./]", "_"))),
 				image, filename, location);
 			register(id(), image());
 		}
@@ -78,15 +78,15 @@ public interface ImageInstance {
 		}
 	}
 
-	record SharedImpl(ResourceLocation id, NativeImage image, String filename, Path location, String url,
+	record SharedImpl(Identifier id, NativeImage image, String filename, Path location, String url,
 					  String uploader, Instant sharedAt) implements Local, Remote {
 
 	}
 
-	record RemoteImpl(ResourceLocation id, NativeImage image, String filename, String uploader, Instant sharedAt,
+	record RemoteImpl(Identifier id, NativeImage image, String filename, String uploader, Instant sharedAt,
 					  String url) implements Remote {
 		public RemoteImpl(NativeImage image, String filename, String uploader, Instant sharedAt, String url) {
-			this(ResourceLocation.fromNamespaceAndPath("axolotlclient", "gallery_remote_" + Hashing.sha256().hashUnencodedChars(url.toLowerCase(Locale.ROOT).replaceAll("[./]", "_"))),
+			this(Identifier.fromNamespaceAndPath("axolotlclient", "gallery_remote_" + Hashing.sha256().hashUnencodedChars(url.toLowerCase(Locale.ROOT).replaceAll("[./]", "_"))),
 				image, filename, uploader, sharedAt, url
 			);
 			register(id(), image());

@@ -27,10 +27,7 @@ import java.time.Instant;
 import com.google.gson.JsonObject;
 import com.jagrosh.discordipc.IPCClient;
 import com.jagrosh.discordipc.IPCListener;
-import com.jagrosh.discordipc.entities.ActivityType;
-import com.jagrosh.discordipc.entities.Packet;
-import com.jagrosh.discordipc.entities.RichPresence;
-import com.jagrosh.discordipc.entities.User;
+import com.jagrosh.discordipc.entities.*;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
@@ -44,7 +41,7 @@ import io.github.axolotlclient.util.options.ForceableBooleanOption;
 
 public class DiscordRPC extends AbstractCommonModule {
 	private static final long CLIENT_ID = 875835666729152573L;
-	private static boolean running;
+	private static boolean running, starting;
 	private static DiscordRPC Instance;
 	private final OptionCategory category = OptionCategory.create("rpc");
 	private final BooleanOption showActivity = new BooleanOption("showActivity", true);
@@ -82,7 +79,7 @@ public class DiscordRPC extends AbstractCommonModule {
 	}
 
 	public void tick() {
-		if (!running && enabled.get()) {
+		if (!running && !starting && enabled.get()) {
 			ThreadExecuter.scheduleTask(this::initRPC);
 		}
 		if (running) {
@@ -97,13 +94,14 @@ public class DiscordRPC extends AbstractCommonModule {
 		}
 	}
 
-	private RichPresence createRichPresence(String gameVersion, String state, String details) {
+	private RichPresence createRichPresence(String state, String details) {
 		RichPresence.Builder builder = new RichPresence.Builder();
-		builder.setLargeImage("icon", "AxolotlClient " + gameVersion);
+		builder.setLargeImageWithTooltip("icon", "AxolotlClient " + AxolotlClientCommon.VERSION+"+"+AxolotlClientCommon.GAME_VERSION);
 		if (showTime.get()) {
 			builder.setStartTimestamp(time.getEpochSecond());
 		}
 		builder.setState(state).setDetails(details);
+		builder.setStatusDisplayType(StatusDisplayType.Name);
 		builder.setActivityType(ActivityType.Playing);
 		return builder.build();
 	}
@@ -130,7 +128,7 @@ public class DiscordRPC extends AbstractCommonModule {
 			details = "";
 		}
 
-		setRichPresence(createRichPresence(AxolotlClientCommon.VERSION, state, details));
+		setRichPresence(createRichPresence(state, details));
 	}
 
 	private void setRichPresence(RichPresence presence) {
@@ -143,8 +141,9 @@ public class DiscordRPC extends AbstractCommonModule {
 		createRichPresence();
 	}
 
-	private void initRPC() {
-		if (enabled.get()) {
+	private synchronized void initRPC() {
+		if (enabled.get() && !starting) {
+			starting = true;
 			if (ipcClient == null) {
 				ipcClient = new IPCClient(CLIENT_ID);
 				ipcClient.setListener(new IPCListener() {
@@ -195,8 +194,10 @@ public class DiscordRPC extends AbstractCommonModule {
 				logger.info("Started RPC");
 				running = true;
 			} catch (Exception e) {
+				logger.warn("Failed to start RPC", e);
 				enabled.set(false);
 			}
+			starting = false;
 		}
 	}
 }

@@ -33,7 +33,7 @@ import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 
 /**
@@ -45,7 +45,7 @@ import net.minecraft.util.ARGB;
 
 public class ActionBarHud extends TextHudEntry {
 
-	public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("kronhud", "actionbarhud");
+	public static final Identifier ID = Identifier.fromNamespaceAndPath("kronhud", "actionbarhud");
 
 	public final IntegerOption timeShown = new IntegerOption("timeshown", 60, 40, 300);
 	public final BooleanOption customTextColor = new BooleanOption("customtextcolor", false);
@@ -63,8 +63,8 @@ public class ActionBarHud extends TextHudEntry {
 	public void render(GuiGraphics graphics, Component actionBar, int color) {
 
 		graphics.drawString(client.font, actionBar,
-			(int) ((float) getPos().x() + Math.round((float) getWidth() / 2) -
-				(float) client.font.width(actionBar) / 2), (int) ((float) getPos().y() + 3),
+			(int) ((float) getContentPos().x() + Math.round((float) getContentWidth() / 2) -
+				(float) client.font.width(actionBar) / 2), (int) ((float) getContentPos().y() + 3),
 			customTextColor.get() ? (textColor.get().getAlpha() == 255 ? new Color(
 				textColor.get().getRed(), textColor.get().getGreen(), textColor.get().getBlue(),
 				ARGB.alpha(color)
@@ -74,14 +74,14 @@ public class ActionBarHud extends TextHudEntry {
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
-		graphics.br$drawString(placeholder, (int) ((float) getPos().x() + Math.round((float) getWidth() / 2) -
+		graphics.br$drawString(placeholder, (int) ((float) getContentPos().x() + Math.round((float) getContentWidth() / 2) -
 				(float) client.br$getFont().br$getWidth(placeholder) / 2),
-			(int) ((float) getPos().y() + 3), -1, false
+			(int) ((float) getContentPos().y() + 3), -1, false
 		);
 	}
 
 	@Override
-	public ResourceLocation getId() {
+	public Identifier getId() {
 		return ID;
 	}
 

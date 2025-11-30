@@ -69,9 +69,7 @@ public abstract class SimpleTextHudEntry extends TextHudEntry implements Dynamic
 	@Override
 	public void renderComponent(AxoRenderContext render, float delta) {
 		render.br$glEnableBlend();
-		// render.blendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		// render.glDisableTexture();
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 		String value = wrapWithBrackets(getValue());
 
 		int valueWidth = render.br$getFont().br$getWidth(value);
@@ -81,22 +79,22 @@ public abstract class SimpleTextHudEntry extends TextHudEntry implements Dynamic
 		boolean boundsChanged = false;
 		int minW = minWidth.get();
 		if (elementWidth < minW) {
-			if (width != minW) {
-				setWidth(minW);
+			if (getContentWidth() != minW) {
+				setContentWidth(minW);
 				boundsChanged = true;
 			}
-		} else if (elementWidth != width) {
-			setWidth(elementWidth);
+		} else if (elementWidth != getContentWidth()) {
+			setContentWidth(elementWidth);
 			boundsChanged = true;
 		}
 		int minH = minHeight.get();
 		if (elementHeight < minH) {
-			if (height != minH) {
-				setHeight(minH);
+			if (getContentHeight() != minH) {
+				setContentHeight(minH);
 				boundsChanged = true;
 			}
-		} else if (elementHeight != height) {
-			setHeight(elementHeight);
+		} else if (elementHeight != getContentHeight()) {
+			setContentHeight(elementHeight);
 			boundsChanged = true;
 		}
 
@@ -104,18 +102,16 @@ public abstract class SimpleTextHudEntry extends TextHudEntry implements Dynamic
 			onBoundsUpdate();
 		}
 		render.br$drawString(value,
-			pos.x() + justification.get().getXOffset(valueWidth, getWidth() - 4) + 2,
-			pos.y() + (Math.round((float) getHeight() / 2)) - 4, getTextColor().toInt(), shadow.get());
-		// render.glEnableTexture();
-		// render.glDisableBlend();
+			pos.x() + justification.get().getXOffset(valueWidth, getContentWidth() - 4) + 2,
+			pos.y() + (Math.round((float) getContentHeight() / 2)) - 4, getTextColor().toInt(), shadow.get());
 	}
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext ctx, float delta) {
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 		String value = wrapWithBrackets(getPlaceholder());
-		ctx.br$drawString(value, pos.x() + justification.get().getXOffset(value, getWidth() - 4) + 2,
-			pos.y() + (Math.round((float) getHeight() / 2)) - 4, getTextColor().toInt(), shadow.get());
+		ctx.br$drawString(value, pos.x() + justification.get().getXOffset(value, getContentWidth() - 4) + 2,
+			pos.y() + (Math.round((float) getContentHeight() / 2)) - 4, getTextColor().toInt(), shadow.get());
 	}
 
 	protected String wrapWithBrackets(String value) {

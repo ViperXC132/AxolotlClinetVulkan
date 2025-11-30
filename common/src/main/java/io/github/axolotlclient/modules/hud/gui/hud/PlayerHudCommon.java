@@ -60,12 +60,12 @@ public abstract class PlayerHudCommon extends BoxHudEntry {
 
 	@Override
 	public void renderComponent(AxoRenderContext ctx, float delta) {
-		renderPlayer(ctx, false, getTrueX(), getTrueY(), delta);
+		renderPlayer(ctx, false, getTrueContentX(), getTrueContentY(), delta);
 	}
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext ctx, float delta) {
-		renderPlayer(ctx, true, getTrueX(), getTrueY(), 0);
+		renderPlayer(ctx, true, getTrueContentX(), getTrueContentY(), 0);
 	}
 
 	protected abstract void renderPlayer(AxoRenderContext ctx, boolean placeholder, double x, double y, float delta);

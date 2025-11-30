@@ -111,7 +111,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 	}
 
 	public void setDefaultKeystrokes() {
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 		// LMB
 		keystrokes.add(createFromKey(new Rectangle(0, 36, 26, 17), pos, client.options.attackKey));
 		// RMB
@@ -169,7 +169,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 			setKeystrokes();
 		}
 		for (Keystroke stroke : keystrokes) {
-			stroke.render();
+			stroke.render(context);
 		}
 	}
 
@@ -185,7 +185,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 
 	@Override
 	public void tick() {
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 		if (keystrokes == null) {
 			setKeystrokes();
 		}
@@ -214,6 +214,8 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 		options.add(outline);
 		options.add(outlineColor);
 		options.add(pressedOutlineColor);
+		options.add(roundBackground);
+		options.add(backgroundRounding);
 		options.add(animationTime);
 		options.add(keystrokesOption);
 		options.add(configurePositions);
@@ -280,21 +282,29 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 			return start == -1 ? 1 : MathHelper.clamp((float) (System.currentTimeMillis() - start) / getAnimTime(), 0, 1);
 		}
 
-		public void render() {
-			renderStroke();
+		public void render(AxoRenderContext ctx) {
+			renderStroke(ctx);
 			render.render(this);
 		}
 
-		public void renderStroke() {
+		public void renderStroke(AxoRenderContext matrices) {
 			if (isKeyDown() != wasPressed) {
 				start = System.currentTimeMillis();
 			}
 			Rectangle rect = getRenderPosition();
 			if (background.get()) {
-				DrawUtil.fillRect(rect, getColor());
+				if (roundBackground.get()) {
+					matrices.br$fillRectRound(rect, getColor(), Math.min(Math.min(rect.height(), rect.width()) / 2f, backgroundRounding.get()));
+				} else {
+					matrices.br$fillRect(rect, getColor());
+				}
 			}
 			if (outline.get()) {
-				DrawUtil.outlineRect(rect, getOutlineColor());
+				if (roundBackground.get()) {
+					matrices.br$outlineRectRound(rect, getOutlineColor(), Math.min(Math.min(rect.height(), rect.width()) / 2f, backgroundRounding.get()));
+				} else {
+					matrices.br$outlineRect(rect, getOutlineColor());
+				}
 			}
 			if ((float) (System.currentTimeMillis() - start) / getAnimTime() >= 1) {
 				start = -1;
@@ -340,10 +350,10 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 		if ("option".equals(json.get("type"))) {
 			KeyBinding key = KeyBindAccessor.getAllKeyBinds().stream().filter(k -> k.getName().equals(json.getOrDefault("key_name", json.get("option")))).findFirst().orElseThrow();
 			return new CustomRenderKeystroke(SpecialKeystroke.byId.get(((String) json.get("special_name")).toLowerCase(Locale.ROOT)),
-				getRectangle((Map<String, ?>) json.get("bounds")), getPos(), key);
+				getRectangle((Map<String, ?>) json.get("bounds")), getContentPos(), key);
 		} else {
 			var key = KeyBindAccessor.getAllKeyBinds().stream().filter(k -> k.getName().equals(json.get("key_name"))).findFirst().orElseThrow();
-			return new LabelKeystroke(getRectangle((Map<String, ?>) json.get("bounds")), getPos(), key, (String) json.get("label"), (boolean) json.get("synchronize_label"),
+			return new LabelKeystroke(getRectangle((Map<String, ?>) json.get("bounds")), getContentPos(), key, (String) json.get("label"), (boolean) json.get("synchronize_label"),
 				Justification.valueOf((String) json.getOrDefault("justification", "CENTER")));
 		}
 	}
@@ -364,7 +374,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 		}
 
 		public CustomRenderKeystroke(SpecialKeystroke stroke) {
-			this(stroke, stroke.getRect().copy(), KeystrokeHud.this.getPos(), stroke.getKey());
+			this(stroke, stroke.getRect().copy(), KeystrokeHud.this.getContentPos(), stroke.getKey());
 		}
 
 		@Override
@@ -397,7 +407,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 	}
 
 	public LabelKeystroke newStroke() {
-		return new LabelKeystroke(new Rectangle(0, 0, 17, 17), getPos(), null, "", false, Justification.CENTER);
+		return new LabelKeystroke(new Rectangle(0, 0, 17, 17), getContentPos(), null, "", false, Justification.CENTER);
 	}
 
 	@Setter

@@ -121,7 +121,7 @@ public class HotbarHUD extends TextHudEntry {
 				float g = 1.0F + f / 5.0F;
 				graphics.br$pushMatrix();
 				graphics.br$translateMatrix((float) (x + 8), (float) (y + 12), 0.0F);
-				graphics.br$scaleMatrix(1.0F / g, (g + 1.0F) / 2.0F, 1.0F);
+				graphics.br$scaleMatrix(1.0F / g, (g + 1.0F) / 2.0F);
 				graphics.br$translateMatrix((float) (-(x + 8)), (float) (-(y + 12)), 0.0F);
 			}
 

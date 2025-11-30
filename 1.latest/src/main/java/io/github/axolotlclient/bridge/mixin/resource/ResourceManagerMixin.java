@@ -30,7 +30,7 @@ import java.util.function.Predicate;
 import io.github.axolotlclient.bridge.resource.AxoResource;
 import io.github.axolotlclient.bridge.resource.AxoResourceManager;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceProvider;
@@ -41,7 +41,7 @@ import org.spongepowered.asm.mixin.Shadow;
 public interface ResourceManagerMixin extends ResourceProvider, AxoResourceManager {
 
 	@Shadow
-	Map<ResourceLocation, Resource> listResources(String path, Predicate<ResourceLocation> filter);
+	Map<Identifier, Resource> listResources(String path, Predicate<Identifier> filter);
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -52,6 +52,6 @@ public interface ResourceManagerMixin extends ResourceProvider, AxoResourceManag
 
 	@Override
 	default AxoResource br$getResource(AxoIdentifier loc) throws IOException {
-		return getResourceOrThrow((ResourceLocation) loc);
+		return getResourceOrThrow((Identifier) loc);
 	}
 }

@@ -33,20 +33,13 @@ dependencies {
 	}
 	include("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+${project.property("minecraft_121")}")
 	modImplementation("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:${project.property("config")}")
+	modImplementation(include("io.github.axolotlclient:AxolotlClient-config-rounded:${project.property("config")}+${project.property("minecraft_121")}")!!)
 
 	modCompileOnlyApi("com.terraformersmc:modmenu:8.0.0") {
 		exclude(group = "net.fabricmc")
 	}
 
 	implementation(include(project(path = ":common", configuration = "shadow"))!!)
-
-	api("org.lwjgl:lwjgl-nanovg:3.3.3")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.3:natives-linux")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.3:natives-linux-arm64")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.3:natives-windows")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.3:natives-windows-arm64")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.3:natives-macos")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.3:natives-macos-arm64")
 
 	modCompileOnly("maven.modrinth:world-host:0.5.0+1.21.1-fabric")
 	//implementation("org.quiltmc.parsers:json:0.3.0")

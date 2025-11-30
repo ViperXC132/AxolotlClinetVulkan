@@ -34,7 +34,7 @@ import net.minecraft.client.gui.components.PlayerFaceRenderer;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class AccountsListWidget extends ObjectSelectionList<AccountsListWidget.Entry> {
 
@@ -67,10 +67,10 @@ public class AccountsListWidget extends ObjectSelectionList<AccountsListWidget.E
 	@Environment(EnvType.CLIENT)
 	public static class Entry extends ObjectSelectionList.Entry<AccountsListWidget.Entry> {
 
-		private static final ResourceLocation checkmark =
-			ResourceLocation.fromNamespaceAndPath("axolotlclient", "textures/check.png");
-		private static final ResourceLocation warningSign =
-			ResourceLocation.fromNamespaceAndPath("axolotlclient", "textures/warning.png");
+		private static final Identifier checkmark =
+			Identifier.fromNamespaceAndPath("axolotlclient", "textures/check.png");
+		private static final Identifier warningSign =
+			Identifier.fromNamespaceAndPath("axolotlclient", "textures/warning.png");
 
 		private final AccountsScreen screen;
 		@Getter
@@ -97,7 +97,7 @@ public class AccountsListWidget extends ObjectSelectionList<AccountsListWidget.E
 			}
 
 
-			ResourceLocation texture = Auth.getInstance().getSkinTexture(account);
+			Identifier texture = Auth.getInstance().getSkinTexture(account);
 			PlayerFaceRenderer.draw(graphics, texture, getContentX() - 1, getContentY() - 1, 33, true, false, -1);
 
 			graphics.drawString(client.font, account.getName(), getContentX() + 3 + 33, getContentY() + 1, -1);

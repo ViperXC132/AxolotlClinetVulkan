@@ -294,7 +294,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 	}
 
 	private void loadCapesList() {
-		capesList.clearEntries();
+		List<Row> rows = new ArrayList<>();
 		var profile = cachedProfile;
 		int columns = Math.max(2, (width / 2 - 25) / LIST_SKIN_WIDTH);
 		var capes = profile.capes();
@@ -319,12 +319,12 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 
 				widgets.add(widget2);
 			}
-			capesList.addEntry(new Row(widgets));
+			rows.add(new Row(widgets));
 		}
+		minecraft.submit(() -> capesList.replaceEntries(rows));
 	}
 
 	private void loadSkinsList() {
-		skinList.clearEntries();
 		var profile = cachedProfile;
 		int columns = Math.max(2, (width / 2 - 25) / LIST_SKIN_WIDTH);
 		List<Skin> skins = new ArrayList<>(profile.skins());
@@ -369,6 +369,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 
 	private void populateSkinList(List<? extends Skin> skins, int columns) {
 		int entryHeight = skinList.getEntryContentsHeight();
+		List<Row> rows = new ArrayList<>();
 		for (int i = 0; i < skins.size(); i += columns) {
 			var s = skins.get(i);
 			if (s != null && s.active()) {
@@ -386,8 +387,9 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 				var widget2 = createEntryForSkin(s2, entryHeight);
 				widgets.add(widget2);
 			}
-			skinList.addEntry(new Row(widgets));
+			rows.add(new Row(widgets));
 		}
+		minecraft.submit(() -> skinList.replaceEntries(rows));
 	}
 
 	private Path ensureNonexistent(Path p) {
@@ -471,11 +473,6 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 		}
 
 		@Override
-		public int addEntry(Row entry) {
-			return super.addEntry(entry);
-		}
-
-		@Override
 		protected int getScrollbarPositionX() {
 			return right - 8;
 		}
@@ -497,8 +494,9 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 			return itemHeight - 4;
 		}
 
-		public void clearEntries() {
-			super.clearEntries();
+		@Override
+		public void replaceEntries(Collection<Row> newEntries) {
+			super.replaceEntries(newEntries);
 		}
 
 		@Override

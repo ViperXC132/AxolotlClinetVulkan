@@ -54,7 +54,7 @@ public class DebugCountersHud extends TextHudEntry implements DynamicallyPositio
 			renderPlaceholderComponent(graphics, delta);
 		}
 
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 		int lineY = pos.y() + 2;
 		int lineX = pos.x() + 1;
 
@@ -73,13 +73,13 @@ public class DebugCountersHud extends TextHudEntry implements DynamicallyPositio
 		}
 
 		boolean boundsChanged = false;
-		if (lineY != getHeight() + pos.y()) {
+		if (lineY != getContentHeight() + pos.y()) {
 			boundsChanged = true;
-			setHeight(lineY - pos.y());
+			setContentHeight(lineY - pos.y());
 		}
-		if (xEnd != pos.x() + getWidth()) {
+		if (xEnd != pos.x() + getContentWidth()) {
 			boundsChanged = true;
-			setWidth(xEnd - pos.x());
+			setContentWidth(xEnd - pos.x());
 		}
 		if (boundsChanged) {
 			onBoundsUpdate();
@@ -88,7 +88,7 @@ public class DebugCountersHud extends TextHudEntry implements DynamicallyPositio
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 		int lineY = pos.y() + 2;
 		int lineX = pos.x() + 1;
 
@@ -107,13 +107,13 @@ public class DebugCountersHud extends TextHudEntry implements DynamicallyPositio
 		}
 
 		boolean boundsChanged = false;
-		if (lineY != getHeight() + pos.y()) {
+		if (lineY != getContentHeight() + pos.y()) {
 			boundsChanged = true;
-			setHeight(lineY - pos.y());
+			setContentHeight(lineY - pos.y());
 		}
-		if (xEnd != pos.x() + getWidth()) {
+		if (xEnd != pos.x() + getContentWidth()) {
 			boundsChanged = true;
-			setWidth(xEnd - pos.x());
+			setContentWidth(xEnd - pos.x());
 		}
 		if (boundsChanged) {
 			onBoundsUpdate();

@@ -70,7 +70,7 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 	@Override
 	public void renderComponent(AxoRenderContext context, float delta) {
 		GlStateManager.enableAlphaTest();
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 		if (BossBar.name != null && BossBar.timer > 0) {
 			client.getTextureManager().bind(BARS_TEXTURE);
 			--BossBar.timer;
@@ -97,7 +97,7 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 		placeholder.render(pos.x, pos.y + 14);
 	}
 

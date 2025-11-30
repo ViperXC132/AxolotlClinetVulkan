@@ -17,12 +17,6 @@
 				"forceableboolean": "io.github.axolotlclient.util.options.rounded.ForceableBooleanWidget",
 				"generic": "io.github.axolotlclient.util.options.rounded.GenericWidget"
 			}
-		},
-		"rounded-quicktoggles": {
-			"widgets": {
-				"category": "io.github.axolotlclient.util.options.rounded.QuickToggleCategoryWidget"
-			},
-			"extends": "rounded"
 		}
 	}
 }

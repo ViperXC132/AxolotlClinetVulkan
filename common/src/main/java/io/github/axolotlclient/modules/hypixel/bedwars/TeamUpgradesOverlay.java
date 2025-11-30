@@ -72,8 +72,8 @@ public class TeamUpgradesOverlay extends BoxHudEntry {
 
 		int x = position.x() + 1;
 		int y = position.y() + 2;
-		int width = getWidth();
-		int height = getHeight();
+		int width = getContentWidth();
+		int height = getContentHeight();
 		context.br$glEnableAlpha();
 		context.br$glEnableBlend();
 		context.br$glColor4(1, 1, 1, 1);
@@ -91,7 +91,7 @@ public class TeamUpgradesOverlay extends BoxHudEntry {
 				x += 17;
 				normalUpgrades = true;
 			}
-			setWidth(Math.max((x - position.x()) + 1, 18));
+			setContentWidth(Math.max((x - position.x()) + 1, 18));
 		}
 		x = position.x() + 1;
 		if (normalUpgrades) {
@@ -103,25 +103,25 @@ public class TeamUpgradesOverlay extends BoxHudEntry {
 				type.draw(context, x, y, 16, 16);
 				x += 17;
 			}
-			setWidth(Math.max((x - position.x()) + 1, 18));
+			setContentWidth(Math.max((x - position.x()) + 1, 18));
 		} else if(upgrades != null) {
 			upgrades.trap.draw(context, x, y, 16, 16);
-			setWidth(Math.max(((x + (upgrades.trap.getTrapCount() * 16)) - position.x()) + 1, getWidth()));
+			setContentWidth(Math.max(((x + (upgrades.trap.getTrapCount() * 16)) - position.x()) + 1, getContentWidth()));
 		}
-		setHeight((y - position.y()) + 19);
-		if (getHeight() != height || getWidth() != width) {
+		setContentHeight((y - position.y()) + 19);
+		if (getContentHeight() != height || getContentWidth() != width) {
 			onBoundsUpdate();
 		}
 	}
 
 	@Override
 	public void renderComponent(AxoRenderContext context, float delta) {
-		drawOverlay(context, getPos(), false);
+		drawOverlay(context, getContentPos(), false);
 	}
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
-		drawOverlay(context, getPos(), true);
+		drawOverlay(context, getContentPos(), true);
 	}
 
 	@Override

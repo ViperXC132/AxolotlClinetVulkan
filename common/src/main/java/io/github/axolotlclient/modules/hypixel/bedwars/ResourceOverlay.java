@@ -66,7 +66,7 @@ public class ResourceOverlay extends BoxHudEntry {
 	}
 
 	private void draw(AxoRenderContext context, Function<AxoItem, Integer> countFunction) {
-		var pos = getPos();
+		var pos = getContentPos();
 		int x = pos.x() + 1;
 		int y = pos.y() + 1;
 		for (AxoItem item : RESOURCES) {

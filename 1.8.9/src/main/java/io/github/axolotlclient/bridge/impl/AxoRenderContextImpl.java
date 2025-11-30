@@ -59,8 +59,8 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 	}
 
 	@Override
-	public void br$scaleMatrix(float sx, float sy, float sz) {
-		GlStateManager.scalef(sx, sy, sz);
+	public void br$scaleMatrix(float sx, float sy) {
+		GlStateManager.scalef(sx, sy, 1);
 	}
 
 	@Override
@@ -111,6 +111,16 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 	@Override
 	public void br$outlineRect(int x, int y, int width, int height, int color) {
 		DrawUtil.outlineRect(x, y, width, height, color);
+	}
+
+	@Override
+	public void br$fillRectRound(int x, int y, int width, int height, int color, float rounding) {
+		io.github.axolotlclient.rendering.DrawUtil.get().axolotlclient_rendering$roundedRect(x, y, x + width, y + height, color, rounding);
+	}
+
+	@Override
+	public void br$outlineRectRound(int x, int y, int width, int height, int color, float rounding) {
+		io.github.axolotlclient.rendering.DrawUtil.get().axolotlclient_rendering$outlineRoundedRect(x, y, x + width, y + height, color, rounding, 0.5f);
 	}
 
 	@Override

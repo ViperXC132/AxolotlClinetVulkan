@@ -55,13 +55,16 @@ public abstract class PlayerEntityRendererMixin {
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitNameTag(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/phys/Vec3;ILnet/minecraft/network/chat/Component;ZIDLnet/minecraft/client/renderer/state/CameraRenderState;)V"))
 	private void axolotlclient$modifiyName(SubmitNodeCollector instance, PoseStack poseStack, Vec3 vec3, int a, Component component, boolean b, int i, double v, CameraRenderState cameraRenderState, Operation<Void> original, @Local(argsOnly = true) AvatarRenderState state) {
 		if (AxolotlClient.config() != null) {
-			Level level = Minecraft.getInstance().level;
-			Entity player = level.getEntity(state.id);
-			boolean self = player.getUUID() == Minecraft.getInstance().player.getUUID();
-			if (self && NickHider.getInstance().hideOwnName.get()) {
-				component = (Component) NickHider.getInstance().editComponent(component, player.getName().getString(), NickHider.getInstance().hiddenNameSelf.get());
-			} else if (!self && NickHider.getInstance().hideOtherNames.get()) {
-				component = (Component) NickHider.getInstance().editComponent(component, player.getName().getString(), NickHider.getInstance().hiddenNameOthers.get());
+			var mc = Minecraft.getInstance();
+			if (mc.player != null) {
+				Level level = Minecraft.getInstance().level;
+				Entity player = level.getEntity(state.id);
+				boolean self = player.getUUID() == mc.player.getUUID();
+				if (self && NickHider.getInstance().hideOwnName.get()) {
+					component = (Component) NickHider.getInstance().editComponent(component, player.getName().getString(), NickHider.getInstance().hiddenNameSelf.get());
+				} else if (!self && NickHider.getInstance().hideOtherNames.get()) {
+					component = (Component) NickHider.getInstance().editComponent(component, player.getName().getString(), NickHider.getInstance().hiddenNameOthers.get());
+				}
 			}
 		}
 		original.call(instance, poseStack, vec3, a, component, b, i, v, cameraRenderState);
