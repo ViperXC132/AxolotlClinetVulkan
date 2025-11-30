@@ -64,7 +64,7 @@ public class MemoryHud extends TextHudEntry implements DynamicallyPositionable {
 		);
 
 		private long used() {
-			return max - free;
+			return total - free;
 		}
 
 		private float usage() {
@@ -108,7 +108,7 @@ public class MemoryHud extends TextHudEntry implements DynamicallyPositionable {
 		DrawPosition pos = getContentPos();
 
 		if (showGraph.get()) {
-			graph.setData(pos.x() + 5, pos.y() + 5, getContentBounds().width - 10, getContentBounds().height - 10);
+			graph.setData(pos.x() + 5, pos.y() + 5, getContentWidth() - 10, getContentHeight() - 10);
 			final int usagePx = (int) (graph.width * info.usage());
 			context.br$fillRect(graph.x, graph.y, usagePx, graph.height, graphUsedColor.get().toInt());
 			context.br$fillRect(graph.x + usagePx, graph.y, graph.width - usagePx, graph.height,

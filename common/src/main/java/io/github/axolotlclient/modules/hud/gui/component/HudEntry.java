@@ -51,6 +51,9 @@ public interface HudEntry extends Identifiable, Configurable, Positionable {
 	default void init() {
 	}
 
+	default void postConfigLoad() {
+	}
+
 	default double getDefaultX() {
 		return 0;
 	}

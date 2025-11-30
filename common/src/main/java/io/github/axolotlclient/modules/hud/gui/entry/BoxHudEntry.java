@@ -63,9 +63,12 @@ public abstract class BoxHudEntry extends AbstractHudEntry {
 	private Rectangle contentBounds = new Rectangle(0, 0, 0, 0);
 	@Getter
 	private DrawPosition contentPos = new DrawPosition(0, 0);
+	private final int initialContentWidth, initialContentHeight;
 
 	public BoxHudEntry(int width, int height, boolean backgroundAllowed) {
 		super(width, height);
+		this.initialContentWidth = width;
+		this.initialContentHeight = height;
 		this.backgroundAllowed = backgroundAllowed;
 		if (!backgroundAllowed) {
 			background = null;
@@ -75,6 +78,12 @@ public abstract class BoxHudEntry extends AbstractHudEntry {
 			roundBackground = null;
 			backgroundRounding = null;
 		}
+	}
+
+	@Override
+	public void postConfigLoad() {
+		setContentWidth(initialContentWidth);
+		setContentHeight(initialContentHeight);
 	}
 
 	@Override
