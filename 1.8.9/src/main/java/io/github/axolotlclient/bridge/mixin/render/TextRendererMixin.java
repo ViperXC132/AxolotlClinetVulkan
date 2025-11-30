@@ -50,16 +50,6 @@ public abstract class TextRendererMixin implements AxoFont {
 		return this.getWidth(text);
 	}
 
-	/*
-	public int br$drawString(AxoRenderContext render, String value, int x, int y, int color, boolean shadow) {
-		return draw(value, x, y, color, shadow);
-	}
-
-	public void br$drawCenteredString(AxoRenderContext context, String value, int x, int y, int color, boolean
-	shadow) {
-		draw(value, x - (float) getWidth(value) / 2, y, color, shadow);
-	}
-*/
 	@Override
 	public int br$getFontHeight() {
 		return fontHeight;

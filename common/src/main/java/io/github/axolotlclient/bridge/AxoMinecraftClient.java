@@ -97,7 +97,7 @@ public interface AxoMinecraftClient extends Executor {
 	/**
 	 * Sends a message <i>as</i> the client to the server.
 	 *
-	 * @param msg
+	 * @param msg the message
 	 */
 	@RequiresImpl
 	default void br$sendToServer(String msg) {
@@ -107,7 +107,7 @@ public interface AxoMinecraftClient extends Executor {
 	/**
 	 * Sends a message to the client.
 	 *
-	 * @param msg
+	 * @param msg the message
 	 */
 	@RequiresImpl
 	default void br$sendToClient(AxoText msg) {

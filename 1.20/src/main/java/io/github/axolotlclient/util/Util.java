@@ -23,21 +23,16 @@
 package io.github.axolotlclient.util;
 
 import java.io.IOException;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.texture.NativeImage;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Graphics;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImageBackedTexture;
-import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.scoreboard.ScoreboardPlayerScore;
-import net.minecraft.scoreboard.Team;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.ChatUtil;
@@ -60,80 +55,6 @@ public class Util {
 		if (end < start)
 			end += 24000;
 		return end - start;
-	}
-
-	public static String getGame() {
-		List<String> sidebar = getSidebar();
-
-		if (sidebar.isEmpty())
-			game = "";
-		else if (MinecraftClient.getInstance().getCurrentServerEntry() != null
-			&& MinecraftClient.getInstance().getCurrentServerEntry().address.toLowerCase()
-			.contains(sidebar.get(0).toLowerCase())) {
-			if (sidebar.get(sidebar.size() - 1).toLowerCase(Locale.ROOT)
-				.contains(MinecraftClient.getInstance().getCurrentServerEntry().address.toLowerCase(Locale.ROOT))
-				|| sidebar.get(sidebar.size() - 1).contains("Playtime")) {
-				game = "In Lobby";
-			} else {
-				if (sidebar.get(sidebar.size() - 1).contains("--------")) {
-					game = "Playing Bridge Practice";
-				} else {
-					game = "Playing " + sidebar.get(sidebar.size() - 1);
-				}
-			}
-		} else {
-			game = "Playing " + sidebar.get(0);
-		}
-
-		if (!Objects.equals(lastgame, game) && game.isEmpty())
-			game = lastgame;
-		else
-			lastgame = game;
-
-		if (game == null) {
-			game = "";
-		}
-
-		return game;
-	}
-
-	public static List<String> getSidebar() {
-		List<String> lines = new ArrayList<>();
-		MinecraftClient client = MinecraftClient.getInstance();
-		if (client.world == null)
-			return lines;
-
-		Scoreboard scoreboard = client.world.getScoreboard();
-		if (scoreboard == null)
-			return lines;
-		ScoreboardObjective sidebar = scoreboard.getObjectiveForSlot(Scoreboard.SIDEBAR_DISPLAY_SLOT_ID);
-		if (sidebar == null)
-			return lines;
-
-		Collection<ScoreboardPlayerScore> scores = scoreboard.getAllPlayerScores(sidebar);
-		List<ScoreboardPlayerScore> list = scores.stream().filter(
-				input -> input != null && input.getPlayerName() != null && !input.getPlayerName().startsWith("#"))
-			.collect(Collectors.toList());
-
-		if (list.size() > 15) {
-			scores = Lists.newArrayList(Iterables.skip(list, scores.size() - 15));
-		} else {
-			scores = list;
-		}
-
-		for (ScoreboardPlayerScore score : scores) {
-			Team team = scoreboard.getPlayerTeam(score.getPlayerName());
-			if (team == null)
-				return lines;
-			String text = team.getPrefix().getString() + team.getSuffix().getString();
-			if (!text.trim().isEmpty())
-				lines.add(text);
-		}
-
-		lines.add(sidebar.getDisplayName().getString());
-		Collections.reverse(lines);
-
-		return lines;
 	}
 
 	public static Text formatFromCodes(String formattedString) {

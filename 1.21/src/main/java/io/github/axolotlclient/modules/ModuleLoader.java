@@ -56,8 +56,8 @@ public class ModuleLoader {
 					CreditsScreen.externalModuleCredits.put(modName, authorsNContributors.toArray(new String[0]));
 				}
 			} catch (Exception e) {
-				AxolotlClient.LOGGER.warn("Skipping module: " + entrypoint.getProvider().getMetadata().getName() + " because of error:");
-				e.printStackTrace();
+				AxolotlClient.LOGGER.warn("Skipping module: " + entrypoint.getProvider().getMetadata().getName() +
+					" because of error:", e);
 			}
 		});
 		return modules;

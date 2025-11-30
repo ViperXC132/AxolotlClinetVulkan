@@ -51,7 +51,7 @@ public abstract class LivingEntityMixin extends Entity {
 
 	@Inject(method = "damage", at = @At(value = "HEAD"))
 	private void axolotlclient$onDamage(DamageSource source, float damage, CallbackInfoReturnable<Boolean> ci) {
-		if (this.isInvulnerable(source)) {
+		/*if (this.isInvulnerable(source)) {
 			return;
 		}
 		if (getHealth() <= 0.0F) {
@@ -61,7 +61,7 @@ public abstract class LivingEntityMixin extends Entity {
 		}
 		if (this.maxHealth > this.defaultMaxHealth / 2.0F) {
 			return;
-		}
+		}*/
 
 		// The client doesn't really get any sort of information about why a person is damaged
 		// Kinda sucks since that means combos can't be guaranteed (i.e. fall damage, or other person hits)

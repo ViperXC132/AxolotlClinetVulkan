@@ -61,9 +61,8 @@ public abstract class JoinMulitplayerScreenMixin extends Screen {
 			addDrawableChild(ButtonWidget.builder(Text.translatable("api.servers"), button -> {
 
 			}).position(this.width / 2 - 102, 32).width(100).build()).active = false;
-			ButtonWidget friendsCountButton = addDrawableChild(ButtonWidget.builder(Text.translatable("api.servers.friends", "..."), button -> {
-				client.setScreen(new FriendsMultiplayerScreen(this.parent));
-			}).positionAndSize(width / 2 + 2, 32, 100, 20).build());
+			ButtonWidget friendsCountButton = addDrawableChild(ButtonWidget.builder(Text.translatable("api.servers.friends", "..."), button ->
+				client.setScreen(new FriendsMultiplayerScreen(this.parent))).positionAndSize(width / 2 + 2, 32, 100, 20).build());
 			FriendRequest.getInstance().getOnlineFriendCount().thenAccept(count -> friendsCountButton.setMessage(Text.translatable("api.servers.friends", count)));
 		}
 	}

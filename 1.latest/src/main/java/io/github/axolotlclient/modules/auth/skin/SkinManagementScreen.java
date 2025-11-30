@@ -629,20 +629,19 @@ public class SkinManagementScreen extends Screen {
 					equipping = true;
 					btn.setMessage(TEXT_EQUIPPING);
 					btn.active = false;
-					Consumer<CompletableFuture<MSApi.MCProfile>> consumer = f -> {
+					Consumer<CompletableFuture<MSApi.MCProfile>> consumer = f ->
 						f.thenAcceptAsync(p -> {
-							cachedProfile = p;
-							if (minecraft.screen == SkinManagementScreen.this) {
-								refreshCurrentList();
-							} else {
-								minecraft.execute(() -> minecraft.setScreen(SkinManagementScreen.this));
-							}
-						}).exceptionally(t -> {
-							AxolotlClientCommon.getInstance().getLogger().warn("Failed to equip asset!", t);
-							equipping = false;
-							return null;
-						});
-					};
+						cachedProfile = p;
+						if (minecraft.screen == SkinManagementScreen.this) {
+							refreshCurrentList();
+						} else {
+							minecraft.execute(() -> minecraft.setScreen(SkinManagementScreen.this));
+						}
+					}).exceptionally(t -> {
+						AxolotlClientCommon.getInstance().getLogger().warn("Failed to equip asset!", t);
+						equipping = false;
+						return null;
+					});
 					if (asset instanceof Skin && !(current.getSkin() instanceof Skin.Local)) {
 						minecraft.setScreen(new ConfirmScreen(confirmed -> {
 							minecraft.setScreen(new LoadingScreen(getTitle(), TEXT_EQUIPPING));

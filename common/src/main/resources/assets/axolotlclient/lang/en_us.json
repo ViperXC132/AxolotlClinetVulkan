@@ -869,5 +869,6 @@
 	"hud.background_rounding": "Background Rounding",
 	"hud.background_padding": "Background Padding",
 	"hide_chat": "Hide Chat",
-	"toggle_hide_chat": "Toggle Hide Chat"
+	"toggle_hide_chat": "Toggle Hide Chat",
+	"api.context_menu": "Context Menu"
 }

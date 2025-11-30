@@ -144,12 +144,10 @@ public class ConfigureKeyBindScreen extends io.github.axolotlclient.AxolotlClien
 
 		rightColY += 28;
 
-		addDrawableChild(new VanillaButtonWidget(super.width / 2 - 150 - 4, rightColY, 150, 20, I18n.translate("keystrokes.stroke.configure_key"), b -> {
-			minecraft.openScreen(new KeyBindSelectionScreen(this, stroke));
-		}));
-		addDrawableChild(new VanillaButtonWidget(super.width / 2 + 4, rightColY, 150, 20, I18n.translate("keystrokes.stroke.configure_position"), b -> {
-			minecraft.openScreen(new KeystrokePositioningScreen(this, hud, stroke));
-		}));
+		addDrawableChild(new VanillaButtonWidget(super.width / 2 - 150 - 4, rightColY, 150, 20, I18n.translate("keystrokes.stroke.configure_key"), b ->
+			minecraft.openScreen(new KeyBindSelectionScreen(this, stroke))));
+		addDrawableChild(new VanillaButtonWidget(super.width / 2 + 4, rightColY, 150, 20, I18n.translate("keystrokes.stroke.configure_position"), b ->
+			minecraft.openScreen(new KeystrokePositioningScreen(this, hud, stroke))));
 
 
 		if (isAddScreen) {

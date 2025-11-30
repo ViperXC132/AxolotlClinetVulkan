@@ -46,10 +46,10 @@ import net.minecraft.util.ARGB;
 public class ActionBarHud extends TextHudEntry {
 
 	public static final Identifier ID = Identifier.fromNamespaceAndPath("kronhud", "actionbarhud");
+	private static final String PLACEHOLDER = "Action Bar";
 
 	public final IntegerOption timeShown = new IntegerOption("timeshown", 60, 40, 300);
 	public final BooleanOption customTextColor = new BooleanOption("customtextcolor", false);
-	private final String placeholder = "Action Bar";
 	private final Minecraft client = (Minecraft) super.client;
 
 	public ActionBarHud() {
@@ -74,8 +74,8 @@ public class ActionBarHud extends TextHudEntry {
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
-		graphics.br$drawString(placeholder, (int) ((float) getContentPos().x() + Math.round((float) getContentWidth() / 2) -
-				(float) client.br$getFont().br$getWidth(placeholder) / 2),
+		graphics.br$drawString(PLACEHOLDER, (int) ((float) getContentPos().x() + Math.round((float) getContentWidth() / 2) -
+				(float) client.br$getFont().br$getWidth(PLACEHOLDER) / 2),
 			(int) ((float) getContentPos().y() + 3), -1, false
 		);
 	}

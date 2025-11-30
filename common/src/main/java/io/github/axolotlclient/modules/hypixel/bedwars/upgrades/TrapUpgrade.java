@@ -115,25 +115,14 @@ public class TrapUpgrade extends TeamUpgrade {
 
 	@AllArgsConstructor
 	public enum TrapType {
-		ITS_A_TRAP((r, x, y, width, height, unused) -> {
-			r.br$drawTexture(x, y, 16, 16, AxoStatusEffects.BLINDNESS.br$getSprite());
-			//Minecraft.getInstance().getTextureManager().bind(new Identifier("textures/gui/container/inventory.png"));
-			//GuiElement.drawTexture(x, y, 5 * 18, 198 + 18, 18, 18, 16, 16, 256, 256);
-		}),
-		COUNTER_OFFENSIVE((r, x, y, width, height, unused) -> {
-			r.br$drawTexture(x, y, 16, 16, AxoStatusEffects.SPEED.br$getSprite());
-//			Minecraft.getInstance().getTextureManager().bind(new Identifier("textures/gui/container/inventory.png"));
-//			GuiElement.drawTexture(x, y, 0, 198, 18, 18, 16, 16, 256, 256);
-		}),
-		ALARM((r, x, y, width, height, unused) -> {
-			r.br$renderGuiItemModel(AxoItemStack.of(AxoItems.ENDER_EYE), x, y);
-//			ItemUtil.renderGuiItemModel(new ItemStack(Items.ENDER_EYE), x, y)
-		}),
-		MINER_FATIGUE((r, x, y, width, height, unused) -> {
-			r.br$drawTexture(x, y, 16, 16, AxoStatusEffects.MINING_FATIGUE.br$getSprite());
-//			Minecraft.getInstance().getTextureManager().bind(new Identifier("textures/gui/container/inventory.png"));
-//			GuiElement.drawTexture(x, y, 3 * 18, 198, 18, 18, 16, 16, 256, 256);
-		});
+		ITS_A_TRAP((r, x, y, width, height, unused) ->
+			r.br$drawTexture(x, y, 16, 16, AxoStatusEffects.BLINDNESS.br$getSprite())),
+		COUNTER_OFFENSIVE((r, x, y, width, height, unused) ->
+			r.br$drawTexture(x, y, 16, 16, AxoStatusEffects.SPEED.br$getSprite())),
+		ALARM((r, x, y, width, height, unused) ->
+			r.br$renderGuiItemModel(AxoItemStack.of(AxoItems.ENDER_EYE), x, y)),
+		MINER_FATIGUE((r, x, y, width, height, unused) ->
+			r.br$drawTexture(x, y, 16, 16, AxoStatusEffects.MINING_FATIGUE.br$getSprite()));
 		private final TeamUpgradeRenderer renderer;
 
 		public static TrapType getFuzzy(String s) {

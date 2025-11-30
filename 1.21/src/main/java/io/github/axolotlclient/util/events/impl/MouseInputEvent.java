@@ -22,11 +22,6 @@
 
 package io.github.axolotlclient.util.events.impl;
 
-import lombok.Data;
+public record MouseInputEvent(long window, int button, int action, int mods) {
 
-@Data
-public class MouseInputEvent {
-
-	private final long window;
-	private final int button, action, mods;
 }

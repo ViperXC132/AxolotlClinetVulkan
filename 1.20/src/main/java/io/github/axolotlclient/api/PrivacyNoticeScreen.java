@@ -83,9 +83,8 @@ public class PrivacyNoticeScreen extends Screen {
 			APIOptions.getInstance().privacyAccepted.set(Options.PrivacyPolicyState.DENIED);
 			accepted.complete(false);
 		}).positionAndSize(width / 2 - 50 + 105, y, 100, 20).build());
-		addDrawableChild(ButtonWidget.builder(Text.translatable("api.privacyNotice.openPolicy"), buttonWidget -> {
-			OSUtil.getOS().open(TERMS_URI);
-		}).positionAndSize(width / 2 - 50 - 105, y, 100, 20).build());
+		addDrawableChild(ButtonWidget.builder(Text.translatable("api.privacyNotice.openPolicy"), buttonWidget ->
+			OSUtil.getOS().open(TERMS_URI)).positionAndSize(width / 2 - 50 - 105, y, 100, 20).build());
 	}
 
 	private int getTitleY() {

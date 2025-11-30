@@ -213,10 +213,8 @@ public class ChatWidget extends EntryListWidget {
 					.title(origin.sender().getName())
 					.spacer();
 				if (!origin.sender().equals(API.getInstance().getSelf())) {
-					builder.entry("api.friends.chat", buttonWidget -> {
-							ChannelRequest.getOrCreateDM(origin.sender())
-								.whenCompleteAsync((channel, throwable) -> client.submit(() -> client.openScreen(new ChatScreen(screen.getParent(), channel))));
-						})
+					builder.entry("api.friends.chat", buttonWidget -> ChannelRequest.getOrCreateDM(origin.sender())
+						.whenCompleteAsync((channel, throwable) -> client.submit(() -> client.openScreen(new ChatScreen(screen.getParent(), channel)))))
 						.spacer();
 				}
 				builder.entry("api.chat.report.message", buttonWidget -> {
@@ -230,9 +228,7 @@ public class ChatWidget extends EntryListWidget {
 							I18n.translate("api.channels.confirm_report.desc", origin.content()), 0));
 					})
 					.spacer()
-					.entry("action.copy", buttonWidget -> {
-						Screen.setClipboard(origin.content());
-					});
+					.entry("action.copy", buttonWidget -> Screen.setClipboard(origin.content()));
 				screen.setContextMenu(builder.build());
 				return true;
 			}

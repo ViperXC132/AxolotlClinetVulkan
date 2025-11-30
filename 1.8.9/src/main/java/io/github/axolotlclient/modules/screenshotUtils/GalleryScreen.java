@@ -371,9 +371,7 @@ public class GalleryScreen extends Screen {
 					e.render(Minecraft.getInstance(), mouseX, mouseY);
 				});
 			} else {
-				buttons.forEach(e -> {
-					e.y = top;
-				});
+				buttons.forEach(e -> e.y = top);
 			}
 		}
 

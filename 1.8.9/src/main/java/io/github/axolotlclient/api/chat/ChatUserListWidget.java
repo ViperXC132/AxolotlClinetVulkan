@@ -149,10 +149,9 @@ public class ChatUserListWidget extends EntryListWidget {
 					ContextMenu.Builder menu = ContextMenu.builder().title(user.getName())
 						.spacer();
 					if (!channel.isDM()) {
-						menu.entry("api.friends.chat", buttonWidget -> {
-							ChannelRequest.getOrCreateDM(user)
-								.whenCompleteAsync((channel, throwable) -> client.submit(() -> client.openScreen(new ChatScreen(screen.getParent(), channel))));
-						}).spacer();
+						menu.entry("api.friends.chat", buttonWidget -> ChannelRequest.getOrCreateDM(user)
+							.whenCompleteAsync((channel, throwable) -> client.submit(() ->
+								client.openScreen(new ChatScreen(screen.getParent(), channel))))).spacer();
 					}
 					if (user.getRelation() != Relation.BLOCKED) {
 						if (user.getRelation() != Relation.FRIEND) {

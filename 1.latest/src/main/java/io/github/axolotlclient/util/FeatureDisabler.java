@@ -48,18 +48,17 @@ public class FeatureDisabler extends FeatureDisablerCommon {
 	@Override
 	protected void registerChannel() {
 		PayloadTypeRegistry.playS2C().register(CHANNEL_ID, FeaturePayload.CODEC);
-		ClientPlayConnectionEvents.INIT.register((handler0, client0) -> {
+		ClientPlayConnectionEvents.INIT.register((handler0, client0) ->
 			ClientPlayNetworking.registerGlobalReceiver(CHANNEL_ID, (payload, ctx) -> {
-				for (String feature : payload.features) {
-					try {
-						ForceableBooleanOption e = FEATURES.get(feature);
-						e.setForceOff(true, "ban_reason");
-					} catch (Exception e) {
-						AxolotlClient.LOGGER.error("Failed to disable " + feature + "!");
-					}
+			for (String feature : payload.features) {
+				try {
+					ForceableBooleanOption e = FEATURES.get(feature);
+					e.setForceOff(true, "ban_reason");
+				} catch (Exception e) {
+					AxolotlClient.LOGGER.error("Failed to disable " + feature + "!");
 				}
-			});
-		});
+			}
+		}));
 	}
 
 	private record FeaturePayload(List<String> features) implements CustomPacketPayload {

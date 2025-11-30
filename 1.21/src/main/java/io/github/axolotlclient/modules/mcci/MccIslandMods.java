@@ -39,9 +39,8 @@ public class MccIslandMods extends AbstractModule {
 
 	@Override
 	public void init() {
-		Events.RECEIVE_CHAT_MESSAGE.register(event -> {
-			event.setCancelled(MccIslandLocation.waitingForResponse(event.getOriginalMessage()));
-		});
+		Events.RECEIVE_CHAT_MESSAGE.register(event ->
+			event.setCancelled(MccIslandLocation.waitingForResponse(event.getOriginalMessage())));
 		noxesium.init();
 	}
 

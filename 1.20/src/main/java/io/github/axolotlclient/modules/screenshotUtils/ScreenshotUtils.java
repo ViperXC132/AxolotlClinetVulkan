@@ -102,9 +102,8 @@ public class ScreenshotUtils extends AbstractModule {
 
 	@Override
 	public void init() {
-		category.add(enabled, autoExec, new GenericOption("imageViewer", "openViewer", () -> {
-			MinecraftClient.getInstance().setScreen(new GalleryScreen(MinecraftClient.getInstance().currentScreen));
-		}));
+		category.add(enabled, autoExec, new GenericOption("imageViewer", "openViewer", () ->
+			MinecraftClient.getInstance().setScreen(new GalleryScreen(MinecraftClient.getInstance().currentScreen))));
 
 		AxolotlClient.config().general.add(category);
 	}

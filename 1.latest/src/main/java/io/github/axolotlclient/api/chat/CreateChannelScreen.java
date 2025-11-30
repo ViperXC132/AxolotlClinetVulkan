@@ -108,14 +108,13 @@ public class CreateChannelScreen extends Screen {
 
 		var footer = LinearLayout.horizontal().spacing(8);
 		footer.addChild(Button.builder(CommonComponents.GUI_CANCEL, widget -> minecraft.setScreen(parent)).build());
-		footer.addChild(Button.builder(CommonComponents.GUI_DONE, widget -> {
+		footer.addChild(Button.builder(CommonComponents.GUI_DONE, widget ->
 			ChannelRequest.createChannel(nameField.getValue(), Persistence.of(persistence.getValue(), count.get().get(),
-					duration.get().get()
-				),
-				Arrays.stream(namesInput.getValue().split(",")).filter(s -> !s.isEmpty())
-					.toArray(String[]::new)
-			).thenRun(() -> minecraft.execute(() -> minecraft.setScreen(parent)));
-		}).build());
+				duration.get().get()
+			),
+			Arrays.stream(namesInput.getValue().split(",")).filter(s -> !s.isEmpty())
+				.toArray(String[]::new)
+		).thenRun(() -> minecraft.execute(() -> minecraft.setScreen(parent)))).build());
 		layout.addToFooter(footer);
 
 		layout.arrangeElements();

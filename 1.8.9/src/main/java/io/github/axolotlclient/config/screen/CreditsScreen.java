@@ -195,9 +195,8 @@ public class CreditsScreen extends io.github.axolotlclient.AxolotlClientConfig.i
 				int textWidth = textRenderer.br$getWidth(t);
 				if (t.startsWith("http")) {
 					addDrawableChild(new PlainTextButtonWidget(width / 2 - textWidth / 2, startY, textWidth, 12,
-						((Text) AxoText.literal(t).br$color(ClientColors.SELECTOR_GREEN)).getFormattedString(), btn -> {
-						handleClickEvent(new LiteralText("").setStyle(new Style().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, t))));
-					}, textRenderer));
+						((Text) AxoText.literal(t).br$color(ClientColors.SELECTOR_GREEN)).getFormattedString(), btn ->
+						handleClickEvent(new LiteralText("").setStyle(new Style().setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, t)))), textRenderer));
 				} else {
 					int y = startY;
 					lines.add(() -> textRenderer.draw(t, width / 2 - textWidth / 2, y,

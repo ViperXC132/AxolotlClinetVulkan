@@ -29,6 +29,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
+import io.github.axolotlclient.bridge.util.AxoText;
 
 public class CommonUtil {
 	public static String toRoman(int number) {
@@ -94,6 +95,6 @@ public class CommonUtil {
 			game = "";
 		}
 
-		return game;
+		return AxoText.strip(game);
 	}
 }

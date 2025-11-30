@@ -39,7 +39,6 @@ public class KeystrokesScreen extends Screen {
 	private final Screen screen;
 	public final HeaderFooterLayoutWidget layout = new HeaderFooterLayoutWidget(this);
 	private final KeyBindsList keyBindsList;
-	private ButtonWidget resetButton;
 
 	public KeystrokesScreen(KeystrokeHud hud, Screen screen) {
 		super(Text.translatable("keystrokes.keys"));
@@ -56,14 +55,14 @@ public class KeystrokesScreen extends Screen {
 	protected void init() {
 		layout.addToHeader(getTitle(), textRenderer);
 		layout.addToContents(keyBindsList);
-		this.resetButton = ButtonWidget.builder(Text.translatable("controls.resetAll"), button -> {
+		var resetButton = ButtonWidget.builder(Text.translatable("controls.resetAll"), button -> {
 			keys.clear();
 			hud.setDefaultKeystrokes();
 			keyBindsList.reload();
 			hud.saveKeystrokes();
 		}).build();
 		LinearLayoutWidget linearLayout = this.layout.addToFooter(LinearLayoutWidget.createHorizontal().setSpacing(8));
-		linearLayout.add(this.resetButton);
+		linearLayout.add(resetButton);
 		linearLayout.add(ButtonWidget.builder(CommonTexts.DONE, button -> this.closeScreen()).build());
 		this.layout.visitWidgets(this::addDrawableSelectableElement);
 		this.repositionElements();
