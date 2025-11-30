@@ -237,8 +237,6 @@ public class ContextMenu implements ContainerEventHandler, Renderable, Narratabl
 	}
 
 	public static class ContextMenuEntryWithAction extends Button {
-
-		private final Minecraft client = Minecraft.getInstance();
 		private final Component inactiveMessage = ComponentUtils.mergeStyles(getMessage(), Style.EMPTY.withColor(0xFFA0A0A0));
 
 		public ContextMenuEntryWithAction(Component message, OnPress onPress) {

@@ -87,7 +87,7 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 
 	@Override
 	protected FeatureDisablerCommon getFeatureDisabler() {
-		return new FeatureDisabler();
+		return FeatureDisabler.getInstance();
 	}
 
 	@Override

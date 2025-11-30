@@ -34,6 +34,7 @@ public class FeatureDisabler extends FeatureDisablerCommon {
 
 	private static final String CHANNEL_NAME = "AXO|block_mods";
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void registerChannel() {
 		ClientPlayNetworking.registerListener(CHANNEL_NAME, (client, handler, buf) -> {

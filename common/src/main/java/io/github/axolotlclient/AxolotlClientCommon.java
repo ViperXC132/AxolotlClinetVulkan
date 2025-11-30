@@ -68,7 +68,7 @@ public abstract class AxolotlClientCommon {
 		return Profiles.getInstance().resolveProfileFile(file);
 	}
 
-	public static final boolean NVG_SUPPORTED = OSUtil.getOS() != OSUtil.OperatingSystem.OTHER &&
+	public static final boolean SHADERS_SUPPORTED = OSUtil.getOS() != OSUtil.OperatingSystem.OTHER &&
 		!Objects.requireNonNullElse(System.getenv("TMPDIR"), "").contains("Android") &&
 		!Objects.requireNonNullElse(System.getenv("HOME"), "").contains("Android") &&
 		!FabricLoader.getInstance().isModLoaded("vulkanmod");
@@ -93,7 +93,7 @@ public abstract class AxolotlClientCommon {
 	private Logger logger;
 	private NotificationProvider notificationProvider;
 	private JsonConfigManager configManager;
-	private boolean initializing = false;
+	private boolean initialized = false;
 	public final List<Module> modules = new ArrayList<>();
 
 	protected AxolotlClientCommon() {
@@ -102,22 +102,22 @@ public abstract class AxolotlClientCommon {
 	// getters
 
 	public AxolotlClientConfigCommon getConfig() {
-		Preconditions.checkState(initializing && config != null);
+		Preconditions.checkState(initialized && config != null);
 		return config;
 	}
 
 	public ConfigManager getConfigManager() {
-		Preconditions.checkState(initializing && configManager != null);
+		Preconditions.checkState(initialized && configManager != null);
 		return configManager;
 	}
 
 	public Logger getLogger() {
-		Preconditions.checkState(initializing && logger != null);
+		Preconditions.checkState(initialized && logger != null);
 		return logger;
 	}
 
 	public NotificationProvider getNotificationProvider() {
-		Preconditions.checkState(initializing && notificationProvider != null);
+		Preconditions.checkState(initialized && notificationProvider != null);
 		return notificationProvider;
 	}
 
@@ -229,13 +229,13 @@ public abstract class AxolotlClientCommon {
 	}
 
 	protected final void init(Logger logger, NotificationProvider provider) {
-		Preconditions.checkState(!initializing);
+		Preconditions.checkState(!initialized);
 		Preconditions.checkState(instance == null);
 
+		instance = this;
 		addBuiltinCommonModules();
 
-		initializing = true;
-		instance = this;
+		initialized = true;
 
 		this.logger = logger;
 		Profiles.getInstance().loadProfiles();
@@ -266,7 +266,7 @@ public abstract class AxolotlClientCommon {
 	}
 
 	protected final void registerModule(Module module) {
-		Preconditions.checkState(!initializing);
+		Preconditions.checkState(!initialized);
 		modules.add(module);
 	}
 

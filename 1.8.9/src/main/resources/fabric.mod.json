@@ -112,6 +112,9 @@
 			],
 			"net/minecraft/unmapped/C_8525326": [
 				"io/github/axolotlclient/bridge/util/AxoProfiler"
+			],
+			"net/minecraft/unmapped/C_1533205": [
+				"io/github/axolotlclient/bridge/network/AxoServerData"
 			]
 		}
 	},

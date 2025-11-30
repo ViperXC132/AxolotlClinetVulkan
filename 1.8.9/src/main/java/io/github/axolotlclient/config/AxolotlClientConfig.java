@@ -86,7 +86,7 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 		ConfigUI.getInstance().runWhenLoaded(() -> {
 			general.getOptions().removeIf(o -> "configStyle".equals(o.getName()));
 			String[] themes = ConfigUI.getInstance().getStyleNames().stream().map(s -> "configStyle." + s)
-				.filter(s -> AxolotlClientCommon.NVG_SUPPORTED || !s.startsWith("rounded"))
+				.filter(s -> AxolotlClientCommon.SHADERS_SUPPORTED || !s.startsWith("rounded"))
 				.toArray(String[]::new);
 			if (themes.length > 1) {
 				StringArrayOption configStyle;

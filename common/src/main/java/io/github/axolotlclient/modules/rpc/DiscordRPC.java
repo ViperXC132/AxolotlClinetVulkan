@@ -56,7 +56,7 @@ public class DiscordRPC extends AbstractCommonModule {
 		new String[]{"showIp", "showName", "off"}, "off");
 	private final BooleanOption showTime = new BooleanOption("showTime", true);
 	private final Instant time = Instant.now();
-	private final Logger logger = AxolotlClientCommon.getInstance().getLogger();
+	private Logger logger;
 	private IPCClient ipcClient;
 	private String currentWorld = "";
 
@@ -71,6 +71,7 @@ public class DiscordRPC extends AbstractCommonModule {
 	}
 
 	public void init() {
+		logger = AxolotlClientCommon.getInstance().getLogger();
 		category.add(enabled, showTime, showActivity, showServerNameMode);
 		if (OSUtil.getOS() == OSUtil.OperatingSystem.OTHER) {
 			enabled.setForceOff(true, "crash");

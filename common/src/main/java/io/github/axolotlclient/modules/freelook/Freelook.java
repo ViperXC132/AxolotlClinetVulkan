@@ -45,19 +45,19 @@ public class Freelook extends AbstractCommonModule {
 	public final ForceableBooleanOption enabled = new ForceableBooleanOption("enabled", false);
 	private final OptionCategory category = OptionCategory.create("freelook");
 	private final StringArrayOption mode =
-		new StringArrayOption("mode", new String[]{"snap_AxoPerspective", "freelook"}, "freelook",
+		new StringArrayOption("mode", new String[]{"snap_perspective", "freelook"}, "freelook",
 			value -> FeatureDisablerCommon.getInstance().update()
 		);
 	private final BooleanOption invert = new BooleanOption("invert", false);
 	private final EnumOption<AxoPerspective> perspective =
-		new EnumOption<>("AxoPerspective", AxoPerspective.class, AxoPerspective.THIRD_PERSON_BACK);
+		new EnumOption<>("perspective", AxoPerspective.class, AxoPerspective.THIRD_PERSON_BACK);
 	private final BooleanOption toggle = new BooleanOption("toggle", "freelook.toggle.tooltip", false);
-	private final EnumOption<AxoPerspective> AxoPerspectiveAlt = new EnumOption<>("AxoPerspective.alt", AxoPerspective.class,
+	private final EnumOption<AxoPerspective> perspectiveAlt = new EnumOption<>("perspective.alt", AxoPerspective.class,
 		AxoPerspective.THIRD_PERSON_FRONT);
 	private final BooleanOption toggleAlt = new BooleanOption("toggle.alt", false);
 	private final WrappedValue active = new WrappedValue(), activeAlt = new WrappedValue();
 	private float yaw, pitch;
-	private final Deque<AxoPerspective> previousAxoPerspectives = new ArrayDeque<>();
+	private final Deque<AxoPerspective> previousPerspectives = new ArrayDeque<>();
 
 	public static Freelook getInstance() {
 		return INSTANCE;
@@ -66,7 +66,7 @@ public class Freelook extends AbstractCommonModule {
 	@Override
 	public void init() {
 		category.add(enabled, mode, perspective, invert, toggle);
-		category.add(AxoPerspectiveAlt, toggleAlt);
+		category.add(perspectiveAlt, toggleAlt);
 		AxolotlClientCommon.getInstance().getConfig().addCategory(category);
 	}
 
@@ -74,7 +74,7 @@ public class Freelook extends AbstractCommonModule {
 	public void tick() {
 		if (!enabled.get() || client.br$getScreen() != null) return;
 		tickSet(toggle, KEY, perspective, active);
-		tickSet(toggleAlt, KEY_ALT, AxoPerspectiveAlt, activeAlt);
+		tickSet(toggleAlt, KEY_ALT, perspectiveAlt, activeAlt);
 	}
 
 	private void tickSet(BooleanOption toggle, AxoKeybinding key, EnumOption<AxoPerspective> perspective, WrappedValue active) {
@@ -100,13 +100,13 @@ public class Freelook extends AbstractCommonModule {
 	private void stop(WrappedValue active) {
 		active.val = false;
 		client.br$notifyLevelRenderer();
-		setAxoPerspective(previousAxoPerspectives.pop());
+		setAxoPerspective(previousPerspectives.pop());
 	}
 
-	private void start(AxoPerspective AxoPerspective, WrappedValue active) {
-		previousAxoPerspectives.push(client.br$getGameOptions().br$getCameraType());
+	private void start(AxoPerspective perspective, WrappedValue active) {
+		previousPerspectives.push(client.br$getGameOptions().br$getCameraType());
 		active.val = true;
-		setAxoPerspective(AxoPerspective);
+		setAxoPerspective(perspective);
 
 		AxoEntity camera = client.br$getCameraEntity();
 
@@ -117,8 +117,8 @@ public class Freelook extends AbstractCommonModule {
 		pitch = camera.br$getPitch();
 	}
 
-	private void setAxoPerspective(AxoPerspective AxoPerspective) {
-		client.br$getGameOptions().br$setCameraType(AxoPerspective);
+	private void setAxoPerspective(AxoPerspective perspective) {
+		client.br$getGameOptions().br$setCameraType(perspective);
 	}
 
 	public boolean consumeRotation(double dx, double dy) {

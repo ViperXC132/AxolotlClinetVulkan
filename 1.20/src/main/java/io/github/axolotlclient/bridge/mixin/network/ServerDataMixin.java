@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -20,14 +20,21 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.bridge.events.types;
+package io.github.axolotlclient.bridge.mixin.network;
 
-import io.github.axolotlclient.bridge.scores.AxoObjective;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import io.github.axolotlclient.bridge.network.AxoServerData;
+import net.minecraft.client.network.ServerInfo;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
-public class ScoreboardRenderEvent extends CancellableEvent {
-	private final AxoObjective objective;
+@Mixin(ServerInfo.class)
+public abstract class ServerDataMixin implements AxoServerData {
+
+	@Shadow
+	public String address;
+
+	@Override
+	public String br$getIp() {
+		return address;
+	}
 }

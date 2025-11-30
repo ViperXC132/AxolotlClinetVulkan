@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -20,20 +20,21 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.util.events.types;
+package io.github.axolotlclient.bridge.mixin.network;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
+import io.github.axolotlclient.bridge.network.AxoServerData;
+import net.minecraft.client.options.ServerListEntry;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
-@Getter
-@ToString
-@EqualsAndHashCode
-public abstract class CancellableEvent {
+@Mixin(ServerListEntry.class)
+public abstract class ServerDataMixin implements AxoServerData {
 
-	private boolean cancelled;
+	@Shadow
+	public String address;
 
-	public void setCancelled(boolean cancel) {
-		cancelled |= cancel;
+	@Override
+	public String br$getIp() {
+		return address;
 	}
 }

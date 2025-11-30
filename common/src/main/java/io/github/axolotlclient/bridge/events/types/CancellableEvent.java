@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2023 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -19,6 +19,7 @@
  *
  * For more information, see the LICENSE file.
  */
+
 package io.github.axolotlclient.bridge.events.types;
 
 import lombok.EqualsAndHashCode;

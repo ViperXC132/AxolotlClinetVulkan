@@ -25,6 +25,7 @@
 		"key.GameOptionsMixin",
 		"key.KeyBindingMixin",
 		"key.KeyMixin",
+		"network.ServerDataMixin",
 		"render.AxoSpritesMixin",
 		"render.FontMixin",
 		"render.GuiGraphicsMixin",

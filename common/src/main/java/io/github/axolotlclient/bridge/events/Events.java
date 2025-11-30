@@ -33,6 +33,7 @@ import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
 import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
 import io.github.axolotlclient.bridge.events.types.WorldLoadEvent;
 import io.github.axolotlclient.bridge.key.AxoKey;
+import io.github.axolotlclient.bridge.network.AxoServerData;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -51,12 +52,8 @@ public class Events {
 	public static final EventBus<Runnable> CLIENT_STOP = EventBus.broadcast0();
 	public static final EventBus<Runnable> TICK = EventBus.broadcast0();
 	public static final EventBus<Runnable> END_RESOURCE_RELOAD = EventBus.broadcast0();
-	public static final EventBus<Runnable> CONNECTION_PLAY_READY = EventBus.broadcast0();
+	public static final EventBus<Consumer<AxoServerData>> CONNECTION_PLAY_READY = EventBus.broadcast1();
 
-	public record ServerJoinInfo(@Nullable String address) {
-	}
-
-	public static final EventBus<Consumer<ServerJoinInfo>> BEGIN_JOIN_SERVER = EventBus.broadcast1();
 	public static final EventBus<Runnable> DISCONNECT = EventBus.broadcast0();
 
 	public static final EventBus<Consumer<ReceiveChatMessageEvent>> RECEIVE_CHAT_MESSAGE = EventBus.broadcast1();
