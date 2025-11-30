@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -20,31 +20,21 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.renderOptions;
+package io.github.axolotlclient.bridge.mixin.network;
 
-import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.modules.AbstractModule;
-import lombok.Getter;
+import io.github.axolotlclient.bridge.network.AxoServerData;
+import net.minecraft.client.options.ServerListEntry;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
-public class BeaconBeam extends AbstractModule {
+@Mixin(ServerListEntry.class)
+public abstract class ServerDataMixin implements AxoServerData {
 
-	@Getter
-	private final static BeaconBeam Instance = new BeaconBeam();
-
-	private final BooleanOption showBeaconBeams = new BooleanOption("showBeaconBeams", true);
-
-	private final OptionCategory beams = OptionCategory.create("beams");
+	@Shadow
+	public String address;
 
 	@Override
-	public void init() {
-		beams.add(showBeaconBeams);
-
-		AxolotlClient.config().rendering.add(beams);
-	}
-
-	public boolean showBeam() {
-		return showBeaconBeams.get();
+	public String br$getIp() {
+		return address;
 	}
 }

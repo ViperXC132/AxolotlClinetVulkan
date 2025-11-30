@@ -42,7 +42,6 @@ import io.github.axolotlclient.util.ThreadExecuter;
 import io.github.axolotlclient.util.notifications.Notifications;
 import io.github.axolotlclient.util.options.GenericOption;
 import lombok.Getter;
-import net.minecraft.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.User;
 import net.minecraft.client.gui.screens.ConfirmScreen;
@@ -54,6 +53,7 @@ import net.minecraft.client.multiplayer.chat.report.ReportingContext;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 
 public class Auth extends Accounts implements Module {
 

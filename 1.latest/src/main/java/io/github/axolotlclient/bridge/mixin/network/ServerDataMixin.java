@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -20,8 +20,21 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.freelook;
+package io.github.axolotlclient.bridge.mixin.network;
 
-public enum Perspective {
-	FIRST_PERSON, THIRD_PERSON_BACK, THIRD_PERSON_FRONT
+import io.github.axolotlclient.bridge.network.AxoServerData;
+import net.minecraft.client.multiplayer.ServerData;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+
+@Mixin(ServerData.class)
+public abstract class ServerDataMixin implements AxoServerData {
+
+	@Shadow
+	public String ip;
+
+	@Override
+	public String br$getIp() {
+		return ip;
+	}
 }

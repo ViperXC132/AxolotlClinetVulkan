@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -20,20 +20,21 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.util.events.types;
+package io.github.axolotlclient.bridge;
 
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.ToString;
 
 @Getter
-@ToString
-@EqualsAndHashCode
-public abstract class CancellableEvent {
+public enum AxoPerspective {
+	FIRST_PERSON(true, false),
+	THIRD_PERSON_BACK(false, false),
+	THIRD_PERSON_FRONT(false, true);
 
-	private boolean cancelled;
+	private final boolean firstPerson;
+	private final boolean mirrored;
 
-	public void setCancelled(boolean cancel) {
-		cancelled |= cancel;
+	AxoPerspective(final boolean firstPerson, final boolean mirrored) {
+		this.firstPerson = firstPerson;
+		this.mirrored = mirrored;
 	}
 }

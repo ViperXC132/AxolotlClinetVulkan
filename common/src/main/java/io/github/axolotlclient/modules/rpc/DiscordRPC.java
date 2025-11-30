@@ -32,49 +32,57 @@ import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringArrayOption;
-import io.github.axolotlclient.modules.Module;
+import io.github.axolotlclient.modules.AbstractCommonModule;
+import io.github.axolotlclient.util.CommonUtil;
 import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.OSUtil;
 import io.github.axolotlclient.util.ThreadExecuter;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 
-public abstract class RPCCommon implements Module {
-
+public class DiscordRPC extends AbstractCommonModule {
 	private static final long CLIENT_ID = 875835666729152573L;
 	private static boolean running, starting;
-	public final OptionCategory category = OptionCategory.create("rpc");
-	public final BooleanOption showActivity = new BooleanOption("showActivity", true);
-	public final ForceableBooleanOption enabled = new ForceableBooleanOption("enabled", false, value -> {
+	private static DiscordRPC Instance;
+	private final OptionCategory category = OptionCategory.create("rpc");
+	private final BooleanOption showActivity = new BooleanOption("showActivity", true);
+	private final ForceableBooleanOption enabled = new ForceableBooleanOption("enabled", false, value -> {
 		if (value) {
 			ThreadExecuter.scheduleTask(this::initRPC);
 		} else {
 			ThreadExecuter.scheduleTask(this::shutdown);
 		}
 	});
-	public final StringArrayOption showServerNameMode = new StringArrayOption("showServerNameMode",
+	private final StringArrayOption showServerNameMode = new StringArrayOption("showServerNameMode",
 		new String[]{"showIp", "showName", "off"}, "off");
-	public final BooleanOption showTime = new BooleanOption("showTime", true);
+	private final BooleanOption showTime = new BooleanOption("showTime", true);
 	private final Instant time = Instant.now();
-	private final Logger logger;
-	private IPCClient client;
+	private Logger logger;
+	private IPCClient ipcClient;
+	private String currentWorld = "";
 
-	public RPCCommon(Logger logger) {
-		this.logger = logger;
+	public static DiscordRPC getInstance() {
+		if (Instance == null)
+			Instance = new DiscordRPC();
+		return Instance;
+	}
+
+	public void setWorld(String world) {
+		currentWorld = world;
 	}
 
 	public void init() {
+		logger = AxolotlClientCommon.getInstance().getLogger();
 		category.add(enabled, showTime, showActivity, showServerNameMode);
-
 		if (OSUtil.getOS() == OSUtil.OperatingSystem.OTHER) {
 			enabled.setForceOff(true, "crash");
 		}
+		AxolotlClientCommon.getInstance().getConfig().addCategory(category);
 	}
 
 	public void tick() {
 		if (!running && !starting && enabled.get()) {
 			ThreadExecuter.scheduleTask(this::initRPC);
 		}
-
 		if (running) {
 			ThreadExecuter.scheduleTask(this::updateRPC);
 		}
@@ -82,29 +90,51 @@ public abstract class RPCCommon implements Module {
 
 	public void shutdown() {
 		if (running) {
-			client.close();
+			ipcClient.close();
 			running = false;
 		}
 	}
 
-	protected RichPresence createRichPresence(String state, String details) {
+	private RichPresence createRichPresence(String state, String details) {
 		RichPresence.Builder builder = new RichPresence.Builder();
 		builder.setLargeImageWithTooltip("icon", "AxolotlClient " + AxolotlClientCommon.VERSION+"+"+AxolotlClientCommon.GAME_VERSION);
 		if (showTime.get()) {
 			builder.setStartTimestamp(time.getEpochSecond());
 		}
-		builder.setState(state)
-			.setDetails(details);
+		builder.setState(state).setDetails(details);
 		builder.setStatusDisplayType(StatusDisplayType.Name);
 		builder.setActivityType(ActivityType.Playing);
 		return builder.build();
 	}
 
-	protected abstract void createRichPresence();
+	private void createRichPresence() {
+		String state = switch (showServerNameMode.get()) {
+			case "showIp" -> client.br$getWorld() == null ? "In the menu"
+				: (CommonUtil.getCurrentServerAddress() == null ? "Singleplayer" : CommonUtil.getCurrentServerAddress());
+			case "showName" -> client.br$getWorld() == null ? "In the menu"
+				: (client.br$getServerAddress() == null
+				? (CommonUtil.getCurrentServerAddress() == null ? "Singleplayer"
+				: CommonUtil.getCurrentServerAddress())
+				: client.br$getServerName());
+			default -> "";
+		};
 
-	protected void setRichPresence(RichPresence presence) {
-		if (running && client != null) {
-			client.sendRichPresence(presence);
+		String details;
+		if (showActivity.get() && !client.br$isLocalServer()) {
+			details = CommonUtil.getGame();
+		} else if (showActivity.get() && !currentWorld.isEmpty()) {
+			details = currentWorld;
+			currentWorld = "";
+		} else {
+			details = "";
+		}
+
+		setRichPresence(createRichPresence(state, details));
+	}
+
+	private void setRichPresence(RichPresence presence) {
+		if (running && ipcClient != null) {
+			ipcClient.sendRichPresence(presence);
 		}
 	}
 
@@ -115,9 +145,9 @@ public abstract class RPCCommon implements Module {
 	private synchronized void initRPC() {
 		if (enabled.get() && !starting) {
 			starting = true;
-			if (client == null) {
-				client = new IPCClient(CLIENT_ID);
-				client.setListener(new IPCListener() {
+			if (ipcClient == null) {
+				ipcClient = new IPCClient(CLIENT_ID);
+				ipcClient.setListener(new IPCListener() {
 					@Override
 					public void onPacketSent(IPCClient client, Packet packet) {
 
@@ -161,7 +191,7 @@ public abstract class RPCCommon implements Module {
 				});
 			}
 			try {
-				client.connect();
+				ipcClient.connect();
 				logger.info("Started RPC");
 				running = true;
 			} catch (Exception e) {
@@ -171,6 +201,4 @@ public abstract class RPCCommon implements Module {
 			starting = false;
 		}
 	}
-
-
 }

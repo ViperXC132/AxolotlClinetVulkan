@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -20,20 +20,21 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.mixin;
+package io.github.axolotlclient.bridge.mixin.network;
 
-import io.github.axolotlclient.util.FeatureDisabler;
-import net.minecraft.client.gui.screen.ConnectScreen;
+import io.github.axolotlclient.bridge.network.AxoServerData;
+import net.minecraft.client.network.ServerInfo;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(ConnectScreen.class)
-public abstract class ConnectScreenMixin {
+@Mixin(ServerInfo.class)
+public abstract class ServerDataMixin implements AxoServerData {
 
-	@Inject(method = "connect", at = @At("HEAD"))
-	private void axolotlclient$onServerJoin(String address, int port, CallbackInfo ci) {
-		FeatureDisabler.onServerJoin(address);
+	@Shadow
+	public String address;
+
+	@Override
+	public String br$getIp() {
+		return address;
 	}
 }

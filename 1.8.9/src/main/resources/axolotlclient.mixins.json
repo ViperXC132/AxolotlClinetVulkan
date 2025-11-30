@@ -17,7 +17,6 @@
 		"ClientWorldMixin",
 		"ConfigVanillaButtonWidgetMixin",
 		"ConfirmScreenMixin",
-		"ConnectScreenMixin",
 		"ControlsOptionsScreenMixin",
 		"DebugHudMixin",
 		"DownloadingTerrainScreenMixin",

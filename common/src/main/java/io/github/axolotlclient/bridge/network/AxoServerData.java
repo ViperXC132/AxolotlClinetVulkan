@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -20,14 +20,14 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.bridge.events.types;
+package io.github.axolotlclient.bridge.network;
 
-import io.github.axolotlclient.bridge.scores.AxoObjective;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import io.github.axolotlclient.bridge.internal.BridgeUtil;
+import io.github.axolotlclient.bridge.internal.RequiresImpl;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
-public class ScoreboardRenderEvent extends CancellableEvent {
-	private final AxoObjective objective;
+public interface AxoServerData {
+	@RequiresImpl
+	default String br$getIp() {
+		throw BridgeUtil.noImpl();
+	}
 }

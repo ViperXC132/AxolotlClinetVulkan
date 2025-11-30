@@ -39,7 +39,7 @@
 		"axolotlclient.e4mc.mixins.json"
 	],
 	"custom": {
-		"axolotlclient:bridge_impl_version": "V1_21_10",
+		"axolotlclient:bridge_impl_version": "V1_21_11",
 		"loom:injected_interfaces": {
 			"net/minecraft/class_2960": [
 				"io/github/axolotlclient/bridge/util/AxoIdentifier"
@@ -78,7 +78,7 @@
 				"io/github/axolotlclient/bridge/key/AxoKeybinding"
 			],
 			"net/minecraft/class_315": [
-				"io/github/axolotlclient/bridge/key/AxoClientKeybinds"
+				"io/github/axolotlclient/bridge/AxoGameOptions"
 			],
 			"net/minecraft/class_3675\u0024class_306": [
 				"io/github/axolotlclient/bridge/key/AxoKey"
@@ -124,6 +124,9 @@
 			],
 			"net/minecraft/class_3695": [
 				"io/github/axolotlclient/bridge/util/AxoProfiler"
+			],
+			"net/minecraft/class_642": [
+				"io/github/axolotlclient/bridge/network/AxoServerData"
 			]
 		}
 	},

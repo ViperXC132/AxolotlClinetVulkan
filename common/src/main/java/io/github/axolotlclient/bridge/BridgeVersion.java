@@ -31,7 +31,7 @@ public enum BridgeVersion {
 	V1_16_COMBAT("1.16_combat-6"),
 	V1_20("1.20"),
 	V1_21("1.21"),
-	V1_21_10("1.21.10");
+	V1_21_11("1.21.11");
 
 	private final String name;
 

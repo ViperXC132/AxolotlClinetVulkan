@@ -27,7 +27,6 @@ import java.util.concurrent.CompletableFuture;
 
 import io.github.axolotlclient.util.OSUtil;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.MultiLineLabel;
 import net.minecraft.client.gui.components.MultiLineTextWidget;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.layouts.FrameLayout;
@@ -56,21 +55,21 @@ public class PrivacyNoticeScreen extends Screen {
 		layout.defaultCellSetting().alignHorizontallyCenter();
 		layout.addChild(new StringWidget(getTitle(), getFont()));
 		layout.addChild(new MultiLineTextWidget(Component.translatable("api.privacyNotice.description"), getFont()))
-			.setCentered(true).setMaxWidth(width-50);
+			.setCentered(true).setMaxWidth(width - 50);
 		var buttons = layout.addChild(LinearLayout.horizontal()).spacing(4);
 		buttons.addChild(Button.builder(Component.translatable("api.privacyNotice.accept"), buttonWidget -> {
-				minecraft.setScreen(parent);
-				APIOptions.getInstance().privacyAccepted.set(Options.PrivacyPolicyState.ACCEPTED);
-				accepted.complete(true);
-			}).width(100).build());
+			minecraft.setScreen(parent);
+			APIOptions.getInstance().privacyAccepted.set(Options.PrivacyPolicyState.ACCEPTED);
+			accepted.complete(true);
+		}).width(100).build());
 		buttons.addChild(Button.builder(Component.translatable("api.privacyNotice.deny"), buttonWidget -> {
-				minecraft.setScreen(parent);
-				APIOptions.getInstance().enabled.set(false);
-				APIOptions.getInstance().privacyAccepted.set(Options.PrivacyPolicyState.DENIED);
-				accepted.complete(false);
-			}).width(100).build());
+			minecraft.setScreen(parent);
+			APIOptions.getInstance().enabled.set(false);
+			APIOptions.getInstance().privacyAccepted.set(Options.PrivacyPolicyState.DENIED);
+			accepted.complete(false);
+		}).width(100).build());
 		buttons.addChild(Button.builder(Component.translatable("api.privacyNotice.openPolicy"),
-				buttonWidget -> OSUtil.getOS().open(TERMS_URI)).width(100).build());
+			buttonWidget -> OSUtil.getOS().open(TERMS_URI)).width(100).build());
 		frame.arrangeElements();
 		frame.visitWidgets(this::addRenderableWidget);
 	}
