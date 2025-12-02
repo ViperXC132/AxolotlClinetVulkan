@@ -145,6 +145,18 @@ public abstract class InGameHudMixin {
 		graphics.getMatrices().pop();
 	}
 
+	@WrapMethod(method = "renderExperienceLevel")
+	public void axolotlclient$customHotbar$xpLevel(GuiGraphics graphics, DeltaTracker tracker, Operation<Void> original) {
+		HotbarHUD hud = (HotbarHUD) HudManager.getInstance().get(HotbarHUD.ID);
+		graphics.getMatrices().push();
+		if (hud.isEnabled() && !hud.isHidden()) {
+			graphics.getMatrices().translate(-graphics.getScaledWindowWidth() / 2f, -graphics.getScaledWindowHeight() + 22, 0);
+			graphics.getMatrices().translate(hud.getX() + hud.getWidth() / 2f, hud.getY(), 0);
+		}
+		original.call(graphics, tracker);
+		graphics.getMatrices().pop();
+	}
+
 	@Inject(
 		method = "renderHealthBar",
 		at = @At(

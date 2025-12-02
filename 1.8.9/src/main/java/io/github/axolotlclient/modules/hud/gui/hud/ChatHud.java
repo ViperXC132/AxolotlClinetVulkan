@@ -135,7 +135,7 @@ public class ChatHud extends TextHudEntry {
 									if (!isChatFocused()) {
 										bg = bg.withAlpha((int) (bg.getAlpha() * d));
 									}
-									context.br$fillRect(pos.x, y - (9 + lineSpacing.get()), pos.x + l + 4, y,
+									context.br$fillRect(pos.x, y - (9 + lineSpacing.get()), l + 4, 9 + lineSpacing.get(),
 										bg.toInt());
 								}
 								String string = chatHudLine.getText().getFormattedString();
