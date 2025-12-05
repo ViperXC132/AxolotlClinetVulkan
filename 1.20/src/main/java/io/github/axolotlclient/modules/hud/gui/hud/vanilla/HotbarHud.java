@@ -27,8 +27,12 @@ import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import net.minecraft.client.MinecraftClient;
@@ -39,15 +43,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
 
-public class HotbarHUD extends TextHudEntry {
+public class HotbarHud extends TextHudEntry implements DynamicallyPositionable {
 
 	public static final Identifier ID = new Identifier("axolotlclient", "hotbarhud");
 	private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
 	public static final Identifier ICONS_TEXTURE = new Identifier("textures/gui/icons.png");
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
 
 	private final MinecraftClient client = (MinecraftClient) super.client;
 
-	public HotbarHUD() {
+	public HotbarHud() {
 		super(182, 22, false);
 		supportsScaling = false;
 	}
@@ -64,7 +69,7 @@ public class HotbarHUD extends TextHudEntry {
 			DrawPosition pos = getPos();
 			int i = pos.x() + getWidth() / 2;
 			graphics.br$pushMatrix();
-			graphics.br$translateMatrix(0.0F, 0.0F, -90.0F);
+			((GuiGraphics) graphics).getMatrices().translate(0.0F, 0.0F, -90.0F);
 			((GuiGraphics) graphics).drawTexture(WIDGETS_TEXTURE, i - 91, pos.y(), 0, 0, 182, 22);
 			((GuiGraphics) graphics).drawTexture(WIDGETS_TEXTURE, i - 91 - 1 + playerEntity.getInventory().selectedSlot * 20, pos.y() - 1, 0, 22, 24, 22);
 			if (!itemStack.isEmpty()) {
@@ -120,9 +125,9 @@ public class HotbarHUD extends TextHudEntry {
 			if (f > 0.0F) {
 				float g = 1.0F + f / 5.0F;
 				graphics.br$pushMatrix();
-				graphics.br$translateMatrix((float) (x + 8), (float) (y + 12), 0.0F);
+				graphics.br$translateMatrix((float) (x + 8), (float) (y + 12));
 				graphics.br$scaleMatrix(1.0F / g, (g + 1.0F) / 2.0F);
-				graphics.br$translateMatrix((float) (-(x + 8)), (float) (-(y + 12)), 0.0F);
+				graphics.br$translateMatrix((float) (-(x + 8)), (float) (-(y + 12)));
 			}
 
 			((GuiGraphics) graphics).drawItem(player, stack, x, y, seed);
@@ -157,6 +162,12 @@ public class HotbarHUD extends TextHudEntry {
 		List<Option<?>> list = new ArrayList<>();
 		list.add(enabled);
 		list.add(hide);
+		list.add(anchor);
 		return list;
+	}
+
+	@Override
+	public AnchorPoint getAnchor() {
+		return anchor.get();
 	}
 }

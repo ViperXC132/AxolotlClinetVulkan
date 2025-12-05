@@ -28,8 +28,12 @@ import java.util.List;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.ItemUtil;
@@ -37,14 +41,15 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.resource.Identifier;
 
-public class HotbarHUD extends TextHudEntry {
+public class HotbarHud extends TextHudEntry implements DynamicallyPositionable {
 
 	public static final Identifier ID = new Identifier("axolotlclient", "hotbarhud");
 	private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
 
 	private final Minecraft client = (Minecraft) super.client;
 
-	public HotbarHUD() {
+	public HotbarHud() {
 		super(182, 22, false);
 		supportsScaling = false;
 	}
@@ -68,7 +73,7 @@ public class HotbarHUD extends TextHudEntry {
 		this.client.getTextureManager().bind(WIDGETS_TEXTURE);
 
 		context.br$pushMatrix();
-		context.br$translateMatrix(0, 0, -90);
+		GlStateManager.translatef(0, 0, -90);
 		DrawUtil.drawTexture(pos.x, pos.y, 0, 0, 182, 22, 256, 256);
 		DrawUtil.drawTexture(pos.x - 1 + playerEntity.inventory.selectedSlot * 20, pos.y - 1, 0, 22, 24, 22, 256, 256);
 		context.br$pushMatrix();
@@ -116,6 +121,12 @@ public class HotbarHUD extends TextHudEntry {
 		list.add(enabled);
 		list.add(hide);
 		list.add(shadow);
+		list.add(anchor);
 		return list;
+	}
+
+	@Override
+	public AnchorPoint getAnchor() {
+		return anchor.get();
 	}
 }

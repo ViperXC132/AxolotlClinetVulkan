@@ -96,7 +96,7 @@ public class MouseMovementHud extends BoxHudEntry {
 
 		context.br$drawTexture(spaceX + (getContentWidth() / 2) - 7 / 2 - 1, spaceY + getContentHeight() / 2 - (7 / 2), 7, 7, Platform.createTexture(mouseMovementIndicatorInner));
 		// Woah KodeToad, good use of translate
-		context.br$translateMatrix(calculatedMouseX, calculatedMouseY, 0);
+		context.br$translateMatrix(calculatedMouseX, calculatedMouseY);
 		context.br$drawTexture(spaceX + (getContentWidth() / 2) - 1, spaceY + getContentHeight() / 2, 11, 11, Platform.createTexture(mouseMovementIndicatorOuter));
 	}
 

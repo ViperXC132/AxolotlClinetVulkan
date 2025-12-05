@@ -60,10 +60,16 @@ public class IconHud extends BoxHudEntry {
 
 	@Override
 	public void renderComponent(AxoRenderContext ctx, float delta) {
+		ctx.br$pushMatrix();
 		ctx.br$glColor4(1, 1, 1, 1);
 		ctx.br$glEnableBlend();
-		ctx.br$drawTexture(getX(), getY(), width, height, AxoSprites.BADGE);
+		float scale = getScale();
+		ctx.br$scaleMatrix(1/scale, 1/scale);
+		ctx.br$translateMatrix(getTrueX(), getTrueY());
+		ctx.br$scaleMatrix(scale, scale);
+		ctx.br$drawTexture(0, 0, 16, 16, AxoSprites.BADGE);
 		ctx.br$glDisableBlend();
+		ctx.br$popMatrix();
 	}
 
 	@Override

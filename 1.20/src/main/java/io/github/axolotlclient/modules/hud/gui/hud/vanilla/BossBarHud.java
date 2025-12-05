@@ -31,6 +31,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.bridge.render.AxoWindow;
 import io.github.axolotlclient.mixin.BossBarHudAccessor;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
@@ -85,7 +86,7 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 		DrawPosition scaledPos = getContentPos();
 		int by = 12;
 		for (ClientBossBar bossBar : bossBars.values()) {
-			renderBossBar((GuiGraphics) graphics, scaledPos.x(), by + scaledPos.y(), bossBar);
+			renderBossBar((GuiGraphics) graphics, scaledPos.x()+1, by + scaledPos.y(), bossBar);
 			by = by + 19;
 			if (by > getContentHeight()) {
 				break;
@@ -102,7 +103,7 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 				return;
 			}
 			// Update height
-			setContentHeight(12 + prevLength * 19);
+			setContentHeight(Math.min(12 + prevLength * 19, (int) AxoWindow.getWindow().br$getScaledHeight() / 3));
 			onBoundsUpdate();
 		}
 	}
@@ -135,8 +136,8 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
 		DrawPosition pos = getContentPos();
-		renderBossBar((GuiGraphics) graphics, pos.x(), pos.y() + 12, placeholder);
-		renderBossBar((GuiGraphics) graphics, pos.x(), pos.y() + 31, placeholder2);
+		renderBossBar((GuiGraphics) graphics, pos.x()+1, pos.y() + 12, placeholder);
+		renderBossBar((GuiGraphics) graphics, pos.x()+1, pos.y() + 31, placeholder2);
 	}
 
 	@Override
@@ -156,7 +157,12 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 
 	@Override
 	public AnchorPoint getAnchor() {
-		return (anchor.get());
+		return anchor.get();
+	}
+
+	@Override
+	public double getDefaultX() {
+		return 0.5;
 	}
 
 	public static class CustomBossBar extends BossBar {

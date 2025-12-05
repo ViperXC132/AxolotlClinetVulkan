@@ -121,6 +121,11 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 		return anchor.get();
 	}
 
+	@Override
+	public double getDefaultX() {
+		return 0.5;
+	}
+
 	@RequiredArgsConstructor
 	public class CustomBossBar extends GuiElement {
 

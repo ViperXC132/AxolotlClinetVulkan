@@ -39,6 +39,7 @@ import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.ItemUtil;
@@ -69,8 +70,7 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 	private final EnumOption<MainHandItemPosition> mainHandItemPosition = new EnumOption<>("armorhud" +
 		".main_hand_item_position", MainHandItemPosition.class, MainHandItemPosition.BOTTOM);
 
-	private final EnumOption<AnchorPoint> anchor = new EnumOption<>("anchorpoint", AnchorPoint.class,
-		AnchorPoint.TOP_RIGHT);
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(AnchorPoint.TOP_RIGHT);
 
 	public ArmorHud() {
 		super(20, 100, true);

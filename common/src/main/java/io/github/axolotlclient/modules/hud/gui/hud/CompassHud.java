@@ -142,7 +142,7 @@ public class CompassHud extends TextHudEntry implements DynamicallyPositionable 
 			shift = dist - shift;
 		}
 		context.br$pushMatrix();
-		context.br$translateMatrix(shift, 0, 0);
+		context.br$translateMatrix(shift, 0);
 		for (int i = 0; i < amount; i++) {
 			int d;
 			if (invert.get()) {

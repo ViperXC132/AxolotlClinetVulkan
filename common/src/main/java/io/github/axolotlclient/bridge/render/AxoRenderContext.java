@@ -49,7 +49,7 @@ public interface AxoRenderContext {
 	}
 
 	@RequiresImpl
-	default void br$translateMatrix(float x, float y, float z) {
+	default void br$translateMatrix(float x, float y) {
 		throw BridgeUtil.noImpl();
 	}
 

@@ -30,9 +30,13 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
@@ -42,17 +46,18 @@ import net.minecraft.client.resource.pack.ResourcePack;
 import net.minecraft.resource.Identifier;
 import net.ornithemc.osl.resource.loader.api.ModResourcePack;
 
-public class PackDisplayHud extends TextHudEntry {
+public class PackDisplayHud extends TextHudEntry implements DynamicallyPositionable {
 
 	public static final Identifier ID = new Identifier("axolotlclient", "packdisplayhud");
 
 	private final List<PackWidget> widgets = new ArrayList<>();
 	private final List<ResourcePack> packs = new ArrayList<>();
 	private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
 	private PackWidget placeholder;
 
 	public PackDisplayHud() {
-		super(200, 50, true);
+		super(120, 18, true);
 	}
 
 	public void setPacks(List<ResourcePack> packs) {
@@ -68,13 +73,13 @@ public class PackDisplayHud extends TextHudEntry {
 		if (widgets.isEmpty())
 			init();
 
-		int y = pos.y + 1;
+		int y = pos.y() + 1;
 		for (int i = widgets.size() - 1; i >= 0; i--) { // Badly reverse the order (I'm sure there are better ways to do this)
 			widgets.get(i).render(pos.x + 1, y);
 			y += 18;
 		}
-		if (y - pos.y + 1 != getContentHeight()) {
-			setContentHeight(y - pos.y - 1);
+		if (y - pos.y() + 1 != getContentHeight()) {
+			setContentHeight(y - pos.y() + 1);
 			onBoundsUpdate();
 		}
 	}
@@ -133,12 +138,18 @@ public class PackDisplayHud extends TextHudEntry {
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
 		options.add(iconsOnly);
+		options.add(anchor);
 		return options;
 	}
 
 	@Override
 	public Identifier getId() {
 		return ID;
+	}
+
+	@Override
+	public AnchorPoint getAnchor() {
+		return anchor.get();
 	}
 
 	private class PackWidget {
@@ -163,7 +174,7 @@ public class PackDisplayHud extends TextHudEntry {
 				GlStateManager.bindTexture(texture);
 				GuiElement.drawTexture(x, y, 0, 0, 16, 16, 16, 16);
 			}
-			AxoRenderContextImpl.getInstance().br$drawString(name, x + 18, y + 6, textColor.get().toInt(), shadow.get());
+			AxoRenderContextImpl.getInstance().br$drawString(name, x + 18, y + 16 / 2 - 9 / 2, textColor.get().toInt(), shadow.get());
 		}
 	}
 }

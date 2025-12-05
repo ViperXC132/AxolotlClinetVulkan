@@ -36,6 +36,7 @@ import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 
 /**
@@ -50,8 +51,7 @@ public class IPHud extends TextHudEntry implements DynamicallyPositionable {
 	private final BooleanOption showIcon = new BooleanOption("iphud.show_icon", false);
 	private AxoSprite.Dynamic sprite;
 	private final IntegerOption height = new IntegerOption("hud.height", 13, 9, 64);
-	private final EnumOption<AnchorPoint> anchor = new EnumOption<>("anchorpoint", AnchorPoint.class,
-		AnchorPoint.TOP_LEFT);
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
 
 	public IPHud() {
 		super(115, 13, true);

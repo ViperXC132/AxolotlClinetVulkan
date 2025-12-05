@@ -102,7 +102,7 @@ public abstract class InGameHudMixin {
 
 	@Inject(method = "renderHotbar", at = @At("HEAD"), cancellable = true)
 	public void axolotlclient$customHotbar(Window window, float tickDelta, CallbackInfo ci) {
-		HotbarHUD hud = (HotbarHUD) HudManager.getInstance().get(HotbarHUD.ID);
+		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
 		if (HudManager.getInstance().hudsEnabled() && hud.isEnabled()) {
 			ci.cancel();
 		}
@@ -110,7 +110,7 @@ public abstract class InGameHudMixin {
 
 	@ModifyArgs(method = "renderMainHandMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/TextRenderer;drawWithShadow(Ljava/lang/String;FFI)I"))
 	public void axolotlclient$setItemNamePos(Args args) {
-		HotbarHUD hud = (HotbarHUD) HudManager.getInstance().get(HotbarHUD.ID);
+		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
 		if (HudManager.getInstance().hudsEnabled() && hud.isEnabled()) {
 			args.set(1, ((Integer) hud.getX()).floatValue() + (hud.getWidth() * hud.getScale()
 				- Minecraft.getInstance().textRenderer.getWidth(args.get(0))) / 2);
@@ -121,7 +121,7 @@ public abstract class InGameHudMixin {
 
 	@ModifyArgs(method = "renderJumpBar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GameGui;drawTexture(IIIIII)V"))
 	public void axolotlclient$moveHorseHealth(Args args) {
-		HotbarHUD hud = (HotbarHUD) HudManager.getInstance().get(HotbarHUD.ID);
+		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
 		if (HudManager.getInstance().hudsEnabled() && hud.isEnabled()) {
 			args.set(0, hud.getX());
 			args.set(1, hud.getY() - 7);
@@ -130,7 +130,7 @@ public abstract class InGameHudMixin {
 
 	@ModifyArgs(method = "renderXpBar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GameGui;drawTexture(IIIIII)V"))
 	public void axolotlclient$moveXPBar(Args args) {
-		HotbarHUD hud = (HotbarHUD) HudManager.getInstance().get(HotbarHUD.ID);
+		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
 		if (HudManager.getInstance().hudsEnabled() && hud.isEnabled()) {
 			args.set(0, hud.getX());
 			args.set(1, hud.getY() - 7);
@@ -139,7 +139,7 @@ public abstract class InGameHudMixin {
 
 	@Redirect(method = "renderXpBar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Window;getHeight()I", ordinal = 1))
 	public int axolotlclient$moveXPBarHeight(Window instance) {
-		HotbarHUD hud = (HotbarHUD) HudManager.getInstance().get(HotbarHUD.ID);
+		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
 		if (HudManager.getInstance().hudsEnabled() && hud.isEnabled()) {
 			return hud.getY() + 22;
 		}
@@ -148,7 +148,7 @@ public abstract class InGameHudMixin {
 
 	@Redirect(method = "renderXpBar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Window;getWidth()I"))
 	public int axolotlclient$moveXPBarWidth(Window instance) {
-		HotbarHUD hud = (HotbarHUD) HudManager.getInstance().get(HotbarHUD.ID);
+		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
 		if (HudManager.getInstance().hudsEnabled() && hud.isEnabled()) {
 			return hud.getX() * 2 + hud.getWidth();
 		}
@@ -157,7 +157,7 @@ public abstract class InGameHudMixin {
 
 	@Redirect(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Window;getHeight()I"))
 	public int axolotlclient$moveStatusBarsHeight(Window instance) {
-		HotbarHUD hud = (HotbarHUD) HudManager.getInstance().get(HotbarHUD.ID);
+		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
 		if (HudManager.getInstance().hudsEnabled() && hud.isEnabled()) {
 			return hud.getY() + 22;
 		}
@@ -166,7 +166,7 @@ public abstract class InGameHudMixin {
 
 	@Redirect(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Window;getWidth()I"))
 	public int axolotlclient$moveStatusBarsWidth(Window instance) {
-		HotbarHUD hud = (HotbarHUD) HudManager.getInstance().get(HotbarHUD.ID);
+		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
 		if (HudManager.getInstance().hudsEnabled() && hud.isEnabled()) {
 			return hud.getX() * 2 + hud.getWidth();
 		}

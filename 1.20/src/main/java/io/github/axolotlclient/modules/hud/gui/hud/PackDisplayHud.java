@@ -32,8 +32,12 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.texture.NativeImage;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
@@ -46,15 +50,16 @@ import net.minecraft.util.Identifier;
 
 import static io.github.axolotlclient.modules.hud.util.DrawUtil.*;
 
-public class PackDisplayHud extends TextHudEntry {
+public class PackDisplayHud extends TextHudEntry implements DynamicallyPositionable {
 
 	public static final Identifier ID = new Identifier("axolotlclient", "packdisplayhud");
 	public final List<PackWidget> widgets = new ArrayList<>();
 	private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
 	private PackWidget placeholder;
 
 	public PackDisplayHud() {
-		super(200, 50, true);
+		super(120, 18, true);
 	}
 
 	@Override
@@ -77,7 +82,7 @@ public class PackDisplayHud extends TextHudEntry {
 			y += 18;
 		}
 		if (y - pos.y() + 1 != getContentHeight()) {
-			setContentHeight(y - pos.y() - 1);
+			setContentHeight(y - pos.y() + 1);
 			onBoundsUpdate();
 		}
 	}
@@ -150,12 +155,18 @@ public class PackDisplayHud extends TextHudEntry {
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
 		options.add(iconsOnly);
+		options.add(anchor);
 		return options;
 	}
 
 	@Override
 	public Identifier getId() {
 		return ID;
+	}
+
+	@Override
+	public AnchorPoint getAnchor() {
+		return anchor.get();
 	}
 
 	public void update() {
@@ -179,7 +190,7 @@ public class PackDisplayHud extends TextHudEntry {
 				RenderSystem.setShaderColor(1, 1, 1, 1F);
 				graphics.drawTexture(texture, x, y, 0, 0, 16, 16, 16, 16);
 			}
-			drawString(graphics, name, x + 18, y + 6, textColor.get().toInt(), shadow.get());
+			drawString(graphics, name, x + 18, y + 16 / 2f - 9 / 2f, textColor.get().toInt(), shadow.get());
 		}
 	}
 }

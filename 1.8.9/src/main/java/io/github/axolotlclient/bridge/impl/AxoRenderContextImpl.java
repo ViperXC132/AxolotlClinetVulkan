@@ -64,8 +64,8 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 	}
 
 	@Override
-	public void br$translateMatrix(float x, float y, float z) {
-		GlStateManager.translatef(x, y, z);
+	public void br$translateMatrix(float x, float y) {
+		GlStateManager.translatef(x, y, 0);
 	}
 
 	@Override

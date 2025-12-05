@@ -63,6 +63,7 @@ public abstract class BoxHudEntry extends AbstractHudEntry {
 	private Rectangle contentBounds = new Rectangle(0, 0, 0, 0);
 	@Getter
 	private DrawPosition contentPos = new DrawPosition(0, 0);
+	@Getter
 	private final int initialContentWidth, initialContentHeight;
 
 	public BoxHudEntry(int width, int height, boolean backgroundAllowed) {

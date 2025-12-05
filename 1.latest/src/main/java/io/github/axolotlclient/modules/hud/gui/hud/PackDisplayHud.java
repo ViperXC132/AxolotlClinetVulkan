@@ -31,8 +31,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import com.mojang.blaze3d.platform.NativeImage;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import lombok.Getter;
@@ -49,16 +53,17 @@ import org.jetbrains.annotations.NotNull;
 
 import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawString;
 
-public class PackDisplayHud extends TextHudEntry {
+public class PackDisplayHud extends TextHudEntry implements DynamicallyPositionable {
 
 	public static final Identifier ID = Identifier.fromNamespaceAndPath("axolotlclient", "packdisplayhud");
 	public final List<PackWidget> widgets = new ArrayList<>();
 	private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
-	private PackWidget placeholder;
 	private final Minecraft client = (Minecraft) super.client;
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
+	private PackWidget placeholder;
 
 	public PackDisplayHud() {
-		super(200, 50, true);
+		super(120, 18, true);
 	}
 
 	@Override
@@ -82,7 +87,7 @@ public class PackDisplayHud extends TextHudEntry {
 			y += 18;
 		}
 		if (y - pos.y() + 1 != getContentHeight()) {
-			setContentHeight(y - pos.y() - 1);
+			setContentHeight(y - pos.y() + 1);
 			onBoundsUpdate();
 		}
 	}
@@ -155,6 +160,7 @@ public class PackDisplayHud extends TextHudEntry {
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
 		options.add(iconsOnly);
+		options.add(anchor);
 		return options;
 	}
 
@@ -166,6 +172,11 @@ public class PackDisplayHud extends TextHudEntry {
 	public void update() {
 		widgets.clear();
 		init();
+	}
+
+	@Override
+	public AnchorPoint getAnchor() {
+		return anchor.get();
 	}
 
 	public class PackWidget {
@@ -183,7 +194,7 @@ public class PackDisplayHud extends TextHudEntry {
 			if (!iconsOnly.get()) {
 				graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, 0, 0, 16, 16, 16, 16);
 			}
-			drawString(graphics, name, x + 18, y + 6, textColor.get().toInt(), shadow.get());
+			drawString(graphics, name, x + 18, y + 16 / 2 - 9 / 2, textColor.get().toInt(), shadow.get());
 		}
 	}
 }

@@ -37,7 +37,7 @@ import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.PotionsHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ActionBarHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.CrosshairHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.HotbarHUD;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.HotbarHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ScoreboardHud;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import net.minecraft.client.MinecraftClient;
@@ -135,7 +135,7 @@ public abstract class InGameHudMixin {
 
 	@WrapMethod(method = "renderHotbar")
 	public void axolotlclient$customHotbar(GuiGraphics graphics, DeltaTracker tracker, Operation<Void> original) {
-		HotbarHUD hud = (HotbarHUD) HudManager.getInstance().get(HotbarHUD.ID);
+		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
 		graphics.getMatrices().push();
 		if (hud.isEnabled() && !hud.isHidden()) {
 			graphics.getMatrices().translate(-graphics.getScaledWindowWidth() / 2f + 182 / 2f, -graphics.getScaledWindowHeight() + 22, 0);
@@ -147,7 +147,7 @@ public abstract class InGameHudMixin {
 
 	@WrapMethod(method = "renderExperienceLevel")
 	public void axolotlclient$customHotbar$xpLevel(GuiGraphics graphics, DeltaTracker tracker, Operation<Void> original) {
-		HotbarHUD hud = (HotbarHUD) HudManager.getInstance().get(HotbarHUD.ID);
+		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
 		graphics.getMatrices().push();
 		if (hud.isEnabled() && !hud.isHidden()) {
 			graphics.getMatrices().translate(-graphics.getScaledWindowWidth() / 2f, -graphics.getScaledWindowHeight() + 22, 0);
