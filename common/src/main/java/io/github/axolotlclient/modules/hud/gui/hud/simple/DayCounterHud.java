@@ -31,14 +31,14 @@ public class DayCounterHud extends SimpleTextHudEntry {
 	public static final AxoIdentifier ID = AxoIdentifier.of("axolotlclient", "daycounterhud");
 
 	@Override
-	public String getPlaceholder() {
+	public String getPlaceholderValue() {
 		return AxoI18n.translate("daycounterhud.days", 35);
 	}
 
 	@Override
 	public String getValue() {
 		if (client.br$getWorld() == null) {
-			return getPlaceholder();
+			return getPlaceholderValue();
 		}
 
 		return AxoI18n.translate("daycounterhud.days", client.br$getWorld().br$getTimeOfDay() / 24000);

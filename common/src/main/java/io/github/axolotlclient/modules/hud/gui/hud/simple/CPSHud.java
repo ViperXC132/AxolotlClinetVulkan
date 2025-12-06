@@ -44,6 +44,10 @@ public class CPSHud extends SimpleTextHudEntry {
 	private final BooleanOption fromKeybindings = new BooleanOption("cpskeybind", false);
 	private final BooleanOption rmb = new BooleanOption("rightcps", false);
 
+	public CPSHud() {
+		super(true);
+	}
+
 	@Override
 	public AxoIdentifier getId() {
 		return ID;
@@ -59,9 +63,9 @@ public class CPSHud extends SimpleTextHudEntry {
 
 	private String render(int left, int right) {
 		if (rmb.get()) {
-			return left + " | " + right + " CPS";
+			return left + " | " + right;
 		} else {
-			return left + " CPS";
+			return String.valueOf(left);
 		}
 	}
 
@@ -73,8 +77,14 @@ public class CPSHud extends SimpleTextHudEntry {
 			render(tracker.leftMouse.clicks(), tracker.rightMouse.clicks());
 	}
 
+
 	@Override
-	public String getPlaceholder() {
+	public String getPlaceholderValue() {
 		return render(0, 0);
+	}
+
+	@Override
+	public String getLabel() {
+		return "CPS";
 	}
 }

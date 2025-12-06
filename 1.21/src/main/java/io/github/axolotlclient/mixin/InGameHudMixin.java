@@ -139,7 +139,7 @@ public abstract class InGameHudMixin {
 		graphics.getMatrices().push();
 		if (hud.isEnabled() && !hud.isHidden()) {
 			graphics.getMatrices().translate(-graphics.getScaledWindowWidth() / 2f + 182 / 2f, -graphics.getScaledWindowHeight() + 22, 0);
-			graphics.getMatrices().translate(hud.getX(), hud.getY(), 0);
+			graphics.getMatrices().translate(hud.getRawTrueX(), hud.getRawTrueY(), 0);
 		}
 		original.call(graphics, tracker);
 		graphics.getMatrices().pop();
@@ -151,7 +151,7 @@ public abstract class InGameHudMixin {
 		graphics.getMatrices().push();
 		if (hud.isEnabled() && !hud.isHidden()) {
 			graphics.getMatrices().translate(-graphics.getScaledWindowWidth() / 2f, -graphics.getScaledWindowHeight() + 22, 0);
-			graphics.getMatrices().translate(hud.getX() + hud.getWidth() / 2f, hud.getY(), 0);
+			graphics.getMatrices().translate(hud.getRawTrueX() + hud.getWidth() / 2f, hud.getRawTrueY(), 0);
 		}
 		original.call(graphics, tracker);
 		graphics.getMatrices().pop();
@@ -164,6 +164,7 @@ public abstract class InGameHudMixin {
 			target = "Lnet/minecraft/util/math/MathHelper;ceil(D)I")
 	)
 	public void axolotlclient$displayHardcoreHearts(GuiGraphics graphics, PlayerEntity player, int x, int y, int lines, int regeneratingHeartIndex, float maxHealth, int lastHealth, int health, int absorption, boolean blinking, CallbackInfo ci, @Local(ordinal = 1) LocalBooleanRef hardcore) {
+		//noinspection OptionalGetWithoutIsPresent
 		if (BedwarsMod.getInstance().isEnabled() &&
 			BedwarsMod.getInstance().inGame() && BedwarsMod.getInstance().hardcoreHearts.get() &&
 			!BedwarsMod.getInstance().getGame().get().getSelf().isBed()) {

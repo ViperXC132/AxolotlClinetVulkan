@@ -51,7 +51,7 @@ public class IPHud extends TextHudEntry implements DynamicallyPositionable {
 	private final BooleanOption showIcon = new BooleanOption("iphud.show_icon", false);
 	private AxoSprite.Dynamic sprite;
 	private final IntegerOption height = new IntegerOption("hud.height", 13, 9, 64);
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 
 	public IPHud() {
 		super(115, 13, true);

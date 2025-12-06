@@ -870,5 +870,10 @@
 	"hud.background_padding": "Marge intérieure de l'arrière-plan",
 	"hide_chat": "Masquer le chat",
 	"toggle_hide_chat": "Basculer la visibilité du chat",
-	"api.context_menu": "Menu contextuel"
+	"api.context_menu": "Menu contextuel",
+	"simple_text_hud.order": "Ordre du contents",
+	"simple_text_hud.separator": "Séparateur",
+	"simple_text_hud.order.value_description": "Valeur - Description",
+	"simple_text_hud.order.description_value": "Description - Valeur",
+	"simple_text_hud.order.value_only": "Value only"
 }

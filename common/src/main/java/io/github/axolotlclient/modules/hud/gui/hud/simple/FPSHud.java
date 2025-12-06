@@ -38,7 +38,7 @@ public class FPSHud extends SimpleTextHudEntry {
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "fpshud");
 
 	public FPSHud() {
-		super();
+		super(true);
 	}
 
 	@Override
@@ -48,11 +48,16 @@ public class FPSHud extends SimpleTextHudEntry {
 
 	@Override
 	public String getValue() {
-		return AxoMinecraftClient.getCurrentFps() + " FPS";
+		return String.valueOf(AxoMinecraftClient.getCurrentFps());
 	}
 
 	@Override
-	public String getPlaceholder() {
-		return "60 FPS";
+	public String getPlaceholderValue() {
+		return "60";
+	}
+
+	@Override
+	public String getLabel() {
+		return "FPS";
 	}
 }

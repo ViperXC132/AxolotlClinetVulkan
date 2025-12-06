@@ -46,6 +46,7 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.resource.ResourceIoSupplier;
 import net.minecraft.resource.pack.ResourcePack;
 import net.minecraft.text.Text;
+import net.minecraft.text.component.TranslatableComponent;
 import net.minecraft.util.Identifier;
 
 import static io.github.axolotlclient.modules.hud.util.DrawUtil.*;
@@ -55,7 +56,7 @@ public class PackDisplayHud extends TextHudEntry implements DynamicallyPositiona
 	public static final Identifier ID = new Identifier("axolotlclient", "packdisplayhud");
 	public final List<PackWidget> widgets = new ArrayList<>();
 	private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 	private PackWidget placeholder;
 
 	public PackDisplayHud() {
@@ -79,18 +80,22 @@ public class PackDisplayHud extends TextHudEntry implements DynamicallyPositiona
 		int y = pos.y() + 1;
 		for (int i = widgets.size() - 1; i >= 0; i--) { // Badly reverse the order (I'm sure there are better ways to do this)
 			widgets.get(i).render((GuiGraphics) graphics, pos.x() + 1, y);
-			y += 18;
+			y += 17;
 		}
-		if (y - pos.y() + 1 != getContentHeight()) {
-			setContentHeight(y - pos.y() + 1);
+		if (y - pos.y() != getContentHeight()) {
+			setContentHeight(y - pos.y());
 			onBoundsUpdate();
 		}
 	}
 
 	@Override
 	public void init() {
-		int listSize = MinecraftClient.getInstance().getResourcePackManager().getProfiles().size();
-		MinecraftClient.getInstance().getResourcePackManager().getEnabledProfiles().forEach(profile -> {
+		var selected = MinecraftClient.getInstance().getResourcePackManager().getEnabledProfiles();
+		var valid = selected.stream()
+			.filter(p -> !(p.getDisplayName().asComponent() instanceof TranslatableComponent tr && tr.getKey().matches("pack\\.name\\.fabricMods?")))
+			.toList();
+		var listSize = valid.size();
+		valid.forEach(profile -> {
 			try (ResourcePack pack = profile.createResourcePack()) {
 
 				if (listSize == 1) {
@@ -111,7 +116,7 @@ public class PackDisplayHud extends TextHudEntry implements DynamicallyPositiona
 		});
 		setContentWidth(w.get());
 
-		setContentHeight(widgets.size() * 18);
+		setContentHeight(widgets.size() * 17 + 1);
 		onBoundsUpdate();
 	}
 

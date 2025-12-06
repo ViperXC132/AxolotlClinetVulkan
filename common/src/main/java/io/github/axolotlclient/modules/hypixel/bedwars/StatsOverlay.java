@@ -142,7 +142,7 @@ public class StatsOverlay extends TextHudEntry implements DynamicallyPositionabl
 	private static final Map<String, PlayerData.Bedwars> SAMPLE_STATS = Map.of(
 		"FloweyTF", createFake(525, 3, new CombinedGameData(4234, 5634, 500, 300, 1469, 336, 230, 123)),
 		"Adaklys", createFake(179, 3, new CombinedGameData(1984, 2048, 300, 500, 834, 737, 123, 273)),
-		"steve", createFake(5, 3, new CombinedGameData(10, 1, 10, 1, 10, 1, 10, 1))
+		"steve", createFake(5, 2, new CombinedGameData(10, 1, 10, 1, 10, 1, 10, 1))
 	);
 
 	private static PlayerData.Bedwars createFake(int level, int winstreak, CombinedGameData data) {
@@ -154,7 +154,7 @@ public class StatsOverlay extends TextHudEntry implements DynamicallyPositionabl
 
 	public final static AxoIdentifier ID = AxoIdentifier.of("axolotlclient", "bedwars_stats_overlay");
 
-	protected final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
+	protected final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 
 	protected final IntegerOption padding = new IntegerOption("hud.padding", 3, 1, 10);
 	protected final IntegerOption columnMargin = new IntegerOption("hud.column_margin", 3, 0, 10);

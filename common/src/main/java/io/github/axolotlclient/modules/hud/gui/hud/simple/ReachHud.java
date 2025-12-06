@@ -51,6 +51,10 @@ public class ReachHud extends SimpleTextHudEntry {
 		return camera.dist(receiving.br$getRotation(1));
 	}
 
+	public ReachHud() {
+		super(true);
+	}
+
 	@Override
 	public void init() {
 		Events.PLAYER_ATTACK.register((attacking, receiving) -> {
@@ -69,7 +73,7 @@ public class ReachHud extends SimpleTextHudEntry {
 			}
 			DecimalFormat formatter = new DecimalFormat(format.toString());
 			formatter.setRoundingMode(RoundingMode.HALF_UP);
-			currentDist = formatter.format(distance) + " " + AxoI18n.translate("blocks");
+			currentDist = formatter.format(distance);
 			lastTime = Platform.getMeasuringTimeMs();
 		});
 	}
@@ -89,16 +93,21 @@ public class ReachHud extends SimpleTextHudEntry {
 	@Override
 	public String getValue() {
 		if (currentDist == null) {
-			return "0 " + AxoI18n.translate("blocks");
+			return "0";
 		} else if (lastTime + 2000 < Platform.getMeasuringTimeMs()) {
 			currentDist = null;
-			return "0 " + AxoI18n.translate("blocks");
+			return "0";
 		}
 		return currentDist;
 	}
 
 	@Override
-	public String getPlaceholder() {
-		return "3.45 " + AxoI18n.translate("blocks");
+	public String getPlaceholderValue() {
+		return "3.45";
+	}
+
+	@Override
+	public String getLabel() {
+		return AxoI18n.translate("blocks");
 	}
 }

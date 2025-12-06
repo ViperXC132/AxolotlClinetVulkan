@@ -40,7 +40,7 @@ import net.minecraft.resources.Identifier;
 
 public class DebugCountersHud extends TextHudEntry implements DynamicallyPositionable {
 	public static final Identifier ID = Identifier.fromNamespaceAndPath("axolotlclient", "debugcountershud");
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 	private final BooleanOption showCCount = new BooleanOption("debugcounters.ccount", true);
 	private final BooleanOption showECount = new BooleanOption("debugcounters.ecount", false);
 	private final BooleanOption showPCount = new BooleanOption("debugcounters.pcount", false);

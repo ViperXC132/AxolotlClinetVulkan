@@ -76,7 +76,7 @@ public class CustomHudEntry extends SimpleTextHudEntry {
 	}
 
 	@Override
-	public String getPlaceholder() {
+	public String getPlaceholderValue() {
 		return value.get();
 	}
 

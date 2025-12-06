@@ -120,7 +120,7 @@ public class ToggleSprintHud extends SimpleTextHudEntry {
 		if (toggleSprint.get() && sprintToggled.get()) {
 			return AxoI18n.translate("sprinting_toggled");
 		}
-		return getPlaceholder();
+		return getPlaceholderValue();
 	}
 
 	private String getRandomPlaceholder() {
@@ -149,7 +149,7 @@ public class ToggleSprintHud extends SimpleTextHudEntry {
 	}
 
 	@Override
-	public String getPlaceholder() {
+	public String getPlaceholderValue() {
 		return randomPlaceholder.get() ? getRandomPlaceholder() : placeholder.get();
 	}
 }

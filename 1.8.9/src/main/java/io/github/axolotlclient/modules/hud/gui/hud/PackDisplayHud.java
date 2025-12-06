@@ -53,7 +53,7 @@ public class PackDisplayHud extends TextHudEntry implements DynamicallyPositiona
 	private final List<PackWidget> widgets = new ArrayList<>();
 	private final List<ResourcePack> packs = new ArrayList<>();
 	private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 	private PackWidget placeholder;
 
 	public PackDisplayHud() {
@@ -63,7 +63,7 @@ public class PackDisplayHud extends TextHudEntry implements DynamicallyPositiona
 	public void setPacks(List<ResourcePack> packs) {
 		widgets.clear();
 		this.packs.clear();
-		this.packs.addAll(packs);
+		this.packs.addAll(packs.stream().filter(p -> !(p instanceof ModResourcePack)).toList());
 	}
 
 	@Override
@@ -76,10 +76,10 @@ public class PackDisplayHud extends TextHudEntry implements DynamicallyPositiona
 		int y = pos.y() + 1;
 		for (int i = widgets.size() - 1; i >= 0; i--) { // Badly reverse the order (I'm sure there are better ways to do this)
 			widgets.get(i).render(pos.x + 1, y);
-			y += 18;
+			y += 17;
 		}
-		if (y - pos.y() + 1 != getContentHeight()) {
-			setContentHeight(y - pos.y() + 1);
+		if (y - pos.y() != getContentHeight()) {
+			setContentHeight(y - pos.y());
 			onBoundsUpdate();
 		}
 	}
@@ -88,9 +88,6 @@ public class PackDisplayHud extends TextHudEntry implements DynamicallyPositiona
 	public void init() {
 		packs.forEach(pack -> {
 			try {
-				if (pack instanceof ModResourcePack) {
-					return;
-				}
 				if (pack.getIcon() != null) {
 					if (packs.size() == 1) {
 						widgets.add(new PackWidget(pack));
@@ -110,7 +107,7 @@ public class PackDisplayHud extends TextHudEntry implements DynamicallyPositiona
 		});
 		setContentWidth(w.get());
 
-		setContentHeight(widgets.size() * 18);
+		setContentHeight(widgets.size() * 17 + 1);
 		onBoundsUpdate();
 	}
 

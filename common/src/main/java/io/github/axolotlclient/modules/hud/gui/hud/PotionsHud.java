@@ -51,7 +51,7 @@ import io.github.axolotlclient.util.CommonUtil;
 public class PotionsHud extends TextHudEntry implements DynamicallyPositionable {
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "potionshud");
 
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 	private final EnumOption<CardinalOrder> order = DefaultOptions.getCardinalOrder(CardinalOrder.TOP_DOWN);
 
 	private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
@@ -71,6 +71,7 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 
 	@Override
 	public void renderComponent(AxoRenderContext graphics, float delta) {
+		assert client.br$getPlayer() != null;
 		renderEffects(graphics, client.br$getPlayer().br$getStatusEffects());
 	}
 

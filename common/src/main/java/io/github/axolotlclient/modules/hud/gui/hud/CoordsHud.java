@@ -67,7 +67,7 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 	private final StringOption separator = new StringOption("coordshud.separator", ", ");
 	private final ColorOption separatorColor = new ColorOption("coordshud.separator.color", firstColor.getDefault());
 
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(AnchorPoint.TOP_MIDDLE);
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(AnchorPoint.TOP_MIDDLE, this);
 
 	private DecimalFormat format;
 

@@ -86,7 +86,7 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 	private final BooleanOption scores = new BooleanOption("scores", true);
 	private final ColorOption scoreColor = new ColorOption("scorecolor", new Color(0xFFFF5555));
 	private final IntegerOption textAlpha = new IntegerOption("text_alpha", 255, 0, 255);
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(AnchorPoint.MIDDLE_RIGHT);
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(AnchorPoint.MIDDLE_RIGHT, this);
 
 	private final MinecraftClient client = (MinecraftClient) super.client;
 

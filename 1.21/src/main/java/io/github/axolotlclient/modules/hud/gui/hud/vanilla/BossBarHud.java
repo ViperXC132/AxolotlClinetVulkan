@@ -95,7 +95,7 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 	private final BooleanOption text = new BooleanOption("text", true);
 	private final BooleanOption bar = new BooleanOption("bar", true);
 	// TODO custom color
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 	private Map<UUID, ClientBossBar> bossBars = new HashMap<>();
 	private final MinecraftClient client = (MinecraftClient) super.client;
 

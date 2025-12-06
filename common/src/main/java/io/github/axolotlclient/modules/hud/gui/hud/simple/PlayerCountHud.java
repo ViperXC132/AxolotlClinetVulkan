@@ -37,6 +37,10 @@ public class PlayerCountHud extends SimpleTextHudEntry {
 
 	public static final AxoIdentifier ID = AxoIdentifier.of("axolotlclient", "playercounthud");
 
+	public PlayerCountHud() {
+		super(true);
+	}
+
 	@Override
 	public AxoIdentifier getId() {
 		return ID;
@@ -45,14 +49,19 @@ public class PlayerCountHud extends SimpleTextHudEntry {
 	@Override
 	public String getValue() {
 		if(client.br$getWorld() == null) {
-			return getPlaceholder();
+			return getPlaceholderValue();
 		}
 
-		return client.br$getWorld().br$getPlayers().size() + " " + AxoI18n.translate("players");
+		return String.valueOf(client.br$getWorld().br$getPlayers().size());
 	}
 
 	@Override
-	public String getPlaceholder() {
-		return 3.141592 + " " + AxoI18n.translate("players");
+	public String getPlaceholderValue() {
+		return String.valueOf(3.141592);
+	}
+
+	@Override
+	public String getLabel() {
+		return AxoI18n.translate("players");
 	}
 }

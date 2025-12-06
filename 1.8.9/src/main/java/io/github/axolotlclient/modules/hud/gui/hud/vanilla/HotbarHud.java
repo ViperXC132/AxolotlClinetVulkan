@@ -45,7 +45,7 @@ public class HotbarHud extends TextHudEntry implements DynamicallyPositionable {
 
 	public static final Identifier ID = new Identifier("axolotlclient", "hotbarhud");
 	private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 
 	private final Minecraft client = (Minecraft) super.client;
 

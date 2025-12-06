@@ -48,7 +48,7 @@ public class HotbarHud extends TextHudEntry implements DynamicallyPositionable {
 	public static final Identifier ID = new Identifier("axolotlclient", "hotbarhud");
 	private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
 	public static final Identifier ICONS_TEXTURE = new Identifier("textures/gui/icons.png");
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 
 	private final MinecraftClient client = (MinecraftClient) super.client;
 
@@ -92,14 +92,15 @@ public class HotbarHud extends TextHudEntry implements DynamicallyPositionable {
 			if (!itemStack.isEmpty()) {
 				int m = pos.y() + 6 - 3;
 				if (arm == Arm.LEFT) {
-					this.renderHotbarItem(graphics, i - 91 - 26, m, delta, playerEntity, itemStack, l++);
+					this.renderHotbarItem(graphics, i - 91 - 26, m, delta, playerEntity, itemStack, l);
 				} else {
-					this.renderHotbarItem(graphics, i + 91 + 10, m, delta, playerEntity, itemStack, l++);
+					this.renderHotbarItem(graphics, i + 91 + 10, m, delta, playerEntity, itemStack, l);
 				}
 			}
 
 			RenderSystem.enableBlend();
 			if (this.client.options.getAttackIndicator().get() == AttackIndicator.HOTBAR) {
+				assert this.client.player != null;
 				float f = this.client.player.getAttackCooldownProgress(0.0F);
 				if (f < 1.0F) {
 					int n = pos.y() + 2;

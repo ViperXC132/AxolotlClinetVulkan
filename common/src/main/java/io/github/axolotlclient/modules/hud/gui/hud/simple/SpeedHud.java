@@ -46,6 +46,10 @@ public class SpeedHud extends SimpleTextHudEntry {
 	private final static NumberFormat FORMATTER = new DecimalFormat("#0.00");
 	private final BooleanOption horizontal = new BooleanOption("horizontal", true);
 
+	public SpeedHud() {
+		super(true);
+	}
+
 	@Override
 	public AxoIdentifier getId() {
 		return ID;
@@ -63,7 +67,7 @@ public class SpeedHud extends SimpleTextHudEntry {
 		AxoPlayer player = client.br$getPlayer();
 
 		if (player == null) {
-			return getPlaceholder();
+			return getPlaceholderValue();
 		}
 
 		AxoEntity entity = Objects.requireNonNullElse(player.br$getVehicle(), player);
@@ -73,11 +77,16 @@ public class SpeedHud extends SimpleTextHudEntry {
 			vec = vec.y(0);
 		}
 
-		return FORMATTER.format(vec.len() * 20) + " BPS";
+		return FORMATTER.format(vec.len() * 20);
 	}
 
 	@Override
-	public String getPlaceholder() {
-		return "4.35 BPS";
+	public String getPlaceholderValue() {
+		return "4.35";
+	}
+
+	@Override
+	public String getLabel() {
+		return "BPS";
 	}
 }

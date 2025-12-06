@@ -88,7 +88,7 @@ public class MemoryHud extends TextHudEntry implements DynamicallyPositionable {
 
 	protected final EnumOption<Justification> justification = new EnumOption<>("justification", Justification.class,
 		Justification.CENTER);
-	protected final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
+	protected final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 
 	private final Rectangle graph = new Rectangle(0, 0, 0, 0);
 	private final ColorOption graphUsedColor = new ColorOption("graphUsedColor",

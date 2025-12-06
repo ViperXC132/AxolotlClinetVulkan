@@ -23,12 +23,14 @@
 package io.github.axolotlclient.modules.hud.gui.entry;
 
 import java.util.List;
+import java.util.Locale;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoI18n;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
@@ -36,6 +38,7 @@ import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.gui.layout.Justification;
 import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
+import lombok.RequiredArgsConstructor;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
@@ -47,30 +50,38 @@ public abstract class SimpleTextHudEntry extends TextHudEntry implements Dynamic
 
 	protected final EnumOption<Justification> justification = new EnumOption<>("justification", Justification.class,
 		Justification.CENTER);
-	protected final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
+	protected final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 	protected final BooleanOption showBrackets = new BooleanOption("show_brackets", false);
-
-	private final IntegerOption minWidth, minHeight;
+	private final EnumOption<ValueDescriptionRelation> order = new EnumOption<>("simple_text_hud.order", ValueDescriptionRelation.class, ValueDescriptionRelation.VALUE_DESCRIPTION);
+	protected final StringOption separator = new StringOption("simple_text_hud.separator", " ");
+	private final IntegerOption minWidth;
+	private final IntegerOption minHeight;
+	private final boolean hasOrder;
 
 	public SimpleTextHudEntry() {
-		this(53, 13, true);
+		this(53);
 	}
 
-	protected SimpleTextHudEntry(int width, int height, boolean backgroundAllowed) {
+	protected SimpleTextHudEntry(boolean hasOrder) {
+		this(53, 13, true, hasOrder);
+	}
+
+	protected SimpleTextHudEntry(int width, int height, boolean backgroundAllowed, boolean hasOrder) {
 		super(width, height, backgroundAllowed);
 		minWidth = new IntegerOption("minwidth", width, 1, 300);
 		minHeight = new IntegerOption("hud.height", height, 1, 150);
+		this.hasOrder = hasOrder;
 	}
 
 	protected SimpleTextHudEntry(int width) {
-		this(width, 13, true);
+		this(width, 13, true, false);
 	}
 
 	@Override
 	public void renderComponent(AxoRenderContext render, float delta) {
 		render.br$glEnableBlend();
 		DrawPosition pos = getContentPos();
-		String value = wrapWithBrackets(getValue());
+		String value = applyOptions(getValue(), getLabel());
 
 		int valueWidth = render.br$getFont().br$getWidth(value);
 		int elementWidth = valueWidth + 4;
@@ -109,21 +120,30 @@ public abstract class SimpleTextHudEntry extends TextHudEntry implements Dynamic
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext ctx, float delta) {
 		DrawPosition pos = getContentPos();
-		String value = wrapWithBrackets(getPlaceholder());
+		String value = applyOptions(getPlaceholderValue(), getPlaceholderLabel());
 		ctx.br$drawString(value, pos.x() + justification.get().getXOffset(value, getContentWidth() - 4) + 2,
 			pos.y() + (Math.round((float) getContentHeight() / 2)) - 4, getTextColor().toInt(), shadow.get());
 	}
 
-	protected String wrapWithBrackets(String value) {
-		if (showBrackets.get()) {
-			return AxoI18n.translate("bracket_format", value);
-		}
-		return value;
+	protected String applyOptions(String value, String desc) {
+		String s;
+		if (hasOrder) s = order.get().func.apply(value, desc, separator.get());
+		else s = value;
+		if (showBrackets.get()) return AxoI18n.translate("bracket_format", s);
+		return s;
 	}
 
-	public abstract String getPlaceholder();
+	public abstract String getPlaceholderValue();
+
+	public String getPlaceholderLabel() {
+		return getLabel();
+	}
 
 	public abstract String getValue();
+
+	public String getLabel() {
+		return "";
+	}
 
 	public Color getTextColor() {
 		return textColor.get();
@@ -137,11 +157,34 @@ public abstract class SimpleTextHudEntry extends TextHudEntry implements Dynamic
 		options.add(minWidth);
 		options.add(minHeight);
 		options.add(showBrackets);
+		if (hasOrder) {
+			options.add(order);
+			options.add(separator);
+		}
 		return options;
 	}
 
 	@Override
 	public AnchorPoint getAnchor() {
 		return anchor.get();
+	}
+
+	@RequiredArgsConstructor
+	private enum ValueDescriptionRelation {
+		VALUE_DESCRIPTION((s, s2, sep) -> s + sep + s2),
+		DESCRIPTION_VALUE((s, s2, sep) -> s2 + sep + s),
+		VALUE_ONLY((s, s2, sep) -> s);
+
+		private final Relation func;
+
+		@Override
+		public String toString() {
+			return "simple_text_hud.order."+super.toString().toLowerCase(Locale.ROOT);
+		}
+
+		@FunctionalInterface
+		private interface Relation {
+			String apply(String value, String description, String separator);
+		}
 	}
 }

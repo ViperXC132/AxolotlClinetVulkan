@@ -23,6 +23,8 @@
 package io.github.axolotlclient.mixin;
 
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.bridge.events.Events;
@@ -41,11 +43,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.vehicle.RideableMinecartEntity;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(GameGui.class)
 public abstract class InGameHudMixin {
@@ -68,28 +70,25 @@ public abstract class InGameHudMixin {
 		}
 	}
 
-	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GameGui;hasCrosshair()Z"))
-	public boolean axolotlclient$noCrosshair(GameGui instance) {
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GameGui;hasCrosshair()Z"))
+	public boolean axolotlclient$noCrosshair(GameGui instance, Operation<Boolean> original) {
 		CrosshairHud hud = (CrosshairHud) HudManager.getInstance().get(CrosshairHud.ID);
 		if (HudManager.getInstance().hudsEnabled() && hud.isEnabled()) {
 			GlStateManager.blendFuncSeparate(775, 769, 1, 0);
 			GlStateManager.enableAlphaTest();
 			return false;
 		}
-		return hasCrosshair();
+		return original.call(instance);
 	}
 
-	@Shadow
-	protected abstract boolean hasCrosshair();
-
-	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/TextRenderer;draw(Ljava/lang/String;III)I", ordinal = 0))
-	public int axolotlclient$actionBar(TextRenderer instance, String text, int x, int y, int color) {
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/TextRenderer;draw(Ljava/lang/String;III)I", ordinal = 0))
+	public int axolotlclient$actionBar(TextRenderer instance, String text, int x, int y, int color, Operation<Integer> original) {
 		ActionBarHud hud = (ActionBarHud) HudManager.getInstance().get(ActionBarHud.ID);
 		if (HudManager.getInstance().hudsEnabled() && hud.isEnabled()) {
 			hud.setActionBar(text, color);
 			return 0;
 		}
-		return instance.draw(text, x, y, color);
+		return original.call(instance, text, x, y, color);
 	}
 
 	@Inject(method = "renderBossBars", at = @At("HEAD"), cancellable = true)
@@ -108,69 +107,60 @@ public abstract class InGameHudMixin {
 		}
 	}
 
-	@ModifyArgs(method = "renderMainHandMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/TextRenderer;drawWithShadow(Ljava/lang/String;FFI)I"))
-	public void axolotlclient$setItemNamePos(Args args) {
+	@WrapOperation(method = "renderMainHandMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/TextRenderer;drawWithShadow(Ljava/lang/String;FFI)I"))
+	public int axolotlclient$setItemNamePos(TextRenderer instance, String string, float x, float y, int color, Operation<Integer> original) {
 		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
 		if (HudManager.getInstance().hudsEnabled() && hud.isEnabled()) {
-			args.set(1, ((Integer) hud.getX()).floatValue() + (hud.getWidth() * hud.getScale()
-				- Minecraft.getInstance().textRenderer.getWidth(args.get(0))) / 2);
-			args.set(2, ((Integer) hud.getY()).floatValue() - 36
-				+ (!Minecraft.getInstance().interactionManager.hasStatusBars() ? 14 : 0));
+			x = hud.getRawTrueX() + (hud.getWidth() * hud.getScale() - Minecraft.getInstance().textRenderer.getWidth(string)) / 2;
+			y = hud.getRawTrueY() - 36 + (!Minecraft.getInstance().interactionManager.hasStatusBars() ? 14 : 0);
 		}
+		return original.call(instance, string, x, y, color);
 	}
 
-	@ModifyArgs(method = "renderJumpBar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GameGui;drawTexture(IIIIII)V"))
-	public void axolotlclient$moveHorseHealth(Args args) {
+	@WrapOperation(method = {"renderJumpBar", "renderXpBar"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GameGui;drawTexture(IIIIII)V"))
+	public void axolotlclient$moveHorseHealth(GameGui instance, int x, int y, int u, int v, int w, int h, Operation<Void> original) {
 		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
 		if (HudManager.getInstance().hudsEnabled() && hud.isEnabled()) {
-			args.set(0, hud.getX());
-			args.set(1, hud.getY() - 7);
+			x = hud.getRawTrueX();
+			y = hud.getRawTrueY() - 7;
 		}
+		original.call(instance, x, y, u, v, w, h);
 	}
 
-	@ModifyArgs(method = "renderXpBar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GameGui;drawTexture(IIIIII)V"))
-	public void axolotlclient$moveXPBar(Args args) {
+	@WrapOperation(method = "renderXpBar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Window;getHeight()I", ordinal = 1))
+	public int axolotlclient$moveXPBarHeight(Window instance, Operation<Integer> original) {
 		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
 		if (HudManager.getInstance().hudsEnabled() && hud.isEnabled()) {
-			args.set(0, hud.getX());
-			args.set(1, hud.getY() - 7);
+			return hud.getRawTrueY() + 22;
 		}
+		return original.call(instance);
 	}
 
-	@Redirect(method = "renderXpBar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Window;getHeight()I", ordinal = 1))
-	public int axolotlclient$moveXPBarHeight(Window instance) {
+	@WrapOperation(method = "renderXpBar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Window;getWidth()I"))
+	public int axolotlclient$moveXPBarWidth(Window instance, Operation<Integer> original) {
 		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
 		if (HudManager.getInstance().hudsEnabled() && hud.isEnabled()) {
-			return hud.getY() + 22;
+			return hud.getRawTrueX() * 2 + hud.getWidth();
 		}
-		return instance.getHeight();
+		return original.call(instance);
 	}
 
-	@Redirect(method = "renderXpBar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Window;getWidth()I"))
-	public int axolotlclient$moveXPBarWidth(Window instance) {
+	@WrapOperation(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Window;getHeight()I"))
+	public int axolotlclient$moveStatusBarsHeight(Window instance, Operation<Integer> original) {
 		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
 		if (HudManager.getInstance().hudsEnabled() && hud.isEnabled()) {
-			return hud.getX() * 2 + hud.getWidth();
+			return hud.getRawTrueY() + 22;
 		}
-		return instance.getWidth();
+		return original.call(instance);
 	}
 
-	@Redirect(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Window;getHeight()I"))
-	public int axolotlclient$moveStatusBarsHeight(Window instance) {
+	@WrapOperation(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Window;getWidth()I"))
+	public int axolotlclient$moveStatusBarsWidth(Window instance, Operation<Integer> original) {
 		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
 		if (HudManager.getInstance().hudsEnabled() && hud.isEnabled()) {
-			return hud.getY() + 22;
+			return hud.getRawTrueX() * 2 + hud.getWidth();
 		}
-		return instance.getHeight();
-	}
-
-	@Redirect(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/Window;getWidth()I"))
-	public int axolotlclient$moveStatusBarsWidth(Window instance) {
-		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
-		if (HudManager.getInstance().hudsEnabled() && hud.isEnabled()) {
-			return hud.getX() * 2 + hud.getWidth();
-		}
-		return instance.getWidth();
+		return original.call(instance);
 	}
 
 	@ModifyVariable(
@@ -181,6 +171,7 @@ public abstract class InGameHudMixin {
 		ordinal = 18
 	)
 	public int axolotlclient$displayHardcoreHearts(int offset) {
+		//noinspection OptionalGetWithoutIsPresent
 		boolean hardcore = BedwarsMod.getInstance().isEnabled() &&
 			BedwarsMod.getInstance().inGame() && BedwarsMod.getInstance().hardcoreHearts.get() &&
 			!BedwarsMod.getInstance().getGame().get().getSelf().isBed();

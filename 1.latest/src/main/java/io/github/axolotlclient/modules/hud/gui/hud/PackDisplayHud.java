@@ -59,7 +59,7 @@ public class PackDisplayHud extends TextHudEntry implements DynamicallyPositiona
 	public final List<PackWidget> widgets = new ArrayList<>();
 	private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
 	private final Minecraft client = (Minecraft) super.client;
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 	private PackWidget placeholder;
 
 	public PackDisplayHud() {
@@ -81,32 +81,30 @@ public class PackDisplayHud extends TextHudEntry implements DynamicallyPositiona
 		if (outline.get()) DrawUtil.outlineRect(graphics, getBounds(), outlineColor.get());
 
 		int y = pos.y() + 1;
-		for (int i = widgets.size() - 1;
-			 i >= 0; i--) { // Badly reverse the order (I'm sure there are better ways to do this)
+		for (int i = widgets.size() - 1; i >= 0; i--) { // Badly reverse the order (I'm sure there are better ways to do this)
 			widgets.get(i).render(graphics, pos.x() + 1, y);
-			y += 18;
+			y += 17;
 		}
-		if (y - pos.y() + 1 != getContentHeight()) {
-			setContentHeight(y - pos.y() + 1);
+		if (y - pos.y() != getContentHeight()) {
+			setContentHeight(y - pos.y());
 			onBoundsUpdate();
 		}
 	}
 
 	@Override
 	public void init() {
-		int listSize = client.getResourcePackRepository().getSelectedPacks().size();
-		client.getResourcePackRepository().getSelectedPacks().forEach(profile -> {
+		var selected = client.getResourcePackRepository().getSelectedPacks();
+		var valid = selected.stream()
+			.filter(p -> !(p.location().title().getContents() instanceof TranslatableContents tr && tr.getKey().matches("pack\\.name\\.fabricMods?")))
+			.toList();
+		var listSize = valid.size();
+		valid.forEach(profile -> {
 			try (PackResources pack = profile.open()) {
-				if (pack.location().title().getContents() instanceof TranslatableContents tr && tr.getKey().matches("pack\\.name\\.fabricMods?")) {
-					return;
-				}
-
 				if (listSize == 1) {
 					widgets.add(createWidget(profile.getTitle(), pack));
 				} else if (!pack.packId().equalsIgnoreCase("vanilla")) {
 					widgets.add(createWidget(profile.getTitle(), pack));
 				}
-
 			} catch (Exception ignored) {
 			}
 		});
@@ -118,7 +116,7 @@ public class PackDisplayHud extends TextHudEntry implements DynamicallyPositiona
 		});
 		setContentWidth(w.get());
 
-		setContentHeight(widgets.size() * 18);
+		setContentHeight(widgets.size() * 17 + 1);
 		onBoundsUpdate();
 	}
 

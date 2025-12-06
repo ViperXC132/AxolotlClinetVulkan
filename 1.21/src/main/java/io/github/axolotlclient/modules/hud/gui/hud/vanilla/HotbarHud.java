@@ -41,7 +41,7 @@ import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawCenteredStri
 
 public class HotbarHud extends TextHudEntry implements DynamicallyPositionable {
 	public static final Identifier ID = Identifier.of("axolotlclient", "hotbarhud");
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 
 	public HotbarHud() {
 		super(182, 22, false);
