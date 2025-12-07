@@ -29,13 +29,10 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
-import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import net.fabricmc.api.EnvType;
@@ -59,7 +56,7 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
  * <p>License: GPL-3.0</p>
  */
 
-public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionable {
+public class ScoreboardHud extends TextHudEntry {
 
 	public static final Identifier ID = Identifier.fromNamespaceAndPath("kronhud", "scoreboardhud");
 	public static final Objective placeholder = Util.make(() -> {
@@ -87,7 +84,6 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 	private final BooleanOption scores = new BooleanOption("scores", true);
 	private final ColorOption scoreColor = new ColorOption("scorecolor", new Color(0xFFFF5555));
 	private final IntegerOption textAlpha = new IntegerOption("text_alpha", 255, 0, 255);
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(AnchorPoint.MIDDLE_RIGHT, this);
 
 	private final Minecraft client = (Minecraft) super.client;
 
@@ -225,7 +221,6 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 		options.add(topColor);
 		options.add(scores);
 		options.add(scoreColor);
-		options.add(anchor);
 		options.add(topPadding);
 		options.remove(textColor);
 		options.add(textAlpha);
@@ -238,8 +233,8 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 	}
 
 	@Override
-	public AnchorPoint getAnchor() {
-		return anchor.get();
+	protected AnchorPoint getDefaultAnchor() {
+		return AnchorPoint.MIDDLE_RIGHT;
 	}
 
 	@Override

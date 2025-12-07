@@ -26,9 +26,13 @@ import java.util.List;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
+import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hypixel.bedwars.upgrades.BedwarsTeamUpgrades;
 import io.github.axolotlclient.modules.hypixel.bedwars.upgrades.TeamUpgrade;
@@ -37,11 +41,12 @@ import io.github.axolotlclient.modules.hypixel.bedwars.upgrades.TrapUpgrade;
 /**
  * @author DarkKronicle
  */
-public class TeamUpgradesOverlay extends BoxHudEntry {
+public class TeamUpgradesOverlay extends BoxHudEntry implements DynamicallyPositionable {
 
 	public final static AxoIdentifier ID = AxoIdentifier.of("axolotlclient", "bedwars_teamupgrades");
 	private final static TrapUpgrade.TrapType[] trapEdit = {TrapUpgrade.TrapType.MINER_FATIGUE, TrapUpgrade.TrapType.ITS_A_TRAP};
 	private final BooleanOption renderWhenRelevant = new BooleanOption(ID.br$getPath() + ".renderWhenRelevant", true);
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 	private final BedwarsMod mod;
 	private BedwarsTeamUpgrades upgrades = null;
 
@@ -132,7 +137,13 @@ public class TeamUpgradesOverlay extends BoxHudEntry {
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
+		options.add(anchor);
 		options.add(renderWhenRelevant);
 		return options;
+	}
+
+	@Override
+	public AnchorPoint getAnchor() {
+		return anchor.get();
 	}
 }

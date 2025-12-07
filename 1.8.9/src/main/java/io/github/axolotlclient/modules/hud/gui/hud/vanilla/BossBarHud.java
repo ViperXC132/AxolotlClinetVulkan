@@ -28,12 +28,9 @@ import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
-import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.util.ClientColors;
@@ -50,7 +47,7 @@ import net.minecraft.resource.Identifier;
  * <p>License: GPL-3.0</p>
  */
 
-public class BossBarHud extends TextHudEntry implements DynamicallyPositionable {
+public class BossBarHud extends TextHudEntry {
 
 	public static final Identifier ID = new Identifier("kronhud", "bossbarhud");
 	private static final Identifier BARS_TEXTURE = new Identifier("textures/gui/icons.png");
@@ -59,8 +56,6 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 	private final BooleanOption text = new BooleanOption("text", true);
 	private final BooleanOption bar = new BooleanOption("bar", true);
 	// TODO custom color
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(AnchorPoint.TOP_MIDDLE, this);
-
 	private final Minecraft client = (Minecraft) super.client;
 
 	public BossBarHud() {
@@ -112,13 +107,12 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 		options.add(hide);
 		options.add(text);
 		options.add(bar);
-		options.add(anchor);
 		return options;
 	}
 
 	@Override
-	public AnchorPoint getAnchor() {
-		return anchor.get();
+	protected AnchorPoint getDefaultAnchor() {
+		return AnchorPoint.TOP_MIDDLE;
 	}
 
 	@Override

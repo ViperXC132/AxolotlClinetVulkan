@@ -29,14 +29,11 @@ import java.util.UUID;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoWindow;
 import io.github.axolotlclient.mixin.BossBarHudAccessor;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
-import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -55,7 +52,7 @@ import net.minecraft.world.BossEvent;
  * <p>License: GPL-3.0</p>
  */
 
-public class BossBarHud extends TextHudEntry implements DynamicallyPositionable {
+public class BossBarHud extends TextHudEntry {
 
 	public static final Identifier ID = Identifier.fromNamespaceAndPath("kronhud", "bossbarhud");
 	private static final Identifier[] BAR_BACKGROUND_SPRITES =
@@ -97,7 +94,6 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 	private final BooleanOption text = new BooleanOption("text", true);
 	private final BooleanOption bar = new BooleanOption("bar", true);
 	// TODO custom color
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(AnchorPoint.TOP_MIDDLE, this);
 	private Map<UUID, LerpingBossEvent> bossBars = new HashMap<>();
 	private final Minecraft client = (Minecraft) super.client;
 
@@ -114,7 +110,7 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 		DrawPosition scaledPos = getContentPos();
 		int by = 12;
 		for (LerpingBossEvent bossBar : bossBars.values()) {
-			renderBossBar((GuiGraphics) graphics, scaledPos.x()+1, by + scaledPos.y(), bossBar);
+			renderBossBar((GuiGraphics) graphics, scaledPos.x() + 1, by + scaledPos.y(), bossBar);
 			by = by + 19;
 			if (by > getContentHeight()) {
 				break;
@@ -164,8 +160,8 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
 		DrawPosition pos = getContentPos();
-		renderBossBar((GuiGraphics) graphics, pos.x()+1, pos.y() + 12, placeholder);
-		renderBossBar((GuiGraphics) graphics, pos.x()+1, pos.y() + 31, placeholder2);
+		renderBossBar((GuiGraphics) graphics, pos.x() + 1, pos.y() + 12, placeholder);
+		renderBossBar((GuiGraphics) graphics, pos.x() + 1, pos.y() + 31, placeholder2);
 	}
 
 	@Override
@@ -179,13 +175,12 @@ public class BossBarHud extends TextHudEntry implements DynamicallyPositionable 
 		options.add(hide);
 		options.add(text);
 		options.add(bar);
-		options.add(anchor);
 		return options;
 	}
 
 	@Override
-	public AnchorPoint getAnchor() {
-		return anchor.get();
+	protected AnchorPoint getDefaultAnchor() {
+		return AnchorPoint.TOP_MIDDLE;
 	}
 
 	@Override

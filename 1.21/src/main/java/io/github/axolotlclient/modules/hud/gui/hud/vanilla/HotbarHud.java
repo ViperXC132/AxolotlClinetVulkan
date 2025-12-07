@@ -26,12 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
-import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
@@ -39,9 +36,8 @@ import net.minecraft.util.Identifier;
 
 import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawCenteredString;
 
-public class HotbarHud extends TextHudEntry implements DynamicallyPositionable {
+public class HotbarHud extends TextHudEntry {
 	public static final Identifier ID = Identifier.of("axolotlclient", "hotbarhud");
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 
 	public HotbarHud() {
 		super(182, 22, false);
@@ -78,12 +74,11 @@ public class HotbarHud extends TextHudEntry implements DynamicallyPositionable {
 		List<Option<?>> list = new ArrayList<>();
 		list.add(enabled);
 		list.add(hide);
-		list.add(anchor);
 		return list;
 	}
 
 	@Override
-	public AnchorPoint getAnchor() {
-		return anchor.get();
+	protected AnchorPoint getDefaultAnchor() {
+		return AnchorPoint.BOTTOM_MIDDLE;
 	}
 }

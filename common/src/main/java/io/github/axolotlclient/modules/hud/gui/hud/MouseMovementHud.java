@@ -25,19 +25,24 @@ package io.github.axolotlclient.modules.hud.gui.hud;
 import java.util.List;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.bridge.Platform;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.PlayerDirectionChangeEvent;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
+import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.util.MathUtil;
 
-public class MouseMovementHud extends BoxHudEntry {
+public class MouseMovementHud extends BoxHudEntry implements DynamicallyPositionable {
 
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "mousemovementhud");
 
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 	private final GraphicsOption mouseMovementIndicatorInner = new GraphicsOption("mouseMovementIndicator", new int[][]{
 		new int[]{0, 0, 0, 0, 0, 0, 0},
 		new int[]{0, 0, 0, 0, 0, 0, 0},
@@ -126,8 +131,14 @@ public class MouseMovementHud extends BoxHudEntry {
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
+		options.add(anchor);
 		options.add(mouseMovementIndicatorInner);
 		options.add(mouseMovementIndicatorOuter);
 		return options;
+	}
+
+	@Override
+	public AnchorPoint getAnchor() {
+		return anchor.get();
 	}
 }

@@ -31,7 +31,6 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
@@ -44,7 +43,7 @@ import io.github.axolotlclient.util.ClientColors;
  * <p>License: GPL-3.0</p>
  */
 
-public class CompassHud extends TextHudEntry implements DynamicallyPositionable {
+public class CompassHud extends TextHudEntry {
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "compasshud");
 
 	private final IntegerOption widthOption = new IntegerOption("width", width, this::updateWidth, 100, 800);
@@ -204,8 +203,7 @@ public class CompassHud extends TextHudEntry implements DynamicallyPositionable 
 	}
 
 	@Override
-	public AnchorPoint getAnchor() {
-		// Won't be dynamically set
+	protected AnchorPoint getDefaultAnchor() {
 		return AnchorPoint.TOP_MIDDLE;
 	}
 

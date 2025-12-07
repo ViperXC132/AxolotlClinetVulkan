@@ -30,10 +30,14 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoSprites;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
+import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 
-public class IconHud extends BoxHudEntry {
+public class IconHud extends BoxHudEntry implements DynamicallyPositionable {
 	public static final AxoIdentifier ID = AxoIdentifier.of("axolotlclient", "iconhud");
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 	private final EnumOption<Mode> mode = new EnumOption<>("iconhud.mode", Mode.class, Mode.BOTH);
 
 	public IconHud() {
@@ -80,8 +84,14 @@ public class IconHud extends BoxHudEntry {
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		var options = super.getConfigurationOptions();
+		options.add(anchor);
 		options.add(mode);
 		return options;
+	}
+
+	@Override
+	public AnchorPoint getAnchor() {
+		return anchor.get();
 	}
 
 	private enum Mode {

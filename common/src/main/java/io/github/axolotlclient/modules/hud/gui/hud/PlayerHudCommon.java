@@ -27,15 +27,20 @@ import java.util.List;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.DoubleOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
+import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 
-public abstract class PlayerHudCommon extends BoxHudEntry {
+public abstract class PlayerHudCommon extends BoxHudEntry implements DynamicallyPositionable {
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "playerhud");
 	protected final DoubleOption rotation = new DoubleOption("rotation", 0d, 0d, 360d);
 	protected final BooleanOption dynamicRotation = new BooleanOption("dynamicrotation", true);
 	protected final BooleanOption autoHide = new BooleanOption("autoHide", false);
+	protected final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 	protected float lastYawOffset = 0;
 	protected float yawOffset = 0;
 	protected float lastYOffset = 0;
@@ -78,9 +83,15 @@ public abstract class PlayerHudCommon extends BoxHudEntry {
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
+		options.add(anchor);
 		options.add(dynamicRotation);
 		options.add(rotation);
 		options.add(autoHide);
 		return options;
+	}
+
+	@Override
+	public AnchorPoint getAnchor() {
+		return anchor.get();
 	}
 }

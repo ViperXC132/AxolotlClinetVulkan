@@ -26,20 +26,15 @@ import java.util.List;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
-import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
-import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Identifier;
 
-public class DebugCountersHud extends TextHudEntry implements DynamicallyPositionable {
+public class DebugCountersHud extends TextHudEntry {
 	public static final Identifier ID = Identifier.of("axolotlclient", "debugcountershud");
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 	private final BooleanOption showCCount = new BooleanOption("debugcounters.ccount", true);
 	private final BooleanOption showECount = new BooleanOption("debugcounters.ecount", false);
 	private final BooleanOption showPCount = new BooleanOption("debugcounters.pcount", false);
@@ -130,15 +125,9 @@ public class DebugCountersHud extends TextHudEntry implements DynamicallyPositio
 	}
 
 	@Override
-	public AnchorPoint getAnchor() {
-		return anchor.get();
-	}
-
-	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
 		options.add(hide);
-		options.add(anchor);
 		options.add(showCCount);
 		options.add(showECount);
 		options.add(showPCount);

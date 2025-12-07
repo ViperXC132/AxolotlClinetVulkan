@@ -26,17 +26,13 @@ import java.util.List;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.bridge.PlatformDispatch;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
-import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
-import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 
 /**
@@ -45,13 +41,12 @@ import io.github.axolotlclient.modules.hud.util.DrawPosition;
  *
  * <p>License: GPL-3.0</p>
  */
-public class IPHud extends TextHudEntry implements DynamicallyPositionable {
+public class IPHud extends TextHudEntry {
 
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "iphud");
 	private final BooleanOption showIcon = new BooleanOption("iphud.show_icon", false);
 	private AxoSprite.Dynamic sprite;
 	private final IntegerOption height = new IntegerOption("hud.height", 13, 9, 64);
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 
 	public IPHud() {
 		super(115, 13, true);
@@ -110,7 +105,6 @@ public class IPHud extends TextHudEntry implements DynamicallyPositionable {
 		var options = super.getConfigurationOptions();
 		options.add(showIcon);
 		options.add(height);
-		options.add(anchor);
 		return options;
 	}
 
@@ -132,10 +126,5 @@ public class IPHud extends TextHudEntry implements DynamicallyPositionable {
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
 		renderComponent(graphics, delta);
-	}
-
-	@Override
-	public AnchorPoint getAnchor() {
-		return anchor.get();
 	}
 }

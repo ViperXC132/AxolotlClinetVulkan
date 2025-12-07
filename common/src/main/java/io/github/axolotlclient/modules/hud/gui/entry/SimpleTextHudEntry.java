@@ -33,10 +33,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoI18n;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
-import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.gui.layout.Justification;
-import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import lombok.RequiredArgsConstructor;
 
@@ -46,11 +43,10 @@ import lombok.RequiredArgsConstructor;
  *
  * <p>License: GPL-3.0</p>
  */
-public abstract class SimpleTextHudEntry extends TextHudEntry implements DynamicallyPositionable {
+public abstract class SimpleTextHudEntry extends TextHudEntry {
 
 	protected final EnumOption<Justification> justification = new EnumOption<>("justification", Justification.class,
 		Justification.CENTER);
-	protected final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 	protected final BooleanOption showBrackets = new BooleanOption("show_brackets", false);
 	private final EnumOption<ValueDescriptionRelation> order = new EnumOption<>("simple_text_hud.order", ValueDescriptionRelation.class, ValueDescriptionRelation.VALUE_DESCRIPTION);
 	protected final StringOption separator = new StringOption("simple_text_hud.separator", " ");
@@ -153,7 +149,6 @@ public abstract class SimpleTextHudEntry extends TextHudEntry implements Dynamic
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
 		options.add(justification);
-		options.add(anchor);
 		options.add(minWidth);
 		options.add(minHeight);
 		options.add(showBrackets);
@@ -162,11 +157,6 @@ public abstract class SimpleTextHudEntry extends TextHudEntry implements Dynamic
 			options.add(separator);
 		}
 		return options;
-	}
-
-	@Override
-	public AnchorPoint getAnchor() {
-		return anchor.get();
 	}
 
 	@RequiredArgsConstructor
@@ -179,7 +169,7 @@ public abstract class SimpleTextHudEntry extends TextHudEntry implements Dynamic
 
 		@Override
 		public String toString() {
-			return "simple_text_hud.order."+super.toString().toLowerCase(Locale.ROOT);
+			return "simple_text_hud.order." + super.toString().toLowerCase(Locale.ROOT);
 		}
 
 		@FunctionalInterface

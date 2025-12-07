@@ -34,9 +34,7 @@ import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffects;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.bridge.util.AxoText;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
-import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.gui.layout.CardinalOrder;
 import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
@@ -48,10 +46,9 @@ import io.github.axolotlclient.util.CommonUtil;
  *
  * <p>License: GPL-3.0</p>
  */
-public class PotionsHud extends TextHudEntry implements DynamicallyPositionable {
+public class PotionsHud extends TextHudEntry {
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "potionshud");
 
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 	private final EnumOption<CardinalOrder> order = DefaultOptions.getCardinalOrder(CardinalOrder.TOP_DOWN);
 
 	private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
@@ -78,7 +75,7 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 	@Override
 	public void render(AxoRenderContext ctx, float delta) {
 		final var player = client.br$getPlayer();
-		if(player == null) {
+		if (player == null) {
 			return;
 		}
 		var effects = player.br$getStatusEffects();
@@ -213,7 +210,6 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
-		options.add(anchor);
 		options.add(order);
 		options.add(iconsOnly);
 		options.add(showEffectName);
@@ -224,10 +220,5 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 	@Override
 	public AxoIdentifier getId() {
 		return ID;
-	}
-
-	@Override
-	public AnchorPoint getAnchor() {
-		return (anchor.get());
 	}
 }

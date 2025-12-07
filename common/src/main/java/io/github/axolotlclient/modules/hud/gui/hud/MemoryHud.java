@@ -31,11 +31,8 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoI18n;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
-import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.gui.layout.Justification;
-import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.util.ClientColors;
@@ -47,7 +44,7 @@ import io.github.axolotlclient.util.ClientColors;
  * <p>License: GPL-3.0</p>
  */
 
-public class MemoryHud extends TextHudEntry implements DynamicallyPositionable {
+public class MemoryHud extends TextHudEntry {
 	private record MemoryInfo(long free, long max, long total) {
 		private static MemoryInfo current() {
 			return new MemoryInfo(
@@ -88,7 +85,6 @@ public class MemoryHud extends TextHudEntry implements DynamicallyPositionable {
 
 	protected final EnumOption<Justification> justification = new EnumOption<>("justification", Justification.class,
 		Justification.CENTER);
-	protected final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 
 	private final Rectangle graph = new Rectangle(0, 0, 0, 0);
 	private final ColorOption graphUsedColor = new ColorOption("graphUsedColor",
@@ -155,7 +151,6 @@ public class MemoryHud extends TextHudEntry implements DynamicallyPositionable {
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
 		options.add(justification);
-		options.add(anchor);
 		options.add(showGraph);
 		options.add(graphUsedColor);
 		options.add(graphFreeColor);
@@ -167,10 +162,5 @@ public class MemoryHud extends TextHudEntry implements DynamicallyPositionable {
 	@Override
 	public AxoIdentifier getId() {
 		return ID;
-	}
-
-	@Override
-	public AnchorPoint getAnchor() {
-		return anchor.get();
 	}
 }

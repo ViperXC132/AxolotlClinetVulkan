@@ -27,12 +27,8 @@ dependencies {
 
 	modImplementation("net.fabricmc:fabric-loader:${project.property("fabric_loader")}")
 
-	modImplementation("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+${project.property("minecraft_18")}") {
-		exclude(group = "org.lwjgl")
-		exclude(group = "org.slf4j")
-	}
+	modImplementation("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+${project.property("minecraft_18")}")
 	include("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+${project.property("minecraft_18")}")
-	implementation("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:${project.property("config")}")
 	modImplementation(include("io.github.axolotlclient:AxolotlClient-config-rounded:${project.property("config")}+${project.property("minecraft_18")}")!!)
 
 	ploceus.dependOsl(project.property("osl") as String)

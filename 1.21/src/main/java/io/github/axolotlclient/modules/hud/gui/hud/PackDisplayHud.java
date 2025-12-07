@@ -32,12 +32,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.texture.NativeImage;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
-import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
-import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
@@ -51,13 +47,12 @@ import net.minecraft.util.Identifier;
 
 import static io.github.axolotlclient.modules.hud.util.DrawUtil.*;
 
-public class PackDisplayHud extends TextHudEntry implements DynamicallyPositionable {
+public class PackDisplayHud extends TextHudEntry {
 
 	public static final Identifier ID = Identifier.of("axolotlclient", "packdisplayhud");
 	private final List<PackWidget> widgets = new ArrayList<>();
 	private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
 	private final MinecraftClient client = (MinecraftClient) super.client;
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 	private PackWidget placeholder;
 
 	public PackDisplayHud() {
@@ -162,7 +157,6 @@ public class PackDisplayHud extends TextHudEntry implements DynamicallyPositiona
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
 		options.add(iconsOnly);
-		options.add(anchor);
 		return options;
 	}
 
@@ -174,11 +168,6 @@ public class PackDisplayHud extends TextHudEntry implements DynamicallyPositiona
 	public void update() {
 		widgets.clear();
 		init();
-	}
-
-	@Override
-	public AnchorPoint getAnchor() {
-		return anchor.get();
 	}
 
 	class PackWidget {

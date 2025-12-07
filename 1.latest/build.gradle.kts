@@ -47,7 +47,6 @@ dependencies {
 
 	modImplementation("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+$minecraftFriendly")
 	include("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+$minecraftFriendly")
-	implementation("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:${project.property("config")}")
 	modImplementation(include("io.github.axolotlclient:AxolotlClient-config-rounded:${project.property("config")}+$minecraftFriendly")!!)
 
 	modCompileOnly("com.terraformersmc:modmenu:$modmenu")
