@@ -32,7 +32,7 @@ dependencies {
 		exclude(group = "org.lwjgl")
 	}
 	include("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+${project.property("minecraft_121")}")
-	modImplementation("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:${project.property("config")}")
+	implementation("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:${project.property("config")}")
 	modImplementation(include("io.github.axolotlclient:AxolotlClient-config-rounded:${project.property("config")}+${project.property("minecraft_121")}")!!)
 
 	modCompileOnlyApi("com.terraformersmc:modmenu:8.0.0") {

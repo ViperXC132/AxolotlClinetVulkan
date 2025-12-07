@@ -45,12 +45,9 @@ dependencies {
 
 	modImplementation("net.fabricmc.fabric-api:fabric-api:$fapi+$minecraftFriendly")
 
-	modImplementation("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+$minecraftFriendly") {
-		exclude(group = "com.terraformersmc")
-		exclude(group = "org.lwjgl")
-	}
+	modImplementation("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+$minecraftFriendly")
 	include("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+$minecraftFriendly")
-	modImplementation("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:${project.property("config")}")
+	implementation("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:${project.property("config")}")
 	modImplementation(include("io.github.axolotlclient:AxolotlClient-config-rounded:${project.property("config")}+$minecraftFriendly")!!)
 
 	modCompileOnly("com.terraformersmc:modmenu:$modmenu")

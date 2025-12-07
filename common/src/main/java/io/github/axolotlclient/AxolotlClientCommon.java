@@ -31,12 +31,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Preconditions;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
 import io.github.axolotlclient.AxolotlClientConfig.impl.managers.JsonConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.impl.managers.VersionedJsonConfigManager;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
@@ -50,6 +52,7 @@ import io.github.axolotlclient.modules.render.BeaconBeam;
 import io.github.axolotlclient.modules.rpc.DiscordRPC;
 import io.github.axolotlclient.modules.tnttime.TntTime;
 import io.github.axolotlclient.util.FeatureDisablerCommon;
+import io.github.axolotlclient.util.GsonHelper;
 import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.OSUtil;
 import io.github.axolotlclient.util.notifications.NotificationProvider;
@@ -69,8 +72,6 @@ public abstract class AxolotlClientCommon {
 	}
 
 	public static final boolean SHADERS_SUPPORTED = OSUtil.getOS() != OSUtil.OperatingSystem.OTHER &&
-		!Objects.requireNonNullElse(System.getenv("TMPDIR"), "").contains("Android") &&
-		!Objects.requireNonNullElse(System.getenv("HOME"), "").contains("Android") &&
 		!FabricLoader.getInstance().isModLoaded("vulkanmod");
 
 	public static final String VERSION = FabricLoader.getInstance()
@@ -168,8 +169,32 @@ public abstract class AxolotlClientCommon {
 							.getAsJsonObject();
 						var mousemovement = new JsonObject();
 						mousemovement.addProperty("enabled", keystrokes.get("enabled").getAsBoolean() && keystrokes.get("mousemovement").getAsBoolean());
-						mousemovement.addProperty("mouseMovementIndicator", keystrokes.get("mouseMovementIndicator").getAsString());
-						mousemovement.addProperty("mouseMovementIndicatorOuter", keystrokes.get("mouseMovementIndicatorOuter").getAsString());
+						var inner = keystrokes.get("mouseMovementIndicator");
+						if (inner.isJsonObject()) {
+							var data = inner.getAsJsonObject().get("data").getAsJsonArray();
+							var pix = GsonHelper.jsonArrayToStream(data).map(JsonElement::getAsJsonArray)
+								.map(GsonHelper::jsonArrayToStream)
+								.map(s -> s.mapToInt(JsonElement::getAsInt).toArray())
+								.toArray(int[][]::new);
+							// hacky
+							var s = new GraphicsOption("", pix).toSerializedValue();
+							mousemovement.addProperty("mouseMovementIndicator", s);
+						} else {
+							mousemovement.addProperty("mouseMovementIndicator", inner.getAsString());
+						}
+						var outer = keystrokes.get("mouseMovementIndicatorOuter");
+						if (outer.isJsonObject()) {
+							var data = inner.getAsJsonObject().get("data").getAsJsonArray();
+							var pix = GsonHelper.jsonArrayToStream(data).map(JsonElement::getAsJsonArray)
+								.map(GsonHelper::jsonArrayToStream)
+								.map(s -> s.mapToInt(JsonElement::getAsInt).toArray())
+								.toArray(int[][]::new);
+							// hacky
+							var s = new GraphicsOption("", pix).toSerializedValue();
+							mousemovement.addProperty("mouseMovementIndicatorOuter", s);
+						} else {
+							mousemovement.addProperty("mouseMovementIndicatorOuter", outer.getAsString());
+						}
 						hud.add("mousemovementhud", mousemovement);
 					}
 				}

@@ -11,7 +11,6 @@
 		"CameraMixin",
 		"ChatHudMixin",
 		"ClientBrandRetrieverMixin",
-		"ClientPlayerEntityMixin",
 		"ClientPlayNetworkHandlerMixin",
 		"ClientWorldMixin",
 		"DebugHudMixin",
