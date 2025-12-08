@@ -143,8 +143,8 @@ public class Profiles {
 		return duplicate;
 	}
 
-	public void exportProfile(Profile profile) {
-		ThreadExecuter.scheduleTask(() -> {
+	public CompletableFuture<?> exportProfile(Profile profile) {
+		return CompletableFuture.runAsync(() -> {
 			try (MemoryStack stack = MemoryStack.stackPush()) {
 				var pointers = stack.mallocPointer(1);
 				pointers.put(stack.UTF8("*" + PROFILE_EXPORT_FILE_EXTENSION));
@@ -186,7 +186,7 @@ public class Profiles {
 					.addStatus("profiles.profile.export.notification.failed",
 						"profiles.profile.export.notification.failed.generic");
 			}
-		});
+		}, ThreadExecuter.service());
 	}
 
 	public CompletableFuture<List<Profile>> importProfiles() {

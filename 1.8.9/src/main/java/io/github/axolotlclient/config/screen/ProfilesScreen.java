@@ -130,8 +130,10 @@ public class ProfilesScreen extends io.github.axolotlclient.AxolotlClientConfig.
 				profileName = new TextFieldWidget(textRenderer, 0, 0, 150, 20, "");
 				profileName.setText(profile.name());
 				profileName.setChangedListener(profile::setName);
-				exportButton = new VanillaButtonWidget(0, 0, 50, 20, EXPORT_BUTTON_TITLE, btn ->
-					Profiles.getInstance().exportProfile(profile));
+				exportButton = new VanillaButtonWidget(0, 0, 50, 20, EXPORT_BUTTON_TITLE, btn -> {
+					btn.active = false;
+					Profiles.getInstance().exportProfile(profile).thenRun(() -> btn.active = true);
+				});
 				loadButton = new VanillaButtonWidget(0, 0, 50, 20, LOAD_BUTTON_TITLE, btn ->
 					Profiles.getInstance().switchTo(profile));
 				duplicateButton = new VanillaButtonWidget(0, 0, 50, 20, DUPLICATE_BUTTON_TITLE, b -> {
@@ -175,7 +177,7 @@ public class ProfilesScreen extends io.github.axolotlclient.AxolotlClientConfig.
 
 			@Override
 			public List<? extends Element> children() {
-				return List.of(profileName, this.loadButton, duplicateButton, removeButton);
+				return List.of(profileName, exportButton, this.loadButton, duplicateButton, removeButton);
 			}
 		}
 
@@ -190,8 +192,13 @@ public class ProfilesScreen extends io.github.axolotlclient.AxolotlClientConfig.
 					Profiles.getInstance().saveProfiles();
 					setScrollAmount(getMaxScroll());
 				});
-				this.importButton = new VanillaButtonWidget(0, 0, 150, 20, I18n.translate("profiles.profile.import"), btn ->
-					Profiles.getInstance().importProfiles().thenRun(ProfilesList.this::reload));
+				this.importButton = new VanillaButtonWidget(0, 0, 150, 20, I18n.translate("profiles.profile.import"), btn -> {
+					btn.active = false;
+					Profiles.getInstance().importProfiles().thenRun(() -> {
+						btn.active = true;
+						ProfilesList.this.reload();
+					});
+				});
 			}
 
 			@Override

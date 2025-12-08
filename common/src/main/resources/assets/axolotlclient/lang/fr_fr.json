@@ -199,7 +199,7 @@
 	"fadeTime": "Temps de Transition (Seconds)",
 	"firsttextcolor": "Première Couleur",
 	"flatItems": "Items Physiques",
-	"flatItems.tooltip": "Items Physiques Simplement :<br>- Les items tournent lorsqu'ils sont dans les airs<br>- Les objets reposent à plat sur le sol",
+	"flatItems.tooltip": "Items Physiques Simplement :<br>- Les items tournent lorsqu'ils sont dans les airs<br>- Les objets reposent à plat sur le sol",
 	"format": "Format",
 	"fpshud": "FPS HUD",
 	"freelook": "Freelook",
@@ -875,5 +875,6 @@
 	"simple_text_hud.separator": "Séparateur",
 	"simple_text_hud.order.value_description": "Valeur - Description",
 	"simple_text_hud.order.description_value": "Description - Valeur",
-	"simple_text_hud.order.value_only": "Value only"
+	"simple_text_hud.order.value_only": "Value only",
+	"custom_loading_bg_color": "Couleur de Chargement d'Arrière-plan Custom"
 }

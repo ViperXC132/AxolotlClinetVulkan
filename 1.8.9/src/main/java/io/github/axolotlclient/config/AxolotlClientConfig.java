@@ -58,6 +58,7 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 	public final BooleanOption flatItems = new BooleanOption("flatItems", false);
 	public final BooleanOption inventoryPotionEffectOffset = new BooleanOption("inventory.potion_effect_offset", true);
 
+	public final BooleanOption customLoadingScreenColor = new BooleanOption("custom_loading_bg_color", false);
 	public final ColorOption loadingScreenColor = new ColorOption("loadingBgColor", new Color(-1));
 	public final BooleanOption nightMode = new BooleanOption("nightMode", false);
 	public final BooleanOption rawMouseInput = new BooleanOption("rawMouseInput", false, v ->
@@ -78,6 +79,7 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 	private final List<Option<?>> options = new ArrayList<>();
 
 	public AxolotlClientConfig() {
+		general.add(customLoadingScreenColor);
 		general.add(loadingScreenColor);
 		general.add(nightMode);
 		general.add(rawMouseInput);

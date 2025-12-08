@@ -149,8 +149,10 @@ public class ProfilesScreen extends Screen {
 				profileName = new TextFieldWidget(textRenderer, 0, 0, 150, 20, Text.empty());
 				profileName.setText(profile.name());
 				profileName.setChangedListener(profile::setName);
-				exportButton = ButtonWidget.builder(EXPORT_BUTTON_TITLE, btn -> Profiles.getInstance().exportProfile(profile))
-					.positionAndSize(0, 0, 50, 20).build();
+				exportButton = ButtonWidget.builder(EXPORT_BUTTON_TITLE, btn -> {
+						btn.active = false;
+						Profiles.getInstance().exportProfile(profile).thenRun(() -> btn.active = true);
+					}).positionAndSize(0, 0, 50, 20).build();
 				loadButton = ButtonWidget.builder(LOAD_BUTTON_TITLE, btn ->
 					Profiles.getInstance().switchTo(profile)).positionAndSize(0, 0, 50, 20).build();
 				duplicateButton = ButtonWidget.builder(DUPLICATE_BUTTON_TITLE, b -> {
@@ -216,13 +218,18 @@ public class ProfilesScreen extends Screen {
 						setScrollAmount(getMaxScroll());
 					}).positionAndSize(0, 0, 150, 20)
 					.build();
-				this.importButton = ButtonWidget.builder(Text.translatable("profiles.profile.import"), btn ->
-					Profiles.getInstance().importProfiles().thenRun(ProfilesList.this::reload)).build();
+				this.importButton = ButtonWidget.builder(Text.translatable("profiles.profile.import"), btn -> {
+					btn.active = false;
+					Profiles.getInstance().importProfiles().thenRun(() -> {
+						btn.active = true;
+						ProfilesList.this.reload();
+					});
+				}).build();
 			}
 
 			@Override
 			public List<? extends Selectable> selectableChildren() {
-				return List.of(addButton);
+				return List.of(addButton, importButton);
 			}
 
 			@Override

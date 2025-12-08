@@ -69,6 +69,7 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 			}
 		});
 
+	public final BooleanOption customLoadingScreenColor = new BooleanOption("custom_loading_bg_color", false);
 	public final ColorOption loadingScreenColor = new ColorOption("loadingBgColor", new Color(239, 50, 61, 255));
 
 	public final GenericOption openCredits = new GenericOption("Credits", "Open Credits", () ->
@@ -79,6 +80,7 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 	private final List<Option<?>> options = new ArrayList<>();
 
 	public AxolotlClientConfig() {
+		general.add(customLoadingScreenColor);
 		general.add(loadingScreenColor);
 		general.add(openCredits);
 

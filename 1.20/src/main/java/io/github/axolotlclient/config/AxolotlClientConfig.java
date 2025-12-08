@@ -79,6 +79,7 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 
 	public final BooleanOption flatItems = new BooleanOption("flatItems", false);
 
+	public final BooleanOption customLoadingScreenColor = new BooleanOption("custom_loading_bg_color", false);
 	public final ColorOption loadingScreenColor = new ColorOption("loadingBgColor", new Color(239, 50, 61, 255));
 	public final BooleanOption nightMode = new BooleanOption("nightMode", false);
 
@@ -90,6 +91,7 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 	private final List<Option<?>> options = new ArrayList<>();
 
 	public AxolotlClientConfig() {
+		general.add(customLoadingScreenColor);
 		general.add(loadingScreenColor);
 		general.add(nightMode);
 		general.add(openCredits);
