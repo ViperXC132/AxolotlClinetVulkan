@@ -41,6 +41,7 @@ import lombok.Getter;
  *
  * <p>License: GPL-3.0</p>
  */
+@SuppressWarnings("unused")
 public abstract class BoxHudEntry extends AbstractHudEntry {
 
 	private final boolean backgroundAllowed;
@@ -191,6 +192,18 @@ public abstract class BoxHudEntry extends AbstractHudEntry {
 		var padding = backgroundPadding.get();
 		if (padding == 0) return getTrueY();
 		return getTrueY() + (int) (padding * getScale());
+	}
+
+	public int getRawTrueContentX() {
+		var padding = backgroundPadding.get();
+		if (padding == 0) return getRawTrueX();
+		return getRawTrueX() + (int) (padding * getScale());
+	}
+
+	public int getRawTrueContentY() {
+		var padding = backgroundPadding.get();
+		if (padding == 0) return getRawTrueY();
+		return getRawTrueY() + (int) (padding * getScale());
 	}
 
 	public int getTrueContentWidth() {

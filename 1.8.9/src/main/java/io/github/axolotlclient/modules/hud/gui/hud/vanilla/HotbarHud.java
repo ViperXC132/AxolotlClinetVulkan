@@ -117,6 +117,7 @@ public class HotbarHud extends TextHudEntry {
 		list.add(enabled);
 		list.add(hide);
 		list.add(shadow);
+		list.add(anchor);
 		return list;
 	}
 

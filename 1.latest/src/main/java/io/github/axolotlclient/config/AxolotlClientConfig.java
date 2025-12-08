@@ -51,6 +51,7 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 	public final BooleanOption lowShield = new BooleanOption("lowShield", false);
 	public final ColorOption hitColor = new ColorOption("hitColor", new Color(255, 0, 0, 77),
 		value -> {
+			//noinspection resource
 			DynamicTexture texture = ((OverlayTextureAccessor) Minecraft.getInstance().gameRenderer.overlayTexture()).axolotlclient$getTexture();
 			NativeImage nativeImage = texture.getPixels();
 			if (nativeImage != null) {

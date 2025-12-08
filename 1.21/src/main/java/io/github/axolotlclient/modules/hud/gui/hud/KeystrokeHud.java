@@ -208,6 +208,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 		List<Option<?>> options = new ArrayList<>();
 		options.add(enabled);
 		options.add(scale);
+		options.add(anchor);
 		options.add(textColor);
 		options.add(pressedTextColor);
 		options.add(shadow);

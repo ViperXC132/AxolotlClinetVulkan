@@ -61,10 +61,10 @@ public class DefaultOptions {
 
 	public static EnumOption<AnchorPoint> getAnchorPoint(AnchorPoint defaultValue, HudEntry entry) {
 		return new EnumOption<>("anchorpoint", AnchorPoint.class, defaultValue, value -> {
-			var storedX = entry.getRawX();
-			var storedY = entry.getRawY();
-			var offsetX = entry.offsetWidth();
-			var offsetY = entry.offsetHeight();
+			var storedX = entry.getRawTrueX();
+			var storedY = entry.getRawTrueY();
+			var offsetX = entry.offsetTrueWidth();
+			var offsetY = entry.offsetTrueHeight();
 			entry.setX(storedX + offsetX);
 			entry.setY(storedY + offsetY);
 		});

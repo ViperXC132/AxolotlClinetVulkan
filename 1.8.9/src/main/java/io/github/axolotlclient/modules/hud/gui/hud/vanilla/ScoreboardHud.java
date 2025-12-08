@@ -22,7 +22,6 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -237,15 +236,11 @@ public class ScoreboardHud extends TextHudEntry {
 
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
-		List<Option<?>> options = new ArrayList<>();
-		options.add(enabled);
-		options.add(scale);
-		options.add(textColor);
-		options.add(shadow);
-		options.add(background);
-		options.add(backgroundColor);
-		options.add(outline);
-		options.add(outlineColor);
+		List<Option<?>> options = super.getConfigurationOptions();
+		options.remove(backgroundPadding);
+		options.remove(backgroundRounding);
+		options.remove(roundBackground);
+		options.set(options.indexOf(super.backgroundColor), backgroundColor);
 		options.add(hide);
 		options.add(topColor);
 		options.add(scores);

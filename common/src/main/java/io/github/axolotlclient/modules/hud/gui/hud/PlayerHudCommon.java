@@ -65,12 +65,12 @@ public abstract class PlayerHudCommon extends BoxHudEntry implements Dynamically
 
 	@Override
 	public void renderComponent(AxoRenderContext ctx, float delta) {
-		renderPlayer(ctx, false, getTrueContentX(), getTrueContentY(), delta);
+		renderPlayer(ctx, false, getRawTrueContentX(), getRawTrueContentY(), delta);
 	}
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext ctx, float delta) {
-		renderPlayer(ctx, true, getTrueContentX(), getTrueContentY(), 0);
+		renderPlayer(ctx, true, getRawTrueContentX(), getRawTrueContentY(), 0);
 	}
 
 	protected abstract void renderPlayer(AxoRenderContext ctx, boolean placeholder, double x, double y, float delta);
