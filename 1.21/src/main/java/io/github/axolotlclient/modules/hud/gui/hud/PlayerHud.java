@@ -123,7 +123,10 @@ public class PlayerHud extends PlayerHudCommon {
 		float pastYaw = client.player.getYaw();
 		float pastPrevYaw = client.player.prevYaw;
 		currentlyRendering = true;
-		InventoryScreen.drawEntity(graphics, (float) x / getScale(), ((float) y - lerpY) / getScale(), scale, new Vector3f(), quaternion, quaternionf2, client.player);
+		InventoryScreen.drawEntity(graphics,
+			((float) (x + getTrueContentWidth() / 2f)) / getScale(),
+			((float) (y + getTrueContentHeight() * client.player.getHeight() / 2f - lerpY)) / getScale(),
+			scale, new Vector3f(), quaternion, quaternionf2, client.player);
 		currentlyRendering = false;
 
 		client.player.setYaw(pastYaw);

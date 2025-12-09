@@ -50,10 +50,9 @@ import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.Watcher;
 import io.github.axolotlclient.util.notifications.Notifications;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -68,7 +67,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2f;
@@ -156,12 +156,12 @@ public class SkinManagementScreen extends Screen {
 		var importButton = SpriteIconButton.builder(Component.translatable("skins.manage.import.local"), btn -> {
 			btn.active = false;
 			SkinImportUtil.openImportSkinDialog().thenAccept(this::onFilesDrop).thenRun(() -> btn.active = true);
-		}, true).sprite(ResourceLocation.fromNamespaceAndPath("axolotlclient", "folder"), 7, 7).size(11, 11).build();
+		}, true).sprite(Identifier.fromNamespaceAndPath("axolotlclient", "folder"), 7, 7).size(11, 11).build();
 		importButton.setTooltip(Tooltip.create(importButton.getMessage()));
 		var downloadButton = SpriteIconButton.builder(Component.translatable("skins.manage.import.online"), btn -> {
 			btn.active = false;
 			promptForSkinDownload();
-		}, true).sprite(ResourceLocation.fromNamespaceAndPath("axolotlclient", "download"), 7, 7).size(11, 11).build();
+		}, true).sprite(Identifier.fromNamespaceAndPath("axolotlclient", "download"), 7, 7).size(11, 11).build();
 		downloadButton.setTooltip(Tooltip.create(downloadButton.getMessage()));
 		if (width - (capesTab.getX() + capesTab.getWidth()) > 28) {
 			importButton.setX(width - importButton.getWidth() - 2);
@@ -476,6 +476,7 @@ public class SkinManagementScreen extends Screen {
 		@Override
 		public void replaceEntries(Collection<Row> newEntries) {
 			super.replaceEntries(newEntries);
+			refreshScrollAmount();
 		}
 
 		@Override
@@ -546,9 +547,9 @@ public class SkinManagementScreen extends Screen {
 			var asset = widget.getFocusedAsset();
 			if (asset != null) {
 				class SpriteButton extends Button {
-					private ResourceLocation sprite;
+					private Identifier sprite;
 
-					public SpriteButton(Component message, OnPress onPress, ResourceLocation sprite) {
+					public SpriteButton(Component message, OnPress onPress, Identifier sprite) {
 						super(0, 0, 11, 11, message, onPress, DEFAULT_NARRATION);
 						this.sprite = sprite;
 						setTooltip(Tooltip.create(message, Component.empty()));
@@ -561,19 +562,14 @@ public class SkinManagementScreen extends Screen {
 					}
 
 					@Override
-					protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-						super.renderWidget(graphics, mouseX, mouseY, delta);
+					protected void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+						renderDefaultSprite(graphics);
 						graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, this.getX() + 2, this.getY() + 2, 7, 7);
-					}
-
-					@Override
-					public void renderString(GuiGraphics guiGraphics, Font font, int color) {
-
 					}
 				}
 				if (asset instanceof Skin skin) {
-					var wideSprite = ResourceLocation.fromNamespaceAndPath("axolotlclient", "wide");
-					var slimSprite = ResourceLocation.fromNamespaceAndPath("axolotlclient", "slim");
+					var wideSprite = Identifier.fromNamespaceAndPath("axolotlclient", "wide");
+					var slimSprite = Identifier.fromNamespaceAndPath("axolotlclient", "slim");
 					var slimText = Component.translatable("skins.manage.variant.classic");
 					var wideText = Component.translatable("skins.manage.variant.slim");
 					actionButtons.add(new SpriteButton(skin.classicVariant() ? wideText : slimText, btn -> {
@@ -603,7 +599,7 @@ public class SkinManagementScreen extends Screen {
 							Component.translatable("skins.manage.delete.confirm.desc_active") :
 							Component.translatable("skins.manage.delete.confirm.desc")
 						).withColor(Colors.RED.toInt())));
-					}, ResourceLocation.fromNamespaceAndPath("axolotlclient", "delete")));
+					}, Identifier.fromNamespaceAndPath("axolotlclient", "delete")));
 				}
 				if (asset instanceof Asset.Online online && online.supportsDownload() && !(asset instanceof Asset.Local)) {
 					this.actionButtons.add(new SpriteButton(Component.translatable("skins.manage.download"), btn -> {
@@ -612,14 +608,14 @@ public class SkinManagementScreen extends Screen {
 							refreshCurrentList();
 							btn.active = true;
 						});
-					}, ResourceLocation.fromNamespaceAndPath("axolotlclient", "download")));
+					}, Identifier.fromNamespaceAndPath("axolotlclient", "download")));
 				}
 			}
 			if (label != null) {
-				this.label = new AbstractStringWidget(0, 0, widget.getWidth(), 16, label, Minecraft.getInstance().font) {
+				this.label = new AbstractStringWidget(0, 0, widget.getWidth(), 16, label, font) {
 					@Override
-					protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-						renderScrollingString(guiGraphics, getFont(), 2, -1);
+					public void visitLines(ActiveTextCollector activeTextCollector) {
+						renderScrollingStringOverContents(activeTextCollector, getMessage(), 2);
 					}
 				};
 				this.label.active = false;
@@ -633,20 +629,19 @@ public class SkinManagementScreen extends Screen {
 					equipping = true;
 					btn.setMessage(TEXT_EQUIPPING);
 					btn.active = false;
-					Consumer<CompletableFuture<MSApi.MCProfile>> consumer = f -> {
+					Consumer<CompletableFuture<MSApi.MCProfile>> consumer = f ->
 						f.thenAcceptAsync(p -> {
-							cachedProfile = p;
-							if (minecraft.screen == SkinManagementScreen.this) {
-								refreshCurrentList();
-							} else {
-								minecraft.execute(() -> minecraft.setScreen(SkinManagementScreen.this));
-							}
-						}).exceptionally(t -> {
-							AxolotlClientCommon.getInstance().getLogger().warn("Failed to equip asset!", t);
-							equipping = false;
-							return null;
-						});
-					};
+						cachedProfile = p;
+						if (minecraft.screen == SkinManagementScreen.this) {
+							refreshCurrentList();
+						} else {
+							minecraft.execute(() -> minecraft.setScreen(SkinManagementScreen.this));
+						}
+					}).exceptionally(t -> {
+						AxolotlClientCommon.getInstance().getLogger().warn("Failed to equip asset!", t);
+						equipping = false;
+						return null;
+					});
 					if (asset instanceof Skin && !(current.getSkin() instanceof Skin.Local)) {
 						minecraft.setScreen(new ConfirmScreen(confirmed -> {
 							minecraft.setScreen(new LoadingScreen(getTitle(), TEXT_EQUIPPING));

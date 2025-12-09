@@ -52,29 +52,29 @@ public class PackDisplayHud extends TextHudEntry {
 	private PackWidget placeholder;
 
 	public PackDisplayHud() {
-		super(200, 50, true);
+		super(120, 18, true);
 	}
 
 	public void setPacks(List<ResourcePack> packs) {
 		widgets.clear();
 		this.packs.clear();
-		this.packs.addAll(packs);
+		this.packs.addAll(packs.stream().filter(p -> !(p instanceof ModResourcePack)).toList());
 	}
 
 	@Override
 	public void renderComponent(AxoRenderContext context, float f) {
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 
 		if (widgets.isEmpty())
 			init();
 
-		int y = pos.y + 1;
+		int y = pos.y() + 1;
 		for (int i = widgets.size() - 1; i >= 0; i--) { // Badly reverse the order (I'm sure there are better ways to do this)
 			widgets.get(i).render(pos.x + 1, y);
-			y += 18;
+			y += 17;
 		}
-		if (y - pos.y + 1 != getHeight()) {
-			setHeight(y - pos.y - 1);
+		if (y - pos.y() != getContentHeight()) {
+			setContentHeight(y - pos.y());
 			onBoundsUpdate();
 		}
 	}
@@ -83,9 +83,6 @@ public class PackDisplayHud extends TextHudEntry {
 	public void init() {
 		packs.forEach(pack -> {
 			try {
-				if (pack instanceof ModResourcePack) {
-					return;
-				}
 				if (pack.getIcon() != null) {
 					if (packs.size() == 1) {
 						widgets.add(new PackWidget(pack));
@@ -103,21 +100,21 @@ public class PackDisplayHud extends TextHudEntry {
 			if (textW > w.get())
 				w.set(textW);
 		});
-		setWidth(w.get());
+		setContentWidth(w.get());
 
-		setHeight(widgets.size() * 18);
+		setContentHeight(widgets.size() * 17 + 1);
 		onBoundsUpdate();
 	}
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
 		boolean updateBounds = false;
-		if (getHeight() < 18) {
-			setHeight(18);
+		if (getContentHeight() < 18) {
+			setContentHeight(18);
 			updateBounds = true;
 		}
-		if (getWidth() < 56) {
-			setWidth(56);
+		if (getContentWidth() < 56) {
+			setContentWidth(56);
 			updateBounds = true;
 		}
 		if (updateBounds) {
@@ -126,7 +123,7 @@ public class PackDisplayHud extends TextHudEntry {
 		if (placeholder == null) {
 			placeholder = new PackWidget(Minecraft.getInstance().getResourcePacks().defaultPack);
 		}
-		placeholder.render(getPos().x + 1, getPos().y + 1);
+		placeholder.render(getContentPos().x + 1, getContentPos().y + 1);
 	}
 
 	@Override
@@ -163,7 +160,7 @@ public class PackDisplayHud extends TextHudEntry {
 				GlStateManager.bindTexture(texture);
 				GuiElement.drawTexture(x, y, 0, 0, 16, 16, 16, 16);
 			}
-			AxoRenderContextImpl.getInstance().br$drawString(name, x + 18, y + 6, textColor.get().toInt(), shadow.get());
+			AxoRenderContextImpl.getInstance().br$drawString(name, x + 18, y + 16 / 2 - 9 / 2, textColor.get().toInt(), shadow.get());
 		}
 	}
 }

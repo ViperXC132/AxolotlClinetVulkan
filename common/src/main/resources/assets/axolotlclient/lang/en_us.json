@@ -864,5 +864,17 @@
 	"hud.hide": "Hide HUD",
 	"hud.hide.tooltip": "Prevents this HUD from rendering completely.",
 	"keystrokes.stroke.move": "Edit Keystroke Positions",
-	"screenshot.gallery.view.error": "Failed to open image in gallery!"
+	"screenshot.gallery.view.error": "Failed to open image in gallery!",
+	"hud.round_background": "Round Background",
+	"hud.background_rounding": "Background Rounding",
+	"hud.background_padding": "Background Padding",
+	"hide_chat": "Hide Chat",
+	"toggle_hide_chat": "Toggle Hide Chat",
+	"api.context_menu": "Context Menu",
+	"simple_text_hud.order": "Content Order",
+	"simple_text_hud.separator": "Separator",
+	"simple_text_hud.order.value_description": "Value - Description",
+	"simple_text_hud.order.description_value": "Description - Value",
+	"simple_text_hud.order.value_only": "Value only",
+	"custom_loading_bg_color": "Custom Loading Screen Background Color"
 }

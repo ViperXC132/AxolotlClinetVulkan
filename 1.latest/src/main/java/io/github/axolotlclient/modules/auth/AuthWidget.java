@@ -28,10 +28,10 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.PlayerFaceRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 
-public class AuthWidget extends Button {
+public class AuthWidget extends Button.Plain {
 
 	public AuthWidget(int x, int y) {
 		super(x, y, Minecraft.getInstance().font.width(Auth.getInstance().getCurrent().getName()) + 28, 20,
@@ -42,9 +42,9 @@ public class AuthWidget extends Button {
 	}
 
 	@Override
-	public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		super.renderWidget(graphics, mouseX, mouseY, delta);
-		ResourceLocation texture = Auth.getInstance().getSkinTexture(Auth.getInstance().getCurrent());
+	public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+		super.renderContents(graphics, mouseX, mouseY, delta);
+		Identifier texture = Auth.getInstance().getSkinTexture(Auth.getInstance().getCurrent());
 		PlayerFaceRenderer.draw(graphics, texture, getX() + 1, getY() + 1, getHeight() - 2, true, false, ARGB.color(alpha, -1));
 		if (API.getInstance().getApiOptions().enabled.get()) {
 			graphics.pose().pushMatrix();

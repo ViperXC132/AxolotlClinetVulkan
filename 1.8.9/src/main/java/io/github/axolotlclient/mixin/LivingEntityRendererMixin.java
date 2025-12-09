@@ -25,8 +25,9 @@ package io.github.axolotlclient.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.modules.freelook.Perspective;
+import io.github.axolotlclient.bridge.AxoPerspective;
 import io.github.axolotlclient.modules.hud.gui.hud.PlayerHud;
 import io.github.axolotlclient.modules.hypixel.NickHider;
 import net.minecraft.client.Minecraft;
@@ -53,7 +54,7 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 
 	@Inject(method = "renderNameTag(Lnet/minecraft/entity/living/LivingEntity;DDD)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;rotatef(FFFF)V", ordinal = 1))
 	private void axolotlclient$correctNameplateRotation(LivingEntity livingEntity, double d, double e, double f, CallbackInfo ci) {
-		if (Minecraft.getInstance().options.perspective == Perspective.THIRD_PERSON_FRONT.ordinal()) {
+		if (Minecraft.getInstance().options.perspective == AxoPerspective.THIRD_PERSON_FRONT.ordinal()) {
 			GlStateManager.rotatef(-this.dispatcher.cameraPitch * 2, 1.0F, 0.0F, 0.0F);
 		}
 	}
@@ -79,6 +80,14 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity> extends 
 			}
 		}
 		return orig;
+	}
+
+	@WrapOperation(method = "renderNameTag(Lnet/minecraft/entity/living/LivingEntity;DDD)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferBuilder;vertex(DDD)Lcom/mojang/blaze3d/vertex/BufferBuilder;"))
+	public BufferBuilder axolotlclient$noBg(BufferBuilder instance, double d, double e, double f, Operation<BufferBuilder> original) {
+		if (AxolotlClient.config().nametagBackground.get()) {
+			original.call(instance, d, e, f);
+		}
+		return instance;
 	}
 
 	@ModifyConstant(method = "setupOverlayColor(Lnet/minecraft/entity/living/LivingEntity;FZ)Z", constant = @Constant(floatValue = 1.0f, ordinal = 0))

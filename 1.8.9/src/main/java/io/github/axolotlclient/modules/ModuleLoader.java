@@ -59,8 +59,7 @@ public class ModuleLoader {
 					}
 				} catch (Exception e) {
 					AxolotlClient.LOGGER.warn("Skipping module: " + entrypoint.getProvider().getMetadata().getName()
-						+ " because of error:");
-					e.printStackTrace();
+						+ " because of error:", e);
 				}
 			});
 		return modules;

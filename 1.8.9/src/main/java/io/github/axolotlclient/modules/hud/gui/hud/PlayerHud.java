@@ -90,7 +90,10 @@ public class PlayerHud extends PlayerHudCommon {
 		GlStateManager.color4f(1, 1, 1, 1);
 		GlStateManager.enableColorMaterial();
 		GlStateManager.pushMatrix();
-		GlStateManager.translated(x, y - lerpY, 1050);
+		GlStateManager.translated(
+			x + getTrueContentWidth() / 2f,
+			y + getTrueContentHeight() * client.player.height / 2f - lerpY,
+			1050);
 		GlStateManager.scalef(1, 1, -1);
 
 		GlStateManager.translatef(0, 0, 1000);

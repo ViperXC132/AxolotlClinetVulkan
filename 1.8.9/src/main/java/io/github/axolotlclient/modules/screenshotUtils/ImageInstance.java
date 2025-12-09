@@ -67,6 +67,7 @@ public interface ImageInstance {
 		Minecraft.getInstance().submit(() -> Minecraft.getInstance().getTextureManager().register(id, new DynamicTexture(img)));
 	}
 
+	@SuppressWarnings("UnstableApiUsage")
 	record LocalImpl(Identifier id, BufferedImage image, String filename, Path location) implements Local {
 		public LocalImpl(BufferedImage image, String filename, Path location) {
 			this(new Identifier("gallery_local_" + Hashing.sha256().hashUnencodedChars(location.toString().toLowerCase(Locale.ROOT).replaceAll("[./]", "_"))),
@@ -84,6 +85,7 @@ public interface ImageInstance {
 
 	}
 
+	@SuppressWarnings("UnstableApiUsage")
 	record RemoteImpl(Identifier id, BufferedImage image, String filename, String uploader, Instant sharedAt,
 					  String url) implements Remote {
 		public RemoteImpl(BufferedImage image, String filename, String uploader, Instant sharedAt, String url) {

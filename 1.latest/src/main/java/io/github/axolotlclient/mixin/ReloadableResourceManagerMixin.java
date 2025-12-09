@@ -35,7 +35,7 @@ import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.PackDisplayHud;
 import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.resources.CloseableResourceManager;
 import net.minecraft.server.packs.resources.ReloadInstance;
@@ -61,7 +61,7 @@ public abstract class ReloadableResourceManagerMixin {
 	}
 
 	@Inject(method = "getResource", at = @At("HEAD"), cancellable = true)
-	private void axolotlclient$getResource(ResourceLocation id, CallbackInfoReturnable<Optional<Resource>> cir) {
+	private void axolotlclient$getResource(Identifier id, CallbackInfoReturnable<Optional<Resource>> cir) {
 		if (AxolotlClient.runtimeResources.get(id) != null) {
 			cir.setReturnValue(Optional.of(AxolotlClient.runtimeResources.get(id)));
 		}
@@ -69,7 +69,7 @@ public abstract class ReloadableResourceManagerMixin {
 
 	@WrapOperation(method = "listResources", at = @At(value = "INVOKE",
 		target = "Lnet/minecraft/server/packs/resources/CloseableResourceManager;listResources(Ljava/lang/String;Ljava/util/function/Predicate;)Ljava/util/Map;"))
-	private Map<ResourceLocation, Resource> injectResources(CloseableResourceManager instance, String s, Predicate<ResourceLocation> predicate, Operation<Map<ResourceLocation, Resource>> original) {
+	private Map<Identifier, Resource> injectResources(CloseableResourceManager instance, String s, Predicate<Identifier> predicate, Operation<Map<Identifier, Resource>> original) {
 		var resources = original.call(instance, s, predicate);
 		AxolotlClient.runtimeResources.forEach((resourceLocation, resource) -> {
 			if (resourceLocation.getPath().startsWith(s) && predicate.test(resourceLocation)) {

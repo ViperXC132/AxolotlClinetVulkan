@@ -24,34 +24,26 @@ package io.github.axolotlclient.mixin;
 
 import java.util.function.IntSupplier;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.modules.auth.Auth;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.SplashOverlay;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Mutable;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(value = SplashOverlay.class, priority = 1100)
+@Mixin(value = SplashOverlay.class)
 public abstract class SplashOverlayMixin {
-	@Mutable
-	@Shadow
-	@Final
-	private static IntSupplier BRAND_ARGB;
-
-	@Inject(method = "<clinit>", at = @At("TAIL"))
-	private static void axolotlclient$customBackgroundColor(CallbackInfo ci) {
-		if (!FabricLoader.getInstance().isModLoaded("dark-loading-screen")) {
-			Color color = AxolotlClient.config().loadingScreenColor.get();
-			BRAND_ARGB = () -> color.toInt();//ColorUtil.Argb32.of(color.getAlpha(), color.getRed(), color.getGreen(), color.getBlue());
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Ljava/util/function/IntSupplier;getAsInt()I"))
+	private int customLoadingScreenBackground(IntSupplier instance, Operation<Integer> original) {
+		if (AxolotlClient.config().customLoadingScreenColor.get()) {
+			return AxolotlClient.config().loadingScreenColor.get().toInt();
 		}
+		return original.call(instance);
 	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;init(Lnet/minecraft/client/MinecraftClient;II)V"))

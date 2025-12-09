@@ -116,12 +116,11 @@ public class CreateChannelScreen extends Screen {
 
 		int footerY = height - 36 / 2 - 20 / 2;
 		addDrawableChild(ButtonWidget.builder(CommonTexts.CANCEL, widget -> client.setScreen(parent)).positionAndSize(width / 2 - 150 - 4, footerY, 150, 20).build());
-		addDrawableChild(ButtonWidget.builder(CommonTexts.DONE, widget -> {
+		addDrawableChild(ButtonWidget.builder(CommonTexts.DONE, widget ->
 			ChannelRequest.createChannel(nameField.getText(),
-					Persistence.of(persistence.getValue(), count.get().get(), duration.get().get()),
-					Arrays.stream(namesInput.getText().split(",")).filter(s -> !s.isEmpty()).toArray(String[]::new))
-				.thenRun(() -> client.submit(() -> client.setScreen(parent)));
-		}).positionAndSize(width / 2 + 4, footerY, 150, 20).build());
+				Persistence.of(persistence.getValue(), count.get().get(), duration.get().get()),
+				Arrays.stream(namesInput.getText().split(",")).filter(s -> !s.isEmpty()).toArray(String[]::new))
+			.thenRun(() -> client.submit(() -> client.setScreen(parent)))).positionAndSize(width / 2 + 4, footerY, 150, 20).build());
 	}
 
 	private <T> Consumer<Boolean> sliderAssembly(int x, int y, Function<Double, T> valueFunc, Consumer<Supplier<T>> value) {

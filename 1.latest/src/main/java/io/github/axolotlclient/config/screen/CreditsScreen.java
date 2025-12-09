@@ -48,7 +48,6 @@ import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.Mth;
 
 public class CreditsScreen extends Screen {
 
@@ -163,14 +162,21 @@ public class CreditsScreen extends Screen {
 			this.name = name;
 			this.things = things;
 			c = new Button(0, 0, 200, 20, Component.literal(name), buttonWidget -> minecraft.setScreen(new CreditOverlay(this)), Supplier::get) {
+				private final Component hoveredMessage = getMessage().copy().withColor(ClientColors.SELECTOR_RED.toInt());
 
 				@Override
-				protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+				protected void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 					if (isHoveredOrFocused()) {
 						DrawUtil.outlineRect(graphics, getX(), getY(), getWidth(), getHeight(), ClientColors.ERROR.toInt());
 					}
-					int i = this.active ? (isHoveredOrFocused() ? ClientColors.SELECTOR_RED.toInt() : -1) : 10526880;
-					this.renderString(graphics, font, i | Mth.ceil(this.alpha * 255.0F) << 24);
+					//int i = this.active ? (isHoveredOrFocused() ? ClientColors.SELECTOR_RED.toInt() : -1) : 10526880;
+					//this.renderString(graphics, font, i | Mth.ceil(this.alpha * 255.0F) << 24);
+					renderDefaultLabel(graphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
+				}
+
+				@Override
+				public Component getMessage() {
+					return isHoveredOrFocused() ? hoveredMessage : super.getMessage();
 				}
 			};
 		}
@@ -214,7 +220,7 @@ public class CreditsScreen extends Screen {
 				if (t.startsWith("http")) {
 					addRenderableWidget(new PlainTextButton(width / 2 - textWidth / 2, startY, textWidth, 12,
 						Component.literal(t).withColor(ClientColors.SELECTOR_GREEN.toInt()), btn ->
-						handleClickEvent(minecraft, new ClickEvent.OpenUrl(URI.create(t))), font));
+						defaultHandleClickEvent(new ClickEvent.OpenUrl(URI.create(t)), minecraft, CreditsScreen.this), font));
 				} else {
 					addRenderableOnly(new StringWidget(width / 2 - textWidth / 2, startY, textWidth, 12,
 						Component.literal(t).withColor(ClientColors.SELECTOR_GREEN.toInt()), font));

@@ -28,6 +28,10 @@ import java.util.List;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
+import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
+import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.util.ClientColors;
 
 /**
@@ -36,10 +40,11 @@ import io.github.axolotlclient.util.ClientColors;
  *
  * <p>License: GPL-3.0</p>
  */
-public abstract class TextHudEntry extends BoxHudEntry {
+public abstract class TextHudEntry extends BoxHudEntry implements DynamicallyPositionable {
 
 	protected final ColorOption textColor = new ColorOption("textcolor", ClientColors.WHITE);
 	protected final BooleanOption shadow = new BooleanOption("shadow", getShadowDefault());
+	protected final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(getDefaultAnchor(), this);
 
 	public TextHudEntry(int width, int height, boolean backgroundAllowed) {
 		super(width, height, backgroundAllowed);
@@ -54,6 +59,16 @@ public abstract class TextHudEntry extends BoxHudEntry {
 		List<Option<?>> options = super.getConfigurationOptions();
 		options.add(textColor);
 		options.add(shadow);
+		options.add(anchor);
 		return options;
+	}
+
+	@Override
+	public AnchorPoint getAnchor() {
+		return anchor.get();
+	}
+
+	protected AnchorPoint getDefaultAnchor() {
+		return AnchorPoint.TOP_LEFT;
 	}
 }

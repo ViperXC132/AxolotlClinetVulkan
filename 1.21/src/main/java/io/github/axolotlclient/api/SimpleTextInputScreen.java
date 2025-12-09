@@ -57,9 +57,7 @@ public class SimpleTextInputScreen extends Screen {
 			}
 			client.setScreen(parent);
 		}).positionAndSize(width / 2 + 5, height - 50, 150, 20).build());
-		input.setChangedListener(s -> {
-			done.active = !s.isBlank();
-		});
+		input.setChangedListener(s -> done.active = !s.isBlank());
 		done.active = false;
 	}
 

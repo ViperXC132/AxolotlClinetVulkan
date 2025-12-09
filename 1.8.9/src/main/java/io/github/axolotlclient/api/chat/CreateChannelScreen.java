@@ -151,12 +151,11 @@ public class CreateChannelScreen extends io.github.axolotlclient.AxolotlClientCo
 
 		int footerY = height - 36 / 2 - 20 / 2;
 		addDrawableChild(new VanillaButtonWidget(width / 2 - 150 - 4, footerY, 150, 20, I18n.translate("gui.cancel"), widget -> minecraft.openScreen(parent)));
-		addDrawableChild(new VanillaButtonWidget(width / 2 + 4, footerY, 150, 20, I18n.translate("gui.done"), widget -> {
+		addDrawableChild(new VanillaButtonWidget(width / 2 + 4, footerY, 150, 20, I18n.translate("gui.done"), widget ->
 			ChannelRequest.createChannel(nameField.getText(),
-					Persistence.of(persistence.getValue(), count.get().get(), duration.get().get()),
-					Arrays.stream(namesInput.getText().split(",")).filter(s -> !s.isEmpty()).toArray(String[]::new))
-				.thenRun(() -> minecraft.submit(() -> minecraft.openScreen(parent)));
-		}));
+				Persistence.of(persistence.getValue(), count.get().get(), duration.get().get()),
+				Arrays.stream(namesInput.getText().split(",")).filter(s -> !s.isEmpty()).toArray(String[]::new))
+			.thenRun(() -> minecraft.submit(() -> minecraft.openScreen(parent)))));
 	}
 
 	private <T> Consumer<Boolean> sliderAssembly(int x, int y, Function<Double, T> valueFunc, Consumer<Supplier<T>> value) {

@@ -24,6 +24,7 @@ package io.github.axolotlclient.mixin;
 
 import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -36,12 +37,13 @@ import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.PotionsHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ActionBarHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.CrosshairHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.HotbarHUD;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.HotbarHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ScoreboardHud;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.hud.chat.ChatHud;
 import net.minecraft.client.gui.hud.in_game.InGameHud;
 import net.minecraft.client.render.DeltaTracker;
 import net.minecraft.entity.Entity;
@@ -133,11 +135,23 @@ public abstract class InGameHudMixin {
 
 	@WrapMethod(method = "renderHotbar")
 	public void axolotlclient$customHotbar(GuiGraphics graphics, DeltaTracker tracker, Operation<Void> original) {
-		HotbarHUD hud = (HotbarHUD) HudManager.getInstance().get(HotbarHUD.ID);
+		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
 		graphics.getMatrices().push();
 		if (hud.isEnabled() && !hud.isHidden()) {
 			graphics.getMatrices().translate(-graphics.getScaledWindowWidth() / 2f + 182 / 2f, -graphics.getScaledWindowHeight() + 22, 0);
-			graphics.getMatrices().translate(hud.getX(), hud.getY(), 0);
+			graphics.getMatrices().translate(hud.getRawTrueX(), hud.getRawTrueY(), 0);
+		}
+		original.call(graphics, tracker);
+		graphics.getMatrices().pop();
+	}
+
+	@WrapMethod(method = "renderExperienceLevel")
+	public void axolotlclient$customHotbar$xpLevel(GuiGraphics graphics, DeltaTracker tracker, Operation<Void> original) {
+		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
+		graphics.getMatrices().push();
+		if (hud.isEnabled() && !hud.isHidden()) {
+			graphics.getMatrices().translate(-graphics.getScaledWindowWidth() / 2f, -graphics.getScaledWindowHeight() + 22, 0);
+			graphics.getMatrices().translate(hud.getRawTrueX() + hud.getWidth() / 2f, hud.getRawTrueY(), 0);
 		}
 		original.call(graphics, tracker);
 		graphics.getMatrices().pop();
@@ -150,6 +164,7 @@ public abstract class InGameHudMixin {
 			target = "Lnet/minecraft/util/math/MathHelper;ceil(D)I")
 	)
 	public void axolotlclient$displayHardcoreHearts(GuiGraphics graphics, PlayerEntity player, int x, int y, int lines, int regeneratingHeartIndex, float maxHealth, int lastHealth, int health, int absorption, boolean blinking, CallbackInfo ci, @Local(ordinal = 1) LocalBooleanRef hardcore) {
+		//noinspection OptionalGetWithoutIsPresent
 		if (BedwarsMod.getInstance().isEnabled() &&
 			BedwarsMod.getInstance().inGame() && BedwarsMod.getInstance().hardcoreHearts.get() &&
 			!BedwarsMod.getInstance().getGame().get().getSelf().isBed()) {
@@ -181,5 +196,11 @@ public abstract class InGameHudMixin {
 			return;
 		}
 		original.call(graphics, player, y, uncappedMaxHealth, cappedMaxHealth, x);
+	}
+
+
+	@WrapWithCondition(method = "renderChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/chat/ChatHud;render(Lnet/minecraft/client/gui/GuiGraphics;IIIZ)V"))
+	private boolean hideChat(ChatHud instance, GuiGraphics graphics, int tickDelta, int mouseX, int mouseY, boolean chatScreenOpen) {
+		return !AxolotlClient.config().hideChat.get();
 	}
 }

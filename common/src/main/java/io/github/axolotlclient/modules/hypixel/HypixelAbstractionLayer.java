@@ -71,6 +71,9 @@ public class HypixelAbstractionLayer {
 		}
 
 		API.getInstance().get(request).whenComplete((response, throwable) -> {
+			if (response == Response.CLIENT_ERROR) {
+				return;
+			}
 			if (response == null) {
 				API.getInstance().getLogger().warn("Failed to process request {}: ", desc, throwable);
 				return;

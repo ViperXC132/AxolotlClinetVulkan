@@ -48,7 +48,7 @@ public class PingHud extends SimpleTextHudEntry {
 	private int second;
 
 	public PingHud() {
-		super();
+		super(true);
 	}
 
 	@Override
@@ -80,11 +80,16 @@ public class PingHud extends SimpleTextHudEntry {
 
 	@Override
 	public String getValue() {
-		return currentServerPing.getValue() + " ms";
+		return String.valueOf(currentServerPing.getValue());
 	}
 
 	@Override
-	public String getPlaceholder() {
-		return "68 ms";
+	public String getPlaceholderValue() {
+		return "68";
+	}
+
+	@Override
+	public String getLabel() {
+		return "ms";
 	}
 }

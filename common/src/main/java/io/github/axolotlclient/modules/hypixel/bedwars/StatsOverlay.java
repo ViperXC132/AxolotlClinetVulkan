@@ -30,7 +30,6 @@ import java.util.function.Predicate;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
@@ -41,16 +40,13 @@ import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoI18n;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.bridge.util.AxoText;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
-import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
-import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
 import io.github.axolotlclient.modules.hypixel.PlayerData;
 import io.github.axolotlclient.modules.hypixel.PlayerData.Bedwars.CombinedGameData;
 import org.jetbrains.annotations.Nullable;
 
-public class StatsOverlay extends TextHudEntry implements DynamicallyPositionable {
+public class StatsOverlay extends TextHudEntry {
 	@FunctionalInterface
 	private interface EntryRenderer {
 
@@ -75,7 +71,7 @@ public class StatsOverlay extends TextHudEntry implements DynamicallyPositionabl
 
 		private final Map<String, PlayerData.Bedwars> stats;
 		private final Map<BedwarsTeam, List<String>> playersByTeam;
-		private int xCursor = getPos().x + padding.get();
+		private int xCursor = getContentPos().x + padding.get();
 		private int yFinal = 0;
 
 		private RenderHelper(Map<String, PlayerData.Bedwars> stats, Map<BedwarsTeam, List<String>> playersByTeam) {
@@ -86,7 +82,7 @@ public class StatsOverlay extends TextHudEntry implements DynamicallyPositionabl
 		private void renderColumn(AxoRenderContext ctx, Entry renderEntry) {
 			final var dy = AxoMinecraftClient.getInstance().br$getFont().br$getFontHeight() + rowMargin.get();
 
-			int currY = getPos().y + padding.get();
+			int currY = getContentPos().y + padding.get();
 			int newXCursor = ctx.br$drawString(AxoI18n.translate(renderEntry.name), xCursor, currY, 0xffffffff, shadow.get());
 
 			currY += dy;
@@ -118,13 +114,13 @@ public class StatsOverlay extends TextHudEntry implements DynamicallyPositionabl
 			}
 
 			// don't multiply the padding by two, since it's already accounted for by the cursors
-			int newWidth = xCursor - getPos().x + padding.get() - columnMargin.get();
-			int newHeight = yFinal - getPos().y + padding.get() - rowMargin.get();
+			int newWidth = xCursor - getContentPos().x + padding.get() - columnMargin.get();
+			int newHeight = yFinal - getContentPos().y + padding.get() - rowMargin.get();
 
-			boolean dirty = newWidth != getWidth() || newHeight != getHeight();
+			boolean dirty = newWidth != getContentWidth() || newHeight != getContentHeight();
 
-			setWidth(newWidth);
-			setHeight(newHeight);
+			setContentWidth(newWidth);
+			setContentHeight(newHeight);
 
 			if (dirty) {
 				onBoundsUpdate();
@@ -142,7 +138,7 @@ public class StatsOverlay extends TextHudEntry implements DynamicallyPositionabl
 	private static final Map<String, PlayerData.Bedwars> SAMPLE_STATS = Map.of(
 		"FloweyTF", createFake(525, 3, new CombinedGameData(4234, 5634, 500, 300, 1469, 336, 230, 123)),
 		"Adaklys", createFake(179, 3, new CombinedGameData(1984, 2048, 300, 500, 834, 737, 123, 273)),
-		"steve", createFake(5, 3, new CombinedGameData(10, 1, 10, 1, 10, 1, 10, 1))
+		"steve", createFake(5, 2, new CombinedGameData(10, 1, 10, 1, 10, 1, 10, 1))
 	);
 
 	private static PlayerData.Bedwars createFake(int level, int winstreak, CombinedGameData data) {
@@ -153,8 +149,6 @@ public class StatsOverlay extends TextHudEntry implements DynamicallyPositionabl
 	}
 
 	public final static AxoIdentifier ID = AxoIdentifier.of("axolotlclient", "bedwars_stats_overlay");
-
-	protected final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
 
 	protected final IntegerOption padding = new IntegerOption("hud.padding", 3, 1, 10);
 	protected final IntegerOption columnMargin = new IntegerOption("hud.column_margin", 3, 0, 10);
@@ -206,7 +200,7 @@ public class StatsOverlay extends TextHudEntry implements DynamicallyPositionabl
 				e.forEach(entry ->
 					api.getAsync(entry.br$getId().toString())
 						.whenCompleteAsync((playerData, throwable) -> {
-							if (playerData == null || playerData.isEmpty()) {
+							if (playerData.isEmpty()) {
 								return;
 							}
 
@@ -223,7 +217,7 @@ public class StatsOverlay extends TextHudEntry implements DynamicallyPositionabl
 	@Override
 	public void render(AxoRenderContext ctx, float delta) {
 		if (errorMessage != null) {
-			ctx.br$drawString(AxoText.Color.RED + errorMessage, getPos().x, getPos().y, 0xffffffff, shadow.get());
+			ctx.br$drawString(AxoText.Color.RED + errorMessage, getContentPos().x, getContentPos().y, 0xffffffff, shadow.get());
 		}
 
 		if (mod.inGame() && shouldRender) {
@@ -265,15 +259,9 @@ public class StatsOverlay extends TextHudEntry implements DynamicallyPositionabl
 	}
 
 	@Override
-	public AnchorPoint getAnchor() {
-		return anchor.get();
-	}
-
-	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		final var opts = super.getConfigurationOptions();
 		opts.remove(textColor);
-		opts.add(anchor);
 		opts.add(padding);
 		opts.add(columnMargin);
 		opts.add(rowMargin);

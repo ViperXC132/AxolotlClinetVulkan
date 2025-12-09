@@ -34,9 +34,7 @@ import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffects;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.bridge.util.AxoText;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
-import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.gui.layout.CardinalOrder;
 import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
@@ -48,10 +46,9 @@ import io.github.axolotlclient.util.CommonUtil;
  *
  * <p>License: GPL-3.0</p>
  */
-public class PotionsHud extends TextHudEntry implements DynamicallyPositionable {
+public class PotionsHud extends TextHudEntry {
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "potionshud");
 
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
 	private final EnumOption<CardinalOrder> order = DefaultOptions.getCardinalOrder(CardinalOrder.TOP_DOWN);
 
 	private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
@@ -71,14 +68,36 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 
 	@Override
 	public void renderComponent(AxoRenderContext graphics, float delta) {
+		assert client.br$getPlayer() != null;
+		renderEffects(graphics, client.br$getPlayer().br$getStatusEffects());
+	}
+
+	@Override
+	public void render(AxoRenderContext ctx, float delta) {
 		final var player = client.br$getPlayer();
-		if(player == null) {
+		if (player == null) {
 			return;
 		}
-
-		final var effects = player.br$getStatusEffects();
-
-		renderEffects(graphics, effects);
+		var effects = player.br$getStatusEffects();
+		boolean noEffects = effects.isEmpty();
+		int calcWidth = noEffects ? 0 : calculateWidth(effects);
+		int calcHeight = noEffects ? 0 : calculateHeight(effects);
+		boolean changed = false;
+		if (calcWidth != getContentWidth()) {
+			setContentWidth(calcWidth);
+			changed = true;
+		}
+		if (calcHeight != getContentHeight()) {
+			setContentHeight(calcHeight);
+			changed = true;
+		}
+		if (changed) {
+			onBoundsUpdate();
+		}
+		if (noEffects) {
+			return;
+		}
+		super.render(ctx, delta);
 	}
 
 	private void renderEffects(AxoRenderContext graphics, List<AxoStatusEffectInstance> effects) {
@@ -86,12 +105,12 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 		int calcWidth = noEffects ? 0 : calculateWidth(effects);
 		int calcHeight = noEffects ? 0 : calculateHeight(effects);
 		boolean changed = false;
-		if (calcWidth != width) {
-			setWidth(calcWidth);
+		if (calcWidth != getContentWidth()) {
+			setContentWidth(calcWidth);
 			changed = true;
 		}
-		if (calcHeight != height) {
-			setHeight(calcHeight);
+		if (calcHeight != getContentHeight()) {
+			setContentHeight(calcHeight);
 			changed = true;
 		}
 		if (changed) {
@@ -103,7 +122,7 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 		int lastPos = 0;
 		CardinalOrder direction = order.get();
 
-		Rectangle bounds = getBounds();
+		Rectangle bounds = getContentBounds();
 		int x = bounds.x();
 		int y = bounds.y();
 		for (int i = 0; i < effects.size(); i++) {
@@ -191,7 +210,6 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
-		options.add(anchor);
 		options.add(order);
 		options.add(iconsOnly);
 		options.add(showEffectName);
@@ -202,10 +220,5 @@ public class PotionsHud extends TextHudEntry implements DynamicallyPositionable 
 	@Override
 	public AxoIdentifier getId() {
 		return ID;
-	}
-
-	@Override
-	public AnchorPoint getAnchor() {
-		return (anchor.get());
 	}
 }

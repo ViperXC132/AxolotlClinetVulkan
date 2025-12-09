@@ -38,7 +38,7 @@ import io.github.axolotlclient.mixin.skins.SkinTextureDownloaderAccessor;
 import io.github.axolotlclient.util.ClientColors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class SkinManager {
 
@@ -91,7 +91,7 @@ public class SkinManager {
 
 		try {
 			var tex = new DynamicTexture(rl::toString, NativeImage.read(skin.image()));
-			Minecraft.getInstance().getTextureManager().register((ResourceLocation) rl, tex);
+			Minecraft.getInstance().getTextureManager().register((Identifier) rl, tex);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
@@ -107,7 +107,7 @@ public class SkinManager {
 
 		try {
 			var tex = new DynamicTexture(rl::toString, NativeImage.read(cape.image()));
-			Minecraft.getInstance().getTextureManager().register((ResourceLocation) rl, tex);
+			Minecraft.getInstance().getTextureManager().register((Identifier) rl, tex);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
@@ -116,7 +116,7 @@ public class SkinManager {
 	}
 
 	public void releaseAll() {
-		loadedTextures.forEach(id -> Minecraft.getInstance().getTextureManager().release((ResourceLocation) id));
+		loadedTextures.forEach(id -> Minecraft.getInstance().getTextureManager().release((Identifier) id));
 		loadedTextures.clear();
 	}
 }

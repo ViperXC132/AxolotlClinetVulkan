@@ -334,9 +334,7 @@ public class GalleryScreen extends Screen {
 					e.render(guiGraphics, mouseX, mouseY, partialTick);
 				});
 			} else {
-				buttons.forEach(e -> {
-					e.setY(top);
-				});
+				buttons.forEach(e -> e.setY(top));
 			}
 		}
 

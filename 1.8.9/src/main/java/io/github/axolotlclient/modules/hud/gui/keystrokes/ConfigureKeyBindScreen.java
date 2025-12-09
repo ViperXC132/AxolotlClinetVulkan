@@ -36,6 +36,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.ClickableWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.TextFieldWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.IntegerWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.VanillaButtonWidget;
+import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import io.github.axolotlclient.modules.hud.gui.layout.Justification;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
@@ -90,7 +91,7 @@ public class ConfigureKeyBindScreen extends io.github.axolotlclient.AxolotlClien
 				GlStateManager.scalef(scale, scale, 1);
 				GlStateManager.translatef(-rect.x(), -rect.y(), 0);
 				DrawUtil.fillRect(rect, Colors.WHITE.withAlpha(128));
-				stroke.render();
+				stroke.render(AxoRenderContextImpl.getInstance());
 				GlStateManager.popMatrix();
 			}
 		}).active = false;
@@ -143,12 +144,10 @@ public class ConfigureKeyBindScreen extends io.github.axolotlclient.AxolotlClien
 
 		rightColY += 28;
 
-		addDrawableChild(new VanillaButtonWidget(super.width / 2 - 150 - 4, rightColY, 150, 20, I18n.translate("keystrokes.stroke.configure_key"), b -> {
-			minecraft.openScreen(new KeyBindSelectionScreen(this, stroke));
-		}));
-		addDrawableChild(new VanillaButtonWidget(super.width / 2 + 4, rightColY, 150, 20, I18n.translate("keystrokes.stroke.configure_position"), b -> {
-			minecraft.openScreen(new KeystrokePositioningScreen(this, hud, stroke));
-		}));
+		addDrawableChild(new VanillaButtonWidget(super.width / 2 - 150 - 4, rightColY, 150, 20, I18n.translate("keystrokes.stroke.configure_key"), b ->
+			minecraft.openScreen(new KeyBindSelectionScreen(this, stroke))));
+		addDrawableChild(new VanillaButtonWidget(super.width / 2 + 4, rightColY, 150, 20, I18n.translate("keystrokes.stroke.configure_position"), b ->
+			minecraft.openScreen(new KeystrokePositioningScreen(this, hud, stroke))));
 
 
 		if (isAddScreen) {

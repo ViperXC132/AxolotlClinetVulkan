@@ -37,7 +37,7 @@ import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 
 public class CreateChannelScreen extends Screen {
 	private final Screen parent;
@@ -69,8 +69,8 @@ public class CreateChannelScreen extends Screen {
 
 		AtomicReference<Consumer<Boolean>> countDisabler = new AtomicReference<>();
 		AtomicReference<Consumer<Boolean>> durationDisabler = new AtomicReference<>();
-		var persistence = CycleButton.<Persistence.Type>builder(
-				type -> Component.translatable("api.chat.persistence." + type.getId()))
+		var persistence = CycleButton.builder(
+				type -> Component.translatable("api.chat.persistence." + type.getId()), Persistence.Type.CHANNEL)
 			.withValues(Persistence.Type.values()).displayOnlyValue()
 			.create(Component.empty(), (cyclingButtonWidget, object) -> {
 				switch (object) {
@@ -108,14 +108,13 @@ public class CreateChannelScreen extends Screen {
 
 		var footer = LinearLayout.horizontal().spacing(8);
 		footer.addChild(Button.builder(CommonComponents.GUI_CANCEL, widget -> minecraft.setScreen(parent)).build());
-		footer.addChild(Button.builder(CommonComponents.GUI_DONE, widget -> {
+		footer.addChild(Button.builder(CommonComponents.GUI_DONE, widget ->
 			ChannelRequest.createChannel(nameField.getValue(), Persistence.of(persistence.getValue(), count.get().get(),
-					duration.get().get()
-				),
-				Arrays.stream(namesInput.getValue().split(",")).filter(s -> !s.isEmpty())
-					.toArray(String[]::new)
-			).thenRun(() -> minecraft.execute(() -> minecraft.setScreen(parent)));
-		}).build());
+				duration.get().get()
+			),
+			Arrays.stream(namesInput.getValue().split(",")).filter(s -> !s.isEmpty())
+				.toArray(String[]::new)
+		).thenRun(() -> minecraft.execute(() -> minecraft.setScreen(parent)))).build());
 		layout.addToFooter(footer);
 
 		layout.arrangeElements();
@@ -158,7 +157,7 @@ public class CreateChannelScreen extends Screen {
 			}
 			slider.visible = !slider.visible;
 			text.visible = !slider.visible;
-		}, true).sprite(ResourceLocation.fromNamespaceAndPath("axolotlclient", "cursor"), 8, 8).size(20, 20).build();
+		}, true).sprite(Identifier.fromNamespaceAndPath("axolotlclient", "cursor"), 8, 8).size(20, 20).build();
 		var assembly = LinearLayout.horizontal().spacing(2);
 		assembly.addChild(slider);
 		assembly.addChild(textButton);

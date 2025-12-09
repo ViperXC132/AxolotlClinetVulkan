@@ -50,8 +50,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.component.AttackRange;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AbstractChestBlock;
 import net.minecraft.world.phys.BlockHitResult;
@@ -66,11 +68,11 @@ import org.joml.Matrix4fStack;
  */
 
 public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositionable {
-	public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("kronhud", "crosshairhud");
-	private static final ResourceLocation CROSSHAIR_TEXTURE = ResourceLocation.withDefaultNamespace("hud/crosshair");
-	private static final ResourceLocation ATTACK_INDICATOR_FULL = ResourceLocation.withDefaultNamespace("hud/crosshair_attack_indicator_full");
-	private static final ResourceLocation ATTACK_INDICATOR_BACKGROUND = ResourceLocation.withDefaultNamespace("hud/crosshair_attack_indicator_background");
-	private static final ResourceLocation ATTACK_INDICATOR_PROGRESS = ResourceLocation.withDefaultNamespace("hud/crosshair_attack_indicator_progress");
+	public static final Identifier ID = Identifier.fromNamespaceAndPath("kronhud", "crosshairhud");
+	private static final Identifier CROSSHAIR_TEXTURE = Identifier.withDefaultNamespace("hud/crosshair");
+	private static final Identifier ATTACK_INDICATOR_FULL = Identifier.withDefaultNamespace("hud/crosshair_attack_indicator_full");
+	private static final Identifier ATTACK_INDICATOR_BACKGROUND = Identifier.withDefaultNamespace("hud/crosshair_attack_indicator_background");
+	private static final Identifier ATTACK_INDICATOR_PROGRESS = Identifier.withDefaultNamespace("hud/crosshair_attack_indicator_progress");
 	private final EnumOption<Crosshair> type = new EnumOption<>("crosshair_type", Crosshair.class, Crosshair.CROSS);
 	private final BooleanOption showInF5 = new BooleanOption("showInF5", false);
 	private final ColorOption defaultColor = new ColorOption("defaultcolor", ClientColors.WHITE);
@@ -190,8 +192,8 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			matrixStack.pushMatrix();
 			matrixStack.translate(client.getWindow().getGuiScaledWidth() / 2F, client.getWindow().getGuiScaledHeight() / 2F,
 				0);
-			matrixStack.rotateX(-camera.getXRot() * 0.017453292F);
-			matrixStack.rotateY(camera.getYRot() * 0.017453292F);
+			matrixStack.rotateX(-camera.xRot() * 0.017453292F);
+			matrixStack.rotateY(camera.yRot() * 0.017453292F);
 			matrixStack.scale(-getScale(), -getScale(), -getScale());
 			client.gui.getDebugOverlay().render3dCrosshair(((GameRendererAccessor) client.gameRenderer).getCamera());
 			matrixStack.popMatrix();
@@ -218,6 +220,9 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 					&& progress >= 1.0F) {
 					targetingEntity = this.client.player.getCurrentItemAttackStrengthDelay() > 5.0F;
 					targetingEntity &= this.client.crosshairPickEntity.isAlive();
+
+					AttackRange attackRange = this.client.player.getActiveItem().get(DataComponents.ATTACK_RANGE);
+					targetingEntity &= attackRange == null || attackRange.isInRange(this.client.player, this.client.hitResult.getLocation());
 				}
 
 				x = (int) ((graphics.guiWidth() / getScale()) / 2 - 8);

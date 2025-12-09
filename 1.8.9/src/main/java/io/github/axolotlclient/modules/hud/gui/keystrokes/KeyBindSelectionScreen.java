@@ -40,7 +40,7 @@ public class KeyBindSelectionScreen extends io.github.axolotlclient.AxolotlClien
 
 	@Override
 	public void init() {
-		addDrawableChild(new KeyBindSelectionList(this, this.minecraft, key -> stroke.setKey(key)));
+		addDrawableChild(new KeyBindSelectionList(this, this.minecraft, stroke::setKey));
 
 		addDrawableChild(new VanillaButtonWidget(width / 2 - 75, height - 33 / 2 - 10, 150, 20, I18n.translate("gui.done"), button -> this.closeScreen()));
 	}

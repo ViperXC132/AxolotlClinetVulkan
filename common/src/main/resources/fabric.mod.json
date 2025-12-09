@@ -22,5 +22,15 @@
 	"icon": "assets/axolotlclient/icon.png",
 	"environment": "client",
 	"entrypoints": {
+	},
+	"custom": {
+		"modmenu": {
+			"parent": {
+				"id": "axolotlclient",
+				"name": "AxolotlClient",
+				"icon": "assets/axolotlclient/icon.png"
+			},
+			"badges": ["library"]
+		}
 	}
 }

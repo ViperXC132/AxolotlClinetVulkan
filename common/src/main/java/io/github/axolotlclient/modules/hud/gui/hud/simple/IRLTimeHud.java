@@ -79,19 +79,19 @@ public class IRLTimeHud extends SimpleTextHudEntry {
 		}
 		if (formatter == null) {
 			updateDateTimeFormatter(format.get());
-			return getPlaceholder();
+			return getPlaceholderValue();
 		}
 		return formatter.format(LocalDateTime.now());
 	}
 
 	@Override
-	public String getPlaceholder() {
+	public String getPlaceholderValue() {
 		if (error) {
 			return "Error Compiling!";
 		}
 		if (formatter == null) {
 			updateDateTimeFormatter(format.get());
-			return getPlaceholder();
+			return getPlaceholderValue();
 		}
 		return formatter.format(LocalDateTime.of(2020, Month.AUGUST, 22, 14, 28, 32, 1595135));
 	}

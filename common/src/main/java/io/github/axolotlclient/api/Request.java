@@ -163,9 +163,8 @@ public record Request(Route route, List<String> path, List<String> query,
 
 		private String mapToString(Map<?, ?> map) {
 			StringBuilder builder = new StringBuilder("{");
-			map.forEach((o, o2) -> {
-				builder.append(o).append(": ").append(o2).append(",\n");
-			});
+			map.forEach((o, o2) ->
+				builder.append(o).append(": ").append(o2).append(",\n"));
 			int length = builder.length();
 			builder.delete(length - 2, length - 1);
 			builder.append("}");

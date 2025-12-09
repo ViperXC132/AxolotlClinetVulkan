@@ -31,7 +31,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
-@SuppressWarnings("UnstableApiUsage")
 public final class CachedAPI<K, V> {
 	public static final class ApiResult<T> {
 		private static final ApiResult<?> PENDING_INSTANCE = new ApiResult<>(null);

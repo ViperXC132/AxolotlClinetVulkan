@@ -51,6 +51,7 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -117,17 +118,19 @@ public abstract class MinecraftClientMixin {
 	}
 
 	// Don't ask me why we need both here, but otherwise it looks ugly
-	@Redirect(method = "renderMojangLogo", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferBuilder;color(IIII)Lcom/mojang/blaze3d/vertex/BufferBuilder;"))
-	public BufferBuilder axolotlclient$loadingScreenColor(BufferBuilder instance, int red, int green, int blue, int alpha) {
-		return instance.color(AxolotlClient.config().loadingScreenColor.get().getRed(),
+	@WrapOperation(method = "renderMojangLogo", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferBuilder;color(IIII)Lcom/mojang/blaze3d/vertex/BufferBuilder;"))
+	public BufferBuilder axolotlclient$loadingScreenColor(BufferBuilder instance, int red, int green, int blue, int alpha, Operation<BufferBuilder> original) {
+		if (!AxolotlClient.config().customLoadingScreenColor.get()) return original.call(instance, red, green, blue, alpha);
+		return original.call(instance, AxolotlClient.config().loadingScreenColor.get().getRed(),
 			AxolotlClient.config().loadingScreenColor.get().getGreen(),
 			AxolotlClient.config().loadingScreenColor.get().getBlue(),
 			AxolotlClient.config().loadingScreenColor.get().getAlpha());
 	}
 
-	@Redirect(method = "renderLoadingScreen", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferBuilder;color(IIII)Lcom/mojang/blaze3d/vertex/BufferBuilder;"))
-	public BufferBuilder axolotlclient$loadingScreenBg(BufferBuilder instance, int red, int green, int blue, int alpha) {
-		return instance.color(AxolotlClient.config().loadingScreenColor.get().getRed(),
+	@WrapOperation(method = "renderLoadingScreen", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferBuilder;color(IIII)Lcom/mojang/blaze3d/vertex/BufferBuilder;"))
+	public BufferBuilder axolotlclient$loadingScreenBg(BufferBuilder instance, int red, int green, int blue, int alpha, Operation<BufferBuilder> original) {
+		if (!AxolotlClient.config().customLoadingScreenColor.get()) return original.call(instance, red, green, blue, alpha);
+		return original.call(instance, AxolotlClient.config().loadingScreenColor.get().getRed(),
 			AxolotlClient.config().loadingScreenColor.get().getGreen(),
 			AxolotlClient.config().loadingScreenColor.get().getBlue(),
 			AxolotlClient.config().loadingScreenColor.get().getAlpha());
@@ -142,7 +145,7 @@ public abstract class MinecraftClientMixin {
 		}
 	}
 
-	@Redirect(method = "<init>", at = @At(value = "FIELD", target = "Lnet/minecraft/client/main/RunArgs$Game;version:Ljava/lang/String;"))
+	@Redirect(method = "<init>", at = @At(value = "FIELD", target = "Lnet/minecraft/client/main/RunArgs$Game;version:Ljava/lang/String;", opcode = Opcodes.GETFIELD))
 	private String axolotlclient$redirectVersion(RunArgs.Game game) {
 		return "1.8.9";
 	}
@@ -173,7 +176,7 @@ public abstract class MinecraftClientMixin {
 		}
 	}
 
-	@Inject(method = "updateWindow", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;onResolutionChanged(II)V"))
+	@Inject(method = "onResolutionChanged()V", at = @At(value = "TAIL"))
 	public void axolotlclient$onResize(CallbackInfo ci) {
 		Util.window = null;
 		HudManager.getInstance().refreshAllBounds();

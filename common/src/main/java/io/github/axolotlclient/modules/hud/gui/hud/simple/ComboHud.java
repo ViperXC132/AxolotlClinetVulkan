@@ -83,7 +83,7 @@ public class ComboHud extends SimpleTextHudEntry {
 	}
 
 	@Override
-	public String getPlaceholder() {
+	public String getPlaceholderValue() {
 		return AxoI18n.translate("hits", 3);
 	}
 }

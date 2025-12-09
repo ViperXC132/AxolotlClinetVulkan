@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.modules.hud.HudEditScreen;
@@ -108,6 +109,7 @@ public class KeystrokePositioningScreen extends Screen {
 		var rect = getScaledRenderPos(s);
 		if (rect.isMouseOver(mouseX, mouseY)) {
 			DrawUtil.fillRect(guiGraphics, rect, ClientColors.SELECTOR_BLUE.withAlpha(100));
+			guiGraphics.requestCursor(CursorTypes.RESIZE_ALL);
 		} else {
 			DrawUtil.fillRect(guiGraphics, rect, ClientColors.WHITE.withAlpha(50));
 		}

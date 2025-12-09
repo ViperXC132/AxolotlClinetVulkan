@@ -34,10 +34,16 @@ import io.github.axolotlclient.util.Util;
 import io.github.axolotlclient.util.duck.NameTagSubmitExtension;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.*;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.SubmitNodeCollection;
+import net.minecraft.client.renderer.SubmitNodeStorage;
 import net.minecraft.client.renderer.feature.NameTagFeatureRenderer;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.rendertype.TextureTransform;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
@@ -50,11 +56,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(NameTagFeatureRenderer.class)
 public abstract class NameTagFeatureRendererMixin {
 	@Unique
-	private static final RenderType TEXTURED_TYPE = RenderType.create("textured_quads", 1536, RenderPipeline.builder(RenderPipelines.GUI_TEXTURED_SNIPPET)
-			.withLocation(ResourceLocation.fromNamespaceAndPath(AxolotlClientCommon.MODID, "pipeline/badge"))
-			.withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST).build(),
-		RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(AxolotlClient.badgeIcon, false))
-			.createCompositeState(false));
+	private static final RenderType TEXTURED_TYPE = RenderType.create("axolotlclient_textured_quads", RenderSetup.builder(
+		RenderPipeline.builder(RenderPipelines.GUI_TEXTURED_SNIPPET)
+			.withLocation(Identifier.fromNamespaceAndPath(AxolotlClientCommon.MODID, "pipeline/badge"))
+			.withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST).build())
+		.bufferSize(1536)
+			.withTexture("Sampler0", AxolotlClient.badgeIcon)
+		.setTextureTransform(TextureTransform.DEFAULT_TEXTURING)
+		.createRenderSetup());
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Lnet/minecraft/network/chat/Component;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)V", ordinal = 1, shift = At.Shift.AFTER))
 	private void renderBadges(SubmitNodeCollection submitNodeCollection, MultiBufferSource.BufferSource bufferSource, Font font, CallbackInfo ci, @Local SubmitNodeStorage.NameTagSubmit submit) {

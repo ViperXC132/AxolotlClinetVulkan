@@ -47,10 +47,10 @@ import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
 import io.github.axolotlclient.modules.hud.gui.component.Positionable;
 import io.github.axolotlclient.modules.hud.gui.entry.AbstractHudEntry;
 import io.github.axolotlclient.modules.hud.gui.hud.*;
-import io.github.axolotlclient.modules.hud.gui.hud.simple.*;
 import io.github.axolotlclient.modules.hud.gui.hud.item.ArmorHud;
 import io.github.axolotlclient.modules.hud.gui.hud.item.ArrowHud;
 import io.github.axolotlclient.modules.hud.gui.hud.item.ItemUpdateHud;
+import io.github.axolotlclient.modules.hud.gui.hud.simple.*;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.InventoryHud;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
@@ -135,6 +135,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 
 	@Override
 	public void lateInit() {
+		entries.values().forEach(HudEntry::postConfigLoad);
 		if (AxoWindow.getWindow() == null) {
 			Events.CLIENT_READY.register(this::refreshAllBounds);
 		} else {

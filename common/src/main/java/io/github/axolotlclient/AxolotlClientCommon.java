@@ -24,27 +24,32 @@
 package io.github.axolotlclient;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.common.base.Preconditions;
-import com.google.gson.JsonObject;
 import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
 import io.github.axolotlclient.AxolotlClientConfig.impl.managers.JsonConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.impl.managers.VersionedJsonConfigManager;
 import io.github.axolotlclient.api.API;
+import io.github.axolotlclient.api.Options;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.bridge.util.AxoProfiler;
+import io.github.axolotlclient.config.migration.ConfigMigration;
 import io.github.axolotlclient.config.profiles.ProfileAware;
 import io.github.axolotlclient.config.profiles.Profiles;
 import io.github.axolotlclient.modules.Module;
+import io.github.axolotlclient.modules.freelook.Freelook;
 import io.github.axolotlclient.modules.hud.ClickInputTracker;
+import io.github.axolotlclient.modules.render.BeaconBeam;
+import io.github.axolotlclient.modules.rpc.DiscordRPC;
+import io.github.axolotlclient.modules.tnttime.TntTime;
+import io.github.axolotlclient.util.FeatureDisablerCommon;
 import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.OSUtil;
 import io.github.axolotlclient.util.notifications.NotificationProvider;
@@ -63,9 +68,7 @@ public abstract class AxolotlClientCommon {
 		return Profiles.getInstance().resolveProfileFile(file);
 	}
 
-	public static final boolean NVG_SUPPORTED = OSUtil.getOS() != OSUtil.OperatingSystem.OTHER &&
-		!Objects.requireNonNullElse(System.getenv("TMPDIR"), "").contains("Android") &&
-		!Objects.requireNonNullElse(System.getenv("HOME"), "").contains("Android") &&
+	public static final boolean SHADERS_SUPPORTED = OSUtil.getOS() != OSUtil.OperatingSystem.OTHER &&
 		!FabricLoader.getInstance().isModLoaded("vulkanmod");
 
 	public static final String VERSION = FabricLoader.getInstance()
@@ -88,7 +91,7 @@ public abstract class AxolotlClientCommon {
 	private Logger logger;
 	private NotificationProvider notificationProvider;
 	private JsonConfigManager configManager;
-	private boolean initializing = false;
+	private boolean initialized = false;
 	public final List<Module> modules = new ArrayList<>();
 
 	protected AxolotlClientCommon() {
@@ -97,22 +100,22 @@ public abstract class AxolotlClientCommon {
 	// getters
 
 	public AxolotlClientConfigCommon getConfig() {
-		Preconditions.checkState(initializing && config != null);
+		Preconditions.checkState(initialized && config != null);
 		return config;
 	}
 
 	public ConfigManager getConfigManager() {
-		Preconditions.checkState(initializing && configManager != null);
+		Preconditions.checkState(initialized && configManager != null);
 		return configManager;
 	}
 
 	public Logger getLogger() {
-		Preconditions.checkState(initializing && logger != null);
+		Preconditions.checkState(initialized && logger != null);
 		return logger;
 	}
 
 	public NotificationProvider getNotificationProvider() {
-		Preconditions.checkState(initializing && notificationProvider != null);
+		Preconditions.checkState(initialized && notificationProvider != null);
 		return notificationProvider;
 	}
 
@@ -123,6 +126,11 @@ public abstract class AxolotlClientCommon {
 
 	private void addBuiltinCommonModules() {
 		registerModule(ClickInputTracker.getInstance());
+		registerModule(BeaconBeam.getInstance());
+		registerModule(Freelook.getInstance());
+		registerModule(TntTime.getInstance());
+		registerModule(DiscordRPC.getInstance());
+		registerModule(getApiOptions());
 	}
 
 	// init logic
@@ -149,68 +157,11 @@ public abstract class AxolotlClientCommon {
 				}
 			}
 		}
-		configManager = new VersionedJsonConfigManager(configFile,
-			config.getConfig(), 5, (oldVersion, newVersion, config, json) -> {
-			if (oldVersion.getMajor() <= 1) {
-				if (json.has("hud")) {
-					var hud = json.get("hud").getAsJsonObject();
-					if (hud.has("keystrokehud")) {
-						var keystrokes = hud.get("keystrokehud")
-							.getAsJsonObject();
-						var mousemovement = new JsonObject();
-						mousemovement.addProperty("enabled", keystrokes.get("enabled").getAsBoolean() && keystrokes.get("mousemovement").getAsBoolean());
-						mousemovement.addProperty("mouseMovementIndicator", keystrokes.get("mouseMovementIndicator").getAsString());
-						mousemovement.addProperty("mouseMovementIndicatorOuter", keystrokes.get("mouseMovementIndicatorOuter").getAsString());
-						hud.add("mousemovementhud", mousemovement);
-					}
-				}
-			}
-			if (oldVersion.getMajor() <= 2) {
-				if (json.has("hud")) {
-					var hud = json.get("hud").getAsJsonObject();
-					if (hud.has("armorhud")) {
-						var armorhud = hud.get("armorhud").getAsJsonObject();
-						if (armorhud.has("armorhud.main_hand_item_top")) {
-							var mainItemTop = armorhud.get("armorhud.main_hand_item_top").getAsBoolean();
-							if (mainItemTop) {
-								armorhud.addProperty("armorhud.main_hand_item_position", "armorhud.main_hand_item_position.top");
-							}
-						}
-					}
-				}
-			}
-			if (oldVersion.getMajor() <= 3) {
-				if (json.has("storedOptions")) {
-					var hiddenOptions = json.get("storedOptions").getAsJsonObject();
-
-					JsonObject apiOptions;
-					if (json.has("api.category")) {
-						apiOptions = json.get("api.category").getAsJsonObject();
-					} else {
-						apiOptions = new JsonObject();
-						json.add("api.category", apiOptions);
-					}
-
-					apiOptions.addProperty("api.privacy_policy_accepted", "privacy_policy_state." + hiddenOptions.get("privacyPolicyAccepted").getAsString().toLowerCase(Locale.ROOT));
-				}
-			}
-			if (oldVersion.getMajor() <= 4) {
-				if (json.has("hypixel-mods")) {
-					var hypixel = json.get("hypixel-mods").getAsJsonObject();
-					var autoboop = hypixel.get("autoboop");
-					if (autoboop != null) {
-						var filterlist = autoboop.getAsJsonObject().get("autoboop.filterlist");
-						if (filterlist != null) {
-							filterlist.getAsString();
-							autoboop.getAsJsonObject().addProperty("autoboop.filterlist", Arrays.stream(filterlist.getAsString().split(","))
-								.map(s -> s.getBytes(StandardCharsets.UTF_8))
-								.map(s -> Base64.getEncoder().encodeToString(s)).collect(Collectors.joining(",")));
-						}
-					}
-				}
-			}
-			return json;
-		});
+		configManager = new VersionedJsonConfigManager(configFile, config.getConfig(), ConfigMigration.CONFIG_VERSION,
+			(oldVersion, newVersion, config, json) -> {
+				ConfigMigration.apply(oldVersion.getMajor(), json);
+				return json;
+			});
 
 		AxolotlClientConfig.getInstance().register(configManager);
 
@@ -220,13 +171,13 @@ public abstract class AxolotlClientCommon {
 	}
 
 	protected final void init(Logger logger, NotificationProvider provider) {
-		Preconditions.checkState(!initializing);
+		Preconditions.checkState(!initialized);
 		Preconditions.checkState(instance == null);
 
+		instance = this;
 		addBuiltinCommonModules();
 
-		initializing = true;
-		instance = this;
+		initialized = true;
 
 		this.logger = logger;
 		Profiles.getInstance().loadProfiles();
@@ -248,7 +199,8 @@ public abstract class AxolotlClientCommon {
 			modules.forEach(Module::tick);
 			AxoProfiler.get().br$pop();
 		});
-		initFeatureDisabler();
+
+		getFeatureDisabler().init();
 
 		// register events
 
@@ -256,13 +208,15 @@ public abstract class AxolotlClientCommon {
 	}
 
 	protected final void registerModule(Module module) {
-		Preconditions.checkState(!initializing);
+		Preconditions.checkState(!initialized);
 		modules.add(module);
 	}
 
-	protected abstract void initFeatureDisabler();
+	protected abstract FeatureDisablerCommon getFeatureDisabler();
 
 	protected abstract AxolotlClientConfigCommon createConfig();
+
+	public abstract Options getApiOptions();
 
 	// random stuff
 

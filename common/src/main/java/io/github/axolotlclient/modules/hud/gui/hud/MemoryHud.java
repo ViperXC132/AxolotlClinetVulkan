@@ -31,11 +31,8 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoI18n;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
-import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.gui.layout.Justification;
-import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.util.ClientColors;
@@ -47,7 +44,7 @@ import io.github.axolotlclient.util.ClientColors;
  * <p>License: GPL-3.0</p>
  */
 
-public class MemoryHud extends TextHudEntry implements DynamicallyPositionable {
+public class MemoryHud extends TextHudEntry {
 	private record MemoryInfo(long free, long max, long total) {
 		private static MemoryInfo current() {
 			return new MemoryInfo(
@@ -64,7 +61,7 @@ public class MemoryHud extends TextHudEntry implements DynamicallyPositionable {
 		);
 
 		private long used() {
-			return max - free;
+			return total - free;
 		}
 
 		private float usage() {
@@ -88,7 +85,6 @@ public class MemoryHud extends TextHudEntry implements DynamicallyPositionable {
 
 	protected final EnumOption<Justification> justification = new EnumOption<>("justification", Justification.class,
 		Justification.CENTER);
-	protected final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint();
 
 	private final Rectangle graph = new Rectangle(0, 0, 0, 0);
 	private final ColorOption graphUsedColor = new ColorOption("graphUsedColor",
@@ -105,10 +101,10 @@ public class MemoryHud extends TextHudEntry implements DynamicallyPositionable {
 	}
 
 	private void doRender(AxoRenderContext context, MemoryInfo info) {
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 
 		if (showGraph.get()) {
-			graph.setData(pos.x() + 5, pos.y() + 5, getBounds().width - 10, getBounds().height - 10);
+			graph.setData(pos.x() + 5, pos.y() + 5, getContentWidth() - 10, getContentHeight() - 10);
 			final int usagePx = (int) (graph.width * info.usage());
 			context.br$fillRect(graph.x, graph.y, usagePx, graph.height, graphUsedColor.get().toInt());
 			context.br$fillRect(graph.x + usagePx, graph.y, graph.width - usagePx, graph.height,
@@ -121,8 +117,8 @@ public class MemoryHud extends TextHudEntry implements DynamicallyPositionable {
 
 			context.br$drawString(
 				mem,
-				pos.x() + justification.get().getXOffset(context.br$getFont().br$getWidth(mem), getWidth() - 4) + 2,
-				pos.y() + (Math.round((float) height / 2) - 4) - (showAllocated.get() ? 4 : 0),
+				pos.x() + justification.get().getXOffset(context.br$getFont().br$getWidth(mem), getContentWidth() - 4) + 2,
+				pos.y() + (Math.round((float) getContentHeight() / 2) - 4) - (showAllocated.get() ? 4 : 0),
 				textColor.get().toInt(),
 				shadow.get()
 			);
@@ -132,8 +128,8 @@ public class MemoryHud extends TextHudEntry implements DynamicallyPositionable {
 				context.br$drawString(
 					alloc,
 					pos.x() + justification.get().getXOffset(context.br$getFont().br$getWidth(alloc),
-						getWidth() - 4) + 2,
-					pos.y() + (Math.round((float) height / 2) - 4) + 4,
+						getContentWidth() - 4) + 2,
+					pos.y() + (Math.round((float) getContentHeight() / 2) - 4) + 4,
 					textColor.get().toInt(),
 					shadow.get()
 				);
@@ -155,7 +151,6 @@ public class MemoryHud extends TextHudEntry implements DynamicallyPositionable {
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
 		options.add(justification);
-		options.add(anchor);
 		options.add(showGraph);
 		options.add(graphUsedColor);
 		options.add(graphFreeColor);
@@ -167,10 +162,5 @@ public class MemoryHud extends TextHudEntry implements DynamicallyPositionable {
 	@Override
 	public AxoIdentifier getId() {
 		return ID;
-	}
-
-	@Override
-	public AnchorPoint getAnchor() {
-		return anchor.get();
 	}
 }

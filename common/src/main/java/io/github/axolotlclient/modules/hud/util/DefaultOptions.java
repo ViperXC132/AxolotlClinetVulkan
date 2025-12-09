@@ -55,12 +55,19 @@ public class DefaultOptions {
 		return new ForceableBooleanOption("enabled", false);
 	}
 
-	public static EnumOption<AnchorPoint> getAnchorPoint() {
-		return getAnchorPoint(AnchorPoint.TOP_LEFT);
+	public static EnumOption<AnchorPoint> getAnchorPoint(HudEntry entry) {
+		return getAnchorPoint(AnchorPoint.TOP_LEFT, entry);
 	}
 
-	public static EnumOption<AnchorPoint> getAnchorPoint(AnchorPoint defaultValue) {
-		return new EnumOption<>("anchorpoint", AnchorPoint.class, defaultValue);
+	public static EnumOption<AnchorPoint> getAnchorPoint(AnchorPoint defaultValue, HudEntry entry) {
+		return new EnumOption<>("anchorpoint", AnchorPoint.class, defaultValue, value -> {
+			var storedX = entry.getRawTrueX();
+			var storedY = entry.getRawTrueY();
+			var offsetX = entry.offsetTrueWidth();
+			var offsetY = entry.offsetTrueHeight();
+			entry.setX(storedX + offsetX);
+			entry.setY(storedY + offsetY);
+		});
 	}
 
 	public static EnumOption<CardinalOrder> getCardinalOrder(CardinalOrder defaultValue) {

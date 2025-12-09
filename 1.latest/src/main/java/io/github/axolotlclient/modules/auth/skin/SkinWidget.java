@@ -40,7 +40,7 @@ import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.network.chat.CommonComponents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.Nullable;
 
@@ -96,7 +96,7 @@ public class SkinWidget extends AbstractWidget {
 		var renderer = SkinRenderer.getOrCreate(minecraft.renderBuffers().bufferSource(), minecraft, "" + hashCode());
 		((GuiGraphicsAccessor) guiGraphics).getGuiRenderState()
 			.submitPicturesInPictureState(
-				new SkinRenderState(classic, (ResourceLocation) skinRl, (ResourceLocation) capeRl, this.rotationX, this.rotationY, pivotY, this.getX(), this.getY(), this.getRight(), this.getBottom(), scale, guiGraphics.scissorStack.peek(), renderer));
+				new SkinRenderState(classic, (Identifier) skinRl, (Identifier) capeRl, this.rotationX, this.rotationY, pivotY, this.getX(), this.getY(), this.getRight(), this.getBottom(), scale, guiGraphics.scissorStack.peek(), renderer));
 	}
 
 	@Override

@@ -33,13 +33,13 @@ import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastManager;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.FormattedCharSequence;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class AxolotlClientToast implements Toast {
-	private static final ResourceLocation BACKGROUND_SPRITE = ResourceLocation.fromNamespaceAndPath("axolotlclient", "toast/axolotlclient");
+	private static final Identifier BACKGROUND_SPRITE = Identifier.fromNamespaceAndPath("axolotlclient", "toast/axolotlclient");
 	private static final int DISPLAY_TIME_MILLIS = 5000;
 	private static final int MAX_LINE_SIZE = 200;
 	private static final int LINE_SPACING = 12;

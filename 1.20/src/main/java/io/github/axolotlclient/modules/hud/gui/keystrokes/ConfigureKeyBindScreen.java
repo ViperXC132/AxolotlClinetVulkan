@@ -132,12 +132,10 @@ public class ConfigureKeyBindScreen extends Screen {
 
 		rightColY += 28;
 
-		addDrawableChild(ButtonWidget.builder(Text.translatable("keystrokes.stroke.configure_key"), b -> {
-			client.setScreen(new KeyBindSelectionScreen(this, stroke));
-		}).positionAndSize(super.width / 2 - 150 - 4, rightColY, 150, 20).build());
-		addDrawableChild(ButtonWidget.builder(Text.translatable("keystrokes.stroke.configure_position"), b -> {
-			client.setScreen(new KeystrokePositioningScreen(this, hud, stroke));
-		}).positionAndSize(super.width / 2 + 4, rightColY, 150, 20).build());
+		addDrawableChild(ButtonWidget.builder(Text.translatable("keystrokes.stroke.configure_key"), b ->
+			client.setScreen(new KeyBindSelectionScreen(this, stroke))).positionAndSize(super.width / 2 - 150 - 4, rightColY, 150, 20).build());
+		addDrawableChild(ButtonWidget.builder(Text.translatable("keystrokes.stroke.configure_position"), b ->
+			client.setScreen(new KeystrokePositioningScreen(this, hud, stroke))).positionAndSize(super.width / 2 + 4, rightColY, 150, 20).build());
 
 
 		if (isAddScreen) {

@@ -44,7 +44,6 @@ import net.fabricmc.api.Environment;
 import net.minecraft.ChatFormatting;
 import net.minecraft.DefaultUncaughtExceptionHandler;
 import net.minecraft.SharedConstants;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ObjectSelectionList;
@@ -56,27 +55,29 @@ import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.*;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.network.EventLoopGroupHolder;
 import net.minecraft.util.FormattedCharSequence;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 public class FriendsMultiplayerSelectionList extends ObjectSelectionList<FriendsMultiplayerSelectionList.Entry> {
-	static final ResourceLocation INCOMPATIBLE_SPRITE = ResourceLocation.withDefaultNamespace("server_list/incompatible");
-	static final ResourceLocation UNREACHABLE_SPRITE = ResourceLocation.withDefaultNamespace("server_list/unreachable");
-	static final ResourceLocation PING_1_SPRITE = ResourceLocation.withDefaultNamespace("server_list/ping_1");
-	static final ResourceLocation PING_2_SPRITE = ResourceLocation.withDefaultNamespace("server_list/ping_2");
-	static final ResourceLocation PING_3_SPRITE = ResourceLocation.withDefaultNamespace("server_list/ping_3");
-	static final ResourceLocation PING_4_SPRITE = ResourceLocation.withDefaultNamespace("server_list/ping_4");
-	static final ResourceLocation PING_5_SPRITE = ResourceLocation.withDefaultNamespace("server_list/ping_5");
-	static final ResourceLocation PINGING_1_SPRITE = ResourceLocation.withDefaultNamespace("server_list/pinging_1");
-	static final ResourceLocation PINGING_2_SPRITE = ResourceLocation.withDefaultNamespace("server_list/pinging_2");
-	static final ResourceLocation PINGING_3_SPRITE = ResourceLocation.withDefaultNamespace("server_list/pinging_3");
-	static final ResourceLocation PINGING_4_SPRITE = ResourceLocation.withDefaultNamespace("server_list/pinging_4");
-	static final ResourceLocation PINGING_5_SPRITE = ResourceLocation.withDefaultNamespace("server_list/pinging_5");
-	static final ResourceLocation JOIN_HIGHLIGHTED_SPRITE = ResourceLocation.withDefaultNamespace("server_list/join_highlighted");
-	static final ResourceLocation JOIN_SPRITE = ResourceLocation.withDefaultNamespace("server_list/join");
+	static final Identifier INCOMPATIBLE_SPRITE = Identifier.withDefaultNamespace("server_list/incompatible");
+	static final Identifier UNREACHABLE_SPRITE = Identifier.withDefaultNamespace("server_list/unreachable");
+	static final Identifier PING_1_SPRITE = Identifier.withDefaultNamespace("server_list/ping_1");
+	static final Identifier PING_2_SPRITE = Identifier.withDefaultNamespace("server_list/ping_2");
+	static final Identifier PING_3_SPRITE = Identifier.withDefaultNamespace("server_list/ping_3");
+	static final Identifier PING_4_SPRITE = Identifier.withDefaultNamespace("server_list/ping_4");
+	static final Identifier PING_5_SPRITE = Identifier.withDefaultNamespace("server_list/ping_5");
+	static final Identifier PINGING_1_SPRITE = Identifier.withDefaultNamespace("server_list/pinging_1");
+	static final Identifier PINGING_2_SPRITE = Identifier.withDefaultNamespace("server_list/pinging_2");
+	static final Identifier PINGING_3_SPRITE = Identifier.withDefaultNamespace("server_list/pinging_3");
+	static final Identifier PINGING_4_SPRITE = Identifier.withDefaultNamespace("server_list/pinging_4");
+	static final Identifier PINGING_5_SPRITE = Identifier.withDefaultNamespace("server_list/pinging_5");
+	static final Identifier JOIN_HIGHLIGHTED_SPRITE = Identifier.withDefaultNamespace("server_list/join_highlighted");
+	static final Identifier JOIN_SPRITE = Identifier.withDefaultNamespace("server_list/join");
 	static final Logger LOGGER = LogUtils.getLogger();
 	static final ThreadPoolExecutor THREAD_POOL = new ScheduledThreadPoolExecutor(
 		5,
@@ -208,7 +209,7 @@ public class FriendsMultiplayerSelectionList extends ObjectSelectionList<Friends
 				graphics.drawString(minecraft.font, user.getStatus().getLastOnline(), getContentX() + 3 + 32, getContentY() + 12, 0xFF808080);
 			}
 
-			ResourceLocation texture = Auth.getInstance().getSkinTexture(user);
+			Identifier texture = Auth.getInstance().getSkinTexture(user);
 			PlayerFaceRenderer.draw(graphics, texture, getContentX(), getContentY(), 32, true, false, -1);
 		}
 	}
@@ -228,7 +229,7 @@ public class FriendsMultiplayerSelectionList extends ObjectSelectionList<Friends
 		@Nullable
 		private List<Component> onlinePlayersTooltip;
 		@Nullable
-		private ResourceLocation statusIcon;
+		private Identifier statusIcon;
 		@Nullable
 		private Component statusIconTooltip;
 		@Getter
@@ -306,7 +307,8 @@ public class FriendsMultiplayerSelectionList extends ObjectSelectionList<Friends
 													this.serverData.protocol == SharedConstants.getCurrentVersion().protocolVersion() ? ServerData.State.SUCCESSFUL : ServerData.State.INCOMPATIBLE
 												);
 											this.minecraft.execute(this::refreshStatus);
-										}
+										},
+										EventLoopGroupHolder.remote(this.minecraft.options.useNativeTransport())
 									);
 							} catch (UnknownHostException var2) {
 								this.serverData.setState(ServerData.State.UNREACHABLE);
@@ -329,7 +331,7 @@ public class FriendsMultiplayerSelectionList extends ObjectSelectionList<Friends
 			}
 
 			guiGraphics.blit(RenderPipelines.GUI_TEXTURED, this.icon.textureLocation(), getContentX(), getContentY(), 0.0F, 0.0F, ICON_WIDTH, ICON_HEIGHT, ICON_WIDTH, ICON_HEIGHT);
-			ResourceLocation texture = Auth.getInstance().getSkinTexture(user);
+			Identifier texture = Auth.getInstance().getSkinTexture(user);
 			PlayerFaceRenderer.draw(guiGraphics, texture, getContentX() + ICON_WIDTH - 10, getContentY() + ICON_HEIGHT - 10, 10, true, false, -1);
 			if (this.serverData.state() == ServerData.State.PINGING) {
 				int i = (int) (Util.getMillis() / 100L + FriendsMultiplayerSelectionList.this.children().indexOf(this) * 2 & 7L);

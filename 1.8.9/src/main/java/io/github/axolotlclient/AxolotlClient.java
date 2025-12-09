@@ -26,6 +26,7 @@ import java.util.HashMap;
 
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.APIOptions;
+import io.github.axolotlclient.api.Options;
 import io.github.axolotlclient.api.StatusUpdateProviderImpl;
 import io.github.axolotlclient.bridge.impl.Bridge;
 import io.github.axolotlclient.config.AxolotlClientConfig;
@@ -33,20 +34,17 @@ import io.github.axolotlclient.modules.ModuleLoader;
 import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.blur.MenuBlur;
 import io.github.axolotlclient.modules.blur.MotionBlur;
-import io.github.axolotlclient.modules.freelook.Freelook;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import io.github.axolotlclient.modules.particles.Particles;
-import io.github.axolotlclient.modules.renderOptions.BeaconBeam;
-import io.github.axolotlclient.modules.rpc.DiscordRPC;
 import io.github.axolotlclient.modules.screenshotUtils.ScreenshotUtils;
 import io.github.axolotlclient.modules.scrollableTooltips.ScrollableTooltips;
 import io.github.axolotlclient.modules.sky.SkyResourceManager;
 import io.github.axolotlclient.modules.tablist.Tablist;
-import io.github.axolotlclient.modules.tnttime.TntTime;
 import io.github.axolotlclient.modules.unfocusedFpsLimiter.UnfocusedFpsLimiter;
 import io.github.axolotlclient.modules.zoom.Zoom;
 import io.github.axolotlclient.util.FeatureDisabler;
+import io.github.axolotlclient.util.FeatureDisablerCommon;
 import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.LoggerImpl;
 import io.github.axolotlclient.util.notifications.Notifications;
@@ -68,16 +66,12 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 		registerModule(MotionBlur.getInstance());
 		registerModule(MenuBlur.getInstance());
 		registerModule(ScrollableTooltips.getInstance());
-		registerModule(DiscordRPC.getInstance());
-		registerModule(Freelook.getInstance());
-		registerModule(TntTime.getInstance());
+
 		registerModule(Particles.getInstance());
 		registerModule(ScreenshotUtils.getInstance());
-		registerModule(BeaconBeam.getInstance());
 		registerModule(UnfocusedFpsLimiter.getInstance());
 		registerModule(Tablist.getInstance());
 		registerModule(Auth.getInstance());
-		registerModule(APIOptions.getInstance());
 	}
 
 	private void addExternalModules() {
@@ -92,7 +86,7 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 		addExternalModules();
 
 		init(LOGGER, Notifications.getInstance());
-		new API(new StatusUpdateProviderImpl(), APIOptions.getInstance());
+		new API(new StatusUpdateProviderImpl());
 
 		LOGGER.debug("Debug Output enabled, Logs will be quite verbose!");
 		LOGGER.info("AxolotlClient Initialized");
@@ -101,13 +95,18 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 	}
 
 	@Override
-	protected void initFeatureDisabler() {
-		FeatureDisabler.init();
+	protected FeatureDisablerCommon getFeatureDisabler() {
+		return FeatureDisabler.getInstance();
 	}
 
 	@Override
 	protected AxolotlClientConfigCommon createConfig() {
 		return new AxolotlClientConfig();
+	}
+
+	@Override
+	public Options getApiOptions() {
+		return APIOptions.getInstance();
 	}
 
 	public static AxolotlClientConfig config() {

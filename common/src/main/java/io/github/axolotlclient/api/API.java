@@ -71,17 +71,18 @@ public class API {
 	private AccountSettings settings;
 	private HttpClient client;
 	private CompletableFuture<?> restartingFuture;
+	private int nextRestartSecs;
 	private Future<?> statusUpdateFuture;
 	private final ScheduledExecutorService statusUpdateExecutor;
 	private static final List<BiContainer<Runnable, ListenerType>> afterStartupListeners = new ArrayList<>();
 
-	public API(StatusUpdateProvider statusUpdateProvider, Options apiOptions) {
+	public API(StatusUpdateProvider statusUpdateProvider) {
 		if (Instance != null) {
 			throw new IllegalStateException("API may only be instantiated once!");
 		}
 		this.logger = AxolotlClientCommon.getInstance().getLogger();
 		this.statusUpdateProvider = statusUpdateProvider;
-		this.apiOptions = apiOptions;
+		this.apiOptions = AxolotlClientCommon.getInstance().getApiOptions();
 		handlers = new HashSet<>();
 		handlers.add(ChatHandler.getInstance());
 		handlers.add(new FriendRequestHandler());
@@ -122,11 +123,11 @@ public class API {
 		try {
 			if (!GlobalDataRequest.get(true).get(1, TimeUnit.MINUTES).success()) {
 				logger.warn("Not trying to start API as it couldn't be reached!");
-				return scheduleRestart(false);
+				return scheduleRestart();
 			}
 		} catch (InterruptedException | ExecutionException | TimeoutException e) {
 			logger.warn("Not trying to start API as it couldn't be reached within the timeout of 1 minute!");
-			return scheduleRestart(false);
+			return scheduleRestart();
 		}
 
 		logDetailed("Authenticating with Mojang...");
@@ -364,20 +365,22 @@ public class API {
 			1014
 		};
 		if (Arrays.stream(error_codes).anyMatch(i -> i == statusCode) && apiOptions.enabled.get()) {
-			scheduleRestart(true);
+			scheduleRestart();
 		}
 	}
 
-	private CompletableFuture<?> scheduleRestart(boolean immediate) {
+	private CompletableFuture<?> scheduleRestart() {
 		if (restartingFuture != null) {
 			restartingFuture.cancel(true);
+			nextRestartSecs = Math.min(nextRestartSecs*2, 60);
+		} else {
+			nextRestartSecs = 2;
 		}
-		logger.info("Trying restart in " + (immediate ? "10 seconds" : "5 minutes."));
+		logger.info("Trying restart in " + nextRestartSecs + "seconds.");
 		restartingFuture = CompletableFuture.supplyAsync(() -> {
 			logDetailed("Restarting API session...");
 			return startup(account).join();
-		}, immediate ? CompletableFuture.delayedExecutor(10, TimeUnit.SECONDS, ThreadExecuter.service()) :
-			CompletableFuture.delayedExecutor(5, TimeUnit.MINUTES, ThreadExecuter.service()));
+		}, CompletableFuture.delayedExecutor(nextRestartSecs, TimeUnit.SECONDS, ThreadExecuter.service()));
 		return restartingFuture;
 	}
 

@@ -48,7 +48,6 @@ import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
 import io.github.axolotlclient.util.keybinds.KeyBinds;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
@@ -56,7 +55,8 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 import net.minecraft.util.profiling.Profiler;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -161,7 +161,7 @@ public abstract class PlatformImplInternalMixin {
 	 */
 	@Overwrite
 	public static AxoIdentifier createIdentifier(String ns, String path) {
-		return ResourceLocation.fromNamespaceAndPath(ns, path);
+		return Identifier.fromNamespaceAndPath(ns, path);
 	}
 
 	/**

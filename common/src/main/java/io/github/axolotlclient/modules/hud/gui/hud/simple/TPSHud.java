@@ -44,6 +44,10 @@ public class TPSHud extends SimpleTextHudEntry {
 	private long lastUpdate = -1;
 	private double tps = -1;
 
+	public TPSHud() {
+		super(true);
+	}
+
 	@Override
 	public void init() {
 		Events.UPDATE_TIME.register(ticks -> {
@@ -79,11 +83,16 @@ public class TPSHud extends SimpleTextHudEntry {
 		if (tps < 0) {
 			return "NaN";
 		}
-		return FORMATTER.format(tps) + " TPS";
+		return FORMATTER.format(tps);
 	}
 
 	@Override
-	public String getPlaceholder() {
-		return "20.00 TPS";
+	public String getPlaceholderValue() {
+		return "20.00";
+	}
+
+	@Override
+	public String getLabel() {
+		return "TPS";
 	}
 }

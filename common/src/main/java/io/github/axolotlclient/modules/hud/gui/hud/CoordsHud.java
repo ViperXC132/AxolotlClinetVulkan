@@ -27,12 +27,14 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.*;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
 import io.github.axolotlclient.bridge.math.Vec3;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoI18n;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
@@ -45,7 +47,7 @@ import io.github.axolotlclient.util.ClientColors;
  * <p>License: GPL-3.0</p>
  */
 
-public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
+public class CoordsHud extends TextHudEntry {
 
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "coordshud");
 
@@ -65,9 +67,6 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 	private final StringOption delimiter = new StringOption("coordshud.delimiter", " ");
 	private final StringOption separator = new StringOption("coordshud.separator", ", ");
 	private final ColorOption separatorColor = new ColorOption("coordshud.separator.color", firstColor.getDefault());
-
-	private final EnumOption<AnchorPoint> anchor = new EnumOption<>("anchorpoint", AnchorPoint.class,
-		AnchorPoint.TOP_MIDDLE);
 
 	private DecimalFormat format;
 
@@ -129,7 +128,7 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 	}
 
 	private void doRender(AxoRenderContext context, double yaw, Vec3 playerPos, String biomeName) {
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 		String fx = format.format(playerPos.x());
 		String fy = format.format(playerPos.y());
 		String fz = format.format(playerPos.z());
@@ -158,18 +157,18 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		} else {
 			int xEnd;
 			int yEnd = pos.y() + 2;
-			int nextX = context.br$drawString("X"+del, xStart, yEnd, firstColor.get().toInt(), shadow.get());
+			int nextX = context.br$drawString("X" + del, xStart, yEnd, firstColor.get().toInt(), shadow.get());
 			xEnd = context.br$drawString(fx, nextX, yEnd,
 				secondColor.get().toInt(), shadow.get());
 			yEnd += 10;
 
-			nextX = context.br$drawString("Y"+del, xStart, yEnd, firstColor.get().toInt(), shadow.get());
+			nextX = context.br$drawString("Y" + del, xStart, yEnd, firstColor.get().toInt(), shadow.get());
 			xEnd = Math.max(xEnd, context.br$drawString(fy, nextX, yEnd,
 				secondColor.get().toInt(), shadow.get()));
 
 			yEnd += 10;
 
-			nextX = context.br$drawString("Z"+del, xStart, yEnd, firstColor.get().toInt(), shadow.get());
+			nextX = context.br$drawString("Z" + del, xStart, yEnd, firstColor.get().toInt(), shadow.get());
 
 			xEnd = Math.max(xEnd, context.br$drawString(fz, nextX, yEnd, secondColor.get().toInt(), shadow.get()));
 
@@ -189,20 +188,20 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		}
 
 		if (biome.get()) {
-			int bX = context.br$drawString(AxoI18n.translate("coordshud.biome")+del, xStart, height + pos.y(), firstColor.get().toInt(), shadow.get());
+			int bX = context.br$drawString(AxoI18n.translate("coordshud.biome") + del, xStart, height + pos.y(), firstColor.get().toInt(), shadow.get());
 			width = Math.max(width + pos.x() - 1, context.br$drawString(biomeName, bX, height + pos.y(), secondColor.get().toInt(), shadow.get())) - pos.x() + 1;
 			height += 10;
 		}
 
 		boolean changed = false;
 
-		if (getWidth() != width) {
-			setWidth(width);
+		if (getContentWidth() != width) {
+			setContentWidth(width);
 			changed = true;
 		}
 
-		if (getHeight() != height) {
-			setHeight(height);
+		if (getContentHeight() != height) {
+			setContentHeight(height);
 			changed = true;
 		}
 
@@ -249,7 +248,6 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		options.add(decimalPlaces);
 		options.add(minimal);
 		options.add(biome);
-		options.add(anchor);
 		options.add(delimiter);
 		options.add(separator);
 		options.add(separatorColor);
@@ -261,7 +259,8 @@ public class CoordsHud extends TextHudEntry implements DynamicallyPositionable {
 		return ID;
 	}
 
-	public AnchorPoint getAnchor() {
-		return anchor.get();
+	@Override
+	protected AnchorPoint getDefaultAnchor() {
+		return AnchorPoint.TOP_MIDDLE;
 	}
 }

@@ -37,6 +37,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.*;
 
+@SuppressWarnings("UnstableApiUsage")
 public class ImageShare extends ImageNetworking {
 
 	@Getter

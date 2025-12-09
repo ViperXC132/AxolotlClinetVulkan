@@ -31,6 +31,8 @@ import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoItems;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
@@ -38,6 +40,7 @@ import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 
 public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable {
 	public static final AxoIdentifier ID = AxoIdentifier.of(AxolotlClientCommon.MODID, "inventoryhud");
@@ -62,9 +65,12 @@ public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable
 	private final BooleanOption itemBackground = new BooleanOption("inventoryhud.item_background", true);
 	private final ColorOption itemBackgroundColor = new ColorOption("inventoryhud.item_background_color", backgroundColor.getDefault());
 	private final BooleanOption alwaysShowItemBackgrounds = new BooleanOption("inventoryhud.always_show_item_backgrounds", false);
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(AnchorPoint.MIDDLE_MIDDLE, this);
 
 	public InventoryHud() {
 		super(164, 56, true);
+		int max = (ITEM_TILE_SIZE +2) / 2;
+		backgroundRounding = new IntegerOption("background_rounding", max, 1, max);
 	}
 
 	@Override
@@ -104,7 +110,7 @@ public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable
 	}
 
 	private void render(AxoRenderContext graphics, List<? extends AxoItemStack> inventorySlots) {
-		var pos = getPos();
+		var pos = getContentPos();
 		int x = pos.x() + 2;
 		int y = pos.y() + 2;
 
@@ -119,7 +125,11 @@ public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable
 	private void renderStack(AxoRenderContext graphics, int x, int y, AxoItemStack itemStack) {
 		var empty = itemStack == null || itemStack.br$isEmpty();
 		if ((!empty || alwaysShowItemBackgrounds.get()) && itemBackground.get() && itemBackgroundColor.get().getAlpha() > 0) {
-			graphics.br$fillRect(x, y, ITEM_TILE_SIZE, ITEM_TILE_SIZE, itemBackgroundColor.get().toInt());
+			if (roundBackground.get()) {
+				graphics.br$fillRectRound(x, y, ITEM_TILE_SIZE, ITEM_TILE_SIZE, itemBackgroundColor.get(), Math.min(backgroundRounding.get(), ITEM_TILE_SIZE/2f));
+			} else {
+				graphics.br$fillRect(x, y, ITEM_TILE_SIZE, ITEM_TILE_SIZE, itemBackgroundColor.get().toInt());
+			}
 		}
 		if (empty) return;
 
@@ -134,13 +144,13 @@ public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable
 
 	@Override
 	public AnchorPoint getAnchor() {
-		return AnchorPoint.MIDDLE_MIDDLE;
+		return anchor.get();
 	}
 
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		var options = super.getConfigurationOptions();
-		Collections.addAll(options, hide, dynamic, itemBackground, itemBackgroundColor, alwaysShowItemBackgrounds);
+		Collections.addAll(options, anchor, hide, dynamic, itemBackground, itemBackgroundColor, alwaysShowItemBackgrounds);
 		return options;
 	}
 }

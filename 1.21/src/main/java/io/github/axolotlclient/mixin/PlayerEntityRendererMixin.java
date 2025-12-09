@@ -43,12 +43,15 @@ public abstract class PlayerEntityRendererMixin {
 	@WrapOperation(method = "renderLabelIfPresent(Lnet/minecraft/client/network/AbstractClientPlayerEntity;Lnet/minecraft/text/Text;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;IF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/entity/LivingEntityRenderer;renderLabelIfPresent(Lnet/minecraft/entity/Entity;Lnet/minecraft/text/Text;Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumerProvider;IF)V"))
 	private void axolotlclient$modifiyName(PlayerEntityRenderer instance, Entity entity, Text text, MatrixStack stack, VertexConsumerProvider vertexConsumerProvider, int i, float v, Operation<Void> original, @Local(argsOnly = true) AbstractClientPlayerEntity player) {
 		if (AxolotlClient.config() != null) {
-			if (player.getUuid() == MinecraftClient.getInstance().player.getUuid()
-				&& NickHider.getInstance().hideOwnName.get()) {
-				text = (Text) NickHider.getInstance().editComponent(text, player.getName().getString(), NickHider.getInstance().hiddenNameSelf.get());
-			} else if (player.getUuid() != MinecraftClient.getInstance().player.getUuid()
-				&& NickHider.getInstance().hideOtherNames.get()) {
-				text = (Text) NickHider.getInstance().editComponent(text, player.getName().getString(), NickHider.getInstance().hiddenNameOthers.get());
+			var mc = MinecraftClient.getInstance();
+			if (mc.player != null) {
+				if (player.getUuid() == mc.player.getUuid()
+					&& NickHider.getInstance().hideOwnName.get()) {
+					text = (Text) NickHider.getInstance().editComponent(text, player.getName().getString(), NickHider.getInstance().hiddenNameSelf.get());
+				} else if (player.getUuid() != mc.player.getUuid()
+					&& NickHider.getInstance().hideOtherNames.get()) {
+					text = (Text) NickHider.getInstance().editComponent(text, player.getName().getString(), NickHider.getInstance().hiddenNameOthers.get());
+				}
 			}
 		}
 		original.call(instance, entity, text, stack, vertexConsumerProvider, i, v);

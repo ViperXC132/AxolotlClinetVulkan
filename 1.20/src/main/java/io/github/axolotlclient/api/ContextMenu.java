@@ -148,9 +148,6 @@ public class ContextMenu implements ParentElement, Drawable, Selectable {
 	}
 
 	public static class Builder {
-
-		private final MinecraftClient client = MinecraftClient.getInstance();
-
 		private final List<ClickableWidget> elements = new ArrayList<>();
 
 		public Builder() {

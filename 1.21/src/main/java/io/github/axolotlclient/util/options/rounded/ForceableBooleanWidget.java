@@ -26,6 +26,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.rounded.widgets.PillB
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import net.minecraft.client.gui.GuiGraphics;
 
+@SuppressWarnings("unused")
 public class ForceableBooleanWidget extends PillBooleanWidget {
 	private final ForceableBooleanOption option;
 
@@ -38,15 +39,6 @@ public class ForceableBooleanWidget extends PillBooleanWidget {
 	public void drawWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 		this.active = !option.isForceOff();
 		super.drawWidget(graphics, mouseX, mouseY, delta);
-	}
-
-	@Override
-	protected void drawHandle(long ctx, float x, float y, float width) {
-		if (option.isForceOff()) {
-			super.drawHandle(ctx, getX() + OFF_POSITION, y, width);
-		} else {
-			super.drawHandle(ctx, x, y, width);
-		}
 	}
 
 	@Override

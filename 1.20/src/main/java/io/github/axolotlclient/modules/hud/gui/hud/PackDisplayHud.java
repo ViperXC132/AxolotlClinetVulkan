@@ -42,6 +42,7 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.resource.ResourceIoSupplier;
 import net.minecraft.resource.pack.ResourcePack;
 import net.minecraft.text.Text;
+import net.minecraft.text.component.TranslatableComponent;
 import net.minecraft.util.Identifier;
 
 import static io.github.axolotlclient.modules.hud.util.DrawUtil.*;
@@ -54,38 +55,42 @@ public class PackDisplayHud extends TextHudEntry {
 	private PackWidget placeholder;
 
 	public PackDisplayHud() {
-		super(200, 50, true);
+		super(120, 18, true);
 	}
 
 	@Override
 	public void renderComponent(AxoRenderContext graphics, float f) {
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 
 		if (widgets.isEmpty())
 			init();
 
 		if (background.get()) {
-			fillRect((GuiGraphics) graphics, getBounds(), backgroundColor.get());
+			fillRect((GuiGraphics) graphics, getContentBounds(), backgroundColor.get());
 		}
 
 		if (outline.get())
-			outlineRect((GuiGraphics) graphics, getBounds(), outlineColor.get());
+			outlineRect((GuiGraphics) graphics, getContentBounds(), outlineColor.get());
 
 		int y = pos.y() + 1;
 		for (int i = widgets.size() - 1; i >= 0; i--) { // Badly reverse the order (I'm sure there are better ways to do this)
 			widgets.get(i).render((GuiGraphics) graphics, pos.x() + 1, y);
-			y += 18;
+			y += 17;
 		}
-		if (y - pos.y() + 1 != getHeight()) {
-			setHeight(y - pos.y() - 1);
+		if (y - pos.y() != getContentHeight()) {
+			setContentHeight(y - pos.y());
 			onBoundsUpdate();
 		}
 	}
 
 	@Override
 	public void init() {
-		int listSize = MinecraftClient.getInstance().getResourcePackManager().getProfiles().size();
-		MinecraftClient.getInstance().getResourcePackManager().getEnabledProfiles().forEach(profile -> {
+		var selected = MinecraftClient.getInstance().getResourcePackManager().getEnabledProfiles();
+		var valid = selected.stream()
+			.filter(p -> !(p.getDisplayName().asComponent() instanceof TranslatableComponent tr && tr.getKey().matches("pack\\.name\\.fabricMods?")))
+			.toList();
+		var listSize = valid.size();
+		valid.forEach(profile -> {
 			try (ResourcePack pack = profile.createResourcePack()) {
 
 				if (listSize == 1) {
@@ -104,9 +109,9 @@ public class PackDisplayHud extends TextHudEntry {
 			if (textW > w.get())
 				w.set(textW);
 		});
-		setWidth(w.get());
+		setContentWidth(w.get());
 
-		setHeight(widgets.size() * 18);
+		setContentHeight(widgets.size() * 17 + 1);
 		onBoundsUpdate();
 	}
 
@@ -125,12 +130,12 @@ public class PackDisplayHud extends TextHudEntry {
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float f) {
 		boolean updateBounds = false;
-		if (getHeight() < 18) {
-			setHeight(18);
+		if (getContentHeight() < 18) {
+			setContentHeight(18);
 			updateBounds = true;
 		}
-		if (getWidth() < 56) {
-			setWidth(56);
+		if (getContentWidth() < 56) {
+			setContentWidth(56);
 			updateBounds = true;
 		}
 		if (updateBounds) {
@@ -142,7 +147,7 @@ public class PackDisplayHud extends TextHudEntry {
 			} catch (Exception ignored) {
 			}
 		} else {
-			placeholder.render((GuiGraphics) graphics, getPos().x() + 1, getPos().y() + 1);
+			placeholder.render((GuiGraphics) graphics, getContentPos().x() + 1, getContentPos().y() + 1);
 		}
 	}
 
@@ -179,7 +184,7 @@ public class PackDisplayHud extends TextHudEntry {
 				RenderSystem.setShaderColor(1, 1, 1, 1F);
 				graphics.drawTexture(texture, x, y, 0, 0, 16, 16, 16, 16);
 			}
-			drawString(graphics, name, x + 18, y + 6, textColor.get().toInt(), shadow.get());
+			drawString(graphics, name, x + 18, y + 16 / 2f - 9 / 2f, textColor.get().toInt(), shadow.get());
 		}
 	}
 }

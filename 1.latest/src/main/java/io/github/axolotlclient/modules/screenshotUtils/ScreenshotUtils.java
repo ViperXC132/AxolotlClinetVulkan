@@ -42,10 +42,10 @@ import io.github.axolotlclient.util.options.GenericOption;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.*;
+import net.minecraft.util.Util;
 import org.jetbrains.annotations.Nullable;
 
 public class ScreenshotUtils extends AbstractModule {

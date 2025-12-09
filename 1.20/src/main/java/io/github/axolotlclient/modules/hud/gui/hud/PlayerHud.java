@@ -122,8 +122,8 @@ public class PlayerHud extends PlayerHudCommon {
 
 		currentlyRendering = true;
 		InventoryScreen.drawEntity((GuiGraphics) ctx,
-			(int) (x + getTrueWidth() / 2f),
-			(int) (y + getTrueHeight() * client.player.getHeight() / 2f - lerpY),
+			(int) (x + getTrueContentWidth() / 2f),
+			(int) (y + getTrueContentHeight() * client.player.getHeight() / 2f - lerpY),
 			(int) scale,
 			quaternion,
 			quaternionf2,

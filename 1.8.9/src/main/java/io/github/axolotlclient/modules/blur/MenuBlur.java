@@ -153,32 +153,74 @@ public class MenuBlur extends AbstractModule {
 
 		@Override
 		public InputStream asStream() {
-			return IOUtils.toInputStream("{\n" + "    \"targets\": [\n" + "        \"swap\"\n" + "    ],\n"
-				+ "    \"passes\": [\n" + "        {\n" + "            \"name\": \"menu_blur\",\n"
-				+ "            \"intarget\": \"minecraft:main\",\n" + "            \"outtarget\": \"swap\",\n"
-				+ "            \"uniforms\": [\n" + "                {\n"
-				+ "                    \"name\": \"BlurDir\",\n" + "                    \"values\": [ 1.0, 0.0 ]\n"
-				+ "                },\n" + "                {\n" + "                    \"name\": \"Radius\",\n"
-				+ "                    \"values\": [ 0.0 ]\n" + "                }\n" + "            ]\n"
-				+ "        },\n" + "        {\n" + "            \"name\": \"menu_blur\",\n"
-				+ "            \"intarget\": \"swap\",\n" + "            \"outtarget\": \"minecraft:main\",\n"
-				+ "            \"uniforms\": [\n" + "                {\n"
-				+ "                    \"name\": \"BlurDir\",\n" + "                    \"values\": [ 0.0, 1.0 ]\n"
-				+ "                },\n" + "                {\n" + "                    \"name\": \"Radius\",\n"
-				+ "                    \"values\": [ 0.0 ]\n" + "                }\n" + "            ]\n"
-				+ "        },\n" + "        {\n" + "            \"name\": \"menu_blur\",\n"
-				+ "            \"intarget\": \"minecraft:main\",\n" + "            \"outtarget\": \"swap\",\n"
-				+ "            \"uniforms\": [\n" + "                {\n"
-				+ "                    \"name\": \"BlurDir\",\n" + "                    \"values\": [ 1.0, 0.0 ]\n"
-				+ "                },\n" + "                {\n" + "                    \"name\": \"Radius\",\n"
-				+ "                    \"values\": [ 0.0 ]\n" + "                }\n" + "            ]\n"
-				+ "        },\n" + "        {\n" + "            \"name\": \"menu_blur\",\n"
-				+ "            \"intarget\": \"swap\",\n" + "            \"outtarget\": \"minecraft:main\",\n"
-				+ "            \"uniforms\": [\n" + "                {\n"
-				+ "                    \"name\": \"BlurDir\",\n" + "                    \"values\": [ 0.0, 1.0 ]\n"
-				+ "                },\n" + "                {\n" + "                    \"name\": \"Radius\",\n"
-				+ "                    \"values\": [ 0.0 ]\n" + "                }\n" + "            ]\n"
-				+ "        }\n" + "    ]\n" + "}");
+			return IOUtils.toInputStream("""
+				{
+				    "targets": [
+				        "swap"
+				    ],
+				    "passes": [
+				        {
+				            "name": "menu_blur",
+				            "intarget": "minecraft:main",
+				            "outtarget": "swap",
+				            "uniforms": [
+				                {
+				                    "name": "BlurDir",
+				                    "values": [ 1.0, 0.0 ]
+				                },
+				                {
+				                    "name": "Radius",
+				                    "values": [ 0.0 ]
+				                }
+				            ]
+				        },
+				        {
+				            "name": "menu_blur",
+				            "intarget": "swap",
+				            "outtarget": "minecraft:main",
+				            "uniforms": [
+				                {
+				                    "name": "BlurDir",
+				                    "values": [ 0.0, 1.0 ]
+				                },
+				                {
+				                    "name": "Radius",
+				                    "values": [ 0.0 ]
+				                }
+				            ]
+				        },
+				        {
+				            "name": "menu_blur",
+				            "intarget": "minecraft:main",
+				            "outtarget": "swap",
+				            "uniforms": [
+				                {
+				                    "name": "BlurDir",
+				                    "values": [ 1.0, 0.0 ]
+				                },
+				                {
+				                    "name": "Radius",
+				                    "values": [ 0.0 ]
+				                }
+				            ]
+				        },
+				        {
+				            "name": "menu_blur",
+				            "intarget": "swap",
+				            "outtarget": "minecraft:main",
+				            "uniforms": [
+				                {
+				                    "name": "BlurDir",
+				                    "values": [ 0.0, 1.0 ]
+				                },
+				                {
+				                    "name": "Radius",
+				                    "values": [ 0.0 ]
+				                }
+				            ]
+				        }
+				    ]
+				}""");
 		}
 
 		@Override

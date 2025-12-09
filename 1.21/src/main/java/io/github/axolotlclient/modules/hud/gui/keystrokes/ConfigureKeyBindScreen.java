@@ -139,12 +139,10 @@ public class ConfigureKeyBindScreen extends Screen {
 		buttonsFrame.setMinWidth(super.width);
 		var row4 = LinearLayoutWidget.createHorizontal().setSpacing(8);
 		row4.getDefaultSettings().alignHorizontallyCenter();
-		row4.add(ButtonWidget.builder(Text.translatable("keystrokes.stroke.configure_key"), b -> {
-			client.setScreen(new KeyBindSelectionScreen(this, stroke));
-		}).width(150).build());
-		row4.add(ButtonWidget.builder(Text.translatable("keystrokes.stroke.configure_position"), b -> {
-			client.setScreen(new KeystrokePositioningScreen(this, hud, stroke));
-		}).width(150).build());
+		row4.add(ButtonWidget.builder(Text.translatable("keystrokes.stroke.configure_key"), b ->
+			client.setScreen(new KeyBindSelectionScreen(this, stroke))).width(150).build());
+		row4.add(ButtonWidget.builder(Text.translatable("keystrokes.stroke.configure_position"), b ->
+			client.setScreen(new KeystrokePositioningScreen(this, hud, stroke))).width(150).build());
 		buttonsFrame.add(row4);
 		body.add(buttonsFrame);
 

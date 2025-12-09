@@ -42,7 +42,7 @@ public class KeyBindSelectionScreen extends Screen {
 
 	@Override
 	public void init() {
-		addDrawableChild(new KeyBindSelectionList(this, this.client, key -> stroke.setKey(key)));
+		addDrawableChild(new KeyBindSelectionList(this, this.client, stroke::setKey));
 
 		addDrawableChild(ButtonWidget.builder(CommonTexts.DONE, button -> this.closeScreen())
 			.positionAndSize(width / 2 - 75, height - 33 / 2 - 10, 150, 20).build());

@@ -26,16 +26,13 @@ import java.util.List;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.bridge.PlatformDispatch;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
-import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 
 /**
@@ -44,14 +41,12 @@ import io.github.axolotlclient.modules.hud.util.DrawPosition;
  *
  * <p>License: GPL-3.0</p>
  */
-public class IPHud extends TextHudEntry implements DynamicallyPositionable {
+public class IPHud extends TextHudEntry {
 
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "iphud");
 	private final BooleanOption showIcon = new BooleanOption("iphud.show_icon", false);
 	private AxoSprite.Dynamic sprite;
 	private final IntegerOption height = new IntegerOption("hud.height", 13, 9, 64);
-	private final EnumOption<AnchorPoint> anchor = new EnumOption<>("anchorpoint", AnchorPoint.class,
-		AnchorPoint.TOP_LEFT);
 
 	public IPHud() {
 		super(115, 13, true);
@@ -63,7 +58,7 @@ public class IPHud extends TextHudEntry implements DynamicallyPositionable {
 			}
 		});
 
-		Events.CONNECTION_PLAY_READY.register(() -> {
+		Events.CONNECTION_PLAY_READY.register(info -> {
 			if (showIcon.get()) {
 				sprite = PlatformDispatch.ipHud$getServerIcon();
 			}
@@ -84,20 +79,20 @@ public class IPHud extends TextHudEntry implements DynamicallyPositionable {
 	}
 
 	private void updateSize(AxoRenderContext graphics) {
-		int w = getWidth();
-		int h = getHeight();
+		int w = getContentWidth();
+		int h = getContentHeight();
 		int hNew = height.get();
 		boolean updated = false;
 		if (h != hNew) {
-			setHeight(hNew);
+			setContentHeight(hNew);
 			updated = true;
 		}
 		int req = graphics.br$getFont().br$getWidth(getValue()) + 4;
 		if (showIcon.get() && sprite != null) {
-			req += getHeight() + 1;
+			req += getContentHeight() + 1;
 		}
 		if (w != req) {
-			setWidth(req);
+			setContentWidth(req);
 			updated = true;
 		}
 		if (updated) {
@@ -110,32 +105,26 @@ public class IPHud extends TextHudEntry implements DynamicallyPositionable {
 		var options = super.getConfigurationOptions();
 		options.add(showIcon);
 		options.add(height);
-		options.add(anchor);
 		return options;
 	}
 
 	@Override
 	public void renderComponent(AxoRenderContext graphics, float delta) {
 		updateSize(graphics);
-		DrawPosition pos = getPos();
-		int textX = pos.x() + getWidth() / 2;
+		DrawPosition pos = getContentPos();
+		int textX = pos.x() + getContentWidth() / 2;
 
 		if (showIcon.get() && sprite != null) {
-			int imageSize = getHeight() - 2;
+			int imageSize = getContentHeight() - 2;
 			textX += imageSize / 2;
 			graphics.br$drawTexture(pos.x() + 1, pos.y() + 1, imageSize, imageSize, sprite);
 		}
 
-		graphics.br$drawCenteredString(getValue(), textX, pos.y() + getHeight() / 2 - client.br$getFont().br$getFontHeight() / 2, textColor.get().toInt(), true);
+		graphics.br$drawCenteredString(getValue(), textX, pos.y() + getContentHeight() / 2 - client.br$getFont().br$getFontHeight() / 2, textColor.get().toInt(), true);
 	}
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
 		renderComponent(graphics, delta);
-	}
-
-	@Override
-	public AnchorPoint getAnchor() {
-		return anchor.get();
 	}
 }

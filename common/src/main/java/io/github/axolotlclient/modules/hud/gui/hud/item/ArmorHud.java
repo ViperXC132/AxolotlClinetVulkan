@@ -36,7 +36,6 @@ import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoItems;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
@@ -49,7 +48,7 @@ import io.github.axolotlclient.util.ItemUtil;
  *
  * <p>License: GPL-3.0</p>
  */
-public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
+public class ArmorHud extends TextHudEntry {
 
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "armorhud");
 	private static final AxoItemStack PLACEHOLDER_MAIN_HAND = AxoItemStack.of(AxoItems.IRON_SWORD);
@@ -68,9 +67,6 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 	private final ColorOption durabilityNumColor = new ColorOption("armorhud.durability_num_color", Colors.WHITE);
 	private final EnumOption<MainHandItemPosition> mainHandItemPosition = new EnumOption<>("armorhud" +
 		".main_hand_item_position", MainHandItemPosition.class, MainHandItemPosition.BOTTOM);
-
-	private final EnumOption<AnchorPoint> anchor = new EnumOption<>("anchorpoint", AnchorPoint.class,
-		AnchorPoint.TOP_RIGHT);
 
 	public ArmorHud() {
 		super(20, 100, true);
@@ -120,20 +116,20 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 				}).mapToInt(Integer::intValue).max().orElse(0) : 0;
 
 		width += labelWidth;
-		if (width != getWidth()) {
-			setWidth(width);
+		if (width != getContentWidth()) {
+			setContentWidth(width);
 			boundsChanged = true;
 		}
 
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 		MainHandItemPosition mhPos = mainHandItemPosition.get();
 
 		if (mhPos == MainHandItemPosition.DISABLED) {
 			height -= 20;
 		}
 
-		if (height != getHeight()) {
-			setHeight(height);
+		if (height != getContentHeight()) {
+			setContentHeight(height);
 			boundsChanged = true;
 		}
 		if (boundsChanged) {
@@ -202,13 +198,13 @@ public class ArmorHud extends TextHudEntry implements DynamicallyPositionable {
 		options.add(showMaxDurabilityNumber);
 		options.add(customDurabilityNumColor);
 		options.add(durabilityNumColor);
-		options.add(anchor);
 		options.add(mainHandItemPosition);
 		return options;
 	}
 
-	public AnchorPoint getAnchor() {
-		return anchor.get();
+	@Override
+	protected AnchorPoint getDefaultAnchor() {
+		return AnchorPoint.TOP_RIGHT;
 	}
 
 	private enum MainHandItemPosition {

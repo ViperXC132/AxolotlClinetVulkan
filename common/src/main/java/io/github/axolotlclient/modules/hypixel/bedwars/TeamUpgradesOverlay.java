@@ -26,9 +26,13 @@ import java.util.List;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
+import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hypixel.bedwars.upgrades.BedwarsTeamUpgrades;
 import io.github.axolotlclient.modules.hypixel.bedwars.upgrades.TeamUpgrade;
@@ -37,11 +41,12 @@ import io.github.axolotlclient.modules.hypixel.bedwars.upgrades.TrapUpgrade;
 /**
  * @author DarkKronicle
  */
-public class TeamUpgradesOverlay extends BoxHudEntry {
+public class TeamUpgradesOverlay extends BoxHudEntry implements DynamicallyPositionable {
 
 	public final static AxoIdentifier ID = AxoIdentifier.of("axolotlclient", "bedwars_teamupgrades");
 	private final static TrapUpgrade.TrapType[] trapEdit = {TrapUpgrade.TrapType.MINER_FATIGUE, TrapUpgrade.TrapType.ITS_A_TRAP};
 	private final BooleanOption renderWhenRelevant = new BooleanOption(ID.br$getPath() + ".renderWhenRelevant", true);
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 	private final BedwarsMod mod;
 	private BedwarsTeamUpgrades upgrades = null;
 
@@ -72,8 +77,8 @@ public class TeamUpgradesOverlay extends BoxHudEntry {
 
 		int x = position.x() + 1;
 		int y = position.y() + 2;
-		int width = getWidth();
-		int height = getHeight();
+		int width = getContentWidth();
+		int height = getContentHeight();
 		context.br$glEnableAlpha();
 		context.br$glEnableBlend();
 		context.br$glColor4(1, 1, 1, 1);
@@ -91,7 +96,7 @@ public class TeamUpgradesOverlay extends BoxHudEntry {
 				x += 17;
 				normalUpgrades = true;
 			}
-			setWidth(Math.max((x - position.x()) + 1, 18));
+			setContentWidth(Math.max((x - position.x()) + 1, 18));
 		}
 		x = position.x() + 1;
 		if (normalUpgrades) {
@@ -103,25 +108,25 @@ public class TeamUpgradesOverlay extends BoxHudEntry {
 				type.draw(context, x, y, 16, 16);
 				x += 17;
 			}
-			setWidth(Math.max((x - position.x()) + 1, 18));
+			setContentWidth(Math.max((x - position.x()) + 1, 18));
 		} else if(upgrades != null) {
 			upgrades.trap.draw(context, x, y, 16, 16);
-			setWidth(Math.max(((x + (upgrades.trap.getTrapCount() * 16)) - position.x()) + 1, getWidth()));
+			setContentWidth(Math.max(((x + (upgrades.trap.getTrapCount() * 16)) - position.x()) + 1, getContentWidth()));
 		}
-		setHeight((y - position.y()) + 19);
-		if (getHeight() != height || getWidth() != width) {
+		setContentHeight((y - position.y()) + 19);
+		if (getContentHeight() != height || getContentWidth() != width) {
 			onBoundsUpdate();
 		}
 	}
 
 	@Override
 	public void renderComponent(AxoRenderContext context, float delta) {
-		drawOverlay(context, getPos(), false);
+		drawOverlay(context, getContentPos(), false);
 	}
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
-		drawOverlay(context, getPos(), true);
+		drawOverlay(context, getContentPos(), true);
 	}
 
 	@Override
@@ -132,7 +137,13 @@ public class TeamUpgradesOverlay extends BoxHudEntry {
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
+		options.add(anchor);
 		options.add(renderWhenRelevant);
 		return options;
+	}
+
+	@Override
+	public AnchorPoint getAnchor() {
+		return anchor.get();
 	}
 }

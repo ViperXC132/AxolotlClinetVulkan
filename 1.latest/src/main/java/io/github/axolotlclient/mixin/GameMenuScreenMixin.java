@@ -75,8 +75,8 @@ public abstract class GameMenuScreenMixin extends Screen {
 				Component.empty(),
 				button -> minecraft.setScreen(new HudEditScreen(this)), Supplier::get) {
 				@Override
-				public void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-					super.renderWidget(graphics, mouseX, mouseY, delta);
+				public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+					renderDefaultSprite(graphics);
 					graphics.blit(RenderPipelines.GUI_TEXTURED, AxolotlClient.badgeIcon, this.getX() + 2, this.getY() + 2, 0, 0, this.width - 4, this.height - 4, this.width - 4, this.height - 4);
 				}
 			});

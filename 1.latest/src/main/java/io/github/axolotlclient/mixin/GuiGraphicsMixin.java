@@ -33,7 +33,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -45,7 +45,7 @@ public abstract class GuiGraphicsMixin {
 	private int recursionDepth;
 
 	@WrapMethod(method = "renderTooltip")
-	private void axolotlclient$scrollableTooltipsX(Font font, List<ClientTooltipComponent> list, int x, int y, ClientTooltipPositioner clientTooltipPositioner, @Nullable ResourceLocation resourceLocation, Operation<Void> original) {
+	private void axolotlclient$scrollableTooltipsX(Font font, List<ClientTooltipComponent> list, int x, int y, ClientTooltipPositioner clientTooltipPositioner, @Nullable Identifier resourceLocation, Operation<Void> original) {
 		if (ScrollableTooltips.getInstance().enabled.get()) {
 			Minecraft mc = Minecraft.getInstance();
 			if ((!(mc.screen instanceof CreativeModeInventoryScreen c)) || c.isInventoryOpen()) {

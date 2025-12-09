@@ -124,7 +124,7 @@ public class KeystrokePositioningScreen extends Screen {
 		}
 		GlStateManager.pushMatrix();
 		GlStateManager.scalef(hud.getScale(), hud.getScale(), 1);
-		s.render();
+		s.render(AxoRenderContextImpl.getInstance());
 		GlStateManager.popMatrix();
 		DrawUtil.outlineRect(rect, Colors.BLACK);
 	}

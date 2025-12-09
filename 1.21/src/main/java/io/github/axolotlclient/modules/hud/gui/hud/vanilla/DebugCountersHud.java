@@ -26,20 +26,15 @@ import java.util.List;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
-import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Identifier;
 
-public class DebugCountersHud extends TextHudEntry implements DynamicallyPositionable {
+public class DebugCountersHud extends TextHudEntry {
 	public static final Identifier ID = Identifier.of("axolotlclient", "debugcountershud");
-	private final EnumOption<AnchorPoint> anchor = new EnumOption<>("anchorpoint", AnchorPoint.class,
-		AnchorPoint.TOP_LEFT);
 	private final BooleanOption showCCount = new BooleanOption("debugcounters.ccount", true);
 	private final BooleanOption showECount = new BooleanOption("debugcounters.ecount", false);
 	private final BooleanOption showPCount = new BooleanOption("debugcounters.pcount", false);
@@ -56,7 +51,7 @@ public class DebugCountersHud extends TextHudEntry implements DynamicallyPositio
 		if (client.world == null) {
 			renderPlaceholderComponent(graphics, delta);
 		}
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 		int lineY = pos.y() + 2;
 		int lineX = pos.x() + 1;
 
@@ -75,13 +70,13 @@ public class DebugCountersHud extends TextHudEntry implements DynamicallyPositio
 		}
 
 		boolean boundsChanged = false;
-		if (lineY != getHeight() + pos.y()) {
+		if (lineY != getContentHeight() + pos.y()) {
 			boundsChanged = true;
-			setHeight(lineY - pos.y());
+			setContentHeight(lineY - pos.y());
 		}
-		if (xEnd != pos.x() + getWidth()) {
+		if (xEnd != pos.x() + getContentWidth()) {
 			boundsChanged = true;
-			setWidth(xEnd - pos.x());
+			setContentWidth(xEnd - pos.x());
 		}
 		if (boundsChanged) {
 			onBoundsUpdate();
@@ -92,7 +87,7 @@ public class DebugCountersHud extends TextHudEntry implements DynamicallyPositio
 	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
 		final var graphics = (GuiGraphics) context;
 
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 		int lineY = pos.y() + 2;
 		int lineX = pos.x() + 1;
 
@@ -111,13 +106,13 @@ public class DebugCountersHud extends TextHudEntry implements DynamicallyPositio
 		}
 
 		boolean boundsChanged = false;
-		if (lineY != getHeight() + pos.y()) {
+		if (lineY != getContentHeight() + pos.y()) {
 			boundsChanged = true;
-			setHeight(lineY - pos.y());
+			setContentHeight(lineY - pos.y());
 		}
-		if (xEnd != pos.x() + getWidth()) {
+		if (xEnd != pos.x() + getContentWidth()) {
 			boundsChanged = true;
-			setWidth(xEnd - pos.x());
+			setContentWidth(xEnd - pos.x());
 		}
 		if (boundsChanged) {
 			onBoundsUpdate();
@@ -130,15 +125,9 @@ public class DebugCountersHud extends TextHudEntry implements DynamicallyPositio
 	}
 
 	@Override
-	public AnchorPoint getAnchor() {
-		return anchor.get();
-	}
-
-	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
 		options.add(hide);
-		options.add(anchor);
 		options.add(showCCount);
 		options.add(showECount);
 		options.add(showPCount);

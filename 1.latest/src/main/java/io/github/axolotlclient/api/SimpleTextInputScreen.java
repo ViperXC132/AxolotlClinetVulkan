@@ -57,9 +57,7 @@ public class SimpleTextInputScreen extends Screen {
 			}
 			minecraft.setScreen(parent);
 		}).bounds(width / 2 + 5, height - 50, 150, 20).build());
-		input.setResponder(s -> {
-			done.active = !s.isBlank();
-		});
+		input.setResponder(s -> done.active = !s.isBlank());
 		done.active = false;
 	}
 

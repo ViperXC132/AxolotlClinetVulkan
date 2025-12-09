@@ -29,25 +29,23 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.numbers.NumberFormat;
 import net.minecraft.network.chat.numbers.StyledFormat;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
+import net.minecraft.util.Util;
 import net.minecraft.world.scores.*;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
@@ -58,9 +56,9 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
  * <p>License: GPL-3.0</p>
  */
 
-public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionable {
+public class ScoreboardHud extends TextHudEntry {
 
-	public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("kronhud", "scoreboardhud");
+	public static final Identifier ID = Identifier.fromNamespaceAndPath("kronhud", "scoreboardhud");
 	public static final Objective placeholder = Util.make(() -> {
 		Scoreboard placeScore = new Scoreboard();
 		Objective objective =
@@ -86,8 +84,6 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 	private final BooleanOption scores = new BooleanOption("scores", true);
 	private final ColorOption scoreColor = new ColorOption("scorecolor", new Color(0xFFFF5555));
 	private final IntegerOption textAlpha = new IntegerOption("text_alpha", 255, 0, 255);
-	private final EnumOption<AnchorPoint> anchor =
-		new EnumOption<>("anchorpoint", AnchorPoint.class, AnchorPoint.MIDDLE_RIGHT);
 
 	private final Minecraft client = (Minecraft) super.client;
 
@@ -217,12 +213,14 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
+		options.remove(backgroundPadding);
+		options.remove(backgroundRounding);
+		options.remove(roundBackground);
 		options.set(options.indexOf(super.backgroundColor), backgroundColor);
 		options.add(hide);
 		options.add(topColor);
 		options.add(scores);
 		options.add(scoreColor);
-		options.add(anchor);
 		options.add(topPadding);
 		options.remove(textColor);
 		options.add(textAlpha);
@@ -230,13 +228,13 @@ public class ScoreboardHud extends TextHudEntry implements DynamicallyPositionab
 	}
 
 	@Override
-	public ResourceLocation getId() {
+	public Identifier getId() {
 		return ID;
 	}
 
 	@Override
-	public AnchorPoint getAnchor() {
-		return anchor.get();
+	protected AnchorPoint getDefaultAnchor() {
+		return AnchorPoint.MIDDLE_RIGHT;
 	}
 
 	@Override

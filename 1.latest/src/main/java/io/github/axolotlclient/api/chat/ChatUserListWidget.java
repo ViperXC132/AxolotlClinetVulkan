@@ -34,7 +34,6 @@ import io.github.axolotlclient.api.types.User;
 import io.github.axolotlclient.api.util.AlphabeticalComparator;
 import io.github.axolotlclient.modules.auth.Auth;
 import lombok.Getter;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -43,8 +42,9 @@ import net.minecraft.client.gui.components.PlayerFaceRenderer;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import net.minecraft.util.Util;
 
 public class ChatUserListWidget extends ObjectSelectionList<ChatUserListWidget.UserListEntry> {
 
@@ -141,7 +141,7 @@ public class ChatUserListWidget extends ObjectSelectionList<ChatUserListWidget.U
 			drawScrollableText(graphics, client.font, Component.literal(user.getStatus().getTitle()), x + 3 + entryHeight,
 				y + 12, x + entryWidth - 6, y + 12 + client.font.lineHeight + 2, 8421504);
 
-			ResourceLocation texture = Auth.getInstance().getSkinTexture(user.getUuid());
+			Identifier texture = Auth.getInstance().getSkinTexture(user.getUuid());
 			PlayerFaceRenderer.draw(graphics, texture, x, y, entryHeight, true, false, -1);
 		}
 
@@ -153,10 +153,9 @@ public class ChatUserListWidget extends ObjectSelectionList<ChatUserListWidget.U
 				if (!user.equals(API.getInstance().getSelf())) {
 					ContextMenu.Builder menu = ContextMenu.builder().title(Component.literal(user.getName())).spacer();
 					if (!channel.isDM()) {
-						menu.entry(Component.translatable("api.friends.chat"), buttonWidget -> {
-							ChannelRequest.getOrCreateDM(user).whenCompleteAsync((channel, throwable) -> client.execute(
-								() -> client.setScreen(new ChatScreen(screen.getParent(), channel))));
-						}).spacer();
+						menu.entry(Component.translatable("api.friends.chat"), buttonWidget ->
+							ChannelRequest.getOrCreateDM(user).whenCompleteAsync((channel, throwable) ->
+								client.execute(() -> client.setScreen(new ChatScreen(screen.getParent(), channel))))).spacer();
 					}
 					if (user.getRelation() != Relation.BLOCKED) {
 						if (user.getRelation() != Relation.FRIEND) {

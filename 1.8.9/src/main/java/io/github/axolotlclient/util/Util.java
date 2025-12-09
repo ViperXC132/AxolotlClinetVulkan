@@ -25,12 +25,9 @@ package io.github.axolotlclient.util;
 import javax.imageio.ImageIO;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.Locale;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Graphics;
@@ -40,17 +37,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.Window;
 import net.minecraft.client.render.texture.DynamicTexture;
 import net.minecraft.resource.Identifier;
-import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.scoreboard.ScoreboardScore;
-import net.minecraft.scoreboard.team.Team;
-import net.minecraft.text.Formatting;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.ApiStatus;
 
 public class Util {
 
-	public static final Util.GlColor GlColor = new GlColor();
 	public static String lastgame;
 	public static String game;
 
@@ -110,10 +101,6 @@ public class Util {
 		return window;
 	}
 
-	public static void sendChatMessage(String msg) {
-		Minecraft.getInstance().player.sendChat(msg);
-	}
-
 	public static void addMessageToChatHud(Text msg) {
 		Minecraft.getInstance().gui.getChat().addMessage(msg);
 	}
@@ -130,92 +117,6 @@ public class Util {
 			builder.append(c);
 		}
 		return builder.toString();
-	}
-
-	public static String getGame() {
-		List<String> sidebar = getSidebar();
-
-		if (sidebar.isEmpty())
-			game = "";
-		else if (Util.getCurrentServerAddress() != null
-			&& Util.getCurrentServerAddress().toLowerCase().contains(sidebar.get(0).toLowerCase())) {
-			if (sidebar.get(sidebar.size() - 1).toLowerCase(Locale.ROOT)
-				.contains(Util.getCurrentServerAddress().toLowerCase(Locale.ROOT))
-				|| sidebar.get(sidebar.size() - 1).contains("Playtime")) {
-				game = "In Lobby";
-			} else {
-				if (sidebar.get(sidebar.size() - 1).contains("--------")) {
-					game = "Playing Bridge Practice";
-				} else {
-					game = "Playing " + sidebar.get(sidebar.size() - 1);
-				}
-			}
-		} else {
-			game = "Playing " + sidebar.get(0);
-		}
-
-		if (!Objects.equals(lastgame, game) && game.isEmpty())
-			game = lastgame;
-		else
-			lastgame = game;
-
-		if (game == null) {
-			game = "";
-		}
-
-		return Formatting.strip(game);
-	}
-
-	public static List<String> getSidebar() {
-		List<String> lines = new ArrayList<>();
-		Minecraft client = Minecraft.getInstance();
-		if (client.world == null)
-			return lines;
-
-		Scoreboard scoreboard = client.world.getScoreboard();
-		if (scoreboard == null)
-			return lines;
-		ScoreboardObjective sidebar = scoreboard.getDisplayObjective(1);
-		if (sidebar == null)
-			return lines;
-
-		Collection<ScoreboardScore> scores = scoreboard.getScores(sidebar);
-		List<ScoreboardScore> list = scores.stream().filter(
-				input -> input != null && input.getOwner() != null && !input.getOwner().startsWith("#"))
-			.collect(Collectors.toList());
-
-		if (list.size() > 15) {
-			scores = Lists.newArrayList(Iterables.skip(list, scores.size() - 15));
-		} else {
-			scores = list;
-		}
-
-		for (ScoreboardScore score : scores) {
-			Team team = scoreboard.getTeamOfMember(score.getOwner());
-			if (team == null)
-				return lines;
-			String text = team.getPrefix() + team.getSuffix();
-			if (!text.trim().isEmpty())
-				lines.add(text);
-		}
-
-		lines.add(sidebar.getDisplayName());
-		Collections.reverse(lines);
-
-		return lines;
-	}
-
-	public static String getCurrentServerAddress() {
-		if (Minecraft.getInstance().isInSingleplayer()) {
-			return null;
-		}
-
-		if (Minecraft.getInstance().getCurrentServerEntry() != null) {
-			return Minecraft.getInstance().getCurrentServerEntry().address;
-		}
-		return ((MinecraftClientAccessor) Minecraft.getInstance()).getServerAddress() != null
-			? ((MinecraftClientAccessor) Minecraft.getInstance()).getServerAddress()
-			: null;
 	}
 
 	public static <T> T make(Supplier<T> factory) {
@@ -274,24 +175,6 @@ public class Util {
 	public static void bindTexture(GraphicsOption option) {
 		Identifier id = getTexture(option);
 		Minecraft.getInstance().getTextureManager().bind(id);
-	}
-
-	public static class GlColor {
-
-		public float red = 1.0F;
-		public float green = 1.0F;
-		public float blue = 1.0F;
-		public float alpha = 1.0F;
-
-		public GlColor() {
-		}
-
-		public GlColor(float red, float green, float blue, float alpha) {
-			this.red = red;
-			this.green = green;
-			this.blue = blue;
-			this.alpha = alpha;
-		}
 	}
 
 	public static String getFormatCode(Color color) {

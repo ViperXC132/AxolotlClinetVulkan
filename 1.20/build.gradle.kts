@@ -32,25 +32,15 @@ dependencies {
 
 	modImplementation("net.fabricmc.fabric-api:fabric-api:${project.property("fapi_120")}+${project.property("minecraft_120")}")
 
-	modImplementation("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+${project.property("minecraft_120")}") {
-		exclude(group = "com.terraformersmc")
-		exclude(group = "org.lwjgl")
-	}
+	modImplementation("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+${project.property("minecraft_120")}")
 	include("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+${project.property("minecraft_120")}")
-	modImplementation("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:${project.property("config")}")
+	modImplementation(include("io.github.axolotlclient:AxolotlClient-config-rounded:${project.property("config")}+${project.property("minecraft_120")}")!!)
 
 	modCompileOnlyApi("com.terraformersmc:modmenu:8.0.0") {
 		exclude(group = "net.fabricmc")
 	}
 
 	implementation(include(project(path = ":common", configuration = "shadow"))!!)
-
-	api("org.lwjgl:lwjgl-nanovg:3.3.2")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.2:natives-linux")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.2:natives-windows")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.2:natives-windows-arm64")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.2:natives-macos")
-	runtimeOnly("org.lwjgl:lwjgl-nanovg:3.3.2:natives-macos-arm64")
 
 	val noxesiumVersion = "1.0.3"
 	modCompileOnly("maven.modrinth:noxesium:$noxesiumVersion")

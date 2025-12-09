@@ -27,7 +27,6 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.resource.CrossFrameResourcePool;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import io.github.axolotlclient.AxolotlClient;
@@ -40,6 +39,7 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.Profiler;
 import org.joml.Matrix4f;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -55,7 +55,7 @@ public abstract class GameRendererMixin {
 	private CrossFrameResourcePool resourcePool;
 
 	@Shadow
-	private boolean panoramicMode;
+	public abstract boolean isPanoramicMode();
 
 	@WrapOperation(method = "getFov", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;lerp(FFF)F"))
 	private float disableDynamicFov(float delta, float start, float end, Operation<Float> original) {
@@ -67,14 +67,14 @@ public abstract class GameRendererMixin {
 
 	@WrapMethod(method = "getFov")
 	private float getFov(Camera camera, float partialTick, boolean useFovSetting, Operation<Float> original) {
-		if (this.panoramicMode) {
+		if (this.isPanoramicMode()) {
 			return original.call(camera, partialTick, useFovSetting);
 		}
 		Zoom.update();
 		return Zoom.getFov(original.call(camera, partialTick, useFovSetting), partialTick);
 	}
 
-	@Inject(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/GameRenderer;postEffectId:Lnet/minecraft/resources/ResourceLocation;", ordinal = 0))
+	@Inject(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/GameRenderer;postEffectId:Lnet/minecraft/resources/Identifier;", ordinal = 0, opcode = Opcodes.GETFIELD))
 	public void axolotlclient$worldMotionBlur(DeltaTracker tracker, boolean renderLevel, CallbackInfo ci) {
 		axolotlclient$motionBlur(tracker, renderLevel, null);
 	}
@@ -89,7 +89,7 @@ public abstract class GameRendererMixin {
 
 		if (MotionBlur.getInstance().enabled.get() && Minecraft.getInstance().isGameLoadFinished()) {
 			MotionBlur blur = MotionBlur.getInstance();
-			RenderSystem.resetTextureMatrix();
+			//RenderSystem.resetTextureMatrix();
 			blur.render(resourcePool);
 		}
 

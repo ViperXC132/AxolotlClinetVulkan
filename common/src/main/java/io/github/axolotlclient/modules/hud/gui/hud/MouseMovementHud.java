@@ -25,19 +25,24 @@ package io.github.axolotlclient.modules.hud.gui.hud;
 import java.util.List;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.bridge.Platform;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.PlayerDirectionChangeEvent;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
+import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.util.MathUtil;
 
-public class MouseMovementHud extends BoxHudEntry {
+public class MouseMovementHud extends BoxHudEntry implements DynamicallyPositionable {
 
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "mousemovementhud");
 
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 	private final GraphicsOption mouseMovementIndicatorInner = new GraphicsOption("mouseMovementIndicator", new int[][]{
 		new int[]{0, 0, 0, 0, 0, 0, 0},
 		new int[]{0, 0, 0, 0, 0, 0, 0},
@@ -78,25 +83,26 @@ public class MouseMovementHud extends BoxHudEntry {
 		mouseX += (event.yaw() - event.prevYaw()) / 7F;
 		mouseY += (event.pitch() - event.prevPitch()) / 7F;
 		// 0, 0 will be the center of the HUD element
-		float halfWidth = getWidth() / 2f;
-		mouseX = MathUtil.clamp(mouseX, -halfWidth + 4, halfWidth - 4);
-		mouseY = MathUtil.clamp(mouseY, -13, 13);
+		float halfWidth = getContentWidth() / 2f;
+		var halfHeight = getContentHeight() / 2f;
+		mouseX = MathUtil.clamp(mouseX, -halfWidth + 2, halfWidth - 2);
+		mouseY = MathUtil.clamp(mouseY, -halfHeight + 2, halfHeight - 2);
 	}
 
 	@Override
 	public void renderComponent(AxoRenderContext context, float delta) {
 		context.br$glColor4(1, 1, 1, 1);
 		context.br$glEnableBlend();
-		int spaceY = getRawY();
-		int spaceX = getRawX();
+		int spaceY = getContentY();
+		int spaceX = getContentX();
 
 		float calculatedMouseX = (lastMouseX + ((mouseX - lastMouseX) * delta)) - 5;
 		float calculatedMouseY = (lastMouseY + ((mouseY - lastMouseY) * delta)) - 5;
 
-		context.br$drawTexture(spaceX + (width / 2) - 7 / 2 - 1, spaceY + 17 - (7 / 2), 7, 7, Platform.createTexture(mouseMovementIndicatorInner));
+		context.br$drawTexture(spaceX + (getContentWidth() / 2) - 7 / 2 - 1, spaceY + getContentHeight() / 2 - (7 / 2), 7, 7, Platform.createTexture(mouseMovementIndicatorInner));
 		// Woah KodeToad, good use of translate
-		context.br$translateMatrix(calculatedMouseX, calculatedMouseY, 0);
-		context.br$drawTexture(spaceX + (width / 2) - 1, spaceY + 17, 11, 11, Platform.createTexture(mouseMovementIndicatorOuter));
+		context.br$translateMatrix(calculatedMouseX, calculatedMouseY);
+		context.br$drawTexture(spaceX + (getContentWidth() / 2) - 1, spaceY + getContentHeight() / 2, 11, 11, Platform.createTexture(mouseMovementIndicatorOuter));
 	}
 
 	@Override
@@ -125,8 +131,14 @@ public class MouseMovementHud extends BoxHudEntry {
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
+		options.add(anchor);
 		options.add(mouseMovementIndicatorInner);
 		options.add(mouseMovementIndicatorOuter);
 		return options;
+	}
+
+	@Override
+	public AnchorPoint getAnchor() {
+		return anchor.get();
 	}
 }

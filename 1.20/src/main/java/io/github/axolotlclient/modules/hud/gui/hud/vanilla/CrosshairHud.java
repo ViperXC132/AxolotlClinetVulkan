@@ -56,7 +56,7 @@ import net.minecraft.util.math.Axis;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import static io.github.axolotlclient.modules.hud.gui.hud.vanilla.HotbarHUD.ICONS_TEXTURE;
+import static io.github.axolotlclient.modules.hud.gui.hud.vanilla.HotbarHud.ICONS_TEXTURE;
 
 /**
  * This implementation of Hud modules is based on KronHUD.

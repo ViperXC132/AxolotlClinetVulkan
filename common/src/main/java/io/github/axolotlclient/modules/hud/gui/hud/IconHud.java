@@ -30,14 +30,18 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoSprites;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
+import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 
-public class IconHud extends BoxHudEntry {
+public class IconHud extends BoxHudEntry implements DynamicallyPositionable {
 	public static final AxoIdentifier ID = AxoIdentifier.of("axolotlclient", "iconhud");
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 	private final EnumOption<Mode> mode = new EnumOption<>("iconhud.mode", Mode.class, Mode.BOTH);
 
 	public IconHud() {
-		super(16, 16, false);
+		super(16, 16, true);
 	}
 
 	@Override
@@ -60,10 +64,16 @@ public class IconHud extends BoxHudEntry {
 
 	@Override
 	public void renderComponent(AxoRenderContext ctx, float delta) {
+		ctx.br$pushMatrix();
 		ctx.br$glColor4(1, 1, 1, 1);
 		ctx.br$glEnableBlend();
-		ctx.br$drawTexture(getX(), getY(), width, height, AxoSprites.BADGE);
+		float scale = getScale();
+		ctx.br$scaleMatrix(1 / scale, 1 / scale);
+		ctx.br$translateMatrix(getRawTrueContentX(), getRawTrueContentY());
+		ctx.br$scaleMatrix(scale, scale);
+		ctx.br$drawTexture(0, 0, 16, 16, AxoSprites.BADGE);
 		ctx.br$glDisableBlend();
+		ctx.br$popMatrix();
 	}
 
 	@Override
@@ -74,18 +84,24 @@ public class IconHud extends BoxHudEntry {
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		var options = super.getConfigurationOptions();
+		options.add(anchor);
 		options.add(mode);
 		return options;
 	}
 
+	@Override
+	public AnchorPoint getAnchor() {
+		return anchor.get();
+	}
+
 	private enum Mode {
-		IN_GAME(){
+		IN_GAME() {
 			@Override
 			public boolean showsInGui() {
 				return false;
 			}
 		},
-		GUI(){
+		GUI() {
 			@Override
 			public boolean showsInGame() {
 				return false;
@@ -104,7 +120,7 @@ public class IconHud extends BoxHudEntry {
 
 		@Override
 		public String toString() {
-			return "iconhud.mode."+super.toString().toLowerCase(Locale.ROOT);
+			return "iconhud.mode." + super.toString().toLowerCase(Locale.ROOT);
 		}
 	}
 }

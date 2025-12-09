@@ -22,7 +22,6 @@
 package io.github.axolotlclient.bridge.events.types;
 
 import io.github.axolotlclient.bridge.util.AxoText;
-import io.github.axolotlclient.util.events.types.CancellableEvent;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

@@ -42,29 +42,30 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackResources;
 import net.minecraft.server.packs.resources.IoSupplier;
+import org.jetbrains.annotations.NotNull;
 
 import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawString;
 
 public class PackDisplayHud extends TextHudEntry {
 
-	public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath("axolotlclient", "packdisplayhud");
+	public static final Identifier ID = Identifier.fromNamespaceAndPath("axolotlclient", "packdisplayhud");
 	public final List<PackWidget> widgets = new ArrayList<>();
 	private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
-	private PackWidget placeholder;
 	private final Minecraft client = (Minecraft) super.client;
+	private PackWidget placeholder;
 
 	public PackDisplayHud() {
-		super(200, 50, true);
+		super(120, 18, true);
 	}
 
 	@Override
 	public void renderComponent(AxoRenderContext context, float f) {
 		final var graphics = (GuiGraphics) context;
 
-		DrawPosition pos = getPos();
+		DrawPosition pos = getContentPos();
 
 		if (widgets.isEmpty()) init();
 
@@ -75,32 +76,30 @@ public class PackDisplayHud extends TextHudEntry {
 		if (outline.get()) DrawUtil.outlineRect(graphics, getBounds(), outlineColor.get());
 
 		int y = pos.y() + 1;
-		for (int i = widgets.size() - 1;
-			 i >= 0; i--) { // Badly reverse the order (I'm sure there are better ways to do this)
+		for (int i = widgets.size() - 1; i >= 0; i--) { // Badly reverse the order (I'm sure there are better ways to do this)
 			widgets.get(i).render(graphics, pos.x() + 1, y);
-			y += 18;
+			y += 17;
 		}
-		if (y - pos.y() + 1 != getHeight()) {
-			setHeight(y - pos.y() - 1);
+		if (y - pos.y() != getContentHeight()) {
+			setContentHeight(y - pos.y());
 			onBoundsUpdate();
 		}
 	}
 
 	@Override
 	public void init() {
-		int listSize = client.getResourcePackRepository().getSelectedPacks().size();
-		client.getResourcePackRepository().getSelectedPacks().forEach(profile -> {
+		var selected = client.getResourcePackRepository().getSelectedPacks();
+		var valid = selected.stream()
+			.filter(p -> !(p.location().title().getContents() instanceof TranslatableContents tr && tr.getKey().matches("pack\\.name\\.fabricMods?")))
+			.toList();
+		var listSize = valid.size();
+		valid.forEach(profile -> {
 			try (PackResources pack = profile.open()) {
-				if (pack.location().title().getContents() instanceof TranslatableContents tr && tr.getKey().matches("pack\\.name\\.fabricMods?")) {
-					return;
-				}
-
 				if (listSize == 1) {
 					widgets.add(createWidget(profile.getTitle(), pack));
 				} else if (!pack.packId().equalsIgnoreCase("vanilla")) {
 					widgets.add(createWidget(profile.getTitle(), pack));
 				}
-
 			} catch (Exception ignored) {
 			}
 		});
@@ -110,17 +109,17 @@ public class PackDisplayHud extends TextHudEntry {
 			int textW = client.font.width(packWidget.getName()) + 20;
 			if (textW > w.get()) w.set(textW);
 		});
-		setWidth(w.get());
+		setContentWidth(w.get());
 
-		setHeight(widgets.size() * 18);
+		setContentHeight(widgets.size() * 17 + 1);
 		onBoundsUpdate();
 	}
 
 	private PackWidget createWidget(Component displayName, PackResources pack) throws IOException, AssertionError {
-		IoSupplier<InputStream> supplier = pack.getRootResource("pack.png");
+		IoSupplier<@NotNull InputStream> supplier = pack.getRootResource("pack.png");
 		assert supplier != null;
 		InputStream stream = supplier.get();
-		ResourceLocation id = ResourceLocation.fromNamespaceAndPath(ID.getNamespace(), ID.getPath() + "/" + pack.packId());
+		Identifier id = Identifier.fromNamespaceAndPath(ID.getNamespace(), ID.getPath() + "/" + pack.packId());
 		client.getTextureManager().register(id, new DynamicTexture(id::toString, NativeImage.read(stream)));
 		stream.close();
 		return new PackWidget(displayName, id);
@@ -129,12 +128,12 @@ public class PackDisplayHud extends TextHudEntry {
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float f) {
 		boolean updateBounds = false;
-		if (getHeight() < 18) {
-			setHeight(18);
+		if (getContentHeight() < 18) {
+			setContentHeight(18);
 			updateBounds = true;
 		}
-		if (getWidth() < 56) {
-			setWidth(56);
+		if (getContentWidth() < 56) {
+			setContentWidth(56);
 			updateBounds = true;
 		}
 		if (updateBounds) {
@@ -146,7 +145,7 @@ public class PackDisplayHud extends TextHudEntry {
 			} catch (Exception ignored) {
 			}
 		} else {
-			placeholder.render((GuiGraphics) graphics, getPos().x() + 1, getPos().y() + 1);
+			placeholder.render((GuiGraphics) graphics, getContentPos().x() + 1, getContentPos().y() + 1);
 		}
 	}
 
@@ -158,7 +157,7 @@ public class PackDisplayHud extends TextHudEntry {
 	}
 
 	@Override
-	public ResourceLocation getId() {
+	public Identifier getId() {
 		return ID;
 	}
 
@@ -171,9 +170,9 @@ public class PackDisplayHud extends TextHudEntry {
 
 		@Getter
 		public final String name;
-		private final ResourceLocation texture;
+		private final Identifier texture;
 
-		public PackWidget(Component name, ResourceLocation id) {
+		public PackWidget(Component name, Identifier id) {
 			this.name = name.getString();
 			texture = id;
 		}
@@ -182,7 +181,7 @@ public class PackDisplayHud extends TextHudEntry {
 			if (!iconsOnly.get()) {
 				graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, 0, 0, 16, 16, 16, 16);
 			}
-			drawString(graphics, name, x + 18, y + 6, textColor.get().toInt(), shadow.get());
+			drawString(graphics, name, x + 18, y + 16 / 2 - 9 / 2, textColor.get().toInt(), shadow.get());
 		}
 	}
 }
