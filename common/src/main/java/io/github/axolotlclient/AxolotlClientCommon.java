@@ -24,25 +24,23 @@
 package io.github.axolotlclient;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.common.base.Preconditions;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
 import io.github.axolotlclient.AxolotlClientConfig.impl.managers.JsonConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.impl.managers.VersionedJsonConfigManager;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.api.API;
+import io.github.axolotlclient.api.Options;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.bridge.util.AxoProfiler;
+import io.github.axolotlclient.config.migration.ConfigMigration;
 import io.github.axolotlclient.config.profiles.ProfileAware;
 import io.github.axolotlclient.config.profiles.Profiles;
 import io.github.axolotlclient.modules.Module;
@@ -52,7 +50,6 @@ import io.github.axolotlclient.modules.render.BeaconBeam;
 import io.github.axolotlclient.modules.rpc.DiscordRPC;
 import io.github.axolotlclient.modules.tnttime.TntTime;
 import io.github.axolotlclient.util.FeatureDisablerCommon;
-import io.github.axolotlclient.util.GsonHelper;
 import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.OSUtil;
 import io.github.axolotlclient.util.notifications.NotificationProvider;
@@ -133,6 +130,7 @@ public abstract class AxolotlClientCommon {
 		registerModule(Freelook.getInstance());
 		registerModule(TntTime.getInstance());
 		registerModule(DiscordRPC.getInstance());
+		registerModule(getApiOptions());
 	}
 
 	// init logic
@@ -159,92 +157,11 @@ public abstract class AxolotlClientCommon {
 				}
 			}
 		}
-		configManager = new VersionedJsonConfigManager(configFile,
-			config.getConfig(), 5, (oldVersion, newVersion, config, json) -> {
-			if (oldVersion.getMajor() <= 1) {
-				if (json.has("hud")) {
-					var hud = json.get("hud").getAsJsonObject();
-					if (hud.has("keystrokehud")) {
-						var keystrokes = hud.get("keystrokehud")
-							.getAsJsonObject();
-						var mousemovement = new JsonObject();
-						mousemovement.addProperty("enabled", keystrokes.get("enabled").getAsBoolean() && keystrokes.get("mousemovement").getAsBoolean());
-						var inner = keystrokes.get("mouseMovementIndicator");
-						if (inner.isJsonObject()) {
-							var data = inner.getAsJsonObject().get("data").getAsJsonArray();
-							var pix = GsonHelper.jsonArrayToStream(data).map(JsonElement::getAsJsonArray)
-								.map(GsonHelper::jsonArrayToStream)
-								.map(s -> s.mapToInt(JsonElement::getAsInt).toArray())
-								.toArray(int[][]::new);
-							// hacky
-							var s = new GraphicsOption("", pix).toSerializedValue();
-							mousemovement.addProperty("mouseMovementIndicator", s);
-						} else {
-							mousemovement.addProperty("mouseMovementIndicator", inner.getAsString());
-						}
-						var outer = keystrokes.get("mouseMovementIndicatorOuter");
-						if (outer.isJsonObject()) {
-							var data = inner.getAsJsonObject().get("data").getAsJsonArray();
-							var pix = GsonHelper.jsonArrayToStream(data).map(JsonElement::getAsJsonArray)
-								.map(GsonHelper::jsonArrayToStream)
-								.map(s -> s.mapToInt(JsonElement::getAsInt).toArray())
-								.toArray(int[][]::new);
-							// hacky
-							var s = new GraphicsOption("", pix).toSerializedValue();
-							mousemovement.addProperty("mouseMovementIndicatorOuter", s);
-						} else {
-							mousemovement.addProperty("mouseMovementIndicatorOuter", outer.getAsString());
-						}
-						hud.add("mousemovementhud", mousemovement);
-					}
-				}
-			}
-			if (oldVersion.getMajor() <= 2) {
-				if (json.has("hud")) {
-					var hud = json.get("hud").getAsJsonObject();
-					if (hud.has("armorhud")) {
-						var armorhud = hud.get("armorhud").getAsJsonObject();
-						if (armorhud.has("armorhud.main_hand_item_top")) {
-							var mainItemTop = armorhud.get("armorhud.main_hand_item_top").getAsBoolean();
-							if (mainItemTop) {
-								armorhud.addProperty("armorhud.main_hand_item_position", "armorhud.main_hand_item_position.top");
-							}
-						}
-					}
-				}
-			}
-			if (oldVersion.getMajor() <= 3) {
-				if (json.has("storedOptions")) {
-					var hiddenOptions = json.get("storedOptions").getAsJsonObject();
-
-					JsonObject apiOptions;
-					if (json.has("api.category")) {
-						apiOptions = json.get("api.category").getAsJsonObject();
-					} else {
-						apiOptions = new JsonObject();
-						json.add("api.category", apiOptions);
-					}
-
-					apiOptions.addProperty("api.privacy_policy_accepted", "privacy_policy_state." + hiddenOptions.get("privacyPolicyAccepted").getAsString().toLowerCase(Locale.ROOT));
-				}
-			}
-			if (oldVersion.getMajor() <= 4) {
-				if (json.has("hypixel-mods")) {
-					var hypixel = json.get("hypixel-mods").getAsJsonObject();
-					var autoboop = hypixel.get("autoboop");
-					if (autoboop != null) {
-						var filterlist = autoboop.getAsJsonObject().get("autoboop.filterlist");
-						if (filterlist != null) {
-							filterlist.getAsString();
-							autoboop.getAsJsonObject().addProperty("autoboop.filterlist", Arrays.stream(filterlist.getAsString().split(","))
-								.map(s -> s.getBytes(StandardCharsets.UTF_8))
-								.map(s -> Base64.getEncoder().encodeToString(s)).collect(Collectors.joining(",")));
-						}
-					}
-				}
-			}
-			return json;
-		});
+		configManager = new VersionedJsonConfigManager(configFile, config.getConfig(), ConfigMigration.CONFIG_VERSION,
+			(oldVersion, newVersion, config, json) -> {
+				ConfigMigration.apply(oldVersion.getMajor(), json);
+				return json;
+			});
 
 		AxolotlClientConfig.getInstance().register(configManager);
 
@@ -298,6 +215,8 @@ public abstract class AxolotlClientCommon {
 	protected abstract FeatureDisablerCommon getFeatureDisabler();
 
 	protected abstract AxolotlClientConfigCommon createConfig();
+
+	public abstract Options getApiOptions();
 
 	// random stuff
 

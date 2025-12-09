@@ -76,13 +76,13 @@ public class API {
 	private final ScheduledExecutorService statusUpdateExecutor;
 	private static final List<BiContainer<Runnable, ListenerType>> afterStartupListeners = new ArrayList<>();
 
-	public API(StatusUpdateProvider statusUpdateProvider, Options apiOptions) {
+	public API(StatusUpdateProvider statusUpdateProvider) {
 		if (Instance != null) {
 			throw new IllegalStateException("API may only be instantiated once!");
 		}
 		this.logger = AxolotlClientCommon.getInstance().getLogger();
 		this.statusUpdateProvider = statusUpdateProvider;
-		this.apiOptions = apiOptions;
+		this.apiOptions = AxolotlClientCommon.getInstance().getApiOptions();
 		handlers = new HashSet<>();
 		handlers.add(ChatHandler.getInstance());
 		handlers.add(new FriendRequestHandler());

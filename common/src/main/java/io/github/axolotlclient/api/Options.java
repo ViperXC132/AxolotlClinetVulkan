@@ -28,7 +28,9 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import io.github.axolotlclient.AxolotlClientCommon;
+import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
+import io.github.axolotlclient.AxolotlClientConfig.impl.managers.JsonConfigManager;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
@@ -69,12 +71,16 @@ public abstract class Options implements Module {
 	public final BooleanOption displayNotes = new BooleanOption("api.display_notes", true);
 	public final BooleanOption addShortcutButtons = new BooleanOption("api.add_shortcut_buttons", true);
 	public final BooleanOption allowFriendsServerJoin = new BooleanOption("api.allow_friends_server_join", false);
-	public final StringOption pkToken = new StringOption("api.pk_token", "", s ->
+	private final OptionCategory pkConfig = OptionCategory.create("pluralkit_sensitive");
+	private final ConfigManager pkConfigManager = new JsonConfigManager(AxolotlClientCommon.resolveConfigFile("pluralkit_sensitive.json"), pkConfig);
+	public final StringOption pkToken = new StringOption("api.pk_token", "", s -> {
 		PkSystem.fromToken(s).thenAccept(sys -> {
 			if (sys != null) {
 				API.getInstance().getSelf().setSystem(sys);
 			}
-		}));
+		});
+		pkConfigManager.save();
+	});
 	public final BooleanOption autoproxy = new BooleanOption("api.pk_autoproxy", false);
 	public final EnumOption<PkSystem.ProxyMode> autoproxyMode = new EnumOption<>("api.pk_proxymode", PkSystem.ProxyMode.class, PkSystem.ProxyMode.PROXY_OFF);
 	public final StringOption autoproxyMember = new StringOption("api.pk_autoproxy_member", "", s -> {
@@ -104,7 +110,10 @@ public abstract class Options implements Module {
 			allowFriendsImageAccess.get()
 		));
 		pkToken.setMaxLength(65);
-		pluralkit.add(pkToken, autoproxy, autoproxyMode, autoproxyMember);
+		pkConfig.add(pkToken);
+		pkConfigManager.load();
+		pluralkit.add(pkToken, false);
+		pluralkit.add(autoproxy, autoproxyMode, autoproxyMember);
 		account.add(showRegistered, retainUsernames, showLastOnline, showActivity, allowFriendsImageAccess);
 		category.add(pluralkit);
 		category.add(account, false);
