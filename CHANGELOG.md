@@ -1,5 +1,9 @@
 ## Changelog:
 
+### 3.1.8
+
+- fix crashes on java 17
+
 ### 3.1.7
 
 - Update to 1.21.11 (in favor of 1.21.10)
