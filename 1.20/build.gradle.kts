@@ -92,7 +92,7 @@ publishing {
 		maven {
 			name = "owlMaven"
 			val repository = if (project.version.toString().contains("beta") || project.version.toString().contains("alpha")) "snapshots" else "releases"
-			url = uri("https://moehreag.duckdns.org/maven/$repository")
+			url = uri("https://maven.axolotlclient.com/$repository")
 			credentials(PasswordCredentials::class)
 			authentication {
 				create<BasicAuthentication>("basic")

@@ -48,6 +48,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -129,7 +130,7 @@ public abstract class PlayerListHudMixin {
 		return false;
 	}
 
-	@Inject(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/hud/PlayerListHud;header:Lnet/minecraft/text/Text;"))
+	@Inject(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/hud/PlayerListHud;header:Lnet/minecraft/text/Text;", opcode = Opcodes.GETFIELD))
 	private void axolotlclient$setRenderHeaderFooter(GuiGraphics graphics, int scaledWindowWidth, Scoreboard scoreboard, ScoreboardObjective objective, CallbackInfo ci) {
 		if (!Tablist.getInstance().showHeader.get()) {
 			header = null;
@@ -195,7 +196,7 @@ public abstract class PlayerListHudMixin {
 		if (game == null || !game.isStarted()) {
 			return;
 		}
-		BedwarsPlayer player = game.getPlayer(playerEntry.getProfile().getName()).orElse(null);
+		BedwarsPlayer player = game.getPlayer(playerEntry.getProfile().getId()).orElse(null);
 		if (player == null) {
 			return;
 		}

@@ -16,7 +16,7 @@ group = "io.github.axolotlclient"
 
 repositories {
 	maven {
-		url = uri("https://moehreag.duckdns.org/maven/releases")
+		url = uri("https://maven.axolotlclient.com/releases")
 	}
 	mavenCentral()
 }
@@ -26,8 +26,8 @@ allprojects {
 		maven("https://maven.terraformersmc.com/releases")
 		maven("https://maven.fabricmc.net")
 		maven("https://maven.quiltmc.org/repository/release")
-		maven("https://moehreag.duckdns.org/maven/releases")
-		maven("https://moehreag.duckdns.org/maven/snapshots")
+		maven("https://maven.axolotlclient.com/releases")
+		maven("https://maven.axolotlclient.com/snapshots")
 		maven("https://maven.parchmentmc.org")
 		maven("https://libraries.minecraft.net/")
 		maven("https://repo.hypixel.net/repository/Hypixel/") {

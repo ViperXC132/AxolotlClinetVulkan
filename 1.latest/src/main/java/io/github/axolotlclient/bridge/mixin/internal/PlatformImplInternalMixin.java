@@ -55,6 +55,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Util;
 import net.minecraft.util.profiling.Profiler;
@@ -62,9 +63,9 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.Team;
-import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
@@ -76,7 +77,7 @@ public abstract class PlatformImplInternalMixin {
 	 * @reason Implement bridge platform.
 	 */
 	@Overwrite
-	public static @Nullable AxoWindow getWindow() {
+	public static AxoWindow getWindow() {
 		return Minecraft.getInstance().getWindow();
 	}
 
@@ -215,12 +216,14 @@ public abstract class PlatformImplInternalMixin {
 	 */
 	@Overwrite
 	public static String getTabNameFor(AxoPlayerListEntry player) {
-		return ChatFormatting.stripFormatting(
-			Minecraft.getInstance().gui
-				.getTabList()
-				.getNameForDisplay((PlayerInfo) player)
-				.getString()
-		);
+		// Inlined PlayerListHud#getDisplayName to avoid StackOverflowError due to mixin
+		PlayerInfo p = (PlayerInfo) player;
+		if (p.getTabListDisplayName() != null) {
+			MutableComponent name = p.getTabListDisplayName().copy();
+			return ChatFormatting.stripFormatting((p.getGameMode() == GameType.SPECTATOR ? name.withStyle(ChatFormatting.ITALIC) : name).getString());
+		}
+		MutableComponent name = PlayerTeam.formatNameForTeam(p.getTeam(), Component.literal(p.getProfile().name()));
+		return ChatFormatting.stripFormatting((p.getGameMode() == GameType.SPECTATOR ? name.withStyle(ChatFormatting.ITALIC) : name).getString());
 	}
 
 	/**

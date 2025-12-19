@@ -23,6 +23,7 @@
 package io.github.axolotlclient.modules.hypixel.bedwars;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.regex.Pattern;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
@@ -30,6 +31,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.Platform;
+import io.github.axolotlclient.bridge.events.EventBus;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
 import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
@@ -45,6 +47,10 @@ import lombok.Getter;
 
 public class BedwarsMod implements AbstractHypixelMod {
 
+	public static EventBus<Consumer<BedwarsGame>> GAME_START_EVENT = EventBus.broadcast1();
+	public static EventBus<Runnable> GAME_END_EVENT = EventBus.broadcast0();
+	// Triggered when adding a player to our cached player lists after the game has started
+	public static EventBus<Consumer<BedwarsPlayer>> PLAYER_ADD = EventBus.broadcast1();
 	private final static Pattern[] GAME_START = {
 		Pattern.compile("^\\s*?Protect your bed and destroy the enemy beds\\.\\s*?$")
 	};
@@ -205,8 +211,7 @@ public class BedwarsMod implements AbstractHypixelMod {
 	}
 
 	public void gameEnd() {
-		upgradesOverlay.onEnd();
-		statsOverlay.onEnd();
+		GAME_END_EVENT.invoker().run();
 		currentGame = null;
 	}
 

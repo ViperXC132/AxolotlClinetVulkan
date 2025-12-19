@@ -22,10 +22,7 @@
 
 package io.github.axolotlclient.modules.hypixel.bedwars;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Predicate;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
@@ -172,9 +169,25 @@ public class StatsOverlay extends TextHudEntry {
 	public StatsOverlay(BedwarsMod mod) {
 		super(400, 600, true);
 		this.mod = mod;
+		BedwarsMod.GAME_START_EVENT.register(this::onStart);
+		BedwarsMod.GAME_END_EVENT.register(this::onEnd);
+		BedwarsMod.PLAYER_ADD.register(player -> {
+			var teamNames = playersByTeam.computeIfAbsent(player.getTeam(), unused -> new ArrayList<>());
+			var namesSize = teamNames.size();
+			if (namesSize == 0) {
+				teamNames.add(player.getProfile().br$getName());
+			} else {
+				var index = Math.min(namesSize, player.getNumber() - 1);
+				teamNames.add(index, player.getProfile().br$getName());
+			}
+			HypixelAbstractionLayer.getInstance().getPlayerDataApi()
+				.getAsync(player.getProfile().br$getId().toString())
+				.thenAcceptAsync(o ->
+					o.ifPresent(data -> stats.put(player.getProfile().br$getName(), data.bedwars())), client);
+		});
 	}
 
-	void onStart() {
+	private void onStart(BedwarsGame g) {
 		playersByTeam.clear();
 		// can't call clear here, since we need a fresh map to avoid requests from writing
 		stats = new HashMap<>();
@@ -194,23 +207,22 @@ public class StatsOverlay extends TextHudEntry {
 
 		// need to use capturedStats since this map could've been "retired"
 		final var capturedStats = this.stats;
-		mod.getGame().ifPresent(g ->
-			g.getPlayersByTeam().forEach((t, e) -> {
-				playersByTeam.put(t, e.stream().map(AxoPlayerListEntry::br$getName).toList());
-				e.forEach(entry ->
-					api.getAsync(entry.br$getId().toString())
-						.whenCompleteAsync((playerData, throwable) -> {
-							if (playerData.isEmpty()) {
-								return;
-							}
 
-							capturedStats.put(entry.br$getName(), playerData.get().bedwars()
-							);
-						}, client));
-			}));
+		g.getPlayersByTeam().forEach((t, e) -> {
+			playersByTeam.put(t, e.stream().map(AxoPlayerListEntry::br$getName).toList());
+			e.forEach(entry ->
+				api.getAsync(entry.br$getId().toString())
+					.whenCompleteAsync((playerData, throwable) -> {
+						if (playerData.isEmpty()) {
+							return;
+						}
+
+						capturedStats.put(entry.br$getName(), playerData.get().bedwars());
+					}, client));
+		});
 	}
 
-	public void onEnd() {
+	private void onEnd() {
 		shouldRender = false;
 	}
 

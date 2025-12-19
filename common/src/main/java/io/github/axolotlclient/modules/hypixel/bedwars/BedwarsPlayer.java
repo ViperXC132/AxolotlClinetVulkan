@@ -35,7 +35,7 @@ import lombok.Data;
 public class BedwarsPlayer {
 
 	private final BedwarsTeam team;
-	private final int number;
+	private int number;
 	private AxoPlayerListEntry profile;
 	private boolean alive = true;
 	private boolean disconnected = false;

@@ -228,7 +228,10 @@ public abstract class PlatformImplInternalMixin {
 	 */
 	@Overwrite
 	public static String getTabNameFor(AxoPlayerListEntry player) {
-		return Minecraft.getInstance().gui.getPlayerTabOverlay().getDisplayName((PlayerInfo) player);
+		// Inlined PlayerTabOverlay#getDisplayName to avoid StackOverflowError due to mixin
+		var p = (PlayerInfo) player;
+		var displayName = p.getDisplayName();
+		return displayName != null ? displayName.getFormattedString() : Team.getMemberDisplayName(p.getTeam(), p.getProfile().getName());
 	}
 
 	/**

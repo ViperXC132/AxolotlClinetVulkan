@@ -22,7 +22,7 @@ jobs:
 
 
       - name: Build
-        run: ./gradlew build collectBuilds
+        run: ./gradlew build collectBuilds --stacktrace --no-daemon
 
       - name: Upload a Build Artifact
         uses: https://data.forgejo.org/forgejo/upload-artifact@v4

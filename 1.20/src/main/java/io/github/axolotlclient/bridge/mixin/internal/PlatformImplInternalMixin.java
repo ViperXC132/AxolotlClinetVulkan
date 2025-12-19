@@ -57,10 +57,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -230,12 +232,14 @@ public abstract class PlatformImplInternalMixin {
 	 */
 	@Overwrite
 	public static String getTabNameFor(AxoPlayerListEntry player) {
-		return Formatting.strip(
-			MinecraftClient.getInstance().inGameHud
-				.getPlayerListHud()
-				.getPlayerName((PlayerListEntry) player)
-				.getString()
-		);
+		// Inlined PlayerListHud#getDisplayName to avoid StackOverflowError due to mixin
+		PlayerListEntry p = (PlayerListEntry) player;
+		if (p.getDisplayName() != null) {
+			MutableText name = p.getDisplayName().copy();
+			return Formatting.strip((p.getGameMode() == GameMode.SPECTATOR ? name.formatted(Formatting.ITALIC) : name).getString());
+		}
+		MutableText name = Team.decorateName(p.getScoreboardTeam(), Text.literal(p.getProfile().getName()));
+		return Formatting.strip((p.getGameMode() == GameMode.SPECTATOR ? name.formatted(Formatting.ITALIC) : name).getString());
 	}
 
 	/**

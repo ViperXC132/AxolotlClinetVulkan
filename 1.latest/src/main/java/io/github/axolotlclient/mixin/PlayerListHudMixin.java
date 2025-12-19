@@ -190,7 +190,7 @@ public abstract class PlayerListHudMixin {
 		if (game == null || !game.isStarted()) {
 			return;
 		}
-		BedwarsPlayer player = game.getPlayer(entry.getProfile().name()).orElse(null);
+		BedwarsPlayer player = game.getPlayer(entry.getProfile().id()).orElse(null);
 		if (player == null) {
 			return;
 		}

@@ -53,14 +53,8 @@ public class TeamUpgradesOverlay extends BoxHudEntry implements DynamicallyPosit
 	public TeamUpgradesOverlay(BedwarsMod mod) {
 		super(60, 40, true);
 		this.mod = mod;
-	}
-
-	public void onStart(BedwarsTeamUpgrades newUpgrades) {
-		upgrades = newUpgrades;
-	}
-
-	public void onEnd() {
-		upgrades = null;
+		BedwarsMod.GAME_START_EVENT.register(game -> upgrades = game.getUpgrades());
+		BedwarsMod.GAME_END_EVENT.register(() -> upgrades = null);
 	}
 
 	@Override
