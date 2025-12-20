@@ -876,5 +876,8 @@
 	"simple_text_hud.order.value_description": "Value - Description",
 	"simple_text_hud.order.description_value": "Description - Value",
 	"simple_text_hud.order.value_only": "Value only",
-	"custom_loading_bg_color": "Custom Loading Screen Background Color"
+	"custom_loading_bg_color": "Custom Loading Screen Background Color",
+	"bedwars.custom_tab_list": "Custom Tab List",
+	"bedwars.custom_tab_header": "Custom Tab Header",
+	"bedwars.custom_tab_footer": "Custom Tab Footer"
 }

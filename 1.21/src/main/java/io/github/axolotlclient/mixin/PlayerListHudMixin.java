@@ -106,8 +106,8 @@ public abstract class PlayerListHudMixin {
 
 	@Inject(method = "renderLatencyIcon", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$numericalPing(GuiGraphics graphics, int width, int x, int y, PlayerListEntry entry, CallbackInfo ci) {
-		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().blockLatencyIcon() &&
-			(BedwarsMod.getInstance().isWaiting() || BedwarsMod.getInstance().inGame())) {
+		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().customTabList.get()
+			&& BedwarsMod.getInstance().blockLatencyIcon() && (BedwarsMod.getInstance().isWaiting() || BedwarsMod.getInstance().inGame())) {
 			ci.cancel();
 		} else if (Tablist.getInstance().renderNumericPing(graphics, width, x, y, entry)) {
 			ci.cancel();
@@ -159,6 +159,9 @@ public abstract class PlayerListHudMixin {
 		if (!BedwarsMod.getInstance().isEnabled()) {
 			return;
 		}
+		if (!BedwarsMod.getInstance().customTabList.get()) {
+			return;
+		}
 
 		BedwarsGame game = BedwarsMod.getInstance().getGame().orElse(null);
 		if (game == null) {
@@ -178,10 +181,16 @@ public abstract class PlayerListHudMixin {
 		ordinal = 1
 	)
 	public int axolotlclient$changeWidth(int value) {
-		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().blockLatencyIcon() && (BedwarsMod.getInstance().isWaiting() || BedwarsMod.getInstance().inGame())) {
+		if (!BedwarsMod.getInstance().isEnabled()) {
+			return value;
+		}
+		if (!BedwarsMod.getInstance().customTabList.get()) {
+			return value;
+		}
+		if (BedwarsMod.getInstance().blockLatencyIcon() && (BedwarsMod.getInstance().isWaiting() || BedwarsMod.getInstance().inGame())) {
 			value -= 9;
 		}
-		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().isWaiting()) {
+		if (BedwarsMod.getInstance().isWaiting()) {
 			value += 20;
 		}
 		return value;
@@ -190,6 +199,9 @@ public abstract class PlayerListHudMixin {
 	@Inject(method = "getPlayerName", at = @At("HEAD"), cancellable = true)
 	public void axolotlclient$getPlayerName(PlayerListEntry playerEntry, CallbackInfoReturnable<Text> cir) {
 		if (!BedwarsMod.getInstance().isEnabled()) {
+			return;
+		}
+		if (!BedwarsMod.getInstance().customTabList.get()) {
 			return;
 		}
 		BedwarsGame game = BedwarsMod.getInstance().getGame().orElse(null);
@@ -209,6 +221,9 @@ public abstract class PlayerListHudMixin {
 		if (!BedwarsMod.getInstance().inGame()) {
 			return original;
 		}
+		if (!BedwarsMod.getInstance().customTabList.get()) {
+			return original;
+		}
 		List<?> players = BedwarsMod.getInstance().getGame().orElseThrow().getTabPlayerList(Collections.unmodifiableList(original));
 		if (players == null) {
 			return original;
@@ -221,6 +236,9 @@ public abstract class PlayerListHudMixin {
 		if (!BedwarsMod.getInstance().inGame()) {
 			return;
 		}
+		if (!BedwarsMod.getInstance().customTabHeader.get()) {
+			return;
+		}
 		this.header = (Text) BedwarsMod.getInstance().getGame().orElseThrow().getTopBarText();
 		ci.cancel();
 	}
@@ -228,6 +246,9 @@ public abstract class PlayerListHudMixin {
 	@Inject(method = "setFooter", at = @At("HEAD"), cancellable = true)
 	public void axolotlclient$changeFooter(Text footer, CallbackInfo ci) {
 		if (!BedwarsMod.getInstance().inGame()) {
+			return;
+		}
+		if (!BedwarsMod.getInstance().customTabFooter.get()) {
 			return;
 		}
 		this.footer = (Text) BedwarsMod.getInstance().getGame().orElseThrow().getBottomBarText();

@@ -78,6 +78,9 @@ public class BedwarsMod implements AbstractHypixelMod {
 	private final BooleanOption tabRenderLatencyIcon = new BooleanOption(getTranslationKey("tabRenderLatencyIcon"), false);
 
 	private final BooleanOption showChatTime = new BooleanOption(getTranslationKey("showChatTime"), true);
+	public final BooleanOption customTabList = new BooleanOption(getTranslationKey("custom_tab_list"), true);
+	public final BooleanOption customTabHeader = new BooleanOption(getTranslationKey("custom_tab_header"), true);
+	public final BooleanOption customTabFooter = new BooleanOption(getTranslationKey("custom_tab_footer"), true);
 	protected BedwarsGame currentGame = null;
 	private int targetTick = -1;
 	private boolean waiting = false;
@@ -91,7 +94,8 @@ public class BedwarsMod implements AbstractHypixelMod {
 	@Override
 	public void init() {
 		category.add(enabled, hardcoreHearts, showHunger, displayArmor, bedwarsLevelHead, bedwarsLevelHeadMode,
-			removeAnnoyingMessages, tabRenderLatencyIcon, showChatTime, overrideMessages);
+			removeAnnoyingMessages, tabRenderLatencyIcon, showChatTime, overrideMessages, customTabList,
+			customTabHeader, customTabFooter);
 		category.add(upgradesOverlay.getAllOptions());
 		category.add(resourceOverlay.getAllOptions());
 		category.add(statsOverlay.getAllOptions());
