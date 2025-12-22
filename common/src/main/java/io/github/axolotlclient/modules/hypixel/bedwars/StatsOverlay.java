@@ -24,6 +24,7 @@ package io.github.axolotlclient.modules.hypixel.bedwars;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
@@ -209,7 +210,7 @@ public class StatsOverlay extends TextHudEntry {
 		final var capturedStats = this.stats;
 
 		g.getPlayersByTeam().forEach((t, e) -> {
-			playersByTeam.put(t, e.stream().map(AxoPlayerListEntry::br$getName).toList());
+			playersByTeam.put(t, e.stream().map(AxoPlayerListEntry::br$getName).collect(Collectors.toCollection(ArrayList::new))); // explicit creation because we require mutability
 			e.forEach(entry ->
 				api.getAsync(entry.br$getId().toString())
 					.whenCompleteAsync((playerData, throwable) -> {

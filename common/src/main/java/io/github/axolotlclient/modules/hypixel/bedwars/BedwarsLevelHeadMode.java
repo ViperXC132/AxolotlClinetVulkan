@@ -40,7 +40,6 @@ public enum BedwarsLevelHeadMode {
 	GAME_KILLS(stats -> "§7Kills (Game): §f" + stats.getGameKills()),
 	LOSSES(stats -> "§7Losses: §f" + stats.getLosses()),
 	WINS(stats -> "§7Wins: §f" + stats.getWins()),
-	WINSTREAK(stats -> "§7Winstreak: §f" + stats.getWinstreak()),
 	STARS(stats -> "§7Stars: §f" + stats.getStars()),
 	FKDR(stats -> "§7FKDR: §f" + stats.getFKDR()),
 	BBLR(stats -> "§7BBLR: §f" + stats.getFKDR());

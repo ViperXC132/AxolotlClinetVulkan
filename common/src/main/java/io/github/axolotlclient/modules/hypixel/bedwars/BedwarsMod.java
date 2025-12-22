@@ -36,6 +36,8 @@ import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
 import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
 import io.github.axolotlclient.bridge.events.types.WorldLoadEvent;
+import io.github.axolotlclient.bridge.key.AxoKeybinding;
+import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.bridge.scores.AxoTeam;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hypixel.AbstractHypixelMod;
@@ -70,6 +72,8 @@ public class BedwarsMod implements AbstractHypixelMod {
 	protected final ResourceOverlay resourceOverlay;
 	@Getter
 	protected final StatsOverlay statsOverlay;
+	@Getter
+	protected final SessionStatisticsOverlay sessionStatsOverlay;
 	protected final BooleanOption removeAnnoyingMessages = new BooleanOption(getTranslationKey("removeAnnoyingMessages"), true);
 	protected final BooleanOption overrideMessages = new BooleanOption(getTranslationKey("overrideMessages"), true);
 	@Getter
@@ -81,6 +85,8 @@ public class BedwarsMod implements AbstractHypixelMod {
 	public final BooleanOption customTabList = new BooleanOption(getTranslationKey("custom_tab_list"), true);
 	public final BooleanOption customTabHeader = new BooleanOption(getTranslationKey("custom_tab_header"), true);
 	public final BooleanOption customTabFooter = new BooleanOption(getTranslationKey("custom_tab_footer"), true);
+	@Getter
+	private SessionStatistics sessionStats = new SessionStatistics();
 	protected BedwarsGame currentGame = null;
 	private int targetTick = -1;
 	private boolean waiting = false;
@@ -89,6 +95,7 @@ public class BedwarsMod implements AbstractHypixelMod {
 		upgradesOverlay = new TeamUpgradesOverlay(this);
 		resourceOverlay = new ResourceOverlay(this);
 		statsOverlay = new StatsOverlay(this);
+		sessionStatsOverlay = new SessionStatisticsOverlay(this);
 	}
 
 	@Override
@@ -99,6 +106,7 @@ public class BedwarsMod implements AbstractHypixelMod {
 		category.add(upgradesOverlay.getAllOptions());
 		category.add(resourceOverlay.getAllOptions());
 		category.add(statsOverlay.getAllOptions());
+		category.add(sessionStatsOverlay.getAllOptions());
 		category.add(BedwarsDeathType.getOptions());
 
 		instance = this;
@@ -106,6 +114,7 @@ public class BedwarsMod implements AbstractHypixelMod {
 		Events.RECEIVE_CHAT_MESSAGE.register(this::onMessage);
 		Events.SCOREBOARD_RENDER_EVENT.register(this::onScoreboardRender);
 		Events.WORLD_LOAD_EVENT.register(this::onWorldLoad);
+		AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "bedwars.reset_session_stats").br$registerOnConsumeClick(this::resetSessionStats);
 	}
 
 	public boolean isEnabled() {
@@ -171,6 +180,8 @@ public class BedwarsMod implements AbstractHypixelMod {
 				}
 			}
 		} else {
+			// The inspection is just wrong because tickCount() doesn't throw since the method is overwritten using mixins
+			//noinspection ConstantValue
 			if (targetTick > 0 && Platform.tickCount() > targetTick) {
 				currentGame = new BedwarsGame(this);
 				targetTick = -1;
@@ -215,8 +226,11 @@ public class BedwarsMod implements AbstractHypixelMod {
 	}
 
 	public void gameEnd() {
-		GAME_END_EVENT.invoker().run();
-		currentGame = null;
+		if (currentGame != null) {
+			getSessionStats().gamePlayed();
+			GAME_END_EVENT.invoker().run();
+			currentGame = null;
+		}
 	}
 
 	public boolean blockLatencyIcon() {
@@ -227,4 +241,7 @@ public class BedwarsMod implements AbstractHypixelMod {
 		return "bedwars." + name;
 	}
 
+	public void resetSessionStats() {
+		sessionStats = new SessionStatistics();
+	}
 }

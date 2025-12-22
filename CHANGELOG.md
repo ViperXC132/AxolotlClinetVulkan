@@ -1,5 +1,11 @@
 ## Changelog:
 
+### 3.1.9
+
+- fix bugs with the Bedwars module
+  - remove `Winstreak` bedwars level head mode
+- add Bedwars Session statistics HUD
+
 ### 3.1.8
 
 - fix crashes on java 17

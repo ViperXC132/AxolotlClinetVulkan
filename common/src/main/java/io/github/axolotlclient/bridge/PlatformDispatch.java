@@ -50,4 +50,9 @@ public class PlatformDispatch {
 	public static void autoBoop$openFiltersScreen(List<String> filters) {
 		throw BridgeUtil.noImpl();
 	}
+
+	@RequiresImpl
+	public static void bedwars$sessionstats$openEntryConfigScreen() {
+		throw BridgeUtil.noImpl();
+	}
 }

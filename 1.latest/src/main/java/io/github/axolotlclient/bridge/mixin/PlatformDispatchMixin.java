@@ -32,6 +32,7 @@ import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
 import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.mixin.MinecraftServerAccessor;
 import io.github.axolotlclient.modules.hypixel.autoboop.FilterListConfigurationScreen;
+import io.github.axolotlclient.modules.hypixel.bedwars.SessionStatsHudEntryConfigScreen;
 import io.github.axolotlclient.util.ThreadExecuter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -128,5 +129,14 @@ public abstract class PlatformDispatchMixin {
 	@Overwrite
 	public static void autoBoop$openFiltersScreen(List<String> filters) {
 		Minecraft.getInstance().setScreen(new FilterListConfigurationScreen(filters, Minecraft.getInstance().screen));
+	}
+
+	/**
+	 * @author moehreag
+	 * @reason Implement bridge.
+	 */
+	@Overwrite
+	public static void bedwars$sessionstats$openEntryConfigScreen() {
+		Minecraft.getInstance().setScreen(new SessionStatsHudEntryConfigScreen(Minecraft.getInstance().screen));
 	}
 }

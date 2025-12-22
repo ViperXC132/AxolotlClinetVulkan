@@ -48,6 +48,8 @@ import org.jetbrains.annotations.Nullable;
  * @author DarkKronicle
  */
 
+// TODO: localize messages, maybe add regexes for text recognition to HypixelMessages?
+//	Currently this only works if Hypixel's language is set to English
 public class BedwarsGame {
 	private final Map<String, BedwarsPlayer> players = new HashMap<>();
 	private final Map<UUID, BedwarsPlayer> playersById = new HashMap<>();
@@ -104,7 +106,7 @@ public class BedwarsGame {
 			for (int i = 0; i < value.size(); i++) {
 				AxoPlayerListEntry e = value.get(i);
 				BedwarsPlayer p = new BedwarsPlayer(teamPlayerList.getKey(), e, i + 1);
-				if (mc.br$getPlayer().br$getUuid().equals(e.br$getId()) || mc.br$getSession().username().equals(e.br$getName())) {
+				if (mc.br$getPlayer().br$getUuid().equals(e.br$getId())) {
 					me = p;
 				}
 				players.put(e.br$getName(), p);
@@ -222,8 +224,10 @@ public class BedwarsGame {
 		}
 		if (me.equals(killer)) {
 			lastKill = player;
+			mod.getSessionStats().addKill(finalDeath);
 		} else if (me.equals(player)) {
 			lastKiller = killer;
+			mod.getSessionStats().addDeath(finalDeath);
 		}
 	}
 
@@ -365,18 +369,8 @@ public class BedwarsGame {
 			return;
 		}
 
-		AxoMinecraftClient.getInstance().br$sendToClient(AxoText.literal(
-			"§8§m----------[§7Winstreaks§8]----------"
-		));
-		for (BedwarsPlayer p : players.values()) {
-			if (p.getStats() != null && p.getStats().getWinstreak() > 0) {
-				boolean winner = p.getTeam().equals(win);
-				int before = p.getStats().getWinstreak();
-				int after = winner ? before + 1 : 0;
-				AxoMinecraftClient.getInstance().br$sendToClient(AxoText.literal(
-					getPlayerFormatted(p) + "§8: §7" + before + " §8 -> §" + (winner ? "a" : "c") + after
-				));
-			}
+		if (me.getTeam() == win) {
+			mod.getSessionStats().win();
 		}
 
 		BedwarsMod.getInstance().gameEnd();
@@ -391,6 +385,10 @@ public class BedwarsGame {
 		if (mod.overrideMessages.get()) {
 			event.setNewMessage(AxoText.literal(formatEliminated(team)));
 		}
+		if (me.getTeam() == team) {
+			mod.getSessionStats().loose();
+			mod.gameEnd();
+		}
 	}
 
 	private void bedDestroyed(ReceiveChatMessageEvent event, BedwarsTeam team, @Nullable BedwarsPlayer breaker) {
@@ -401,6 +399,11 @@ public class BedwarsGame {
 		if (mod.overrideMessages.get()) {
 			event.setNewMessage(AxoText.literal(formatBed(team, breaker)));
 		}
+		if (me.equals(breaker)) {
+			mod.getSessionStats().addBrokenBed();
+		} else if (me.getTeam() == team) {
+			mod.getSessionStats().bedLost();
+		}
 	}
 
 	private void disconnected(ReceiveChatMessageEvent event, BedwarsPlayer player) {
@@ -409,7 +412,6 @@ public class BedwarsGame {
 			event.setNewMessage(AxoText.literal(formatDisconnect(player)));
 		}
 	}
-
 
 	private void reconnected(ReceiveChatMessageEvent event, BedwarsPlayer player) {
 		player.reconnected();

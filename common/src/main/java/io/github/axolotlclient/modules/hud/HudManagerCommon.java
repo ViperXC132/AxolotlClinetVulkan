@@ -115,6 +115,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 		addNonConfigured(BedwarsMod.getInstance().getUpgradesOverlay());
 		addNonConfigured(BedwarsMod.getInstance().getResourceOverlay());
 		addNonConfigured(BedwarsMod.getInstance().getStatsOverlay());
+		addNonConfigured(BedwarsMod.getInstance().getSessionStatsOverlay());
 
 		entries.values().forEach(HudEntry::init);
 
