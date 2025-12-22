@@ -747,8 +747,8 @@
 	"enable_background": "Enable Background",
 	"custom_background_color": "Custom Background Color",
 	"armorhud.main_hand_item_position": "Main Hand Item Position",
-	"armorhud.main_hand_item_position.top": "Top",
-	"armorhud.main_hand_item_position.bottom": "Bottom",
+	"armorhud.main_hand_item_position.top": "Start",
+	"armorhud.main_hand_item_position.bottom": "End",
 	"armorhud.main_hand_item_position.disabled": "Disabled",
 	"tablist.small_ping_text": "Small Ping Text",
 	"tablist.small_ping_text.tooltip": "Use Unicode subscript number characters instead of regular numbers",
@@ -903,5 +903,6 @@
 	"bedwars.session_stats.configure.entry.move_down": "Move Down",
 	"bedwars.session_stats.order": "Entry Configuration",
 	"bedwars.session_stats.order.label": "Open",
-	"bedwars.session_stats.value_color": "Value Color"
+	"bedwars.session_stats.value_color": "Value Color",
+	"armorhud.reverse_armor_order": "Reverse Armor Piece Order"
 }
