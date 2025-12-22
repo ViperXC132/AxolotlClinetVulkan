@@ -55,7 +55,7 @@ public class SessionStatisticsOverlay extends TextHudEntry {
 		s.bedsLost = 23;
 		s.bedsBroken = 72;
 		s.gamesPlayed = 67;
-		s.finalDeaths = 0;
+		s.finalDeaths = 20;
 		s.finalKills = 65;
 		s.winstreak = 4;
 		s.deaths = 96;
@@ -116,10 +116,15 @@ public class SessionStatisticsOverlay extends TextHudEntry {
 	}
 
 	@Override
-	public void renderComponent(AxoRenderContext ctx, float delta) {
+	public void render(AxoRenderContext ctx, float delta) {
 		if (shown.get()) {
-			renderEntries(ctx, mod.getSessionStats());
+			super.render(ctx, delta);
 		}
+	}
+
+	@Override
+	public void renderComponent(AxoRenderContext ctx, float delta) {
+		renderEntries(ctx, mod.getSessionStats());
 	}
 
 	private void renderEntries(AxoRenderContext ctx, SessionStatistics stats) {

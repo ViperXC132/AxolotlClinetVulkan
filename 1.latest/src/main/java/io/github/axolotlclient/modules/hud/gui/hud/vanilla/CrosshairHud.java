@@ -43,7 +43,6 @@ import io.github.axolotlclient.modules.hud.gui.entry.AbstractHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.Util;
-import lombok.AllArgsConstructor;
 import net.minecraft.client.AttackIndicatorStatus;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -84,7 +83,6 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 	private final BooleanOption applyBlend = new BooleanOption("applyBlend", true);
 	private final BooleanOption overrideF3 = new BooleanOption("overrideF3", false);
 	private final BooleanOption customAttackIndicator = new BooleanOption("crosshairhud.custom_attack_indicator", false);
-	private final Minecraft client = (Minecraft) super.client;
 
 	private final GraphicsOption customTextureGraphics = new GraphicsOption("customTextureGraphics",
 		new int[][]{
@@ -104,6 +102,11 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 		});
+	private final EnumOption<TargetCrosshair> entityCrosshairType = new EnumOption<>("entity_crosshair_type", TargetCrosshair.class, TargetCrosshair.CROSSHAIR_TYPE_DEFAULT);
+	private final EnumOption<TargetCrosshair> containerCrosshairType = new EnumOption<>("container_crosshair_type", TargetCrosshair.class, TargetCrosshair.CROSSHAIR_TYPE_DEFAULT);
+	private final GraphicsOption entityCustomTextureGraphics = new GraphicsOption("entity_crosshair_graphics", customTextureGraphics.getDefault());
+	private final GraphicsOption containerCustomTextureGraphics = new GraphicsOption("container_crosshair_graphics", customTextureGraphics.getDefault());
+	private final Minecraft client = (Minecraft) super.client;
 
 	public CrosshairHud() {
 		super(15, 15);
@@ -125,6 +128,10 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		options.add(hide);
 		options.add(type);
 		options.add(customTextureGraphics);
+		options.add(entityCrosshairType);
+		options.add(entityCustomTextureGraphics);
+		options.add(containerCrosshairType);
+		options.add(containerCustomTextureGraphics);
 		options.add(showInF5);
 		options.add(overrideF3);
 		options.add(applyBlend);
@@ -172,21 +179,34 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 
 		int x = getPos().x();
 		int y = getPos().y() + 1;
-		Color color = getColor();
+		var mode = getMode();
+		Color color = (switch (mode) {
+			case DEFAULT -> defaultColor;
+			case ENTITY -> entityColor;
+			case CONTAINER -> containerColor;
+		}).get();
+		Crosshair defaultType = this.type.get();
+		var typeOption = (switch (mode) {
+			case DEFAULT -> this.type;
+			case ENTITY -> entityCrosshairType;
+			case CONTAINER -> containerCrosshairType;
+		}).get();
+		var type = typeOption instanceof Crosshair ? typeOption : ((TargetCrosshair)typeOption).asCrosshair(defaultType);
 		AttackIndicatorStatus indicator = this.client.options.attackIndicator().get();
 
 		// Need to not enable blend while the debug HUD is open because it does weird stuff. Why? no idea.
-		boolean blend = color == defaultColor.get() && !type.get().equals(Crosshair.DIRECTION) && applyBlend.get()
+		boolean blend = color == defaultColor.get() && !type.equals(Crosshair.DIRECTION) && applyBlend.get()
 			&& !client.gui.getDebugOverlay().showDebugScreen();
 
-		if (type.get().equals(Crosshair.DOT)) {
+		boolean isTex = type.equals(Crosshair.TEXTURE) || type.equals(Crosshair.CUSTOM);
+		if (type.equals(Crosshair.DOT)) {
 			fillRenderType(graphics, blend, x + (getWidth() / 2) - 2, y + (getHeight() / 2) - 2, 3, 3, color);
-		} else if (type.get().equals(Crosshair.CROSS)) {
+		} else if (type.equals(Crosshair.CROSS)) {
 			fillRenderType(graphics, blend, x + (getWidth() / 2) - 6, y + (getHeight() / 2) - 1, 6, 1, color);
 			fillRenderType(graphics, blend, x + (getWidth() / 2), y + (getHeight() / 2) - 1, 5, 1, color);
 			fillRenderType(graphics, blend, x + (getWidth() / 2) - 1, y + (getHeight() / 2) - 6, 1, 5, color);
 			fillRenderType(graphics, blend, x + (getWidth() / 2) - 1, y + (getHeight() / 2), 1, 5, color);
-		} else if (type.get().equals(Crosshair.DIRECTION)) {
+		} else if (type.equals(Crosshair.DIRECTION)) {
 			Camera camera = this.client.gameRenderer.getMainCamera();
 			Matrix4fStack matrixStack = RenderSystem.getModelViewStack();
 			matrixStack.pushMatrix();
@@ -197,15 +217,21 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			matrixStack.scale(-getScale(), -getScale(), -getScale());
 			client.gui.getDebugOverlay().render3dCrosshair(((GameRendererAccessor) client.gameRenderer).getCamera());
 			matrixStack.popMatrix();
-		} else if (type.get().equals(Crosshair.TEXTURE) || type.get().equals(Crosshair.CUSTOM)) {
-			if (type.get().equals(Crosshair.TEXTURE)) {
+		} else if (isTex) {
+			if (type.equals(Crosshair.TEXTURE)) {
 				// Draw crosshair
 				graphics.blitSprite(renderType(blend), CROSSHAIR_TEXTURE,
 					(int) (((graphics.guiWidth() / getScale()) - 15) / 2),
 					(int) (((graphics.guiHeight() / getScale()) - 15) / 2), 15, 15, color.toInt());
 			} else {
 				// Draw crosshair
-				graphics.blit(renderType(blend), Util.getTexture(customTextureGraphics), (int) (((graphics.guiWidth() / getScale()) - 15) / 2),
+				graphics.blit(renderType(blend), Util.getTexture(switch (mode) {
+						case DEFAULT -> customTextureGraphics;
+						case ENTITY ->
+							typeOption == TargetCrosshair.CROSSHAIR_TYPE_DEFAULT ? customTextureGraphics : entityCustomTextureGraphics;
+						case CONTAINER ->
+							typeOption == TargetCrosshair.CROSSHAIR_TYPE_DEFAULT ? customTextureGraphics : containerCustomTextureGraphics;
+					}), (int) (((graphics.guiWidth() / getScale()) - 15) / 2),
 					(int) (((graphics.guiHeight() / getScale()) - 15) / 2), 0, 0, 15, 15, 15, 15, color.toInt());
 			}
 
@@ -237,7 +263,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 				}
 			}
 		}
-		if (((type.get().equals(Crosshair.TEXTURE) || type.get().equals(Crosshair.CUSTOM)) ? customAttackIndicator.get() : true) && indicator == AttackIndicatorStatus.CROSSHAIR) {
+		if ((isTex ? customAttackIndicator.get() : true) && indicator == AttackIndicatorStatus.CROSSHAIR) {
 			//noinspection DataFlowIssue
 			float progress = this.client.player.getAttackStrengthScale(0.0F);
 			if (progress != 1.0F) {
@@ -262,22 +288,22 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		}
 	}
 
-	public Color getColor() {
+	private CrosshairMode getMode() {
 		HitResult hit = client.hitResult;
 		if (hit == null || hit.getType() == HitResult.Type.MISS) {
-			return defaultColor.get();
+			return CrosshairMode.DEFAULT;
 		} else if (hit.getType() == HitResult.Type.ENTITY) {
-			return entityColor.get();
+			return CrosshairMode.ENTITY;
 		} else if (hit.getType() == HitResult.Type.BLOCK) {
 			BlockPos blockPos = ((BlockHitResult) hit).getBlockPos();
 			Level world = this.client.level;
 			//noinspection DataFlowIssue
 			if (world.getBlockState(blockPos).getMenuProvider(world, blockPos) != null
 				|| world.getBlockState(blockPos).getBlock() instanceof AbstractChestBlock<?>) {
-				return containerColor.get();
+				return CrosshairMode.CONTAINER;
 			}
 		}
-		return defaultColor.get();
+		return CrosshairMode.DEFAULT;
 	}
 
 	@Override
@@ -290,8 +316,26 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		return AnchorPoint.MIDDLE_MIDDLE;
 	}
 
-	@AllArgsConstructor
-	public enum Crosshair {
+	private enum CrosshairMode {
+		DEFAULT, ENTITY, CONTAINER
+	}
+
+	private enum Crosshair {
 		CROSS, DOT, DIRECTION, TEXTURE, CUSTOM
+	}
+
+	private enum TargetCrosshair {
+		CROSS, DOT, DIRECTION, TEXTURE, CUSTOM, CROSSHAIR_TYPE_DEFAULT;
+
+		public Crosshair asCrosshair(Crosshair defaultType) {
+			return switch (this) {
+				case CROSS -> Crosshair.CROSS;
+				case DOT -> Crosshair.DOT;
+				case DIRECTION -> Crosshair.DIRECTION;
+				case TEXTURE -> Crosshair.TEXTURE;
+				case CUSTOM -> Crosshair.CUSTOM;
+				case CROSSHAIR_TYPE_DEFAULT -> defaultType;
+			};
+		}
 	}
 }

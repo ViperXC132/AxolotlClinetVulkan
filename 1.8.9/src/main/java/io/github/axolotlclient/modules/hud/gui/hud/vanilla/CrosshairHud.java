@@ -84,8 +84,13 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			new int[]{0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0},
 			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
 			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},});
+			new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+		});
 
+	private final EnumOption<TargetCrosshair> entityCrosshairType = new EnumOption<>("entity_crosshair_type", TargetCrosshair.class, TargetCrosshair.CROSSHAIR_TYPE_DEFAULT);
+	private final EnumOption<TargetCrosshair> containerCrosshairType = new EnumOption<>("container_crosshair_type", TargetCrosshair.class, TargetCrosshair.CROSSHAIR_TYPE_DEFAULT);
+	private final GraphicsOption entityCustomTextureGraphics = new GraphicsOption("entity_crosshair_graphics", customTextureGraphics.getDefault());
+	private final GraphicsOption containerCustomTextureGraphics = new GraphicsOption("container_crosshair_graphics", customTextureGraphics.getDefault());
 	private final Minecraft client = (Minecraft) super.client;
 
 	public CrosshairHud() {
@@ -108,6 +113,10 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		options.add(hide);
 		options.add(type);
 		options.add(customTextureGraphics);
+		options.add(entityCrosshairType);
+		options.add(entityCustomTextureGraphics);
+		options.add(containerCrosshairType);
+		options.add(containerCustomTextureGraphics);
 		options.add(showInF5);
 		options.add(overrideF3);
 		options.add(applyBlend);
@@ -141,7 +150,19 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 
 		GlStateManager.pushMatrix();
 		scale(context);
-		Color color = getColor();
+		var mode = getMode();
+		Color color = (switch (mode) {
+			case DEFAULT -> defaultColor;
+			case ENTITY -> entityColor;
+			case CONTAINER -> containerColor;
+		}).get();
+		Crosshair defaultType = this.type.get();
+		var typeOption = (switch (mode) {
+			case DEFAULT -> this.type;
+			case ENTITY -> entityCrosshairType;
+			case CONTAINER -> containerCrosshairType;
+		}).get();
+		var type = typeOption instanceof Crosshair ? typeOption : ((TargetCrosshair)typeOption).asCrosshair(defaultType);
 		GlStateManager.color4f((float) color.getRed() / 255, (float) color.getGreen() / 255,
 			(float) color.getBlue() / 255, 1F);
 		if (color == defaultColor.get() && applyBlend.get()) {
@@ -151,22 +172,28 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 
 		int x = getPos().x;
 		int y = getPos().y + 1;
-		if (type.get().equals(Crosshair.DOT)) {
+		if (type.equals(Crosshair.DOT)) {
 			RenderUtil.fillBlend(x + (width / 2) - 1, y + (height / 2) - 2, 3, 3, color);
-		} else if (type.get().equals(Crosshair.CROSS)) {
+		} else if (type.equals(Crosshair.CROSS)) {
 			RenderUtil.fillBlend(x + (width / 2) - 5, y + (height / 2) - 1, 6, 1, color);
 			RenderUtil.fillBlend(x + (width / 2) + 1, y + (height / 2) - 1, 5, 1, color);
 			RenderUtil.fillBlend(x + (width / 2), y + (height / 2) - 6, 1, 5, color);
 			RenderUtil.fillBlend(x + (width / 2), y + (height / 2), 1, 5, color);
-		} else if (type.get().equals(Crosshair.TEXTURE)) {
+		} else if (type.equals(Crosshair.TEXTURE)) {
 			Minecraft.getInstance().getTextureManager().bind(GuiElement.ICONS_LOCATION);
 
 			// Draw crosshair
 			//noinspection DataFlowIssue
 			client.gui.drawTexture((int) (((Util.getWindow().getScaledWidth() / getScale()) - 14) / 2),
 				(int) (((Util.getWindow().getScaledHeight() / getScale()) - 14) / 2), 0, 0, 16, 16);
-		} else if (type.get().equals(Crosshair.CUSTOM)) {
-			Util.bindTexture(customTextureGraphics);
+		} else if (type.equals(Crosshair.CUSTOM)) {
+			Util.bindTexture(switch (mode) {
+				case DEFAULT -> customTextureGraphics;
+				case ENTITY ->
+					typeOption == TargetCrosshair.CROSSHAIR_TYPE_DEFAULT ? customTextureGraphics : entityCustomTextureGraphics;
+				case CONTAINER ->
+					typeOption == TargetCrosshair.CROSSHAIR_TYPE_DEFAULT ? customTextureGraphics : containerCustomTextureGraphics;
+			});
 			DrawUtil.drawTexture(x + (width / 2) - (15 / 2), y + height / 2 - 15 / 2 - 1, 0, 0, 15, 15, 15, 15);
 		}
 		GlStateManager.color4f(1, 1, 1, 1);
@@ -176,12 +203,12 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		GlStateManager.disableAlphaTest();
 	}
 
-	public Color getColor() {
+	private CrosshairMode getMode() {
 		HitResult hit = client.crosshairTarget;
 		if (hit == null || hit.type == null) {
-			return defaultColor.get();
+			return CrosshairMode.DEFAULT;
 		} else if (hit.type == HitResult.Type.ENTITY) {
-			return entityColor.get();
+			return CrosshairMode.ENTITY;
 		} else if (hit.type == HitResult.Type.BLOCK) {
 			BlockPos blockPos = hit.getPos();
 			World world = this.client.world;
@@ -189,10 +216,10 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 				&& (world.getBlockState(blockPos).getBlock() instanceof ChestBlock
 				|| world.getBlockState(blockPos).getBlock() instanceof EnderChestBlock
 				|| world.getBlockState(blockPos).getBlock() instanceof HopperBlock)) {
-				return containerColor.get();
+				return CrosshairMode.CONTAINER;
 			}
 		}
-		return defaultColor.get();
+		return CrosshairMode.DEFAULT;
 	}
 
 	@Override
@@ -205,7 +232,26 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		return AnchorPoint.MIDDLE_MIDDLE;
 	}
 
-	public enum Crosshair {
-		CROSS, DOT, TEXTURE, CUSTOM
+	private enum CrosshairMode {
+		DEFAULT, ENTITY, CONTAINER
+	}
+
+	private enum Crosshair {
+		CROSS, DOT, DIRECTION, TEXTURE, CUSTOM
+	}
+
+	private enum TargetCrosshair {
+		CROSS, DOT, DIRECTION, TEXTURE, CUSTOM, CROSSHAIR_TYPE_DEFAULT;
+
+		public Crosshair asCrosshair(Crosshair defaultType) {
+			return switch (this) {
+				case CROSS -> Crosshair.CROSS;
+				case DOT -> Crosshair.DOT;
+				case DIRECTION -> Crosshair.DIRECTION;
+				case TEXTURE -> Crosshair.TEXTURE;
+				case CUSTOM -> Crosshair.CUSTOM;
+				case CROSSHAIR_TYPE_DEFAULT -> defaultType;
+			};
+		}
 	}
 }

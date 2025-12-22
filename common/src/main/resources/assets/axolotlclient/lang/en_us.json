@@ -904,5 +904,10 @@
 	"bedwars.session_stats.order": "Entry Configuration",
 	"bedwars.session_stats.order.label": "Open",
 	"bedwars.session_stats.value_color": "Value Color",
-	"armorhud.reverse_armor_order": "Reverse Armor Piece Order"
+	"armorhud.reverse_armor_order": "Reverse Armor Piece Order",
+	"entity_crosshair_type": "Crosshair Type (Entities)",
+	"container_crosshair_type": "Crosshair Type (Containers)",
+	"entity_crosshair_graphics": "Custom Texture (Entities)",
+	"container_crosshair_graphics": "Custom Texture (Containers)",
+	"CROSSHAIR_TYPE_DEFAULT": "Default (Inherit)"
 }
