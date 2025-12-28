@@ -23,6 +23,7 @@
 package io.github.axolotlclient.modules.hud.gui.hud;
 
 import java.util.List;
+import java.util.Locale;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
@@ -39,6 +40,7 @@ import io.github.axolotlclient.modules.hud.gui.layout.CardinalOrder;
 import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.util.CommonUtil;
+import lombok.AllArgsConstructor;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
@@ -51,7 +53,7 @@ public class PotionsHud extends TextHudEntry {
 
 	private final EnumOption<CardinalOrder> order = DefaultOptions.getCardinalOrder(CardinalOrder.TOP_DOWN);
 
-	private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
+	private final EnumOption<Mode> mode = new EnumOption<>("mode", Mode.class, Mode.ICONS_AND_TEXT);
 	private final BooleanOption showEffectName = new BooleanOption("showEffectNames", true);
 	private final ColorOption timerTextColor = new ColorOption("potionshud.timer_text_color", Color.parse("#7F7F7F"));
 
@@ -128,17 +130,20 @@ public class PotionsHud extends TextHudEntry {
 		for (int i = 0; i < effects.size(); i++) {
 			final var effect = effects.get(direction.getDirection() == -1 ? i : effects.size() - i - 1);
 			if (direction.isXAxis()) {
-				renderPotion(graphics, effect, x + lastPos + 1, y + 1);
+				renderPotion(graphics, effect, x + lastPos + 2, y + 2);
 				int nameWidth = 0;
-				if (!iconsOnly.get()) {
-					nameWidth += graphics.br$getFont().br$getWidth(effect.br$formatDuration()) + 1;
+				if (mode.get().hasText) {
+					nameWidth += graphics.br$getFont().br$getWidth(effect.br$formatDuration()) + 2;
 					if (showEffectName.get()) {
-						nameWidth = Math.max(nameWidth, client.br$getFont().br$getWidth(formatNameAndAmplifier(effect)));
+						nameWidth = Math.max(nameWidth, client.br$getFont().br$getWidth(formatNameAndAmplifier(effect)) + 2);
 					}
 				}
-				lastPos += 20 + nameWidth;
+				if (mode.get().hasIcons) {
+					nameWidth += 20;
+				}
+				lastPos += nameWidth;
 			} else {
-				renderPotion(graphics, effect, x + 1, y + 1 + lastPos);
+				renderPotion(graphics, effect, x + 2, y + 2 + lastPos);
 				lastPos += 20;
 			}
 		}
@@ -152,31 +157,38 @@ public class PotionsHud extends TextHudEntry {
 			.map(AxoStatusEffectInstance::br$formatDuration)
 			.mapToInt(client.br$getFont()::br$getWidth);
 
+		int width = 2;
 		if (order.get().isXAxis()) {
-			if (iconsOnly.get()) {
-				return 20 * effects.size() + 2;
+			if (mode.get().hasIcons) {
+				width += 20 * effects.size();
 			}
 
-			if (!showEffectName.get()) {
-				return widthStreamDuration.map(i -> i + 20).sum() + 3;
+			if (mode.get().hasText) {
+				if (!showEffectName.get()) {
+					width += widthStreamDuration.map(i -> i + 2).sum();
+				} else {
+					width += widthStreamFullName.map(i -> i + 2).sum();
+				}
 			}
-
-			return widthStreamFullName.map(i -> i + 20).sum() + 2;
 		} else {
-			if (iconsOnly.get()) {
-				return 20;
+			if (mode.get().hasIcons) {
+				width += 20;
 			}
 
-			if (!showEffectName.get()) {
-				return widthStreamDuration.max().orElse(0) + 22;
+			if (mode.get().hasText) {
+				if (!showEffectName.get()) {
+					width += widthStreamDuration.max().orElse(0) + 2;
+				} else {
+					width += widthStreamFullName.max().orElse(0) + 2;
+				}
 			}
-			return widthStreamFullName.max().orElse(0) + 22;
 		}
+		return width;
 	}
 
 	private int calculateHeight(List<AxoStatusEffectInstance> effects) {
 		if ((order.get()).isXAxis()) {
-			return 20;
+			return 24;
 		} else {
 			return 20 * effects.size() + 2;
 		}
@@ -185,15 +197,19 @@ public class PotionsHud extends TextHudEntry {
 	private void renderPotion(AxoRenderContext graphics, AxoStatusEffectInstance effect, int x, int y) {
 		final var type = effect.br$getType();
 
-		graphics.br$drawTexture(x, y, 18, 18, type.br$getSprite());
+		var mode = this.mode.get();
+		if (mode.hasIcons) {
+			graphics.br$drawTexture(x, y, 18, 18, type.br$getSprite());
+			x += 19;
+		}
 
-		if (!iconsOnly.get()) {
+		if (mode.hasText) {
 			if (showEffectName.get()) {
-				graphics.br$drawString(formatNameAndAmplifier(effect), x + 19, y + 1, textColor.get().toInt(), shadow.get());
-				graphics.br$drawString(effect.br$formatDuration(), x + 19, y + 1 + 10,
+				graphics.br$drawString(formatNameAndAmplifier(effect), x, y + 1, textColor.get().toInt(), shadow.get());
+				graphics.br$drawString(effect.br$formatDuration(), x, y + 1 + 10,
 					timerTextColor.get().toInt(), shadow.get());
 			} else {
-				graphics.br$drawString(effect.br$formatDuration(), x + 19, y + 5,
+				graphics.br$drawString(effect.br$formatDuration(), x, y + 5,
 					timerTextColor.get().toInt(), shadow.get());
 			}
 		}
@@ -211,7 +227,7 @@ public class PotionsHud extends TextHudEntry {
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
 		options.add(order);
-		options.add(iconsOnly);
+		options.add(mode);
 		options.add(showEffectName);
 		options.add(timerTextColor);
 		return options;
@@ -220,5 +236,18 @@ public class PotionsHud extends TextHudEntry {
 	@Override
 	public AxoIdentifier getId() {
 		return ID;
+	}
+
+	@AllArgsConstructor
+	private enum Mode {
+		ICONS_ONLY(true, false),
+		TEXT_ONLY(false, true),
+		ICONS_AND_TEXT(true, true);
+		private final boolean hasIcons, hasText;
+
+		@Override
+		public String toString() {
+			return "potionshud.mode." + super.toString().toLowerCase(Locale.ROOT);
+		}
 	}
 }

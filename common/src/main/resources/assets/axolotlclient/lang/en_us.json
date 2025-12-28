@@ -909,5 +909,8 @@
 	"container_crosshair_type": "Crosshair Type (Containers)",
 	"entity_crosshair_graphics": "Custom Texture (Entities)",
 	"container_crosshair_graphics": "Custom Texture (Containers)",
-	"CROSSHAIR_TYPE_DEFAULT": "Default (Inherit)"
+	"CROSSHAIR_TYPE_DEFAULT": "Default (Inherit)",
+	"potionshud.mode.icons_only": "Icons Only",
+	"potionshud.mode.text_only": "Text Only",
+	"potionshud.mode.icons_and_text": "Icons and Text"
 }
