@@ -22,27 +22,23 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
-import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
-import io.github.axolotlclient.modules.hud.util.RenderUtil;
+import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.Util;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resource.Identifier;
 import net.minecraft.scoreboard.Scoreboard;
@@ -50,7 +46,6 @@ import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardScore;
 import net.minecraft.scoreboard.criterion.ScoreboardCriterion;
 import net.minecraft.scoreboard.team.Team;
-import net.minecraft.util.Pair;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
@@ -115,131 +110,113 @@ public class ScoreboardHud extends TextHudEntry {
 		ScoreboardObjective scoreboardObjective2 = scoreboardObjective != null ? scoreboardObjective
 			: scoreboard.getDisplayObjective(1);
 		if (scoreboardObjective2 != null) {
-			this.renderScoreboardSidebar(scoreboardObjective2, false);
+			this.renderScoreboardSidebar(context, scoreboardObjective2);
 		}
 	}
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
-		renderScoreboardSidebar(placeholder, true);
+		renderScoreboardSidebar(context, placeholder);
 	}
 
 	// Abusing this could break some stuff/could allow for unfair advantages. The goal is not to do this, so it won't
 	// show any more information than it would have in vanilla.
-	private void renderScoreboardSidebar(ScoreboardObjective objective, boolean placeholder) {
-		Scoreboard scoreboard = objective.getScoreboard();
-		Collection<ScoreboardScore> scores = scoreboard.getScores(objective);
-		List<ScoreboardScore> filteredScores = scores.stream()
+	private void renderScoreboardSidebar(AxoRenderContext graphics, ScoreboardObjective objective) {
+		var font = client.textRenderer;
+		var scoreboard = objective.getScoreboard();
+
+		@Environment(EnvType.CLIENT)
+		record DisplayEntry(String name, String score, int scoreWidth) {
+		}
+
+		DisplayEntry[] entries = scoreboard.getScores(objective).stream()
 			.filter((testScore) -> testScore.getOwner() != null && !testScore.getOwner().startsWith("#"))
-			.collect(Collectors.toList());
+			//.filter(entry -> !entry.isHidden())
+			.sorted(Comparator.comparing(ScoreboardScore::get).reversed()
+				.thenComparing(ScoreboardScore::getOwner, String.CASE_INSENSITIVE_ORDER))
+			.limit(15L)
+			.map(entry -> {
+				var owner = entry.getOwner();
+				var team = scoreboard.getTeamOfMember(owner);
+				var value = String.valueOf(entry.get());
+				return new DisplayEntry(Team.getMemberDisplayName(team, owner), value, font.getWidth(value));
+			}).toArray(DisplayEntry[]::new);
+		var title = objective.getDisplayName();
+		int titleWidth = font.getWidth(title) + 2;
+		int maxWidth = titleWidth;
+		int textOffset = font.getWidth(": ");
 
-		if (filteredScores.size() > 15) {
-			scores = Lists.newArrayList(Iterables.skip(filteredScores, scores.size() - 15));
-		} else {
-			scores = filteredScores;
+		for (DisplayEntry lv : entries) {
+			maxWidth = Math.max(maxWidth, font.getWidth(lv.name) + (lv.scoreWidth > 0 && scores.get() ?
+				textOffset + lv.scoreWidth : 0));
 		}
 
-		List<Pair<ScoreboardScore, String>> scoresWText = Lists.newArrayListWithCapacity(scores.size());
-		String text = objective.getDisplayName();
-		int displayNameWidth = client.textRenderer.getWidth(text);
-		int maxWidth = displayNameWidth;
-		int spacerWidth = client.textRenderer.getWidth(": ");
+		maxWidth += 3;
+		int entryCount = entries.length;
+		int mainHeight = entryCount * font.fontHeight;
 
-		ScoreboardScore scoreboardPlayerScore;
-		String formattedText;
-		for (Iterator<ScoreboardScore> scoresIterator = scores.iterator(); scoresIterator
-			.hasNext(); maxWidth = Math
-			.max(maxWidth,
-				client.textRenderer.getWidth(formattedText) + (this.scores.get()
-					? spacerWidth + client.textRenderer
-					.getWidth(Integer.toString(scoreboardPlayerScore.get()))
-					: 0))) {
-			scoreboardPlayerScore = scoresIterator.next();
-			Team team = scoreboard.getTeamOfMember(scoreboardPlayerScore.getOwner());
-			formattedText = Team.getMemberDisplayName(team, scoreboardPlayerScore.getOwner());
-			scoresWText.add(new Pair<>(scoreboardPlayerScore, formattedText));
-		}
-		maxWidth = maxWidth + 6;
-
-		int scoresSize = scores.size();
-		int scoreHeight = scoresSize * 9;
-		int fullHeight = scoreHeight + 11 + topPadding.get() * 2;
+		int newHeight = mainHeight + 10 + topPadding.get() * 2;
 
 		boolean updated = false;
-		if (fullHeight + 1 != height) {
-			setHeight(fullHeight + 1);
+		if (newHeight + 1 != getContentHeight()) {
+			setContentHeight(newHeight + 1);
 			updated = true;
 		}
-		if (maxWidth + 1 != width) {
-			setWidth(maxWidth + 1);
+		if (maxWidth + 1 != getContentWidth()) {
+			setContentWidth(maxWidth + 1);
 			updated = true;
 		}
 		if (updated) {
 			onBoundsUpdate();
 		}
 
-		Rectangle bounds = getBounds();
+		Rectangle bounds = getContentBounds();
 
-		int renderX = bounds.x() + bounds.width() - maxWidth;
-		int renderY = bounds.y() + (bounds.height() / 2 - fullHeight / 2) + 1;
-
-		int scoreX = renderX + 4;
-		int scoreY = renderY + scoreHeight + 10;
-		int num = 0;
-		int textOffset = scoreX - 4;
-
-		for (Pair<ScoreboardScore, String> scoreboardPlayerScoreTextPair : scoresWText) {
-			++num;
-			ScoreboardScore scoreboardPlayerScore2 = scoreboardPlayerScoreTextPair.getLeft();
-			String scoreText = scoreboardPlayerScoreTextPair.getRight();
-			String score = String.valueOf(scoreboardPlayerScore2.get());
-			int relativeY = scoreY - num * 9 + topPadding.get() * 2;
-
-			if (background.get() && backgroundColor.get().getAlpha() > 0 && !placeholder) {
-				if (num == scoresSize) {
-					RenderUtil.drawRectangle(textOffset, relativeY - 1, maxWidth, 10, backgroundColor.get().toInt());
-				} else if (num == 1) {
-					RenderUtil.drawRectangle(textOffset, relativeY, maxWidth, 10, backgroundColor.get());
-				} else {
-					RenderUtil.drawRectangle(textOffset, relativeY, maxWidth, 9, backgroundColor.get());
-				}
-			}
-
-			if (shadow.get()) {
-				client.textRenderer.drawWithShadow(scoreText, (float) scoreX, (float) relativeY, Colors.WHITE.withAlpha(textAlpha.get()).toInt());
+		int yEnd = bounds.y() + bounds.height();
+		int textX = bounds.x() + 2;
+		int xEnd = bounds.x() + bounds.width() - 1;
+		int titleEnd = yEnd - mainHeight;
+		var bgBounds = getBounds();
+		var maxRounding = Math.min(Math.min(font.fontHeight + topPadding.get() * 2 + backgroundPadding.get(), titleEnd - 1 - bgBounds.y()), xEnd - textX - 3) / 2f;
+		float rounding = Math.min(maxRounding, backgroundRounding.get());
+		var drawUtil = io.github.axolotlclient.rendering.DrawUtil.get();
+		if (background.get()) {
+			if (roundBackground.get()) {
+				drawUtil.axolotlclient_rendering$roundedRect(0, 0, 1, 1, 0, 0); // HELP
+				drawUtil.axolotlclient_rendering$roundedRectVarying(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), titleEnd - 1,
+					topColor.get().toInt(), rounding, 0, 0, rounding);
+				drawUtil.axolotlclient_rendering$roundedRectVarying(bgBounds.x(), titleEnd - 1, bgBounds.xEnd(), bgBounds.yEnd(),
+					backgroundColor.get().toInt(), 0, rounding, rounding, 0);
 			} else {
-				client.textRenderer.draw(scoreText, scoreX, relativeY, Colors.WHITE.withAlpha(textAlpha.get()).toInt());
+				graphics.br$fillRect(bgBounds.x(), bgBounds.y(), bgBounds.width(), titleEnd - 1 - bgBounds.y(), topColor.get().toInt());
+				graphics.br$fillRect(bgBounds.x(), titleEnd - 1, bgBounds.width(), bgBounds.yEnd() - titleEnd + 1, backgroundColor.get().toInt());
 			}
-			if (this.scores.get()) {
-				DrawUtil.drawString(score, (float) (scoreX + maxWidth - client.textRenderer.getWidth(score) - 6),
-					(float) relativeY, scoreColor.get().toInt(), shadow.get());
-			}
-			if (num == scoresSize) {
-				// Draw the title
-				if (background.get() && !placeholder) {
-					RenderUtil.drawRectangle(textOffset, relativeY - 10 - topPadding.get() * 2 - 1, maxWidth,
-						10 + topPadding.get() * 2, topColor.get());
-				}
-				float title = (renderX + (maxWidth - displayNameWidth) / 2F);
-				if (shadow.get()) {
-					client.textRenderer.drawWithShadow(text, title, (float) (relativeY - 9) - topPadding.get(), Colors.WHITE.withAlpha(textAlpha.get()).toInt());
-				} else {
-					client.textRenderer.draw(text, (int) title, (relativeY - 9), Colors.WHITE.withAlpha(textAlpha.get()).toInt());
-				}
+		}
+		font.draw(title, textX + maxWidth / 2f - titleWidth / 2f, titleEnd - font.fontHeight - topPadding.get(),
+			ClientColors.ARGB.color(textAlpha.get(), -1), shadow.get());
+
+		for (int v = 0; v < entryCount; v++) {
+			DisplayEntry entry = entries[v];
+			int y = yEnd - (entryCount - v) * font.fontHeight;
+			font.draw(entry.name, textX, y, ClientColors.ARGB.color(textAlpha.get(), -1), shadow.get());
+			if (scores.get()) {
+				font.draw(entry.score, xEnd - entry.scoreWidth, y, scoreColor.get().toInt(),
+					shadow.get());
 			}
 		}
 
-		if (outline.get() && outlineColor.get().getAlpha() > 0 && !placeholder) {
-			RenderUtil.drawOutline(textOffset, bounds.y(), maxWidth, fullHeight + 1, outlineColor.get());
+		if (outline.get() && outlineColor.get().getAlpha() > 0) {
+			if (roundBackground.get()) {
+				drawUtil.axolotlclient_rendering$outlineRoundedRect(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), bgBounds.yEnd(), outlineColor.get().toInt(), rounding, 0.5f);
+			} else {
+				graphics.br$outlineRect(bgBounds, outlineColor.get());
+			}
 		}
 	}
 
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
-		options.remove(backgroundPadding);
-		options.remove(backgroundRounding);
-		options.remove(roundBackground);
 		options.set(options.indexOf(super.backgroundColor), backgroundColor);
 		options.add(hide);
 		options.add(topColor);

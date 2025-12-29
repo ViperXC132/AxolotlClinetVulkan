@@ -128,32 +128,27 @@ public class ScoreboardHud extends TextHudEntry {
 	// Abusing this could break some stuff/could allow for unfair advantages. The goal is not to do this, so it won't
 	// show any more information than it would have in vanilla.
 	private void displayScoreboardSidebar(GuiGraphics guiGraphics, Objective objective) {
-		Font font = client.font;
-		Scoreboard scoreboard = objective.getScoreboard();
-		NumberFormat numberFormat = objective.numberFormatOrDefault(StyledFormat.SIDEBAR_DEFAULT);
+		var font = client.font;
+		var scoreboard = objective.getScoreboard();
+		var numberFormat = objective.numberFormatOrDefault(StyledFormat.SIDEBAR_DEFAULT);
 
 		@Environment(EnvType.CLIENT)
 		record DisplayEntry(Component name, Component score, int scoreWidth) {
 		}
 
-		DisplayEntry[] entries = scoreboard.listPlayerScores(objective)
-			.stream()
+		DisplayEntry[] entries = scoreboard.listPlayerScores(objective).stream()
 			.filter(entry -> !entry.isHidden())
-			.sorted(Comparator.comparing(PlayerScoreEntry::value)
-				.reversed()
+			.sorted(Comparator.comparing(PlayerScoreEntry::value).reversed()
 				.thenComparing(PlayerScoreEntry::owner, String.CASE_INSENSITIVE_ORDER))
 			.limit(15L)
-			.map(playerScoreEntry -> {
-				PlayerTeam playerTeam = scoreboard.getPlayersTeam(playerScoreEntry.owner());
-				Component componentx = playerScoreEntry.ownerName();
-				Component component2 = PlayerTeam.formatNameForTeam(playerTeam, componentx);
-				Component component3 = playerScoreEntry.formatValue(numberFormat);
-				int ix = font.width(component3);
-				return new DisplayEntry(component2, component3, ix);
-			})
-			.toArray(DisplayEntry[]::new);
-		Component title = objective.getDisplayName();
-		int titleWidth = font.width(title);
+			.map(entry -> {
+				var team = scoreboard.getPlayersTeam(entry.owner());
+				var owner = entry.ownerName();
+				var value = entry.formatValue(numberFormat);
+				return new DisplayEntry(PlayerTeam.formatNameForTeam(team, owner), value, font.width(value));
+			}).toArray(DisplayEntry[]::new);
+		var title = objective.getDisplayName();
+		int titleWidth = font.width(title) + 2;
 		int maxWidth = titleWidth;
 		int textOffset = font.width(": ");
 
@@ -163,59 +158,69 @@ public class ScoreboardHud extends TextHudEntry {
 		}
 
 		maxWidth += 3;
-		int m = entries.length;
-		int mainHeight = m * 9;
+		int entryCount = entries.length;
+		int mainHeight = entryCount * font.lineHeight;
 
 		int newHeight = mainHeight + 10 + topPadding.get() * 2;
 
 		boolean updated = false;
-		if (newHeight + 1 != height) {
-			setHeight(newHeight + 1);
+		if (newHeight + 1 != getContentHeight()) {
+			setContentHeight(newHeight + 1);
 			updated = true;
 		}
-		if (maxWidth + 1 != width) {
-			setWidth(maxWidth + 1);
+		if (maxWidth + 1 != getContentWidth()) {
+			setContentWidth(maxWidth + 1);
 			updated = true;
 		}
 		if (updated) {
 			onBoundsUpdate();
 		}
 
-		Rectangle bounds = getBounds();
+		Rectangle bounds = getContentBounds();
 
 		int yEnd = bounds.y() + bounds.height();
-		int textX = bounds.x() + 3;
+		int textX = bounds.x() + 2;
 		int xEnd = bounds.x() + bounds.width() - 1;
 		int titleEnd = yEnd - mainHeight;
+		var bgBounds = getBounds();
+		var maxRounding = Math.min(Math.min(font.lineHeight + topPadding.get() * 2 + backgroundPadding.get(), titleEnd - 1 - bgBounds.y()), xEnd - textX - 3) / 2f;
+		float rounding = Math.min(maxRounding, backgroundRounding.get());
 		if (background.get()) {
-			guiGraphics.fill(textX - 2, titleEnd - 9 - 1 - topPadding.get() * 2, xEnd, titleEnd - 1,
-				topColor.get().toInt());
-			guiGraphics.fill(textX - 2, titleEnd - 1, xEnd, yEnd, backgroundColor.get().toInt());
+			if (roundBackground.get()) {
+				guiGraphics.axolotlclient_rendering$roundedRectVarying(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), titleEnd - 1,
+					topColor.get().toInt(), rounding, 0, 0, rounding);
+				guiGraphics.axolotlclient_rendering$roundedRectVarying(bgBounds.x(), titleEnd - 1, bgBounds.xEnd(), bgBounds.yEnd(),
+					backgroundColor.get().toInt(), 0, rounding, rounding, 0);
+			} else {
+				guiGraphics.fill(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), titleEnd - 1, topColor.get().toInt());
+				guiGraphics.fill(bgBounds.x(), titleEnd - 1, bgBounds.xEnd(), bgBounds.yEnd(), backgroundColor.get().toInt());
+			}
 		}
-		guiGraphics.drawString(font, title, textX + maxWidth / 2 - titleWidth / 2, titleEnd - 9 - topPadding.get(),
+		guiGraphics.drawString(font, title, textX + maxWidth / 2 - titleWidth / 2, titleEnd - font.lineHeight - topPadding.get(),
 			ARGB.color(textAlpha.get(), -1), shadow.get());
 
-		for (int v = 0; v < m; v++) {
-			DisplayEntry lv2 = entries[v];
-			int w = yEnd - (m - v) * 9;
-			guiGraphics.drawString(font, lv2.name, textX, w, ARGB.color(textAlpha.get(), -1), shadow.get());
+		for (int v = 0; v < entryCount; v++) {
+			DisplayEntry entry = entries[v];
+			int y = yEnd - (entryCount - v) * font.lineHeight;
+			guiGraphics.drawString(font, entry.name, textX, y, ARGB.color(textAlpha.get(), -1), shadow.get());
 			if (scores.get()) {
-				guiGraphics.drawString(font, lv2.score, xEnd - lv2.scoreWidth, w, scoreColor.get().toInt(),
+				guiGraphics.drawString(font, entry.score, xEnd - entry.scoreWidth, y, scoreColor.get().toInt(),
 					shadow.get());
 			}
 		}
 
 		if (outline.get() && outlineColor.get().getAlpha() > 0) {
-			DrawUtil.outlineRect(guiGraphics, bounds, outlineColor.get());
+			if (roundBackground.get()) {
+				guiGraphics.axolotlclient_rendering$outlineRoundedRect(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), bgBounds.yEnd(), outlineColor.get().toInt(), rounding, 0.5f);
+			} else {
+				DrawUtil.outlineRect(guiGraphics, bgBounds, outlineColor.get());
+			}
 		}
 	}
 
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
-		options.remove(backgroundPadding);
-		options.remove(backgroundRounding);
-		options.remove(roundBackground);
 		options.set(options.indexOf(super.backgroundColor), backgroundColor);
 		options.add(hide);
 		options.add(topColor);
