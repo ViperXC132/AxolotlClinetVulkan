@@ -69,6 +69,11 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 	}
 
 	@Override
+	public void br$rotateMatrix(float ang) {
+		GlStateManager.rotatef(ang, 1, 0, 0);
+	}
+
+	@Override
 	public void br$pushScissor(int x, int y, int w, int h) {
 		io.github.axolotlclient.AxolotlClientConfig.impl.util.DrawUtil.pushScissor(x, y, w, h);
 	}

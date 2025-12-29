@@ -92,6 +92,16 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 		pose.translate(x, y);
 	}
 
+	@Override
+	public void br$rotateMatrix(float ang) {
+		pose.rotate(ang);
+	}
+
+	@Override
+	public void br$rotateMatrixAround(float ang, float x, float y) {
+		pose.rotateAbout(ang, x, y);
+	}
+
 	// scissor
 	@Override
 	public void br$pushScissor(int x, int y, int w, int h) {

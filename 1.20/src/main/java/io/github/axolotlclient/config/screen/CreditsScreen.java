@@ -93,7 +93,7 @@ public class CreditsScreen extends Screen {
 				.append(Text.translatable(AxolotlClient.config().creditsBGM.get() ? "options.on" : "options.off")),
 			buttonWidget -> {
 				AxolotlClient.config().creditsBGM.toggle();
-				AxolotlClient.getInstance().getConfigManager().save();
+				AxolotlClient.getInstance().saveConfig();
 				stopBGM();
 				buttonWidget.setMessage(Text.translatable("creditsBGM").append(": ").append(
 					Text.translatable(AxolotlClient.config().creditsBGM.get() ? "options.on" : "options.off")));

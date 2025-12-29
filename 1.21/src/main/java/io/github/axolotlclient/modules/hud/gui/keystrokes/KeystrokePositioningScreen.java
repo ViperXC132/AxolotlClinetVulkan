@@ -86,7 +86,7 @@ public class KeystrokePositioningScreen extends Screen {
 				HudEditScreen.toggleSnapping();
 				buttonWidget.setMessage(Text.translatable("hud.snapping").append(": ")
 					.append(Text.translatable(HudEditScreen.isSnappingEnabled() ? "options.on" : "options.off")));
-				AxolotlClient.getInstance().getConfigManager().save();
+				AxolotlClient.getInstance().saveConfig();
 			}).positionAndSize(width / 2 - 50, height - 50, 100, 20).build());
 	}
 
@@ -175,14 +175,14 @@ public class KeystrokePositioningScreen extends Screen {
 			focused.setX((int) Math.round((mouseX - offset.x()) / hud.getScale()));
 			focused.setY((int) Math.round((mouseY - offset.y()) / hud.getScale()));
 			if (snap != null) {
-				Integer snapX, snapY;
+				Optional<Integer> snapX, snapY;
 				var rect = getScaledRenderPos(focused);
 				snap.setCurrent(rect);
-				if ((snapX = snap.getCurrentXSnap()) != null) {
-					focused.setX((int) (snapX / hud.getScale()));
+				if ((snapX = snap.getCurrentXSnap()).isPresent()) {
+					focused.setX(Math.round(snapX.get() / hud.getScale()));
 				}
-				if ((snapY = snap.getCurrentYSnap()) != null) {
-					focused.setY(Math.round(snapY / hud.getScale()));
+				if ((snapY = snap.getCurrentYSnap()).isPresent()) {
+					focused.setY(Math.round(snapY.get() / hud.getScale()));
 				}
 			}
 			return true;

@@ -912,5 +912,7 @@
 	"CROSSHAIR_TYPE_DEFAULT": "Default (Inherit)",
 	"potionshud.mode.icons_only": "Icons Only",
 	"potionshud.mode.text_only": "Text Only",
-	"potionshud.mode.icons_and_text": "Icons and Text"
+	"potionshud.mode.icons_and_text": "Icons and Text",
+	"hud.dependency_links": "HUD Dependency Links",
+	"hud.dependency_links.clear": "Clear All"
 }

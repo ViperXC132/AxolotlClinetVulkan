@@ -42,8 +42,8 @@ public class CustomHudEntry extends SimpleTextHudEntry {
 	public final StringOption value = new StringOption("custom_hud.value", "Text");
 	private final GenericOption removeEntry;
 
-	public CustomHudEntry() {
-		this.id = AxoIdentifier.of("axolotlclient", "custom_hud/" + UUID.randomUUID());
+	public CustomHudEntry(AxoIdentifier id) {
+		this.id = id;
 		removeEntry = new GenericOption("custom_hud.remove", "custom_hud.remove.label", () -> {
 			HudManagerCommon.getInstance().removeEntry(this.id);
 			HudManagerCommon.getInstance().saveCustomEntries();

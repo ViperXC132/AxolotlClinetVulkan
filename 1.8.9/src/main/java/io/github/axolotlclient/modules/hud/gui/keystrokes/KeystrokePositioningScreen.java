@@ -111,7 +111,7 @@ public class KeystrokePositioningScreen extends Screen {
 			hud.keystrokes.forEach(s -> drawStroke(mouseX, mouseY, s));
 		}
 		if (mouseDown && snap != null) {
-			snap.renderSnaps();
+			snap.renderSnaps(AxoRenderContextImpl.getInstance());
 		}
 	}
 
@@ -192,14 +192,14 @@ public class KeystrokePositioningScreen extends Screen {
 			focused.setX(Math.round((mouseX - offset.x()) / hud.getScale()));
 			focused.setY(Math.round((mouseY - offset.y()) / hud.getScale()));
 			if (snap != null) {
-				Integer snapX, snapY;
+				Optional<Integer> snapX, snapY;
 				var rect = getScaledRenderPos(focused);
 				snap.setCurrent(rect);
-				if ((snapX = snap.getCurrentXSnap()) != null) {
-					focused.setX((int) (snapX / hud.getScale()));
+				if ((snapX = snap.getCurrentXSnap()).isPresent()) {
+					focused.setX(Math.round(snapX.get() / hud.getScale()));
 				}
-				if ((snapY = snap.getCurrentYSnap()) != null) {
-					focused.setY(Math.round(snapY / hud.getScale()));
+				if ((snapY = snap.getCurrentYSnap()).isPresent()) {
+					focused.setY(Math.round(snapY.get() / hud.getScale()));
 				}
 			}
 		}

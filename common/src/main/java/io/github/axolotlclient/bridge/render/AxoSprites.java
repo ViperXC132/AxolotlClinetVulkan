@@ -29,4 +29,5 @@ public class AxoSprites {
 	public static final AxoSprite BARRIER_ITEM_ICON = BridgeUtil.noImplValue();
 	public static final AxoSprite FURNACE_OFF = BridgeUtil.noImplValue();
 	public static final AxoSprite FURNACE_ON = BridgeUtil.noImplValue();
+	public static final AxoSprite MAGNET_ICON = BridgeUtil.noImplValue();
 }

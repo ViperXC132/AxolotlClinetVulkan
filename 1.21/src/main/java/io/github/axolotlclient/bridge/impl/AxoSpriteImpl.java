@@ -40,6 +40,13 @@ public interface AxoSpriteImpl extends AxoSprite {
 		}
 	}
 
+	record Gui(Identifier id) implements AxoSpriteImpl {
+		@Override
+		public void draw(MinecraftClient client, GuiGraphics stack, int sX, int sY, int sW, int sH) {
+			stack.drawGuiTexture(id, sX, sY, sW, sH);
+		}
+	}
+
 	record Vanilla(Sprite sprite) implements AxoSpriteImpl {
 		@Override
 		public void draw(MinecraftClient client, GuiGraphics stack, int sX, int sY, int sW, int sH) {

@@ -98,6 +98,11 @@ public class PlatformImplInternal {
 	}
 
 	@RequiresImpl
+	public static AxoIdentifier parseIdentifier(String id) {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
 	public static AxoKeybinding createKeyBinding(@Nullable AxoKey defaultKey, String name) {
 		throw BridgeUtil.noImpl();
 	}

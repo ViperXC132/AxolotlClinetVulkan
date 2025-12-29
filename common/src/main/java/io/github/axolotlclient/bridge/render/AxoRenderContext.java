@@ -53,6 +53,31 @@ public interface AxoRenderContext {
 		throw BridgeUtil.noImpl();
 	}
 
+	/**
+	 * Rotate the current matrix
+	 * @param ang the angle, in radians.
+	 * @see Math#toRadians(double)
+	 */
+	@RequiresImpl
+	default void br$rotateMatrix(float ang) {
+		throw BridgeUtil.noImpl();
+	}
+
+	/**
+	 * Rotate the current matrix
+	 * @param ang the angle, in radians.
+	 * @param x the x-coordinate of the rotation origin
+	 * @param y the y-coordinate of the rotation origin
+	 * @see Math#toRadians(double)
+	 */
+	@RequiresImpl
+	default void br$rotateMatrixAround(float ang, float x, float y) {
+		// naive default impl, may be overridden if a better impl is available in a version.
+		br$translateMatrix(x, y);
+		br$rotateMatrix(ang);
+		br$translateMatrix(-x, -y);
+	}
+
 	// scissor
 	@RequiresImpl
 	default void br$pushScissor(int x, int y, int w, int h) {

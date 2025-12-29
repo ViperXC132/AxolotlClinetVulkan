@@ -35,6 +35,10 @@ public interface AxoIdentifier {
 		return of("minecraft", path);
 	}
 
+	static AxoIdentifier parse(String id) {
+		return PlatformImplInternal.parseIdentifier(id);
+	}
+
 	@RequiresImpl
 	default String br$getPath() {
 		throw BridgeUtil.noImpl();

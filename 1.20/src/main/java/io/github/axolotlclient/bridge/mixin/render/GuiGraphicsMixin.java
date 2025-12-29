@@ -36,6 +36,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.Axis;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
@@ -85,6 +86,16 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	@Override
 	public void br$translateMatrix(float x, float y) {
 		matrices.translate(x, y, 0);
+	}
+
+	@Override
+	public void br$rotateMatrix(float ang) {
+		br$rotateMatrixAround(ang, 0, 0);
+	}
+
+	@Override
+	public void br$rotateMatrixAround(float ang, float x, float y) {
+		matrices.rotateAround(Axis.X_NEGATIVE.rotation(ang), x, y, 0);
 	}
 
 	// scissor

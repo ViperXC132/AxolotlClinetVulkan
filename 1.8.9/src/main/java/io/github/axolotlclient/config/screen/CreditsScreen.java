@@ -90,7 +90,7 @@ public class CreditsScreen extends io.github.axolotlclient.AxolotlClientConfig.i
 			+ I18n.translate(AxolotlClient.config().creditsBGM.get() ? "options.on" : "options.off"),
 			buttonWidget -> {
 				AxolotlClient.config().creditsBGM.toggle();
-				AxolotlClient.getInstance().getConfigManager().save();
+				AxolotlClient.getInstance().saveConfig();
 				stopBGM();
 				buttonWidget.setMessage(I18n.translate("creditsBGM") + ": " +
 					I18n.translate(AxolotlClient.config().creditsBGM.get() ? "options.on" : "options.off"));

@@ -57,12 +57,18 @@ public abstract class AxoSpritesMixin {
 	@Final
 	public static AxoSprite FURNACE_ON;
 
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoSprite MAGNET_ICON;
+
 	@Inject(method = "<clinit>", at = @At("HEAD"), cancellable = true)
 	private static void setStaticValues(CallbackInfo info) {
 		BADGE = new AxoSpriteImpl.Simple((Identifier) AxolotlClientCommon.BADGE_PATH, 0, 0, 16, 16);
 		BARRIER_ITEM_ICON = new AxoSpriteImpl.Simple(new Identifier("textures/item/barrier.png"), 0, 0, 16, 16);
 		FURNACE_OFF = new AxoSpriteImpl.Simple(new Identifier("textures/block/furnace_front.png"), 0, 0, 16, 16);
 		FURNACE_ON = new AxoSpriteImpl.Simple(new Identifier("textures/block/furnace_front_on.png"), 0, 0, 16, 16);
+		MAGNET_ICON = new AxoSpriteImpl.Simple(new Identifier(AxolotlClientCommon.MODID, "textures/gui/sprites/magnet.png"), 0, 0, 9, 9);
 		info.cancel();
 	}
 }

@@ -22,7 +22,7 @@
 
 package io.github.axolotlclient.modules.hud;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 import io.github.axolotlclient.AxolotlClient;
@@ -33,7 +33,6 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.util.ConfigStyles;
 import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
 import io.github.axolotlclient.modules.hud.snapping.SnappingHelper;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
-import io.github.axolotlclient.modules.hud.util.Rectangle;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.Screen;
@@ -93,7 +92,7 @@ public class HudEditScreen extends Screen {
 
 	private void updateSnapState() {
 		if (snapping.get() && current != null) {
-			List<Rectangle> bounds = HudManager.getInstance().getAllBounds();
+			var bounds = HudManager.getInstance().getAllBounds();
 			bounds.remove(current.getTrueBounds());
 			snap = new SnappingHelper(bounds, current.getTrueBounds());
 		} else if (snap != null) {
@@ -121,7 +120,13 @@ public class HudEditScreen extends Screen {
 			entry = HudManager.getInstance().getEntryXY(mouseX, mouseY);
 			entry.ifPresent(abstractHudEntry -> abstractHudEntry.setHovered(true));
 		}
+		if (mouseDown && snap != null) {
+			snap.renderHighlights(graphics, current);
+		}
 		HudManager.getInstance().renderPlaceholder(graphics, delta);
+		if (getFocused() instanceof HudEntryWidget w) {
+			w.render(graphics, mouseX, mouseY, delta);
+		}
 		if (entry.isPresent()) {
 			var bounds = entry.get().getTrueBounds();
 			if (mode == ModificationMode.NONE && bounds.isMouseOver(mouseX, mouseY)) {
@@ -151,6 +156,7 @@ public class HudEditScreen extends Screen {
 		}
 		if (mouseDown && snap != null) {
 			snap.renderSnaps(graphics);
+			snap.renderMagnet(graphics, current);
 		}
 	}
 
@@ -166,7 +172,7 @@ public class HudEditScreen extends Screen {
 				snapping.toggle();
 				buttonWidget.setMessage(Text.translatable("hud.snapping").append(": ")
 					.append(Text.translatable(snapping.get() ? "options.on" : "options.off")));
-				AxolotlClient.getInstance().getConfigManager().save();
+				AxolotlClient.getInstance().saveConfig();
 			}).positionAndSize(width / 2 - 50, height / 2 + 12, 100, 20).build());
 
 		this.addDrawableChild(new ButtonWidget.Builder(Text.translatable("hud.clientOptions"),
@@ -259,14 +265,24 @@ public class HudEditScreen extends Screen {
 				current.setX((int) mouseX - offset.x() + current.offsetTrueWidth());
 				current.setY((int) mouseY - offset.y() + current.offsetTrueHeight());
 				if (snap != null) {
-					Integer snapX, snapY;
+					Collection<HudEntry> entries = null;
+					Optional<Integer> snapX = snap.getCurrentXSnap(), snapY = snap.getCurrentYSnap();
+					if (snapX.isPresent() || snapY.isPresent()) {
+						entries = HudManagerCommon.getInstance().getMoveableEntries();
+						entries.remove(current);
+						entries.removeIf(e -> e.dependsOnX(current).isPresent() || e.dependsOnY(current).isPresent());
+					}
 					snap.setCurrent(current.getTrueBounds());
-					if ((snapX = snap.getCurrentXSnap()) != null) {
-						current.setX(snapX + current.offsetTrueWidth());
+					current.clearBoundsDependencies();
+					if (snapX.isPresent()) {
+						current.setX(snapX.get() + current.offsetTrueWidth());
+						snap.getXTouching(entries, current).forEach(c -> current.addBoundsDependency(c.getLeft(), c.getRight()));
 					}
-					if ((snapY = snap.getCurrentYSnap()) != null) {
-						current.setY(snapY + current.offsetTrueHeight());
+					if (snapY.isPresent()) {
+						current.setY(snapY.get() + current.offsetTrueHeight());
+						snap.getYTouching(entries, current).forEach(c -> current.addBoundsDependency(c.getLeft(), c.getRight()));
 					}
+					HudManagerCommon.getInstance().saveHudDependencyLinks();
 				}
 			} else {
 				var bounds = current.getTrueBounds();

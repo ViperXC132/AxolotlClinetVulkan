@@ -156,6 +156,15 @@ public abstract class PlatformImplInternalMixin {
 	}
 
 	/**
+	 * @author moehreag
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static AxoIdentifier parseIdentifier(String id) {
+		return new Identifier(id);
+	}
+
+	/**
 	 * @author Flowey
 	 * @reason Implement bridge platform.
 	 */
