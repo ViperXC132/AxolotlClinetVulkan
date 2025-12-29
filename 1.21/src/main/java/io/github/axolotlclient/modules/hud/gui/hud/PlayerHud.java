@@ -65,7 +65,7 @@ public class PlayerHud extends PlayerHudCommon {
 			float height = client.player.getHeight();
 			// sin = opposite / hypotenuse
 			float offset = (float) (Math.sin(Math.toRadians(pitch)) * height);
-			yOffset = Math.abs(offset) + 35;
+			yOffset = Math.abs(offset) - 30;
 		} else if (client.player != null && client.player.isFallFlying()) {
 			// Elytra!
 
@@ -75,8 +75,7 @@ public class PlayerHud extends PlayerHudCommon {
 			float pitch = k * (-90.0F - client.player.getPitch()) + 90;
 			float height = client.player.getHeight();
 			// sin = opposite / hypotenuse
-			float offset = (float) (Math.sin(Math.toRadians(pitch)) * height) * 50;
-			yOffset = 35 - offset;
+			yOffset = (float) (Math.sin(Math.toRadians(pitch)) * height) - getContentHeight()/4f;
 			if (pitch < 0) {
 				yOffset -= (float) (((1 / (1 + Math.exp(-pitch / 4))) - .5) * 20);
 			}
@@ -107,8 +106,6 @@ public class PlayerHud extends PlayerHudCommon {
 
 		float lerpY = (lastYOffset + ((yOffset - lastYOffset) * delta));
 
-		float scale = getScale() * 40;
-
 		Quaternionf quaternion = Axis.Z_POSITIVE.rotationDegrees(180.0F);
 
 		// Rotate to whatever is wanted. Also make sure to offset the yaw
@@ -124,9 +121,9 @@ public class PlayerHud extends PlayerHudCommon {
 		float pastPrevYaw = client.player.prevYaw;
 		currentlyRendering = true;
 		InventoryScreen.drawEntity(graphics,
-			((float) (x + getTrueContentWidth() / 2f)) / getScale(),
-			((float) (y + getTrueContentHeight() * client.player.getHeight() / 2f - lerpY)) / getScale(),
-			scale, new Vector3f(), quaternion, quaternionf2, client.player);
+			((float) (x/getScale() + getContentWidth() / 2f)),
+			((float) (y/getScale() + getContentHeight() * client.player.getHeight() / 2f - lerpY)),
+			40, new Vector3f(), quaternion, quaternionf2, client.player);
 		currentlyRendering = false;
 
 		client.player.setYaw(pastYaw);

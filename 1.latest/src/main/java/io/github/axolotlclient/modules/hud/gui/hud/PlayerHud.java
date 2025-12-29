@@ -36,6 +36,7 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -71,7 +72,7 @@ public class PlayerHud extends PlayerHudCommon {
 			float height = client.player.getBbHeight();
 			// sin = opposite / hypotenuse
 			float offset = (float) (Math.sin(Math.toRadians(pitch)) * height);
-			yOffset = Math.abs(offset);
+			yOffset = Math.abs(offset) - 30;
 		} else if (client.player != null && client.player.isFallFlying()) {
 			// Elytra!
 
@@ -81,7 +82,7 @@ public class PlayerHud extends PlayerHudCommon {
 			float pitch = k * (-90.0F - client.player.getXRot()) + 90;
 			float height = client.player.getBbHeight() / 2f;
 			// sin = opposite / hypotenuse
-			yOffset = (float) (Math.sin(Math.toRadians(pitch)) * height);
+			yOffset = (float) (Math.sin(Math.toRadians(pitch)) * height) - getContentHeight()/4f;
 			if (pitch < 0) {
 				yOffset -= (float) (((1 / (1 + Math.exp(-pitch / 4))) - .5) * 2);
 			}
@@ -154,7 +155,7 @@ public class PlayerHud extends PlayerHudCommon {
 		EntityRenderDispatcher entityRenderDispatcher = mc.getEntityRenderDispatcher();
 		if (renderer == null)
 			renderer = new PlayerHudEntityRenderer(mc.renderBuffers().bufferSource(), entityRenderDispatcher);
-		EntityRenderer<LivingEntity, LivingEntityRenderState> entityRenderer = (EntityRenderer<LivingEntity, LivingEntityRenderState>) entityRenderDispatcher.getRenderer(livingEntity);
+		EntityRenderer<@NotNull LivingEntity, @NotNull LivingEntityRenderState> entityRenderer = (EntityRenderer<@NotNull LivingEntity, @NotNull LivingEntityRenderState>) entityRenderDispatcher.getRenderer(livingEntity);
 		if (reusedPlayerRendererState == null) {
 			reusedPlayerRendererState = entityRenderer.createRenderState();
 		}

@@ -154,6 +154,7 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 
 	@Override
 	public void br$fillRectRound(int x, int y, int width, int height, int color, float rounding) {
+		((GuiGraphics) (Object) this).axolotlclient_rendering$roundedRect(0, 0, 1, 1, 0, 0); // HELP
 		((GuiGraphics) (Object) this).axolotlclient_rendering$roundedRect(x, y, x + width, y + height, color, rounding);
 	}
 

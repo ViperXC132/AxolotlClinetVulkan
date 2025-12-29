@@ -67,7 +67,7 @@ public class PlayerHud extends PlayerHudCommon {
 			float height = client.player.getHeight();
 			// sin = opposite / hypotenuse
 			float offset = (float) (Math.sin(Math.toRadians(pitch)) * height);
-			yOffset = Math.abs(offset) + 35;
+			yOffset = Math.abs(offset) - 30;
 		} else if (client.player != null && client.player.isFallFlying()) {
 			// Elytra!
 
@@ -77,7 +77,7 @@ public class PlayerHud extends PlayerHudCommon {
 			float pitch = k * (-90.0F - client.player.getPitch()) + 90;
 			float height = client.player.getHeight();
 			// sin = opposite / hypotenuse
-			yOffset = (float) (Math.sin(Math.toRadians(pitch)) * height);
+			yOffset = (float) (Math.sin(Math.toRadians(pitch)) * height) - getContentHeight()/4f;
 			if (pitch < 0) {
 				yOffset -= (float) (((1 / (1 + Math.exp(-pitch / 4))) - .5) * 20);
 			}
@@ -122,8 +122,8 @@ public class PlayerHud extends PlayerHudCommon {
 
 		currentlyRendering = true;
 		InventoryScreen.drawEntity((GuiGraphics) ctx,
-			(int) (x + getTrueContentWidth() / 2f),
-			(int) (y + getTrueContentHeight() * client.player.getHeight() / 2f - lerpY),
+			(int) (x/getScale() + getContentWidth() / 2f),
+			(int) (y + getContentHeight() * client.player.getHeight() / 2f - lerpY),
 			(int) scale,
 			quaternion,
 			quaternionf2,

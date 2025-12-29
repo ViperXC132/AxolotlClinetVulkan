@@ -30,9 +30,7 @@ import com.google.common.base.Preconditions;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.impl.commands.CommandsImpl;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
-import net.minecraft.block.Blocks;
 import net.minecraft.client.options.KeyBinding;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.ornithemc.osl.keybinds.api.KeyBindingEvents;
 import net.ornithemc.osl.lifecycle.api.client.MinecraftClientEvents;
@@ -45,8 +43,7 @@ public class Bridge {
 	private static List<KeyBinding> keyBindings = new ArrayList<>();
 
 	public static AxoItemStack wrapStack(@Nullable ItemStack stack) {
-		// TODO: this is a bit of a janky workaround, but whatever...
-		return Objects.requireNonNullElseGet(stack, () -> new ItemStack(Item.byBlock(Blocks.STONE), 0));
+		return Objects.requireNonNullElseGet(stack, AirItemStackImpl::getInstance);
 	}
 
 	@Nullable

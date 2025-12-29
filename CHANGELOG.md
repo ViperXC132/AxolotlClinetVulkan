@@ -5,6 +5,9 @@
 - fix bugs with the Bedwars module
   - remove `Winstreak` bedwars level head mode
 - add Bedwars Session statistics HUD
+- fix bugs relating to multiple HUDs
+- add hud bounds dependencies (moving one when the bounds of another change)
+- add rounding support to Scoreboard HUDs
 
 ### 3.1.8
 
