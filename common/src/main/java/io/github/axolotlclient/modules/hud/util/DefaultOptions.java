@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.hud.util;
 
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.DoubleOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
@@ -72,5 +73,9 @@ public class DefaultOptions {
 
 	public static EnumOption<CardinalOrder> getCardinalOrder(CardinalOrder defaultValue) {
 		return new EnumOption<>("cardinalorder", CardinalOrder.class, defaultValue);
+	}
+
+	public static BooleanOption getHideIfEmpty() {
+		return new BooleanOption("hud.hide_if_empty", true);
 	}
 }

@@ -65,7 +65,7 @@ public class PlayerHud extends PlayerHudCommon {
 			float height = client.player.getHeight();
 			// sin = opposite / hypotenuse
 			float offset = (float) (Math.sin(Math.toRadians(pitch)) * height);
-			yOffset = Math.abs(offset) - 30;
+			yOffset = Math.abs(offset) + 35;
 		} else if (client.player != null && client.player.isFallFlying()) {
 			// Elytra!
 
@@ -75,7 +75,8 @@ public class PlayerHud extends PlayerHudCommon {
 			float pitch = k * (-90.0F - client.player.getPitch()) + 90;
 			float height = client.player.getHeight();
 			// sin = opposite / hypotenuse
-			yOffset = (float) (Math.sin(Math.toRadians(pitch)) * height) - getContentHeight()/4f;
+			float offset = (float) (Math.sin(Math.toRadians(pitch)) * height) * 50;
+			yOffset = 35 - offset;
 			if (pitch < 0) {
 				yOffset -= (float) (((1 / (1 + Math.exp(-pitch / 4))) - .5) * 20);
 			}
@@ -90,18 +91,6 @@ public class PlayerHud extends PlayerHudCommon {
 		var graphics = (GuiGraphics) ctx;
 		if (client.player == null) {
 			return;
-		}
-
-		if (!placeholder && autoHide.get()) {
-			if (isPerformingAction()) {
-				hide = -1;
-			} else if (hide == -1) {
-				hide = System.currentTimeMillis();
-			}
-
-			if (hide != -1 && System.currentTimeMillis() - hide > 500) {
-				return;
-			}
 		}
 
 		float lerpY = (lastYOffset + ((yOffset - lastYOffset) * delta));
@@ -121,8 +110,8 @@ public class PlayerHud extends PlayerHudCommon {
 		float pastPrevYaw = client.player.prevYaw;
 		currentlyRendering = true;
 		InventoryScreen.drawEntity(graphics,
-			((float) (x/getScale() + getContentWidth() / 2f)),
-			((float) (y/getScale() + getContentHeight() * client.player.getHeight() / 2f - lerpY)),
+			((float) (x / getScale() + getContentWidth() / 2f)),
+			((float) (y / getScale() + getContentHeight() - lerpY)),
 			40, new Vector3f(), quaternion, quaternionf2, client.player);
 		currentlyRendering = false;
 
@@ -130,7 +119,8 @@ public class PlayerHud extends PlayerHudCommon {
 		client.player.prevYaw = pastPrevYaw;
 	}
 
-	private boolean isPerformingAction() {
+	@Override
+	protected boolean isPerformingAction() {
 		// inspired by tr7zw's mod
 		ClientPlayerEntity player = MinecraftClient.getInstance().player;
 		//noinspection DataFlowIssue

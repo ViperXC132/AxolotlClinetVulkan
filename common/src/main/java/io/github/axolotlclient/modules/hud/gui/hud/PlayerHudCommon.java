@@ -64,6 +64,22 @@ public abstract class PlayerHudCommon extends BoxHudEntry implements Dynamically
 	}
 
 	@Override
+	public void render(AxoRenderContext ctx, float delta) {
+		if (autoHide.get()) {
+			if (isPerformingAction()) {
+				hide = -1;
+			} else if (hide == -1) {
+				hide = System.currentTimeMillis();
+			}
+
+			if (hide != -1 && System.currentTimeMillis() - hide > 500) {
+				return;
+			}
+		}
+		super.render(ctx, delta);
+	}
+
+	@Override
 	public void renderComponent(AxoRenderContext ctx, float delta) {
 		renderPlayer(ctx, false, getRawTrueContentX(), getRawTrueContentY(), delta);
 	}
@@ -94,4 +110,6 @@ public abstract class PlayerHudCommon extends BoxHudEntry implements Dynamically
 	public AnchorPoint getAnchor() {
 		return anchor.get();
 	}
+
+	protected abstract boolean isPerformingAction();
 }

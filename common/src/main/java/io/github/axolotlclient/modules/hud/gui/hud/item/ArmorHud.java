@@ -73,9 +73,22 @@ public class ArmorHud extends TextHudEntry {
 		".main_hand_item_position", MainHandItemPosition.class, MainHandItemPosition.BOTTOM);
 	private final EnumOption<CardinalOrder> order = DefaultOptions.getCardinalOrder(CardinalOrder.LEFT_RIGHT);
 	private final BooleanOption reverseArmorOrder = new BooleanOption("armorhud.reverse_armor_order", false);
+	private final BooleanOption hideIfEmpty = DefaultOptions.getHideIfEmpty();
 
 	public ArmorHud() {
 		super(20, 100, true);
+	}
+
+	@Override
+	public void render(AxoRenderContext ctx, float delta) {
+		final var player = client.br$getPlayer();
+		if (player == null) {
+			return;
+		}
+		if (hideIfEmpty.get() && Stream.concat(Stream.of(player.br$getInventory().br$getMainHand()), player.br$getInventory().br$getArmor().stream()).allMatch(AxoItemStack::br$isEmpty)) {
+			return;
+		}
+		super.render(ctx, delta);
 	}
 
 	@Override
@@ -116,8 +129,10 @@ public class ArmorHud extends TextHudEntry {
 			Collections.reverse(armor);
 		}
 
-		DrawPosition pos = getContentPos();
 		MainHandItemPosition mhPos = mainHandItemPosition.get();
+		if (hideIfEmpty.get() && mhPos != MainHandItemPosition.DISABLED && mainHand.br$isEmpty()) {
+			mhPos = MainHandItemPosition.DISABLED;
+		}
 		var order = this.order.get();
 		if (order.isXAxis()) {
 			int labelWidth = (showDurability || showMaxDurability) ?
@@ -146,6 +161,7 @@ public class ArmorHud extends TextHudEntry {
 			if (boundsChanged) {
 				onBoundsUpdate();
 			}
+			DrawPosition pos = getContentPos();
 
 			int lastY = 2 + (height - 20);
 
@@ -235,6 +251,7 @@ public class ArmorHud extends TextHudEntry {
 			if (boundsChanged) {
 				onBoundsUpdate();
 			}
+			DrawPosition pos = getContentPos();
 			var x = pos.x() + 2;
 			var y = pos.y() + 2;
 			int stackWidth = 18;
@@ -346,6 +363,7 @@ public class ArmorHud extends TextHudEntry {
 		options.add(mainHandItemPosition);
 		options.add(order);
 		options.add(reverseArmorOrder);
+		options.add(hideIfEmpty);
 		return options;
 	}
 
