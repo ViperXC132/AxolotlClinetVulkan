@@ -304,6 +304,16 @@ public abstract class AbstractHudEntry implements HudEntry {
 	}
 
 	@Override
+	public void removeBoundsDependencyX(HudEntry entry) {
+		xDependencies.remove(entry);
+	}
+
+	@Override
+	public void removeBoundsDependencyY(HudEntry entry) {
+		yDependencies.remove(entry);
+	}
+
+	@Override
 	public Map<HudEntry, SnapAnchorType> getDependenciesX() {
 		return xDependencies;
 	}

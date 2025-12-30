@@ -53,6 +53,7 @@ import io.github.axolotlclient.modules.hud.gui.hud.item.ItemUpdateHud;
 import io.github.axolotlclient.modules.hud.gui.hud.simple.*;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.InventoryHud;
 import io.github.axolotlclient.modules.hud.gui.layout.SnapAnchorType;
+import io.github.axolotlclient.modules.hud.snapping.SnappingHelper;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.util.GsonHelper;
@@ -161,6 +162,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 	private void loadHudDependencyLinks() {
 		try {
 			var path = AxolotlClientCommon.resolveProfileConfigFile(HUD_DEPENDENCIES_SAVE_FILE_NAME);
+			AxolotlClientCommon.getInstance().getLogger().info("Path: {}", path);
 			if (Files.exists(path)) {
 				var obj = (Map<String, Object>) GsonHelper.read(Files.readString(path));
 				obj.forEach((name, o) -> {
@@ -168,21 +170,26 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 					var hud = get(hudId);
 					if (hud == null) return;
 					var deps = (Map<String, Object>) o;
-					((Map<String, String>) deps.get("x")).forEach((id, type) -> {
-						var dep = get(AxoIdentifier.parse(id));
-						if (dep == null) return;
-						var anchorType = SnapAnchorType.fromName(type);
-						if (anchorType == null) return;
-						hud.addBoundsDependency(dep, anchorType);
-					});
-					((Map<String, String>) deps.get("y")).forEach((id, type) -> {
-						var dep = get(AxoIdentifier.parse(id));
-						if (dep == null) return;
-						var anchorType = SnapAnchorType.fromName(type);
-						if (anchorType == null) return;
-						hud.addBoundsDependency(dep, anchorType);
-					});
+					if (deps.containsKey("x")) {
+						((Map<String, String>) deps.get("x")).forEach((id, type) -> {
+							var dep = get(AxoIdentifier.parse(id));
+							if (dep == null) return;
+							var anchorType = SnapAnchorType.fromName(type);
+							if (anchorType == null) return;
+							hud.addBoundsDependency(dep, anchorType);
+						});
+					}
+					if (deps.containsKey("y")) {
+						((Map<String, String>) deps.get("y")).forEach((id, type) -> {
+							var dep = get(AxoIdentifier.parse(id));
+							if (dep == null) return;
+							var anchorType = SnapAnchorType.fromName(type);
+							if (anchorType == null) return;
+							hud.addBoundsDependency(dep, anchorType);
+						});
+					}
 				});
+				AxolotlClientCommon.getInstance().getLogger().info("Loaded hud dependency links!");
 			}
 		} catch (Exception e) {
 			AxolotlClientCommon.getInstance().getLogger().warn("Failed to load hud dependency links!", e);
@@ -373,6 +380,11 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 		for (HudEntry hud : getEntries()) {
 			if (hud.isEnabled()) {
 				hud.renderPlaceholder(context, delta);
+			}
+		}
+		for (HudEntry hud : getEntries()) {
+			if (hud.isEnabled()) {
+				SnappingHelper.renderLinks(context, hud);
 			}
 		}
 	}

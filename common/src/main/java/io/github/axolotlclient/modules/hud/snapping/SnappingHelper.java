@@ -24,6 +24,7 @@ package io.github.axolotlclient.modules.hud.snapping;
 
 import java.util.*;
 
+import com.google.common.collect.Sets;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.api.util.BiContainer;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
@@ -35,7 +36,6 @@ import io.github.axolotlclient.modules.hud.gui.layout.SnapAnchorType;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.util.ClientColors;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
@@ -79,7 +79,7 @@ public class SnappingHelper {
 	public void renderSnaps(AxoRenderContext graphics) {
 		Optional<Integer> curx, cury;
 		if ((curx = getRawXSnap()).isPresent()) {
-			var x = curx.get();
+			int x = curx.get();
 			graphics.br$fillRect(x, 0, 1, (int) window.br$getScaledHeight(), LINE_COLOR);
 			var isStart = x - distance <= current.x() && x + distance >= current.x();
 			if ((isStart && this.x.contains(x + current.width())) || (!isStart && this.x.contains(current.x()))) {
@@ -87,7 +87,7 @@ public class SnappingHelper {
 			}
 		}
 		if ((cury = getRawYSnap()).isPresent()) {
-			var y = cury.get();
+			int y = cury.get();
 			graphics.br$fillRect(0, y, (int) window.br$getScaledWidth(), 1, LINE_COLOR);
 			var isStart = y - distance <= current.y() && y + distance >= current.y();
 			if ((isStart && this.y.contains(y + current.height())) || (!isStart && this.y.contains(current.y()))) {
@@ -95,45 +95,6 @@ public class SnappingHelper {
 			}
 		}
 		//renderAll();
-	}
-
-	public void renderMagnet(AxoRenderContext graphics, HudEntry current) {
-		var entries = HudManagerCommon.getInstance().getMoveableEntries();
-		var cBounds = current.getTrueBounds();
-		for (HudEntry entry : entries) {
-			if (entry == current) continue;
-			if (entry.dependsOnX(current).isPresent() || entry.dependsOnY(current).isPresent()) continue;
-			var touchingX = isTouchingX(current, entry);
-			var touchingY = isTouchingY(current, entry);
-			if (touchingX && touchingY) {
-				var xM = getRawXSnap();
-				var yM = getRawYSnap();
-				if (xM.isEmpty() || yM.isEmpty()) return;
-				int xMatch = xM.get();
-				int yMatch = yM.get();
-				graphics.br$pushMatrix();
-				graphics.br$translateMatrix(xMatch, yMatch);
-				int ang = 0;
-				if (xMatch == cBounds.x() && yMatch == cBounds.y()) {
-					ang = -45;
-				} else if (xMatch == cBounds.x() && yMatch == cBounds.yEnd()) {
-					ang = 45 + 180;
-				} else if (xMatch == cBounds.xEnd() && yMatch == cBounds.y()) {
-					ang = 45;
-				} else if (xMatch == cBounds.xEnd() && yMatch == cBounds.yEnd()) {
-					ang = 180 - 45;
-				}
-				graphics.br$translateMatrix(-4.5f, -4.5f);
-				graphics.br$rotateMatrixAround((float) Math.toRadians(ang), 4.5f, 4.5f);
-				graphics.br$drawTexture(0, 0, 9, 9, AxoSprites.MAGNET_ICON);
-				graphics.br$popMatrix();
-			} else if (touchingX) {
-				renderXSnapMagnet(graphics, entry, cBounds);
-			} else if (touchingY) {
-				renderYSnapMagnet(graphics, entry, cBounds);
-			}
-		}
-
 	}
 
 	public void renderHighlights(AxoRenderContext ctx, HudEntry current) {
@@ -227,40 +188,127 @@ public class SnappingHelper {
 		return Optional.empty();
 	}
 
-	private void renderXSnapMagnet(@NotNull AxoRenderContext graphics, HudEntry xE, Rectangle cBounds) {
-		var xBounds = xE.getTrueBounds();
-		var xM = getRawXSnap();
-		if (xM.isEmpty()) return;
-		int xMatch = xM.get();
-		graphics.br$pushMatrix();
-		var touchStart = Math.max(cBounds.y(), xBounds.y());
-		var touchHeight = Math.min(cBounds.yEnd(), xBounds.yEnd()) - touchStart;
-		graphics.br$translateMatrix(xMatch, touchStart + touchHeight / 2f);
-		graphics.br$translateMatrix(-4.5f, -4.5f);
-		var ang = -90;
-		if (xMatch == cBounds.xEnd()) {
-			ang += 180;
+	public static void renderLinks(AxoRenderContext graphics, HudEntry current) {
+		var entriesX = new HashMap<>(current.getDependenciesX());
+		var entriesY = new HashMap<>(current.getDependenciesY());
+		var xEmpty = entriesX.isEmpty();
+		var yEmpty = entriesY.isEmpty();
+		var cBounds = current.getTrueBounds();
+		if (!xEmpty && !yEmpty) {
+			var union = Sets.intersection(entriesX.keySet(), entriesY.keySet()).immutableCopy();
+			for (HudEntry entry : union) {
+				var xType = entriesX.get(entry);
+				var yType = entriesY.get(entry);
+				int xMatch = switch (xType) {
+					case X_X, X_XEND -> cBounds.x();
+					case XEND_X, XEND_XEND -> cBounds.xEnd();
+					default -> throw new IllegalArgumentException();
+				};
+				int yMatch = switch (yType) {
+					case Y_Y, Y_YEND -> cBounds.y();
+					case YEND_Y, YEND_YEND -> cBounds.yEnd();
+					default -> throw new IllegalArgumentException();
+				};
+				graphics.br$pushMatrix();
+				graphics.br$translateMatrix(xMatch, yMatch);
+				int ang = 0;
+				if (xMatch == cBounds.x() && yMatch == cBounds.y()) {
+					ang = -45;
+				} else if (xMatch == cBounds.x() && yMatch == cBounds.yEnd()) {
+					ang = 45 + 180;
+				} else if (xMatch == cBounds.xEnd() && yMatch == cBounds.y()) {
+					ang = 45;
+				} else if (xMatch == cBounds.xEnd() && yMatch == cBounds.yEnd()) {
+					ang = 180 - 45;
+				}
+				graphics.br$translateMatrix(-4.5f, -4.5f);
+				graphics.br$rotateMatrixAround((float) Math.toRadians(ang), 4.5f, 4.5f);
+				graphics.br$drawTexture(0, 0, 9, 9, AxoSprites.MAGNET_ICON);
+				graphics.br$popMatrix();
+			}
+			union.forEach(e -> {
+				entriesX.remove(e);
+				entriesY.remove(e);
+			});
 		}
-		graphics.br$rotateMatrixAround((float) Math.toRadians(ang), 4.5f, 4.5f);
-		graphics.br$drawTexture(0, 0, 9, 9, AxoSprites.MAGNET_ICON);
-		graphics.br$popMatrix();
-	}
-
-	private void renderYSnapMagnet(@NotNull AxoRenderContext graphics, HudEntry yE, Rectangle cBounds) {
-		var yBounds = yE.getTrueBounds();
-		var yM = getRawYSnap();
-		if (yM.isEmpty()) return;
-		int yMatch = yM.get();
-		graphics.br$pushMatrix();
-		var touchStart = Math.max(cBounds.x(), yBounds.x());
-		var touchHeight = Math.min(cBounds.xEnd(), yBounds.xEnd()) - touchStart;
-		graphics.br$translateMatrix(touchStart + touchHeight / 2f, yMatch);
-		graphics.br$translateMatrix(-4.5f, -4.5f);
-		if (yMatch == cBounds.yEnd()) {
-			graphics.br$rotateMatrixAround((float) Math.PI, 4.5f, 4.5f);
+		if (!xEmpty) {
+			for (var entry : entriesX.entrySet()) {
+				var xBounds = entry.getKey().getTrueBounds();
+				var xType = entry.getValue();
+				int x1 = switch (xType) {
+					case X_X, X_XEND -> cBounds.x();
+					case XEND_X, XEND_XEND -> cBounds.xEnd();
+					default -> throw new IllegalArgumentException();
+				};
+				int x2 = switch (xType) {
+					case X_X, XEND_X -> xBounds.x();
+					case X_XEND, XEND_XEND -> xBounds.xEnd();
+					default -> throw new IllegalArgumentException();
+				};
+				int y1 = xBounds.y() > cBounds.y() ? cBounds.yEnd() : cBounds.y(), y2 = xBounds.y() > cBounds.y() ? xBounds.y() : xBounds.yEnd();
+				graphics.br$pushMatrix();
+				graphics.br$translateMatrix(x1, y1);
+				var overlap = Math.min(cBounds.yEnd(), xBounds.yEnd()) - Math.max(cBounds.y(), xBounds.y());
+				if (overlap < 0) {
+					var x = x2 - x1;
+					var y = y2 - y1;
+					float ang = (float) Math.atan2(x, y);
+					int touchLen = (int) Math.sqrt(x * x + y * y);
+					graphics.br$rotateMatrix(-ang);
+					graphics.br$fillRectGradientVert(0, 0, 1, touchLen, ClientColors.SELECTOR_GREEN.toInt(), ClientColors.SELECTOR_RED.toInt());
+					graphics.br$translateMatrix(0, touchLen / 2f);
+					graphics.br$rotateMatrix(ang);
+				} else {
+					graphics.br$translateMatrix((x2 - x1) / 2f, (y2 - y1) / 2f);
+				}
+				graphics.br$translateMatrix(-4.5f, -4.5f);
+				var ang = -90;
+				if (x1 == cBounds.xEnd()) {
+					ang += 180;
+				}
+				graphics.br$rotateMatrixAround((float) Math.toRadians(ang), 4.5f, 4.5f);
+				graphics.br$drawTexture(0, 0, 9, 9, AxoSprites.MAGNET_ICON);
+				graphics.br$popMatrix();
+			}
 		}
-		graphics.br$drawTexture(0, 0, 9, 9, AxoSprites.MAGNET_ICON);
-		graphics.br$popMatrix();
+		if (!yEmpty) {
+			for (var entry : entriesY.entrySet()) {
+				var yBounds = entry.getKey().getTrueBounds();
+				var yType = entry.getValue();
+				int y1 = switch (yType) {
+					case Y_Y, Y_YEND -> cBounds.y();
+					case YEND_Y, YEND_YEND -> cBounds.yEnd();
+					default -> throw new IllegalArgumentException();
+				};
+				int y2 = switch (yType) {
+					case Y_Y, YEND_Y -> yBounds.y();
+					case Y_YEND, YEND_YEND -> yBounds.yEnd();
+					default -> throw new IllegalArgumentException();
+				};
+				int x1 = yBounds.x() > cBounds.x() ? cBounds.xEnd() : cBounds.x(), x2 = yBounds.x() > cBounds.x() ? yBounds.x() : yBounds.xEnd();
+				graphics.br$pushMatrix();
+				graphics.br$translateMatrix(x1, y1);
+				var overlap = Math.min(cBounds.xEnd(), yBounds.xEnd()) - Math.max(cBounds.x(), yBounds.x());
+				if (overlap < 0) {
+					var x = x2 - x1;
+					var y = y2 - y1;
+					float ang = (float) Math.atan2(x, y);
+					int touchLen = (int) Math.sqrt(x * x + y * y);
+					graphics.br$rotateMatrix(-ang);
+					graphics.br$fillRectGradientVert(0, 0, 1, touchLen, ClientColors.SELECTOR_GREEN.toInt(), ClientColors.SELECTOR_RED.toInt());
+					graphics.br$translateMatrix(0, touchLen / 2f);
+					graphics.br$rotateMatrix(ang);
+				} else {
+					graphics.br$translateMatrix((x2 - x1) / 2f, (y2 - y1) / 2f);
+				}
+				graphics.br$translateMatrix(-4.5f, -4.5f);
+				if (y1 == cBounds.yEnd()) {
+					graphics.br$rotateMatrixAround((float) Math.PI, 4.5f, 4.5f);
+				}
+				graphics.br$drawTexture(0, 0, 9, 9, AxoSprites.MAGNET_ICON);
+				graphics.br$popMatrix();
+			}
+		}
 	}
 
 	private static boolean isTouchingY(HudEntry current, HudEntry e) {

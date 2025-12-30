@@ -23,9 +23,6 @@
 	"accessWidener": "axolotlclient.accesswidener",
 	"environment": "client",
 	"entrypoints": {
-		"client": [
-			"io.github.axolotlclient.AxolotlClient"
-		],
 		"modmenu": [
 			"io.github.axolotlclient.config.modmenu.ModMenuCompat"
 		]

@@ -29,6 +29,7 @@ import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import io.github.axolotlclient.util.HorizontalGradientRectangleRenderState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -71,6 +72,9 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 
 	@Shadow
 	public abstract void drawString(Font par1, Component par2, int par3, int par4, int par5, boolean par6);
+
+	@Shadow
+	public abstract void fillGradient(int startX, int startY, int endX, int endY, int startColor, int endColor);
 
 	@Override
 	public void br$popMatrix() {
@@ -151,6 +155,16 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	@Override
 	public void br$fillRect(int x, int y, int width, int height, int color) {
 		fill(x, y, x + width, y + height, color);
+	}
+
+	@Override
+	public void br$fillRectGradientVert(int x, int y, int width, int height, int color1, int color2) {
+		fillGradient(x, y, x + width, y + height, color1, color2);
+	}
+
+	@Override
+	public void br$fillRectGradientHoriz(int x, int y, int width, int height, int color1, int color2) {
+		HorizontalGradientRectangleRenderState.create((GuiGraphics) (Object) this, x, y, x + width, y + height, color1, color2).submit();
 	}
 
 	@Override

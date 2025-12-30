@@ -23,6 +23,7 @@
 package io.github.axolotlclient.bridge.mixin.render;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.render.AxoFont;
@@ -33,12 +34,14 @@ import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Axis;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -67,6 +70,13 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	@Shadow
 	public abstract void drawItemInSlot(TextRenderer textRenderer, ItemStack stack, int x, int y,
 										@Nullable String countOverride);
+
+	@Shadow
+	public abstract void fillGradient(int startX, int startY, int endX, int endY, int startColor, int endColor);
+
+	@Shadow
+	@Final
+	private MinecraftClient client;
 
 	@Override
 	public void br$popMatrix() {
@@ -145,6 +155,21 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	@Override
 	public void br$fillRect(int x, int y, int width, int height, int color) {
 		fill(x, y, x + width, y + height, color);
+	}
+
+	@Override
+	public void br$fillRectGradientVert(int x, int y, int width, int height, int color1, int color2) {
+		fillGradient(x, y, x + width, y + height, color1, color2);
+	}
+
+	@Override
+	public void br$fillRectGradientHoriz(int x, int y, int width, int height, int color1, int color2) {
+		VertexConsumer consumer = client.getBufferBuilders().getEntityVertexConsumers().getBuffer(RenderLayer.getGui());
+		Matrix4f matrix4f = matrices.peek().getModel();
+		consumer.vertex(matrix4f, x, y, 0).color(color1).next();
+		consumer.vertex(matrix4f, x, y + height, 0).color(color1).next();
+		consumer.vertex(matrix4f, x + width, y + height, 0).color(color2).next();
+		consumer.vertex(matrix4f, x + width, y, 0).color(color2).next();
 	}
 
 	@Override

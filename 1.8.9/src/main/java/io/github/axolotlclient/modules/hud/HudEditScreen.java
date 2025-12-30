@@ -22,8 +22,10 @@
 
 package io.github.axolotlclient.modules.hud;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
@@ -33,6 +35,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.util.ConfigStyles;
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
+import io.github.axolotlclient.modules.hud.gui.component.Positionable;
 import io.github.axolotlclient.modules.hud.snapping.SnappingHelper;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.util.WindowAccess;
@@ -93,8 +96,14 @@ public class HudEditScreen extends Screen {
 
 	private void updateSnapState() {
 		if (snapping.get() && current != null) {
-			var bounds = HudManager.getInstance().getAllBounds();
+			var bounds = HudManager.getInstance().getMoveableEntries()
+				.stream()
+				.filter(e -> e.dependsOnX(current).isEmpty() && e.dependsOnY(current).isEmpty())
+				.map(Positionable::getTrueBounds)
+				.collect(Collectors.toCollection(ArrayList::new));
 			bounds.remove(current.getTrueBounds());
+			current.getDependenciesX().keySet().forEach(e -> bounds.remove(e.getTrueBounds()));
+			current.getDependenciesY().keySet().forEach(e -> bounds.remove(e.getTrueBounds()));
 			snap = new SnappingHelper(bounds, current.getTrueBounds());
 		} else if (snap != null) {
 			snap = null;
@@ -162,7 +171,6 @@ public class HudEditScreen extends Screen {
 		}
 		if (mouseDown && snap != null) {
 			snap.renderSnaps(graphics);
-			snap.renderMagnet(graphics, current);
 		}
 	}
 
@@ -230,6 +238,7 @@ public class HudEditScreen extends Screen {
 	@Override
 	protected void mouseDragged(int mouseX, int mouseY, int button, long mouseLastClicked) {
 		if (current != null) {
+			current.clearBoundsDependencies();
 			if (mode == ModificationMode.MOVE) {
 				current.setX((mouseX - offset.x()) + current.offsetTrueWidth());
 				current.setY(mouseY - offset.y() + current.offsetTrueHeight());
@@ -242,14 +251,19 @@ public class HudEditScreen extends Screen {
 						entries.removeIf(e -> e.dependsOnX(current).isPresent() || e.dependsOnY(current).isPresent());
 					}
 					snap.setCurrent(current.getTrueBounds());
-					current.clearBoundsDependencies();
 					if (snapX.isPresent()) {
 						current.setX(snapX.get() + current.offsetTrueWidth());
-						snap.getXTouching(entries, current).forEach(c -> current.addBoundsDependency(c.getLeft(), c.getRight()));
+						snap.getXTouching(entries, current).forEach(c -> {
+							c.getLeft().removeBoundsDependencyX(current);
+							current.addBoundsDependency(c.getLeft(), c.getRight());
+						});
 					}
 					if (snapY.isPresent()) {
 						current.setY(snapY.get() + current.offsetTrueHeight());
-						snap.getYTouching(entries, current).forEach(c -> current.addBoundsDependency(c.getLeft(), c.getRight()));
+						snap.getYTouching(entries, current).forEach(c -> {
+							c.getLeft().removeBoundsDependencyY(current);
+							current.addBoundsDependency(c.getLeft(), c.getRight());
+						});
 					}
 					HudManagerCommon.getInstance().saveHudDependencyLinks();
 				}

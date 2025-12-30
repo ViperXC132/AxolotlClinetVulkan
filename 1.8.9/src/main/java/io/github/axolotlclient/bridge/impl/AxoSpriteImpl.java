@@ -36,6 +36,8 @@ public interface AxoSpriteImpl extends AxoSprite {
 	record Simple(Identifier id, int x, int y, int width, int height) implements AxoSpriteImpl {
 		@Override
 		public void draw(Minecraft client, int sX, int sY, int sW, int sH) {
+			GlStateManager.enableTexture();
+			GlStateManager.enableBlend();
 			GlStateManager.color3f(1, 1, 1);
 			client.getTextureManager().bind(id);
 			GuiElement.drawTexture(sX, sY, x, y, sW, sH, width, height);

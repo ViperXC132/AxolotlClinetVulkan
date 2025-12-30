@@ -70,7 +70,6 @@ public interface AxoRenderContext {
 	 * @param y the y-coordinate of the rotation origin
 	 * @see Math#toRadians(double)
 	 */
-	@RequiresImpl
 	default void br$rotateMatrixAround(float ang, float x, float y) {
 		// naive default impl, may be overridden if a better impl is available in a version.
 		br$translateMatrix(x, y);
@@ -229,6 +228,16 @@ public interface AxoRenderContext {
 
 	@RequiresImpl
 	default void br$fillRectRound(int x, int y, int width, int height, int color, float rounding) {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default void br$fillRectGradientVert(int x, int y, int width, int height, int color1, int color2) {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default void br$fillRectGradientHoriz(int x, int y, int width, int height, int color1, int color2) {
 		throw BridgeUtil.noImpl();
 	}
 

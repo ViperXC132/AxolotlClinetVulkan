@@ -48,11 +48,10 @@ import io.github.axolotlclient.util.FeatureDisablerCommon;
 import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.LoggerImpl;
 import io.github.axolotlclient.util.notifications.Notifications;
-import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.resource.Resource;
 import net.minecraft.resource.Identifier;
 
-public class AxolotlClient extends AxolotlClientCommon implements ClientModInitializer {
+public class AxolotlClient extends AxolotlClientCommon {
 
 	public static final HashMap<Identifier, Resource> runtimeResources = new HashMap<>();
 	public static final Identifier badgeIcon = new Identifier(MODID, "textures/badge.png");
@@ -78,7 +77,6 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 		ModuleLoader.loadExternalModules().forEach(this::registerModule);
 	}
 
-	@Override
 	public void onInitializeClient() {
 		Bridge.init();
 

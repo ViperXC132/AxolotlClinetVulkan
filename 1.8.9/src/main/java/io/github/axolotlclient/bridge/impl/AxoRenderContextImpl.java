@@ -23,6 +23,9 @@
 package io.github.axolotlclient.bridge.impl;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tessellator;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
@@ -33,6 +36,7 @@ import io.github.axolotlclient.modules.hud.util.ItemUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.opengl.GL11;
 
 public class AxoRenderContextImpl implements AxoRenderContext {
 	@Nullable
@@ -70,7 +74,7 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 
 	@Override
 	public void br$rotateMatrix(float ang) {
-		GlStateManager.rotatef(ang, 1, 0, 0);
+		GlStateManager.rotatef((float) Math.toDegrees(ang), 0, 0, 1);
 	}
 
 	@Override
@@ -111,6 +115,46 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 	@Override
 	public void br$fillRect(int x, int y, int width, int height, int color) {
 		DrawUtil.fillRect(x, y, width, height, color);
+	}
+
+	@Override
+	public void br$fillRectGradientVert(int x, int y, int width, int height, int color1, int color2) {
+		GlStateManager.disableTexture();
+		GlStateManager.enableBlend();
+		GlStateManager.disableAlphaTest();
+		GlStateManager.blendFuncSeparate(770, 771, 1, 0);
+		GlStateManager.shadeModel(7425);
+		BufferBuilder consumer = Tessellator.getInstance().getBuilder();
+		consumer.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_COLOR);
+		consumer.vertex(x + width, y, 0).color(color1 >> 16 & 255, color1 >> 8 & 255, color1 & 255, color1 >> 24 & 255);
+		consumer.vertex(x, y, 0).color(color1 >> 16 & 255, color1 >> 8 & 255, color1 & 255, color1 >> 24 & 255);
+		consumer.vertex(x, y + height, 0).color(color2 >> 16 & 255, color2 >> 8 & 255, color2 & 255, color2 >> 24 & 255);
+		consumer.vertex(x + width, y + height, 0).color(color2 >> 16 & 255, color2 >> 8 & 255, color2 & 255, color2 >> 24 & 255);
+		Tessellator.getInstance().end();
+		GlStateManager.shadeModel(7424);
+		GlStateManager.disableBlend();
+		GlStateManager.enableAlphaTest();
+		GlStateManager.enableTexture();
+	}
+
+	@Override
+	public void br$fillRectGradientHoriz(int x, int y, int width, int height, int color1, int color2) {
+		GlStateManager.disableTexture();
+		GlStateManager.enableBlend();
+		GlStateManager.disableAlphaTest();
+		GlStateManager.blendFuncSeparate(770, 771, 1, 0);
+		GlStateManager.shadeModel(7425);
+		BufferBuilder consumer = Tessellator.getInstance().getBuilder();
+		consumer.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_COLOR);
+		consumer.vertex(x, y, 0).color(color1 >> 16 & 255, color1 >> 8 & 255, color1 & 255, color1 >> 24 & 255);
+		consumer.vertex(x, y + height, 0).color(color1 >> 16 & 255, color1 >> 8 & 255, color1 & 255, color1 >> 24 & 255);
+		consumer.vertex(x + width, y + height, 0).color(color2 >> 16 & 255, color2 >> 8 & 255, color2 & 255, color2 >> 24 & 255);
+		consumer.vertex(x + width, y, 0).color(color2 >> 16 & 255, color2 >> 8 & 255, color2 & 255, color2 >> 24 & 255);
+		Tessellator.getInstance().end();
+		GlStateManager.shadeModel(7424);
+		GlStateManager.disableBlend();
+		GlStateManager.enableAlphaTest();
+		GlStateManager.enableTexture();
 	}
 
 	@Override
