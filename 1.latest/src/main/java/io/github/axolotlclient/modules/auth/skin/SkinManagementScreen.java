@@ -72,6 +72,7 @@ import net.minecraft.util.Util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2f;
+import org.jspecify.annotations.NullMarked;
 
 public class SkinManagementScreen extends Screen {
 	private static final Path SKINS_DIR = FabricLoader.getInstance().getGameDir().resolve("skins");
@@ -440,6 +441,7 @@ public class SkinManagementScreen extends Screen {
 		return capesTab ? capesList : skinList;
 	}
 
+	@NullMarked
 	private static class SkinListWidget extends ContainerObjectSelectionList<Row> {
 		public SkinListWidget(Minecraft minecraft, int width, int height, int y, int entryHeight) {
 			super(minecraft, width, height, y, entryHeight);
@@ -485,6 +487,7 @@ public class SkinManagementScreen extends Screen {
 		}
 	}
 
+	@NullMarked
 	private class Row extends ContainerObjectSelectionList.Entry<Row> {
 		private final List<AbstractWidget> widgets;
 
@@ -493,7 +496,7 @@ public class SkinManagementScreen extends Screen {
 		}
 
 		@Override
-		public @NotNull List<? extends NarratableEntry> narratables() {
+		public List<? extends NarratableEntry> narratables() {
 			return widgets;
 		}
 
@@ -512,7 +515,7 @@ public class SkinManagementScreen extends Screen {
 		}
 
 		@Override
-		public @NotNull List<? extends GuiEventListener> children() {
+		public List<? extends GuiEventListener> children() {
 			return widgets;
 		}
 
@@ -556,13 +559,13 @@ public class SkinManagementScreen extends Screen {
 					}
 
 					@Override
-					public void setMessage(Component message) {
+					public void setMessage(@NotNull Component message) {
 						super.setMessage(message);
 						setTooltip(Tooltip.create(message, Component.empty()));
 					}
 
 					@Override
-					protected void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+					protected void renderContents(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 						renderDefaultSprite(graphics);
 						graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, this.getX() + 2, this.getY() + 2, 7, 7);
 					}
@@ -614,7 +617,7 @@ public class SkinManagementScreen extends Screen {
 			if (label != null) {
 				this.label = new AbstractStringWidget(0, 0, widget.getWidth(), 16, label, font) {
 					@Override
-					public void visitLines(ActiveTextCollector activeTextCollector) {
+					public void visitLines(@NotNull ActiveTextCollector activeTextCollector) {
 						renderScrollingStringOverContents(activeTextCollector, getMessage(), 2);
 					}
 				};
@@ -631,17 +634,17 @@ public class SkinManagementScreen extends Screen {
 					btn.active = false;
 					Consumer<CompletableFuture<MSApi.MCProfile>> consumer = f ->
 						f.thenAcceptAsync(p -> {
-						cachedProfile = p;
-						if (minecraft.screen == SkinManagementScreen.this) {
-							refreshCurrentList();
-						} else {
-							minecraft.execute(() -> minecraft.setScreen(SkinManagementScreen.this));
-						}
-					}).exceptionally(t -> {
-						AxolotlClientCommon.getInstance().getLogger().warn("Failed to equip asset!", t);
-						equipping = false;
-						return null;
-					});
+							cachedProfile = p;
+							if (minecraft.screen == SkinManagementScreen.this) {
+								refreshCurrentList();
+							} else {
+								minecraft.execute(() -> minecraft.setScreen(SkinManagementScreen.this));
+							}
+						}).exceptionally(t -> {
+							AxolotlClientCommon.getInstance().getLogger().warn("Failed to equip asset!", t);
+							equipping = false;
+							return null;
+						});
 					if (asset instanceof Skin && !(current.getSkin() instanceof Skin.Local)) {
 						minecraft.setScreen(new ConfirmScreen(confirmed -> {
 							minecraft.setScreen(new LoadingScreen(getTitle(), TEXT_EQUIPPING));
@@ -694,7 +697,7 @@ public class SkinManagementScreen extends Screen {
 		}
 
 		@Override
-		protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+		protected void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 			int y = getY() + 4;
 			int x = getX() + 2;
 			skinWidget.setPosition(x, y);
@@ -743,7 +746,7 @@ public class SkinManagementScreen extends Screen {
 		}
 
 		@Override
-		protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+		protected void updateWidgetNarration(@NotNull NarrationElementOutput narrationElementOutput) {
 			skinWidget.updateNarration(narrationElementOutput);
 			actionButtons.forEach(w -> w.updateNarration(narrationElementOutput));
 			if (label != null) {

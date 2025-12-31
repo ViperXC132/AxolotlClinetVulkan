@@ -53,12 +53,12 @@ public class BedwarsTeamUpgrades {
 	public final TeamUpgrade healPool = new BinaryUpgrade(
 		"healpool", Pattern.compile("^\\b[A-Za-z0-9_§]{3,16}\\b purchased Heal Pool\\s*$"), 3, 1,
 		(context, x, y, width, height, upgradeLevel) -> {
-		if (upgradeLevel == 0) {
-			Color color = ClientColors.DARK_GRAY;
-			context.br$glColor4(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
-		}
-		context.br$drawTexture(x, y, 16, 16, AxoStatusEffects.REGEN.br$getSprite());
-	});
+			if (upgradeLevel == 0) {
+				Color color = ClientColors.DARK_GRAY;
+				context.br$glColor4(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
+			}
+			context.br$drawTexture(x, y, 16, 16, AxoStatusEffects.REGEN.br$getSprite());
+		});
 
 	public final TeamUpgrade protection = new TieredUpgrade(
 		"prot", Pattern.compile("^\\b[A-Za-z0-9_§]{3,16}\\b purchased Reinforced Armor .{1,3}\\s*$"),

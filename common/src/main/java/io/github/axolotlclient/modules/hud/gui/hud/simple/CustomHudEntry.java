@@ -24,7 +24,6 @@ package io.github.axolotlclient.modules.hud.gui.hud.simple;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
 import io.github.axolotlclient.AxolotlClientConfig.api.manager.ConfigManager;

@@ -97,7 +97,7 @@ public class DiscordRPC extends AbstractCommonModule {
 
 	private RichPresence createRichPresence(String state, String details) {
 		RichPresence.Builder builder = new RichPresence.Builder();
-		builder.setLargeImageWithTooltip("icon", "AxolotlClient " + AxolotlClientCommon.VERSION+"+"+AxolotlClientCommon.GAME_VERSION);
+		builder.setLargeImageWithTooltip("icon", "AxolotlClient " + AxolotlClientCommon.VERSION + "+" + AxolotlClientCommon.GAME_VERSION);
 		if (showTime.get()) {
 			builder.setStartTimestamp(time.getEpochSecond());
 		}

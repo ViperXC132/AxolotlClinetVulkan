@@ -163,10 +163,13 @@ public class Status {
 					JsonObject metadataObj = GsonHelper.GSON.fromJson(in, JsonObject.class);
 					String type = metadataObj.get("type").getAsString();
 					MetadataAttributes attributes = switch (type) {
-						case WorldHostMetadata.ID -> GsonHelper.GSON.fromJson(metadataObj.get("attributes"), WorldHostMetadata.class);
-						case E4mcMetadata.ID -> GsonHelper.GSON.fromJson(metadataObj.get("attributes"), E4mcMetadata.class);
-						case ExternalServerMetadata.ID -> GsonHelper.GSON.fromJson(metadataObj.get("attributes"), ExternalServerMetadata.class);
-						default -> throw new IllegalArgumentException("Unsupported attributes id: "+type);
+						case WorldHostMetadata.ID ->
+							GsonHelper.GSON.fromJson(metadataObj.get("attributes"), WorldHostMetadata.class);
+						case E4mcMetadata.ID ->
+							GsonHelper.GSON.fromJson(metadataObj.get("attributes"), E4mcMetadata.class);
+						case ExternalServerMetadata.ID ->
+							GsonHelper.GSON.fromJson(metadataObj.get("attributes"), ExternalServerMetadata.class);
+						default -> throw new IllegalArgumentException("Unsupported attributes id: " + type);
 					};
 					return new Metadata(type, attributes);
 				}

@@ -150,9 +150,9 @@ public class ProfilesScreen extends Screen {
 				profileName.setText(profile.name());
 				profileName.setChangedListener(profile::setName);
 				exportButton = ButtonWidget.builder(EXPORT_BUTTON_TITLE, btn -> {
-						btn.active = false;
-						Profiles.getInstance().exportProfile(profile).thenRun(() -> btn.active = true);
-					}).positionAndSize(0, 0, 50, 20).build();
+					btn.active = false;
+					Profiles.getInstance().exportProfile(profile).thenRun(() -> btn.active = true);
+				}).positionAndSize(0, 0, 50, 20).build();
 				loadButton = ButtonWidget.builder(LOAD_BUTTON_TITLE, btn ->
 					Profiles.getInstance().switchTo(profile)).positionAndSize(0, 0, 50, 20).build();
 				duplicateButton = ButtonWidget.builder(DUPLICATE_BUTTON_TITLE, b -> {

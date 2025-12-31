@@ -97,7 +97,7 @@ public class Watcher implements AutoCloseable {
 		while ((watchKey = this.watcher.poll()) != null) {
 			for (WatchEvent<?> watchEvent : watchKey.pollEvents()) {
 				if (watchKey.watchable() == this.path && watchEvent.context() != null) {
-					bl |= this.fileFilter.test(((Path)watchEvent.context()).toString());
+					bl |= this.fileFilter.test(((Path) watchEvent.context()).toString());
 				}
 			}
 

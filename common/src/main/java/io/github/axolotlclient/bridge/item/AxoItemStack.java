@@ -95,7 +95,7 @@ public interface AxoItemStack {
 
 	@ApiStatus.NonExtendable
 	default int br$getBarColor() {
-		float f = Math.max(0.0F, ((float)this.br$getMaxDamage() - (float)br$getDamage()) / (float)this.br$getMaxDamage());
+		float f = Math.max(0.0F, ((float) this.br$getMaxDamage() - (float) br$getDamage()) / (float) this.br$getMaxDamage());
 		return MathUtil.hsvToRgb(f / 3.0F, 1.0F, 1.0F);
 	}
 

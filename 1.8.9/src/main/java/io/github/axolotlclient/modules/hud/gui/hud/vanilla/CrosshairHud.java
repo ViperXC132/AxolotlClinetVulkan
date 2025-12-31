@@ -162,7 +162,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			case ENTITY -> entityCrosshairType;
 			case CONTAINER -> containerCrosshairType;
 		}).get();
-		var type = typeOption instanceof Crosshair ? typeOption : ((TargetCrosshair)typeOption).asCrosshair(defaultType);
+		var type = typeOption instanceof Crosshair ? typeOption : ((TargetCrosshair) typeOption).asCrosshair(defaultType);
 		GlStateManager.color4f((float) color.getRed() / 255, (float) color.getGreen() / 255,
 			(float) color.getBlue() / 255, 1F);
 		if (color == defaultColor.get() && applyBlend.get()) {

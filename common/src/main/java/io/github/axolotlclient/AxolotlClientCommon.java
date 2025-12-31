@@ -106,8 +106,8 @@ public abstract class AxolotlClientCommon {
 
 	/**
 	 * @return The config manager
-	 * @see #saveConfig()
 	 * @implNote Do not use to save the config as files other than the main config need to be saved as well
+	 * @see #saveConfig()
 	 */
 	public ConfigManager getConfigManager() {
 		Preconditions.checkState(initialized && configManager != null);

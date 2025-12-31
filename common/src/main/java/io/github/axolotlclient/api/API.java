@@ -136,7 +136,7 @@ public class API {
 
 		if (result.getStatus() != MojangAuth.Status.SUCCESS) {
 			logger.error("Failed to authenticate with Mojang! Status: ", result.getStatus());
-			return CompletableFuture.failedFuture(new UnsupportedOperationException("Failed to authenticate with mojang, status: "+result.getStatus()));
+			return CompletableFuture.failedFuture(new UnsupportedOperationException("Failed to authenticate with mojang, status: " + result.getStatus()));
 		}
 
 		logDetailed("Requesting authentication from backend...");
@@ -372,7 +372,7 @@ public class API {
 	private CompletableFuture<?> scheduleRestart() {
 		if (restartingFuture != null) {
 			restartingFuture.cancel(true);
-			nextRestartSecs = Math.min(nextRestartSecs*2, 60);
+			nextRestartSecs = Math.min(nextRestartSecs * 2, 60);
 		} else {
 			nextRestartSecs = 2;
 		}

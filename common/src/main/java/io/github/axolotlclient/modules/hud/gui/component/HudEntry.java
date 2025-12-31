@@ -83,7 +83,9 @@ public interface HudEntry extends Identifiable, Configurable, Positionable {
 	Optional<SnapAnchorType> dependsOnY(HudEntry entry);
 
 	void addBoundsDependency(HudEntry dependency, SnapAnchorType type);
+
 	void removeBoundsDependencyX(HudEntry entry);
+
 	void removeBoundsDependencyY(HudEntry entry);
 
 	void clearBoundsDependencies();

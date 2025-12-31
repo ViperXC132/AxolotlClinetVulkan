@@ -35,7 +35,7 @@ public class SessionStatistics {
 
 	public void win() {
 		wins++;
-		winstreak+=1;
+		winstreak += 1;
 	}
 
 	public void loose() {
@@ -66,10 +66,10 @@ public class SessionStatistics {
 	}
 
 	public float getFkdr() {
-		return (float) finalKills /finalDeaths;
+		return (float) finalKills / finalDeaths;
 	}
 
 	public float getKdr() {
-		return (float) kills /deaths;
+		return (float) kills / deaths;
 	}
 }

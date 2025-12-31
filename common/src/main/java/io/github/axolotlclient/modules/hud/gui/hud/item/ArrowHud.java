@@ -73,7 +73,7 @@ public class ArrowHud extends TextHudEntry {
 		if (dynamic.get() && player != null) {
 			final var mainHand = player.br$getInventory().br$getMainHand().br$getItem();
 
-			if(!mainHand.br$is(AxoItemClass.RANGED_WEAPON)) {
+			if (!mainHand.br$is(AxoItemClass.RANGED_WEAPON)) {
 				if (BridgeVersion.version() == BridgeVersion.V1_8) {
 					return;
 				}
@@ -133,7 +133,7 @@ public class ArrowHud extends TextHudEntry {
 		List<Option<?>> options = super.getConfigurationOptions();
 		options.add(dynamic);
 
-		if(BridgeVersion.version() != BridgeVersion.V1_8) {
+		if (BridgeVersion.version() != BridgeVersion.V1_8) {
 			options.add(allArrowTypes);
 		}
 

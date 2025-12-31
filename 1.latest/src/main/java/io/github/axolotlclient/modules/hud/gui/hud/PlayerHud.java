@@ -71,7 +71,7 @@ public class PlayerHud extends PlayerHudCommon {
 			float pitch = Mth.lerp(client.player.getSwimAmount(1), 0.0F, rawPitch);
 			float height = client.player.getBbHeight();
 			// sin = opposite / hypotenuse
-			float offset = (float) (Math.sin(Math.toRadians(pitch)) * height)*20;
+			float offset = (float) (Math.sin(Math.toRadians(pitch)) * height) * 20;
 			yOffset = -(offset);
 			if (pitch > 0) {
 				yOffset -= (float) (((1 / (1 + Math.exp(pitch / 4))) - .5) * 40);

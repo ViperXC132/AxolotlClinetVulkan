@@ -103,7 +103,7 @@ public class TeamUpgradesOverlay extends BoxHudEntry implements DynamicallyPosit
 				x += 17;
 			}
 			setContentWidth(Math.max((x - position.x()) + 1, 18));
-		} else if(upgrades != null) {
+		} else if (upgrades != null) {
 			upgrades.trap.draw(context, x, y, 16, 16);
 			setContentWidth(Math.max(((x + (upgrades.trap.getTrapCount() * 16)) - position.x()) + 1, getContentWidth()));
 		}

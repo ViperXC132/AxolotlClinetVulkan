@@ -179,7 +179,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			case ENTITY -> entityCrosshairType;
 			case CONTAINER -> containerCrosshairType;
 		}).get();
-		var type = typeOption instanceof Crosshair ? typeOption : ((TargetCrosshair)typeOption).asCrosshair(defaultType);
+		var type = typeOption instanceof Crosshair ? typeOption : ((TargetCrosshair) typeOption).asCrosshair(defaultType);
 		AttackIndicator indicator = this.client.options.getAttackIndicator().get();
 
 		RenderSystem.enableBlend();

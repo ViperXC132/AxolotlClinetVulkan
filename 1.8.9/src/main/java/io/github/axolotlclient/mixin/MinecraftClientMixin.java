@@ -120,7 +120,8 @@ public abstract class MinecraftClientMixin {
 	// Don't ask me why we need both here, but otherwise it looks ugly
 	@WrapOperation(method = "renderMojangLogo", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferBuilder;color(IIII)Lcom/mojang/blaze3d/vertex/BufferBuilder;"))
 	public BufferBuilder axolotlclient$loadingScreenColor(BufferBuilder instance, int red, int green, int blue, int alpha, Operation<BufferBuilder> original) {
-		if (!AxolotlClient.config().customLoadingScreenColor.get()) return original.call(instance, red, green, blue, alpha);
+		if (!AxolotlClient.config().customLoadingScreenColor.get())
+			return original.call(instance, red, green, blue, alpha);
 		return original.call(instance, AxolotlClient.config().loadingScreenColor.get().getRed(),
 			AxolotlClient.config().loadingScreenColor.get().getGreen(),
 			AxolotlClient.config().loadingScreenColor.get().getBlue(),
@@ -129,7 +130,8 @@ public abstract class MinecraftClientMixin {
 
 	@WrapOperation(method = "renderLoadingScreen", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferBuilder;color(IIII)Lcom/mojang/blaze3d/vertex/BufferBuilder;"))
 	public BufferBuilder axolotlclient$loadingScreenBg(BufferBuilder instance, int red, int green, int blue, int alpha, Operation<BufferBuilder> original) {
-		if (!AxolotlClient.config().customLoadingScreenColor.get()) return original.call(instance, red, green, blue, alpha);
+		if (!AxolotlClient.config().customLoadingScreenColor.get())
+			return original.call(instance, red, green, blue, alpha);
 		return original.call(instance, AxolotlClient.config().loadingScreenColor.get().getRed(),
 			AxolotlClient.config().loadingScreenColor.get().getGreen(),
 			AxolotlClient.config().loadingScreenColor.get().getBlue(),

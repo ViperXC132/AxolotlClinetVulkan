@@ -57,11 +57,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class NameTagFeatureRendererMixin {
 	@Unique
 	private static final RenderType TEXTURED_TYPE = RenderType.create("axolotlclient_textured_quads", RenderSetup.builder(
-		RenderPipeline.builder(RenderPipelines.GUI_TEXTURED_SNIPPET)
-			.withLocation(Identifier.fromNamespaceAndPath(AxolotlClientCommon.MODID, "pipeline/badge"))
-			.withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST).build())
+			RenderPipeline.builder(RenderPipelines.GUI_TEXTURED_SNIPPET)
+				.withLocation(Identifier.fromNamespaceAndPath(AxolotlClientCommon.MODID, "pipeline/badge"))
+				.withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST).build())
 		.bufferSize(1536)
-			.withTexture("Sampler0", AxolotlClient.badgeIcon)
+		.withTexture("Sampler0", AxolotlClient.badgeIcon)
 		.setTextureTransform(TextureTransform.DEFAULT_TEXTURING)
 		.createRenderSetup());
 
@@ -93,7 +93,7 @@ public abstract class NameTagFeatureRendererMixin {
 	}
 
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Lnet/minecraft/network/chat/Component;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)V"), index = 8)
-	public int axolotlclient$bgColor(int color, @Local SubmitNodeStorage.NameTagSubmit submit) {
+	public int axolotlclient$bgColor(int color) {
 		if (AxolotlClient.config().nametagBackground.get()) {
 			return color;
 		} else {

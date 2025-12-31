@@ -52,7 +52,7 @@ public class ComboHud extends SimpleTextHudEntry {
 	public void init() {
 		Events.PLAYER_ATTACK.register((player, attacked) -> target = attacked.br$getNetId());
 		Events.PLAYER_HURT.register((player, entity) -> {
-			if(client.br$getPlayer() == null || entity == null) {
+			if (client.br$getPlayer() == null || entity == null) {
 				return;
 			}
 

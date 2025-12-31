@@ -55,6 +55,7 @@ public interface AxoRenderContext {
 
 	/**
 	 * Rotate the current matrix
+	 *
 	 * @param ang the angle, in radians.
 	 * @see Math#toRadians(double)
 	 */
@@ -65,9 +66,10 @@ public interface AxoRenderContext {
 
 	/**
 	 * Rotate the current matrix
+	 *
 	 * @param ang the angle, in radians.
-	 * @param x the x-coordinate of the rotation origin
-	 * @param y the y-coordinate of the rotation origin
+	 * @param x   the x-coordinate of the rotation origin
+	 * @param y   the y-coordinate of the rotation origin
 	 * @see Math#toRadians(double)
 	 */
 	default void br$rotateMatrixAround(float ang, float x, float y) {

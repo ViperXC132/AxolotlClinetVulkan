@@ -48,7 +48,7 @@ public class PlayerCountHud extends SimpleTextHudEntry {
 
 	@Override
 	public String getValue() {
-		if(client.br$getWorld() == null) {
+		if (client.br$getWorld() == null) {
 			return getPlaceholderValue();
 		}
 

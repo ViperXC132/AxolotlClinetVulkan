@@ -114,9 +114,9 @@ public class CreateChannelScreen extends Screen {
 		footer.add(ButtonWidget.builder(CommonTexts.CANCEL, widget -> client.setScreen(parent)).build());
 		footer.add(ButtonWidget.builder(CommonTexts.DONE, widget ->
 			ChannelRequest.createChannel(nameField.getText(),
-				Persistence.of(persistence.getValue(), count.get().get(), duration.get().get()),
-				Arrays.stream(namesInput.getText().split(",")).filter(s -> !s.isEmpty()).toArray(String[]::new))
-			.thenRun(() -> client.execute(() -> client.setScreen(parent)))).build());
+					Persistence.of(persistence.getValue(), count.get().get(), duration.get().get()),
+					Arrays.stream(namesInput.getText().split(",")).filter(s -> !s.isEmpty()).toArray(String[]::new))
+				.thenRun(() -> client.execute(() -> client.setScreen(parent)))).build());
 		layout.addToFooter(footer);
 
 		layout.arrangeElements();

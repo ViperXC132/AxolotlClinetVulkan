@@ -196,24 +196,24 @@ public class SkinManagementScreen extends Screen {
 			return;
 		}
 		loadingFuture.thenAcceptAsync(profile -> {
-				cachedProfile = profile;
-				initDisplay();
-				addWidgets.run();
-			}).exceptionally(t -> {
-				if (t.getCause() instanceof CancellationException) {
-					client.setScreen(parent);
-					return null;
-				}
-				AxolotlClientCommon.getInstance().getLogger().error("Failed to load skins!", t);
-				var error = Text.translatable("skins.error.failed_to_load");
-				var errorDesc = Text.translatable("skins.error.failed_to_load_desc");
-				clearChildren();
-				addDrawableChild(titleWidget);
-				addDrawableChild(new TextWidget(width / 2 - textRenderer.getWidth(error) / 2, height / 2 - textRenderer.fontHeight - 2, textRenderer.getWidth(error), textRenderer.fontHeight, error, textRenderer));
-				addDrawableChild(new TextWidget(width / 2 - textRenderer.getWidth(errorDesc) / 2, height / 2 + 1, textRenderer.getWidth(errorDesc), textRenderer.fontHeight, errorDesc, textRenderer));
-				addDrawableChild(back);
+			cachedProfile = profile;
+			initDisplay();
+			addWidgets.run();
+		}).exceptionally(t -> {
+			if (t.getCause() instanceof CancellationException) {
+				client.setScreen(parent);
 				return null;
-			});
+			}
+			AxolotlClientCommon.getInstance().getLogger().error("Failed to load skins!", t);
+			var error = Text.translatable("skins.error.failed_to_load");
+			var errorDesc = Text.translatable("skins.error.failed_to_load_desc");
+			clearChildren();
+			addDrawableChild(titleWidget);
+			addDrawableChild(new TextWidget(width / 2 - textRenderer.getWidth(error) / 2, height / 2 - textRenderer.fontHeight - 2, textRenderer.getWidth(error), textRenderer.fontHeight, error, textRenderer));
+			addDrawableChild(new TextWidget(width / 2 - textRenderer.getWidth(errorDesc) / 2, height / 2 + 1, textRenderer.getWidth(errorDesc), textRenderer.fontHeight, errorDesc, textRenderer));
+			addDrawableChild(back);
+			return null;
+		});
 	}
 
 	private void promptForSkinDownload() {

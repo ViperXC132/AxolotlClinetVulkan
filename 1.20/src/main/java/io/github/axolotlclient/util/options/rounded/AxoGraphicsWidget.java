@@ -75,7 +75,7 @@ public class AxoGraphicsWidget extends GraphicsWidget {
 
 		@Override
 		protected int getCurrentHeight() {
-			return super.getCurrentHeight() - 24*2;
+			return super.getCurrentHeight() - 24 * 2;
 		}
 	}
 }

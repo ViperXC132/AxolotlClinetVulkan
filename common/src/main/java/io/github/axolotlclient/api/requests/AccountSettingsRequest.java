@@ -43,12 +43,12 @@ public class AccountSettingsRequest {
 
 	public static void update(AccountSettings settings) {
 		API.getInstance().patch(Request.Route.ACCOUNT_SETTINGS.builder()
-				.field("show_registered", settings.showRegistered())
-				.field("retain_usernames", settings.retainUsernames())
-				.field("show_last_online", settings.showLastOnline())
-				.field("show_activity", settings.showActivity())
-				.field("allow_friends_image_access", settings.allowFriendsImageAccess())
-				.build());
+			.field("show_registered", settings.showRegistered())
+			.field("retain_usernames", settings.retainUsernames())
+			.field("show_last_online", settings.showLastOnline())
+			.field("show_activity", settings.showActivity())
+			.field("allow_friends_image_access", settings.allowFriendsImageAccess())
+			.build());
 	}
 
 	public static CompletableFuture<Boolean> deleteAccount() {

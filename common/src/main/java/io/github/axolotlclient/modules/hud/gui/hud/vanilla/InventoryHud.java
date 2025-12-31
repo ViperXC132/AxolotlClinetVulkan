@@ -69,7 +69,7 @@ public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable
 
 	public InventoryHud() {
 		super(164, 56, true);
-		int max = (ITEM_TILE_SIZE +2) / 2;
+		int max = (ITEM_TILE_SIZE + 2) / 2;
 		backgroundRounding = new IntegerOption("background_rounding", max, 1, max);
 	}
 
@@ -126,7 +126,7 @@ public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable
 		var empty = itemStack == null || itemStack.br$isEmpty();
 		if ((!empty || alwaysShowItemBackgrounds.get()) && itemBackground.get() && itemBackgroundColor.get().getAlpha() > 0) {
 			if (roundBackground.get()) {
-				graphics.br$fillRectRound(x, y, ITEM_TILE_SIZE, ITEM_TILE_SIZE, itemBackgroundColor.get(), Math.min(backgroundRounding.get(), ITEM_TILE_SIZE/2f));
+				graphics.br$fillRectRound(x, y, ITEM_TILE_SIZE, ITEM_TILE_SIZE, itemBackgroundColor.get(), Math.min(backgroundRounding.get(), ITEM_TILE_SIZE / 2f));
 			} else {
 				graphics.br$fillRect(x, y, ITEM_TILE_SIZE, ITEM_TILE_SIZE, itemBackgroundColor.get().toInt());
 			}

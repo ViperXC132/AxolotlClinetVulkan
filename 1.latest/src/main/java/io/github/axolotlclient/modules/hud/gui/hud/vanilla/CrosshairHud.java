@@ -191,7 +191,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			case ENTITY -> entityCrosshairType;
 			case CONTAINER -> containerCrosshairType;
 		}).get();
-		var type = typeOption instanceof Crosshair ? typeOption : ((TargetCrosshair)typeOption).asCrosshair(defaultType);
+		var type = typeOption instanceof Crosshair ? typeOption : ((TargetCrosshair) typeOption).asCrosshair(defaultType);
 		AttackIndicatorStatus indicator = this.client.options.attackIndicator().get();
 
 		// Need to not enable blend while the debug HUD is open because it does weird stuff. Why? no idea.

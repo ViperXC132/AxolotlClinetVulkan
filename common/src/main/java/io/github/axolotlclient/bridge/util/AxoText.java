@@ -59,7 +59,7 @@ public interface AxoText {
 
 		@Override
 		public String toString() {
-			return "§"+charCode;
+			return "§" + charCode;
 		}
 	}
 
