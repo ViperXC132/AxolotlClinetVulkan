@@ -155,6 +155,7 @@ public class SnappingHelper {
 		return Optional.empty();
 	}
 
+	@SuppressWarnings("unused")
 	public void renderAll(AxoRenderContext graphics) {
 		for (Integer xval : x) {
 			graphics.br$fillRect(new Rectangle(xval, 0, 1, (int) window.br$getScaledHeight()), ClientColors.WHITE);
@@ -188,7 +189,7 @@ public class SnappingHelper {
 		return Optional.empty();
 	}
 
-	public static void renderLinks(AxoRenderContext graphics, HudEntry current) {
+	public static void renderLinks(AxoRenderContext graphics, HudEntry current, float lineWidth) {
 		var entriesX = new HashMap<>(current.getDependenciesX());
 		var entriesY = new HashMap<>(current.getDependenciesY());
 		var xEmpty = entriesX.isEmpty();
@@ -252,10 +253,12 @@ public class SnappingHelper {
 				if (overlap < 0) {
 					var x = x2 - x1;
 					var y = y2 - y1;
+					var c1 = ClientColors.SELECTOR_GREEN.toInt();
+					var c2 = ClientColors.SELECTOR_RED.toInt();
+					graphics.br$fillSegment(0, 0, x, y, c1, c2, c2, c1, lineWidth);
 					float ang = (float) Math.atan2(x, y);
 					int touchLen = (int) Math.sqrt(x * x + y * y);
 					graphics.br$rotateMatrix(-ang);
-					graphics.br$fillRectGradientVert(0, 0, 1, touchLen, ClientColors.SELECTOR_GREEN.toInt(), ClientColors.SELECTOR_RED.toInt());
 					graphics.br$translateMatrix(0, touchLen / 2f);
 					graphics.br$rotateMatrix(ang);
 				} else {
@@ -287,15 +290,17 @@ public class SnappingHelper {
 				};
 				int x1 = yBounds.x() > cBounds.x() ? cBounds.xEnd() : cBounds.x(), x2 = yBounds.x() > cBounds.x() ? yBounds.x() : yBounds.xEnd();
 				graphics.br$pushMatrix();
-				graphics.br$translateMatrix(x1, y1);
 				var overlap = Math.min(cBounds.xEnd(), yBounds.xEnd()) - Math.max(cBounds.x(), yBounds.x());
+				graphics.br$translateMatrix(x1, y1);
 				if (overlap < 0) {
 					var x = x2 - x1;
 					var y = y2 - y1;
+					var c1 = ClientColors.SELECTOR_GREEN.toInt();
+					var c2 = ClientColors.SELECTOR_RED.toInt();
+					graphics.br$fillSegment(0, 0, x, y, c1, c1, c2, c2, lineWidth);
 					float ang = (float) Math.atan2(x, y);
 					int touchLen = (int) Math.sqrt(x * x + y * y);
 					graphics.br$rotateMatrix(-ang);
-					graphics.br$fillRectGradientVert(0, 0, 1, touchLen, ClientColors.SELECTOR_GREEN.toInt(), ClientColors.SELECTOR_RED.toInt());
 					graphics.br$translateMatrix(0, touchLen / 2f);
 					graphics.br$rotateMatrix(ang);
 				} else {

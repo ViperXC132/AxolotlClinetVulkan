@@ -243,6 +243,24 @@ public interface AxoRenderContext {
 		throw BridgeUtil.noImpl();
 	}
 
+	@RequiresImpl
+	default void br$fillRectRoundGradient(int x, int y, int width, int height, int colorTopLeft, int colorBottomLeft, int colorBottomRight, int colorTopRight, float roundingPx) {
+		throw BridgeUtil.noImpl();
+	}
+
+	default void br$fillSegmentGradientVert(int x, int y, int width, int height, int colorTop, int colorBottom, float radius) {
+		br$fillSegment(x, y, x+width, y+height, colorTop, colorBottom, colorBottom, colorTop, radius);
+	}
+
+	default void br$fillSegmentGradientHoriz(int x, int y, int width, int height, int colorLeft, int colorRight, float radius) {
+		br$fillSegment(x, y, x+width, y+height, colorLeft, colorLeft, colorRight, colorRight, radius);
+	}
+
+	@RequiresImpl
+	default void br$fillSegment(int x0, int y0, int x1, int y1, int colorX0Y0, int colorX0Y1, int colorX1Y1, int colorX1Y0, float radius) {
+
+	}
+
 	// outlineRect overloads
 	@ApiStatus.NonExtendable
 	default void br$outlineRect(Rectangle rect, Color color) {

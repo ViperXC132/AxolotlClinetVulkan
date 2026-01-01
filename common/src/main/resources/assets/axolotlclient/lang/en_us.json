@@ -915,6 +915,8 @@
 	"potionshud.mode.icons_and_text": "Icons and Text",
 	"hud.dependency_links": "HUD Dependency Links",
 	"hud.dependency_links.clear": "Clear All",
+	"hud.hud_link_line_width": "HUD Link Line Width",
 	"hud.hide_if_empty": "Hide If Empty",
-	"togglesprint.hide_instead_of_placeholder": "Hide Instead of Placeholder"
+	"togglesprint.hide_instead_of_placeholder": "Hide Instead of Placeholder",
+	"pinghud.hide_in_singleplayer": "Hide in Singleplayer"
 }

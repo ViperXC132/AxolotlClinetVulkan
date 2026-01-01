@@ -40,11 +40,13 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Axis;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(GuiGraphics.class)
 public abstract class GuiGraphicsMixin implements AxoRenderContext {
@@ -77,6 +79,11 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	@Shadow
 	@Final
 	private MinecraftClient client;
+
+	@Unique
+	private @NotNull GuiGraphics self() {
+		return (GuiGraphics) (Object) this;
+	}
 
 	@Override
 	public void br$popMatrix() {
@@ -173,23 +180,33 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	}
 
 	@Override
+	public void br$fillRectRoundGradient(int x, int y, int width, int height, int colorTopLeft, int colorBottomLeft, int colorBottomRight, int colorTopRight, float roundingPx) {
+		self().axolotlclient_rendering$roundedRectGradient(x, y, x+width, y+height, colorTopLeft, colorBottomLeft, colorBottomRight, colorTopRight, roundingPx);
+	}
+
+	@Override
+	public void br$fillSegment(int x0, int y0, int x1, int y1, int colorX0Y0, int colorX0Y1, int colorX1Y1, int colorX1Y0, float radius) {
+		self().axolotlclient_rendering$segment(x0, y0, x1, y1, colorX0Y0, colorX0Y1, colorX1Y1, colorX1Y0, radius);
+	}
+
+	@Override
 	public void br$outlineRect(int x, int y, int width, int height, int color) {
-		DrawUtil.outlineRect((GuiGraphics) (Object) this, x, y, width, height, color);
+		DrawUtil.outlineRect(self(), x, y, width, height, color);
 	}
 
 	@Override
 	public void br$fillRectRound(int x, int y, int width, int height, int color, float rounding) {
-		((GuiGraphics) (Object) this).axolotlclient_rendering$roundedRect(x, y, x + width, y + height, color, rounding);
+		self().axolotlclient_rendering$roundedRect(x, y, x + width, y + height, color, rounding);
 	}
 
 	@Override
 	public void br$outlineRectRound(int x, int y, int width, int height, int color, float rounding) {
-		((GuiGraphics) (Object) this).axolotlclient_rendering$outlineRoundedRect(x, y, x + width, y + height, color, rounding, 0.5f);
+		self().axolotlclient_rendering$outlineRoundedRect(x, y, x + width, y + height, color, rounding, 0.5f);
 	}
 
 	@Override
 	public void br$drawTexture(int x, int y, int width, int height, AxoSprite sprite) {
-		((AxoSpriteImpl) sprite).draw(MinecraftClient.getInstance(), (GuiGraphics) (Object) this, x, y, width, height);
+		((AxoSpriteImpl) sprite).draw(MinecraftClient.getInstance(), self(), x, y, width, height);
 	}
 
 	// item model rendering

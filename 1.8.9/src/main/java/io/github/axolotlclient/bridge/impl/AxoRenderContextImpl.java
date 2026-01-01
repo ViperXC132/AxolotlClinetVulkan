@@ -33,10 +33,12 @@ import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.ItemUtil;
+import io.github.axolotlclient.rendering.GuiGraphicsExtension;
 import net.minecraft.client.Minecraft;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
+import org.spongepowered.asm.mixin.Unique;
 
 public class AxoRenderContextImpl implements AxoRenderContext {
 	@Nullable
@@ -51,6 +53,11 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 	}
 
 	private final Minecraft client = Minecraft.getInstance();
+
+	@Unique
+	private static GuiGraphicsExtension renderingUtil() {
+		return io.github.axolotlclient.rendering.DrawUtil.get();
+	}
 
 	@Override
 	public void br$popMatrix() {
@@ -158,18 +165,28 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 	}
 
 	@Override
+	public void br$fillRectRoundGradient(int x, int y, int width, int height, int colorTopLeft, int colorBottomLeft, int colorBottomRight, int colorTopRight, float roundingPx) {
+		renderingUtil().axolotlclient_rendering$roundedRectGradient(x, y, x+width, y+height, colorTopLeft, colorBottomLeft, colorBottomRight, colorTopRight, roundingPx);
+	}
+
+	@Override
+	public void br$fillSegment(int x0, int y0, int x1, int y1, int colorX0Y0, int colorX0Y1, int colorX1Y1, int colorX1Y0, float radius) {
+		renderingUtil().axolotlclient_rendering$segment(x0, y0, x1, y1, colorX0Y0, colorX0Y1, colorX1Y1, colorX1Y0, radius);
+	}
+
+	@Override
 	public void br$outlineRect(int x, int y, int width, int height, int color) {
 		DrawUtil.outlineRect(x, y, width, height, color);
 	}
 
 	@Override
 	public void br$fillRectRound(int x, int y, int width, int height, int color, float rounding) {
-		io.github.axolotlclient.rendering.DrawUtil.get().axolotlclient_rendering$roundedRect(x, y, x + width, y + height, color, rounding);
+		renderingUtil().axolotlclient_rendering$roundedRect(x, y, x + width, y + height, color, rounding);
 	}
 
 	@Override
 	public void br$outlineRectRound(int x, int y, int width, int height, int color, float rounding) {
-		io.github.axolotlclient.rendering.DrawUtil.get().axolotlclient_rendering$outlineRoundedRect(x, y, x + width, y + height, color, rounding, 0.5f);
+		renderingUtil().axolotlclient_rendering$outlineRoundedRect(x, y, x + width, y + height, color, rounding, 0.5f);
 	}
 
 	@Override

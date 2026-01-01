@@ -33,6 +33,7 @@ import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.FloatOption;
 import io.github.axolotlclient.bridge.Platform;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
@@ -76,6 +77,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 	private final AxoKeybinding toggleHud = AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "key.toggle_hud");
 	private final OptionCategory hudCategory = OptionCategory.create("hud");
 	private final BooleanOption enabled = new BooleanOption("enabled", true);
+	private final FloatOption hudLinkLineWidth = new FloatOption("hud.hud_link_line_width", 3f, 1f, 10f);
 	private final Map<AxoIdentifier, HudEntry> entries;
 	private final Deque<HudEntry> visitedEntries = new ArrayDeque<>();
 
@@ -90,7 +92,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 		key.br$registerOnConsumeClick(this::openScreen);
 		toggleHud.br$registerOnConsumeClick(enabled::toggle);
 		Platform.getConfig().addCategory(hudCategory);
-		hudCategory.add(enabled);
+		hudCategory.add(enabled, hudLinkLineWidth);
 		add(new PingHud());
 		add(new FPSHud());
 		add(new CPSHud());
@@ -384,7 +386,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 		}
 		for (HudEntry hud : getEntries()) {
 			if (hud.isEnabled()) {
-				SnappingHelper.renderLinks(context, hud);
+				SnappingHelper.renderLinks(context, hud, hudLinkLineWidth.get()/2f);
 			}
 		}
 	}
