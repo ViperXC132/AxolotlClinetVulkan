@@ -46,7 +46,7 @@ public class PingHud extends SimpleTextHudEntry {
 
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "pinghud");
 	private final IntegerOption refreshDelay = new IntegerOption("refreshTime", 4, 1, 15);
-	private final BooleanOption hideInSingleplayer = new BooleanOption("pinghud.hide_in_singleplayer", false);
+	private final BooleanOption hideInSingleplayer = new BooleanOption("pinghud.hide_in_singleplayer", true);
 	private final MutableInt currentServerPing = new MutableInt();
 	private int second;
 

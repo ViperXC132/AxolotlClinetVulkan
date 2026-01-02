@@ -248,12 +248,8 @@ public interface AxoRenderContext {
 		throw BridgeUtil.noImpl();
 	}
 
-	default void br$fillSegmentGradientVert(int x, int y, int width, int height, int colorTop, int colorBottom, float radius) {
-		br$fillSegment(x, y, x+width, y+height, colorTop, colorBottom, colorBottom, colorTop, radius);
-	}
-
-	default void br$fillSegmentGradientHoriz(int x, int y, int width, int height, int colorLeft, int colorRight, float radius) {
-		br$fillSegment(x, y, x+width, y+height, colorLeft, colorLeft, colorRight, colorRight, radius);
+	default void br$fillSegment(int x0, int y0, int x1, int y1, int color, float radius) {
+		br$fillSegment(x0, y0, x1, y1, color, color, color, color, radius);
 	}
 
 	@RequiresImpl

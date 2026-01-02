@@ -110,18 +110,18 @@ public class ScoreboardHud extends TextHudEntry {
 		ScoreboardObjective scoreboardObjective2 = scoreboardObjective != null ? scoreboardObjective
 			: scoreboard.getDisplayObjective(1);
 		if (scoreboardObjective2 != null) {
-			this.renderScoreboardSidebar(context, scoreboardObjective2);
+			this.renderScoreboardSidebar(context, scoreboardObjective2, false);
 		}
 	}
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
-		renderScoreboardSidebar(context, placeholder);
+		renderScoreboardSidebar(context, placeholder, true);
 	}
 
 	// Abusing this could break some stuff/could allow for unfair advantages. The goal is not to do this, so it won't
 	// show any more information than it would have in vanilla.
-	private void renderScoreboardSidebar(AxoRenderContext graphics, ScoreboardObjective objective) {
+	private void renderScoreboardSidebar(AxoRenderContext graphics, ScoreboardObjective objective, boolean placeholder) {
 		var font = client.textRenderer;
 		var scoreboard = objective.getScoreboard();
 
@@ -180,7 +180,7 @@ public class ScoreboardHud extends TextHudEntry {
 		var maxRounding = Math.min(Math.min(font.fontHeight + topPadding.get() * 2 + backgroundPadding.get(), titleEnd - 1 - bgBounds.y()), xEnd - textX - 3) / 2f;
 		float rounding = Math.min(maxRounding, backgroundRounding.get());
 		var drawUtil = io.github.axolotlclient.rendering.DrawUtil.get();
-		if (background.get()) {
+		if (!placeholder && background.get()) {
 			if (roundBackground.get()) {
 				drawUtil.axolotlclient_rendering$roundedRect(0, 0, 1, 1, 0, 0); // HELP
 				drawUtil.axolotlclient_rendering$roundedRectVarying(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), titleEnd - 1,
@@ -191,6 +191,8 @@ public class ScoreboardHud extends TextHudEntry {
 				graphics.br$fillRect(bgBounds.x(), bgBounds.y(), bgBounds.width(), titleEnd - 1 - bgBounds.y(), topColor.get().toInt());
 				graphics.br$fillRect(bgBounds.x(), titleEnd - 1, bgBounds.width(), bgBounds.yEnd() - titleEnd + 1, backgroundColor.get().toInt());
 			}
+		} else {
+			graphics.br$fillRect(bgBounds.x()+1, bgBounds.y()+1, bgBounds.width()-2, titleEnd - 1 - bgBounds.y()-1, ClientColors.DARK_GRAY.withAlpha(100));
 		}
 		font.draw(title, textX + maxWidth / 2f - titleWidth / 2f, titleEnd - font.fontHeight - topPadding.get(),
 			ClientColors.ARGB.color(textAlpha.get(), -1), shadow.get());
@@ -205,11 +207,13 @@ public class ScoreboardHud extends TextHudEntry {
 			}
 		}
 
-		if (outline.get() && outlineColor.get().getAlpha() > 0) {
-			if (roundBackground.get()) {
-				drawUtil.axolotlclient_rendering$outlineRoundedRect(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), bgBounds.yEnd(), outlineColor.get().toInt(), rounding, 0.5f);
-			} else {
-				graphics.br$outlineRect(bgBounds, outlineColor.get());
+		if (!placeholder) {
+			if (outline.get() && outlineColor.get().getAlpha() > 0) {
+				if (roundBackground.get()) {
+					drawUtil.axolotlclient_rendering$outlineRoundedRect(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), bgBounds.yEnd(), outlineColor.get().toInt(), rounding, 0.5f);
+				} else {
+					graphics.br$outlineRect(bgBounds, outlineColor.get());
+				}
 			}
 		}
 	}

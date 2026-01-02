@@ -110,18 +110,18 @@ public class ScoreboardHud extends TextHudEntry {
 		ScoreboardObjective scoreboardObjective2 = scoreboardObjective != null ? scoreboardObjective
 			: scoreboard.getObjectiveForSlot(Scoreboard.SIDEBAR_DISPLAY_SLOT_ID);
 		if (scoreboardObjective2 != null) {
-			this.renderScoreboardSidebar((GuiGraphics) graphics, scoreboardObjective2);
+			this.renderScoreboardSidebar((GuiGraphics) graphics, scoreboardObjective2, false);
 		}
 	}
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
-		renderScoreboardSidebar((GuiGraphics) graphics, placeholder);
+		renderScoreboardSidebar((GuiGraphics) graphics, placeholder, true);
 	}
 
 	// Abusing this could break some stuff/could allow for unfair advantages. The goal is not to do this, so it won't
 	// show any more information than it would have in vanilla.
-	private void renderScoreboardSidebar(GuiGraphics graphics, ScoreboardObjective objective) {
+	private void renderScoreboardSidebar(GuiGraphics graphics, ScoreboardObjective objective, boolean placeholder) {
 		var font = client.textRenderer;
 		var scoreboard = objective.getScoreboard();
 
@@ -136,10 +136,10 @@ public class ScoreboardHud extends TextHudEntry {
 				.thenComparing(ScoreboardPlayerScore::getPlayerName, String.CASE_INSENSITIVE_ORDER))
 			.limit(15L)
 			.map(entry -> {
-				var team = scoreboard.getPlayerTeam(entry.getPlayerName());
 				var owner = entry.getPlayerName();
+				var team = scoreboard.getPlayerTeam(owner);
 				var value = Text.literal(String.valueOf(entry.getScore()));
-				return new DisplayEntry(Team.decorateName(team, Text.literal(entry.getPlayerName())), value, font.getWidth(value));
+				return new DisplayEntry(Team.decorateName(team, Text.literal(owner)), value, font.getWidth(value));
 			}).toArray(DisplayEntry[]::new);
 		var title = objective.getDisplayName();
 		int titleWidth = font.getWidth(title) + 2;
@@ -179,7 +179,7 @@ public class ScoreboardHud extends TextHudEntry {
 		var bgBounds = getBounds();
 		var maxRounding = Math.min(Math.min(font.fontHeight + topPadding.get() * 2 + backgroundPadding.get(), titleEnd - 1 - bgBounds.y()), xEnd - textX - 3) / 2f;
 		float rounding = Math.min(maxRounding, backgroundRounding.get());
-		if (background.get()) {
+		if (!placeholder && background.get()) {
 			if (roundBackground.get()) {
 				graphics.axolotlclient_rendering$roundedRect(0, 0, 1, 1, 0, 0); // HELP
 				graphics.axolotlclient_rendering$roundedRectVarying(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), titleEnd - 1,
@@ -190,6 +190,8 @@ public class ScoreboardHud extends TextHudEntry {
 				graphics.fill(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), titleEnd - 1, topColor.get().toInt());
 				graphics.fill(bgBounds.x(), titleEnd - 1, bgBounds.xEnd(), bgBounds.yEnd(), backgroundColor.get().toInt());
 			}
+		} else {
+			graphics.br$fillRect(bgBounds.x()+1, bgBounds.y()+1, bgBounds.width()-2, titleEnd - 1 - bgBounds.y()-1, ClientColors.DARK_GRAY.withAlpha(100));
 		}
 		graphics.drawText(font, title, textX + maxWidth / 2 - titleWidth / 2, titleEnd - font.fontHeight - topPadding.get(),
 			ClientColors.ARGB.color(textAlpha.get(), -1), shadow.get());
@@ -204,11 +206,13 @@ public class ScoreboardHud extends TextHudEntry {
 			}
 		}
 
-		if (outline.get() && outlineColor.get().getAlpha() > 0) {
-			if (roundBackground.get()) {
-				graphics.axolotlclient_rendering$outlineRoundedRect(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), bgBounds.yEnd(), outlineColor.get().toInt(), rounding, 0.5f);
-			} else {
-				DrawUtil.outlineRect(graphics, bgBounds, outlineColor.get());
+		if (!placeholder) {
+			if (outline.get() && outlineColor.get().getAlpha() > 0) {
+				if (roundBackground.get()) {
+					graphics.axolotlclient_rendering$outlineRoundedRect(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), bgBounds.yEnd(), outlineColor.get().toInt(), rounding, 0.5f);
+				} else {
+					DrawUtil.outlineRect(graphics, bgBounds, outlineColor.get());
+				}
 			}
 		}
 	}
