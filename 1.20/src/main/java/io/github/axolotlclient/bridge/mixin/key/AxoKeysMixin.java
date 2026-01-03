@@ -67,6 +67,11 @@ public abstract class AxoKeysMixin {
 	@Final
 	public static AxoKey KEY_UNKNOWN;
 
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoKey KEY_C;
+
 	@Inject(method = "<clinit>", at = @At("HEAD"), cancellable = true)
 	private static void setStaticValues(CallbackInfo ci) {
 		KEY_I = InputUtil.Type.KEYSYM.createFromKeyCode(GLFW.GLFW_KEY_I);
@@ -75,6 +80,7 @@ public abstract class AxoKeysMixin {
 		MOUSE_RIGHT = InputUtil.Type.MOUSE.createFromKeyCode(GLFW.GLFW_MOUSE_BUTTON_2);
 		KEY_RSHIFT = InputUtil.Type.KEYSYM.createFromKeyCode(GLFW.GLFW_KEY_RIGHT_SHIFT);
 		KEY_UNKNOWN = InputUtil.UNKNOWN_KEY;
+		KEY_C = InputUtil.Type.KEYSYM.createFromKeyCode(InputUtil.KEY_C_CODE);
 		ci.cancel();
 	}
 }

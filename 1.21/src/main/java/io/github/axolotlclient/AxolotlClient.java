@@ -38,7 +38,6 @@ import io.github.axolotlclient.modules.particles.Particles;
 import io.github.axolotlclient.modules.screenshotUtils.ScreenshotUtils;
 import io.github.axolotlclient.modules.scrollableTooltips.ScrollableTooltips;
 import io.github.axolotlclient.modules.tablist.Tablist;
-import io.github.axolotlclient.modules.zoom.Zoom;
 import io.github.axolotlclient.util.FeatureDisabler;
 import io.github.axolotlclient.util.FeatureDisablerCommon;
 import io.github.axolotlclient.util.Logger;
@@ -55,7 +54,6 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 	public static final Logger LOGGER = new LoggerImpl();
 
 	private void addBuiltinModules() {
-		registerModule(Zoom.getInstance());
 		registerModule(HudManager.getInstance());
 		registerModule(HypixelMods.getInstance());
 		registerModule(MotionBlur.getInstance());

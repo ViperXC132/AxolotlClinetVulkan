@@ -47,6 +47,7 @@ import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.modules.zoom.Zoom;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
@@ -74,7 +75,7 @@ public abstract class TitleScreenMixin extends Screen {
 
 	@Inject(method = "createNormalMenuOptions", at = @At("TAIL"))
 	private void axolotlclient$inMenu(int y, int spacingY, CallbackInfoReturnable<Integer> cir) {
-		if (minecraft.options.keySaveHotbarActivator.same(Zoom.key)) {
+		if (minecraft.options.keySaveHotbarActivator.same((KeyMapping) Zoom.getInstance().getKey())) {
 			minecraft.options.keySaveHotbarActivator.setKey(InputConstants.UNKNOWN);
 			AxolotlClient.LOGGER.info("Unbound \"Save Toolbar Activator\" to resolve conflict with the zoom key!");
 		}

@@ -65,11 +65,6 @@ public class AirItemStackImpl implements AxoItemStack {
 	}
 
 	@Override
-	public boolean br$isEmpty() {
-		return true;
-	}
-
-	@Override
 	public int br$getEnchantment(AxoEnchant enchant) {
 		return 0;
 	}
@@ -82,16 +77,6 @@ public class AirItemStackImpl implements AxoItemStack {
 	@Override
 	public void br$removeEnchantment(AxoEnchant enchant) {
 
-	}
-
-	@Override
-	public boolean br$hasEnchantment(AxoEnchant enchant) {
-		return false;
-	}
-
-	@Override
-	public int br$getBarColor() {
-		return 0;
 	}
 
 	@Override

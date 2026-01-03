@@ -238,7 +238,7 @@ public class ArmorHud extends TextHudEntry {
 				height += 10;
 			}
 			if (labelWidth > 20) {
-				width = (mhPos == MainHandItemPosition.DISABLED ? 4 : 5) * labelWidth + 2;
+				width = (mhPos == MainHandItemPosition.DISABLED ? 4 : 5) * labelWidth + 1;
 			}
 			if (width != getContentWidth()) {
 				setContentWidth(width);
@@ -258,11 +258,11 @@ public class ArmorHud extends TextHudEntry {
 			labelWidth = Math.max(stackWidth, labelWidth);
 			if (mhPos == MainHandItemPosition.TOP) {
 				if (order == CardinalOrder.TOP_DOWN) {
-					var numHeight = renderDurabilityNumberYAxis(context, mainHand, x, y);
+					var numHeight = renderDurabilityNumberYAxis(context, mainHand, x + labelWidth / 2, y);
 					renderMainItem(context, mainHand, x - stackWidth / 2 + labelWidth / 2, y + numHeight, mainHandCount);
 				} else {
 					renderMainItem(context, mainHand, x - stackWidth / 2 + labelWidth / 2, y, mainHandCount);
-					renderDurabilityNumberYAxis(context, mainHand, x, y + 18);
+					renderDurabilityNumberYAxis(context, mainHand, x + labelWidth / 2, y + 18);
 				}
 				x += labelWidth;
 			}
@@ -274,21 +274,21 @@ public class ArmorHud extends TextHudEntry {
 				}
 
 				if (order == CardinalOrder.TOP_DOWN) {
-					var numHeight = renderDurabilityNumberYAxis(context, stack, x, y);
+					var numHeight = renderDurabilityNumberYAxis(context, stack, x + labelWidth / 2, y);
 					renderItem(context, stack, x - stackWidth / 2 + labelWidth / 2, y + numHeight, label);
 				} else {
 					renderItem(context, stack, x - stackWidth / 2 + labelWidth / 2, y, label);
-					renderDurabilityNumberYAxis(context, stack, x, y + 18);
+					renderDurabilityNumberYAxis(context, stack, x + labelWidth / 2, y + 18);
 				}
 				x += labelWidth;
 			}
 			if (mhPos == MainHandItemPosition.BOTTOM) {
 				if (order == CardinalOrder.TOP_DOWN) {
-					var numHeight = renderDurabilityNumberYAxis(context, mainHand, x, y);
+					var numHeight = renderDurabilityNumberYAxis(context, mainHand, x + labelWidth / 2, y);
 					renderMainItem(context, mainHand, x - stackWidth / 2 + labelWidth / 2, y + numHeight, mainHandCount);
 				} else {
 					renderMainItem(context, mainHand, x - stackWidth / 2 + labelWidth / 2, y, mainHandCount);
-					renderDurabilityNumberYAxis(context, mainHand, x, y + 18);
+					renderDurabilityNumberYAxis(context, mainHand, x + labelWidth / 2, y + 18);
 				}
 			}
 		}
@@ -333,15 +333,14 @@ public class ArmorHud extends TextHudEntry {
 			var text2 = "/" + stack.br$getMaxDamage();
 			int t1W = graphics.br$getFont().br$getWidth(text1);
 			int t2W = graphics.br$getFont().br$getWidth(text2);
-			var tW = Math.max(t1W, t2W);
-			graphics.br$drawString(text1, x + tW / 2 - t1W / 2, textY, customDurabilityNumColor.get() ? durabilityNumColor.get().toInt() :
+			graphics.br$drawString(text1, x - t1W / 2, textY, customDurabilityNumColor.get() ? durabilityNumColor.get().toInt() :
 				ClientColors.ARGB.opaque(stack.br$getBarColor()), true);
-			graphics.br$drawString(text2, x + tW / 2 - t2W / 2, textY + 10, customDurabilityNumColor.get() ? durabilityNumColor.get().toInt() :
+			graphics.br$drawString(text2, x - t2W / 2, textY + 10, customDurabilityNumColor.get() ? durabilityNumColor.get().toInt() :
 				ClientColors.ARGB.opaque(stack.br$getBarColor()), true);
 			return 20;
 		} else {
 			var text = String.valueOf(showDurability ? stack.br$getMaxDamage() - stack.br$getDamage() : stack.br$getMaxDamage());
-			graphics.br$drawString(text, x, textY, customDurabilityNumColor.get() ? durabilityNumColor.get().toInt() :
+			graphics.br$drawString(text, x - graphics.br$getFont().br$getWidth(text)/2, textY, customDurabilityNumColor.get() ? durabilityNumColor.get().toInt() :
 				ClientColors.ARGB.opaque(stack.br$getBarColor()), true);
 			return 10;
 		}

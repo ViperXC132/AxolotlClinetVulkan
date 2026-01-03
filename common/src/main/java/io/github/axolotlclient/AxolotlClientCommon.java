@@ -49,6 +49,7 @@ import io.github.axolotlclient.modules.hud.ClickInputTracker;
 import io.github.axolotlclient.modules.render.BeaconBeam;
 import io.github.axolotlclient.modules.rpc.DiscordRPC;
 import io.github.axolotlclient.modules.tnttime.TntTime;
+import io.github.axolotlclient.modules.zoom.Zoom;
 import io.github.axolotlclient.util.FeatureDisablerCommon;
 import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.OSUtil;
@@ -136,6 +137,7 @@ public abstract class AxolotlClientCommon {
 		registerModule(TntTime.getInstance());
 		registerModule(DiscordRPC.getInstance());
 		registerModule(getApiOptions());
+		registerModule(Zoom.getInstance());
 	}
 
 	// init logic

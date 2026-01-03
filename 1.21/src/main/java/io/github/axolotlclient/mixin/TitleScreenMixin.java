@@ -53,6 +53,7 @@ import net.minecraft.client.gui.screen.TitleScreen;
 import net.minecraft.client.gui.screen.realms.RealmsNotificationsScreen;
 import net.minecraft.client.gui.widget.PressableWidget;
 import net.minecraft.client.gui.widget.button.ButtonWidget;
+import net.minecraft.client.option.KeyBind;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -78,7 +79,7 @@ public abstract class TitleScreenMixin extends Screen {
 
 	@Inject(method = "initWidgetsNormal", at = @At("TAIL"))
 	private void axolotlclient$inMenu(int y, int spacingY, CallbackInfo ci) {
-		if (MinecraftClient.getInstance().options.saveToolbarActivatorKey.keyEquals(Zoom.key)) {
+		if (MinecraftClient.getInstance().options.saveToolbarActivatorKey.keyEquals((KeyBind) Zoom.getInstance().getKey())) {
 			MinecraftClient.getInstance().options.saveToolbarActivatorKey.setBoundKey(InputUtil.UNKNOWN_KEY);
 			AxolotlClient.LOGGER.info("Unbound \"Save Toolbar Activator\" to resolve conflict with the zoom key!");
 		}

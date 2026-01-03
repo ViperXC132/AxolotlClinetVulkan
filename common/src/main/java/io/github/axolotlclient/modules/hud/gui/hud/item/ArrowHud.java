@@ -36,6 +36,7 @@ import io.github.axolotlclient.bridge.item.AxoItems;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.util.ItemUtil;
 
@@ -58,6 +59,7 @@ public class ArrowHud extends TextHudEntry {
 
 	private final BooleanOption dynamic = new BooleanOption("dynamic", false);
 	private final BooleanOption allArrowTypes = new BooleanOption("allArrowTypes", false);
+	private final BooleanOption hideIfEmpty = DefaultOptions.getHideIfEmpty();
 
 	private int arrows = 0;
 	private AxoItemStack currentArrow = AxoItemStack.of(AxoItems.ARROW);
@@ -82,6 +84,9 @@ public class ArrowHud extends TextHudEntry {
 					return;
 				}
 			}
+		}
+		if (hideIfEmpty.get() && !isAllArrowTypes() && currentArrow.br$isEmpty()) {
+			return;
 		}
 
 		super.render(graphics, delta);
@@ -132,6 +137,7 @@ public class ArrowHud extends TextHudEntry {
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
 		options.add(dynamic);
+		options.add(hideIfEmpty);
 
 		if (BridgeVersion.version() != BridgeVersion.V1_8) {
 			options.add(allArrowTypes);

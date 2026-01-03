@@ -70,8 +70,8 @@ public abstract class GameRendererMixin {
 		if (this.isPanoramicMode()) {
 			return original.call(camera, partialTick, useFovSetting);
 		}
-		Zoom.update();
-		return Zoom.getFov(original.call(camera, partialTick, useFovSetting), partialTick);
+		Zoom.getInstance().update();
+		return Zoom.getInstance().getFov(original.call(camera, partialTick, useFovSetting), partialTick);
 	}
 
 	@Inject(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/GameRenderer;postEffectId:Lnet/minecraft/resources/Identifier;", ordinal = 0, opcode = Opcodes.GETFIELD))

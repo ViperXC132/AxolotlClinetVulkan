@@ -39,6 +39,10 @@ public class MathUtil {
 		return value < min ? min : Math.min(value, max);
 	}
 
+	public static float lerp(float delta, float start, float end) {
+		return start + delta * (end - start);
+	}
+
 	public static int hsvToRgb(float hue, float saturation, float value) {
 		int i = (int) (hue * 6.0F) % 6;
 		float f = hue * 6.0F - (float) i;

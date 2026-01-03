@@ -47,6 +47,12 @@ public abstract class GameOptionsMixin implements AxoGameOptions {
 	@Shadow
 	public int perspective;
 
+	@Shadow
+	public boolean smoothCamera;
+
+	@Shadow
+	public float mouseSensitivity;
+
 	@Override
 	public AxoKeybinding br$getSprintKeybind() {
 		return sprintKey;
@@ -75,5 +81,25 @@ public abstract class GameOptionsMixin implements AxoGameOptions {
 	@Override
 	public void br$setCameraType(AxoPerspective perspective) {
 		this.perspective = perspective.ordinal();
+	}
+
+	@Override
+	public boolean br$getSmoothCamera() {
+		return smoothCamera;
+	}
+
+	@Override
+	public void br$setSmoothCamera(boolean c) {
+		smoothCamera = c;
+	}
+
+	@Override
+	public double br$getSensitivity() {
+		return mouseSensitivity;
+	}
+
+	@Override
+	public void br$setSensitivity(double sensitivity) {
+		mouseSensitivity = (float) sensitivity;
 	}
 }
