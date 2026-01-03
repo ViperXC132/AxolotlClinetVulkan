@@ -200,26 +200,42 @@ public class SnappingHelper {
 			for (HudEntry entry : union) {
 				var xType = entriesX.get(entry);
 				var yType = entriesY.get(entry);
-				int xMatch = switch (xType) {
+				int cXMatch = switch (xType) {
 					case X_X, X_XEND -> cBounds.x();
 					case XEND_X, XEND_XEND -> cBounds.xEnd();
 					default -> throw new IllegalArgumentException();
 				};
-				int yMatch = switch (yType) {
+				int cYMatch = switch (yType) {
 					case Y_Y, Y_YEND -> cBounds.y();
 					case YEND_Y, YEND_YEND -> cBounds.yEnd();
 					default -> throw new IllegalArgumentException();
 				};
+				var eBounds = entry.getTrueBounds();
+				int eXMatch = switch (xType) {
+					case X_X, XEND_X -> eBounds.x();
+					case X_XEND, XEND_XEND -> eBounds.xEnd();
+					default -> throw new IllegalArgumentException();
+				};
+				int eYMatch = switch (yType) {
+					case Y_Y, YEND_Y -> eBounds.y();
+					case Y_YEND, YEND_YEND -> eBounds.yEnd();
+					default -> throw new IllegalArgumentException();
+				};
 				graphics.br$pushMatrix();
-				graphics.br$translateMatrix(xMatch, yMatch);
+				graphics.br$translateMatrix(cXMatch, cYMatch);
+				if (Math.abs(cXMatch - eXMatch) > 2 || Math.abs(cYMatch - eYMatch) > 2) {
+					var c1 = ClientColors.SELECTOR_GREEN.toInt();
+					var c2 = ClientColors.SELECTOR_RED.toInt();
+					graphics.br$fillSegment(0, 0, eXMatch - cXMatch, eYMatch - cYMatch, c1, c2, c2, c2, lineWidth);
+				}
 				int ang = 0;
-				if (xMatch == cBounds.x() && yMatch == cBounds.y()) {
+				if (cXMatch == cBounds.x() && cYMatch == cBounds.y()) {
 					ang = -45;
-				} else if (xMatch == cBounds.x() && yMatch == cBounds.yEnd()) {
+				} else if (cXMatch == cBounds.x() && cYMatch == cBounds.yEnd()) {
 					ang = 45 + 180;
-				} else if (xMatch == cBounds.xEnd() && yMatch == cBounds.y()) {
+				} else if (cXMatch == cBounds.xEnd() && cYMatch == cBounds.y()) {
 					ang = 45;
-				} else if (xMatch == cBounds.xEnd() && yMatch == cBounds.yEnd()) {
+				} else if (cXMatch == cBounds.xEnd() && cYMatch == cBounds.yEnd()) {
 					ang = 180 - 45;
 				}
 				graphics.br$translateMatrix(-4.5f, -4.5f);
@@ -368,5 +384,29 @@ public class SnappingHelper {
 			} else return null;
 			return BiContainer.of(e, type);
 		}).filter(Objects::nonNull).toList();
+	}
+
+	private static void iterateHudDependencyTree(HudEntry entry, Set<HudEntry> set, Map<HudEntry, Set<HudEntry>> dependencies) {
+		set.add(entry);
+		if (dependencies.containsKey(entry)) {
+			dependencies.get(entry).forEach(e -> iterateHudDependencyTree(e, set, dependencies));
+		}
+	}
+
+	public static Collection<HudEntry> getNonDependentEntries(HudEntry current, Collection<HudEntry> entries) {
+		var reverseDependencies = new HashMap<HudEntry, Set<HudEntry>>();
+		for (var e : entries) {
+			Sets.union(e.getDependenciesX().keySet(), e.getDependenciesY().keySet())
+				.forEach(d -> reverseDependencies.computeIfAbsent(d, unused -> new HashSet<>()).add(e));
+		}
+		if (!reverseDependencies.containsKey(current)) {
+			return entries;
+		}
+
+		var depTree = new HashSet<HudEntry>();
+		reverseDependencies.get(current).forEach(e -> iterateHudDependencyTree(e, depTree, reverseDependencies));
+		var ret = new ArrayList<>(entries);
+		ret.removeAll(depTree);
+		return ret;
 	}
 }

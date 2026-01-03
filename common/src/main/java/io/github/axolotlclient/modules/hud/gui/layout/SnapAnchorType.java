@@ -52,8 +52,8 @@ public enum SnapAnchorType {
 	}
 
 	private int getNewXPos(HudEntry dependency, HudEntry dependent) {
-		var bounds = dependency.getBounds();
-		var depBounds = dependent.getBounds();
+		var bounds = dependency.getTrueBounds();
+		var depBounds = dependent.getTrueBounds();
 		return switch (this) {
 			case X_X -> bounds.x();
 			case X_XEND -> bounds.xEnd();
@@ -64,8 +64,8 @@ public enum SnapAnchorType {
 	}
 
 	private int getNewYPos(HudEntry dependency, HudEntry dependent) {
-		var bounds = dependency.getBounds();
-		var depBounds = dependent.getBounds();
+		var bounds = dependency.getTrueBounds();
+		var depBounds = dependent.getTrueBounds();
 		return switch (this) {
 			case Y_Y -> bounds.y();
 			case Y_YEND -> bounds.yEnd();
@@ -76,10 +76,10 @@ public enum SnapAnchorType {
 	}
 
 	public void updatePosX(HudEntry dependency, HudEntry dependent) {
-		dependent.setX(getNewXPos(dependency, dependent) + dependent.offsetWidth());
+		dependent.setTrueX((int) (getNewXPos(dependency, dependent) * dependent.getScale()));
 	}
 
 	public void updatePosY(HudEntry dependency, HudEntry dependent) {
-		dependent.setY(getNewYPos(dependency, dependent) + dependent.offsetHeight());
+		dependent.setTrueY((int) (getNewYPos(dependency, dependent) * dependent.getScale()));
 	}
 }

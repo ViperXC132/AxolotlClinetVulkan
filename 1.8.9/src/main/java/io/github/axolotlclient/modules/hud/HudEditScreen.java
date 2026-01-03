@@ -96,9 +96,8 @@ public class HudEditScreen extends Screen {
 
 	private void updateSnapState() {
 		if (snapping.get() && current != null) {
-			var bounds = HudManager.getInstance().getMoveableEntries()
+			var bounds = SnappingHelper.getNonDependentEntries(current, HudManager.getInstance().getMoveableEntries())
 				.stream()
-				.filter(e -> e.dependsOnX(current).isEmpty() && e.dependsOnY(current).isEmpty())
 				.map(Positionable::getTrueBounds)
 				.collect(Collectors.toCollection(ArrayList::new));
 			bounds.remove(current.getTrueBounds());

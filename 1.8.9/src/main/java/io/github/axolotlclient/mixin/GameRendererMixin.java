@@ -26,6 +26,7 @@ import java.nio.FloatBuffer;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
@@ -50,7 +51,6 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.living.LivingEntity;
 import net.minecraft.entity.living.effect.StatusEffect;
-import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GLContext;
@@ -62,7 +62,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(GameRenderer.class)
 public abstract class GameRendererMixin {
@@ -156,7 +155,7 @@ public abstract class GameRendererMixin {
 			return;
 		}
 
-		Zoom.update();
+		Zoom.getInstance().update();
 
 		float returnValue = cir.getReturnValue();
 
@@ -175,7 +174,7 @@ public abstract class GameRendererMixin {
 			returnValue = f;
 		}
 
-		returnValue = (float) Zoom.getFov(returnValue, tickDelta);
+		returnValue = Zoom.getInstance().getFov(returnValue, tickDelta);
 
 		cir.setReturnValue(returnValue);
 	}
@@ -234,22 +233,22 @@ public abstract class GameRendererMixin {
 		original.call(instance, yaw, pitch);
 	}
 
-	@Redirect(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;yaw:F"))
+	@Redirect(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;yaw:F", opcode = Opcodes.GETFIELD))
 	public float axolotlclient$freelook$yaw(Entity entity) {
 		return Freelook.getInstance().yaw(entity.yaw);
 	}
 
-	@Redirect(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;prevYaw:F"))
+	@Redirect(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;prevYaw:F", opcode = Opcodes.GETFIELD))
 	public float axolotlclient$freelook$prevYaw(Entity entity) {
 		return Freelook.getInstance().yaw(entity.prevYaw);
 	}
 
-	@Redirect(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;pitch:F"))
+	@Redirect(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;pitch:F", opcode = Opcodes.GETFIELD))
 	public float axolotlclient$freelook$pitch(Entity entity) {
 		return Freelook.getInstance().pitch(entity.pitch);
 	}
 
-	@Redirect(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;prevPitch:F"))
+	@Redirect(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;prevPitch:F", opcode = Opcodes.GETFIELD))
 	public float axolotlclient$freelook$prevPitch(Entity entity) {
 		return Freelook.getInstance().pitch(entity.prevPitch);
 	}
@@ -268,8 +267,8 @@ public abstract class GameRendererMixin {
 		}
 	}
 
-	@Inject(method = "applyViewBobbing", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V"), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
-	private void axolotlclient$minimalViewBob(float f, CallbackInfo ci, PlayerEntity entity, float g, float h, float i, float j) {
+	@Inject(method = "applyViewBobbing", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V"), cancellable = true)
+	private void axolotlclient$minimalViewBob(float f, CallbackInfo ci, @Local(ordinal = 2) float h, @Local(ordinal = 3) float i, @Local(ordinal = 4) float j) {
 		if (AxolotlClient.config().minimalViewBob.get()) {
 			h /= 2;
 			i /= 2;
