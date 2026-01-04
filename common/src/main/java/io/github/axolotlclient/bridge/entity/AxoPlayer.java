@@ -43,4 +43,14 @@ public interface AxoPlayer extends AxoLivingEntity {
 	default String br$getName() {
 		throw BridgeUtil.noImpl();
 	}
+
+	@RequiresImpl
+	default int br$getExperienceLevel() {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default float br$getExperienceProgress() {
+		throw BridgeUtil.noImpl();
+	}
 }

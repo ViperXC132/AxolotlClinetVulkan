@@ -43,6 +43,11 @@ public class MathUtil {
 		return start + delta * (end - start);
 	}
 
+	public static int floor(float value) {
+		int i = (int) value;
+		return value < i ? i - 1 : i;
+	}
+
 	public static int hsvToRgb(float hue, float saturation, float value) {
 		int i = (int) (hue * 6.0F) % 6;
 		float f = hue * 6.0F - (float) i;

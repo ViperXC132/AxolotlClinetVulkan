@@ -115,6 +115,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 		add(new MouseMovementHud());
 		add(new DayCounterHud());
 		add(new InventoryHud());
+		add(new XPHud());
 
 		addExtraHud();
 
@@ -164,7 +165,6 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 	private void loadHudDependencyLinks() {
 		try {
 			var path = AxolotlClientCommon.resolveProfileConfigFile(HUD_DEPENDENCIES_SAVE_FILE_NAME);
-			AxolotlClientCommon.getInstance().getLogger().info("Path: {}", path);
 			if (Files.exists(path)) {
 				var obj = (Map<String, Object>) GsonHelper.read(Files.readString(path));
 				obj.forEach((name, o) -> {
@@ -191,7 +191,6 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 						});
 					}
 				});
-				AxolotlClientCommon.getInstance().getLogger().info("Loaded hud dependency links!");
 			}
 		} catch (Exception e) {
 			AxolotlClientCommon.getInstance().getLogger().warn("Failed to load hud dependency links!", e);

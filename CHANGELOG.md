@@ -6,8 +6,9 @@
   - remove `Winstreak` bedwars level head mode
 - add Bedwars Session statistics HUD
 - fix bugs relating to multiple HUDs
-- add hud bounds dependencies (moving one when the bounds of another change)
+- add hud links (moving one when the bounds of another change)
 - add rounding support to Scoreboard HUDs
+- add XPHud
 
 ### 3.1.8
 

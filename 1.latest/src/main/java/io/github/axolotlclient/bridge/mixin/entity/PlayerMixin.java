@@ -48,6 +48,12 @@ public abstract class PlayerMixin implements AxoPlayer {
 	@Shadow
 	public abstract ItemStack getProjectile(ItemStack weaponStack);
 
+	@Shadow
+	public int experienceLevel;
+
+	@Shadow
+	public float experienceProgress;
+
 	@Override
 	public AxoPlayerInventory br$getInventory() {
 		return this.inventory;
@@ -61,5 +67,15 @@ public abstract class PlayerMixin implements AxoPlayer {
 	@Override
 	public String br$getName() {
 		return gameProfile.name();
+	}
+
+	@Override
+	public int br$getExperienceLevel() {
+		return experienceLevel;
+	}
+
+	@Override
+	public float br$getExperienceProgress() {
+		return experienceProgress;
 	}
 }
