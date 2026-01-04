@@ -228,17 +228,14 @@ public class ArmorHud extends TextHudEntry {
 				width = height - 6;
 				height = n;
 			}
-			if (mhPos == MainHandItemPosition.DISABLED) {
-				width -= 20;
-			}
 			if (showDurability) {
 				height += 10;
 			}
 			if (showMaxDurability) {
 				height += 10;
 			}
-			if (labelWidth > 20) {
-				width = (mhPos == MainHandItemPosition.DISABLED ? 4 : 5) * labelWidth + 1;
+			if (labelWidth > 0) {
+				width = (mhPos == MainHandItemPosition.DISABLED ? 4 : 5) * labelWidth + 2;
 			}
 			if (width != getContentWidth()) {
 				setContentWidth(width);

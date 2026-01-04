@@ -58,7 +58,9 @@ public abstract class PlayerEntityRendererMixin {
 			var mc = Minecraft.getInstance();
 			if (mc.player != null) {
 				Level level = Minecraft.getInstance().level;
+				if (level == null) return;
 				Entity player = level.getEntity(state.id);
+				if (player == null) return; // some mods seem to create players without adding them to a level for gui rendering. why?
 				boolean self = player.getUUID() == mc.player.getUUID();
 				if (self && NickHider.getInstance().hideOwnName.get()) {
 					component = (Component) NickHider.getInstance().editComponent(component, player.getName().getString(), NickHider.getInstance().hiddenNameSelf.get());
