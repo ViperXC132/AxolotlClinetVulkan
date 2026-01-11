@@ -94,6 +94,7 @@ public abstract class AxolotlClientConfigCommon {
 	public final OptionCategory timeChanger = OptionCategory.create("timeChanger");
 
 	public final BooleanOption creditsBGM = new BooleanOption("creditsBGM", true);
+	public final BooleanOption modifyClientBrand = new BooleanOption("modify_client_brand", true);
 	public final BooleanOption debugLogOutput = new BooleanOption("debugLogOutput", false);
 
 	public final BooleanOption noRain = new BooleanOption("noRain", false);
@@ -149,7 +150,7 @@ public abstract class AxolotlClientConfigCommon {
 			hideChat
 		);
 
-		hidden.add(creditsBGM, someNiceBackground);
+		hidden.add(creditsBGM, someNiceBackground, modifyClientBrand);
 
 		AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "toggle_hide_chat").br$registerOnConsumeClick(hideChat::toggle);
 	}

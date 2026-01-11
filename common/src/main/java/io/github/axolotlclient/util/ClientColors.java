@@ -80,6 +80,7 @@ public class ClientColors {
 		return start + (add);
 	}
 
+	@SuppressWarnings("unused")
 	public class ARGB {
 
 		public static int alpha(int color) {
@@ -163,8 +164,8 @@ public class ClientColors {
 			return alpha << 24 | color & 16777215;
 		}
 
-		public static int color(float f, int i) {
-			return as8BitChannel(f) << 24 | i & 16777215;
+		public static int color(float alpha, int color) {
+			return as8BitChannel(alpha) << 24 | color & 16777215;
 		}
 
 		public static int white(float alpha) {

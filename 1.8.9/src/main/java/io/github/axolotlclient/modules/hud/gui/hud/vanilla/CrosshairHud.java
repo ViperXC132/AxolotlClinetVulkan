@@ -143,8 +143,12 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 
 	@Override
 	public void render(AxoRenderContext context, float delta) {
-		if (!(client.options.perspective == 0) && !showInF5.get())
+		if (!(client.options.perspective == 0) && !showInF5.get()) {
 			return;
+		}
+		if (client.options.debugEnabled && !overridesF3()) {
+			return;
+		}
 
 		GlStateManager.enableAlphaTest();
 

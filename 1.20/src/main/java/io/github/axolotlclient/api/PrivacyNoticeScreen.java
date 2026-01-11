@@ -65,26 +65,28 @@ public class PrivacyNoticeScreen extends Screen {
 	@Override
 	protected void init() {
 
+		//noinspection DataFlowIssue
 		message = MultilineText.create(client.textRenderer,
 			Text.translatable("api.privacyNotice.description"), width - 50);
 		int y = MathHelper.clamp(this.getMessageY() + this.getMessagesHeight() + 20, this.height / 6 + 96, this.height - 24);
 		this.addButtons(y);
 	}
 
+	@SuppressWarnings("DataFlowIssue")
 	private void addButtons(int y) {
 		addDrawableChild(ButtonWidget.builder(Text.translatable("api.privacyNotice.accept"), buttonWidget -> {
 			client.setScreen(parent);
 			APIOptions.getInstance().privacyAccepted.set(Options.PrivacyPolicyState.ACCEPTED);
 			accepted.complete(true);
-		}).positionAndSize(width / 2 - 50, y, 100, 20).build());
+		}).positionAndSize(width / 2 - 50 - 104, y, 100, 20).build());
 		addDrawableChild(ButtonWidget.builder(Text.translatable("api.privacyNotice.deny"), buttonWidget -> {
 			client.setScreen(parent);
 			APIOptions.getInstance().enabled.set(false);
 			APIOptions.getInstance().privacyAccepted.set(Options.PrivacyPolicyState.DENIED);
 			accepted.complete(false);
-		}).positionAndSize(width / 2 - 50 + 105, y, 100, 20).build());
+		}).positionAndSize(width / 2 - 50 + 104, y, 100, 20).build());
 		addDrawableChild(ButtonWidget.builder(Text.translatable("api.privacyNotice.openPolicy"), buttonWidget ->
-			OSUtil.getOS().open(TERMS_URI)).positionAndSize(width / 2 - 50 - 105, y, 100, 20).build());
+			OSUtil.getOS().open(TERMS_URI)).positionAndSize(width / 2 - 50, y, 100, 20).build());
 	}
 
 	private int getTitleY() {

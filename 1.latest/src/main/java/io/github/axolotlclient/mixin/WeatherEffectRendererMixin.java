@@ -33,7 +33,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WeatherEffectRenderer.class)
-public class WeatherEffectRendererMixin {
+public abstract class WeatherEffectRendererMixin {
 	@Inject(method = "extractRenderState", at = @At("HEAD"),
 		cancellable = true)
 	private void noRain(Level level, int i, float f, Vec3 vec3, WeatherRenderState weatherRenderState, CallbackInfo ci) {

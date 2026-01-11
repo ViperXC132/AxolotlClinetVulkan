@@ -158,6 +158,9 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		if (!client.options.getPerspective().isFirstPerson() && !showInF5.get()) {
 			return;
 		}
+		if (client.options.debugEnabled && !overridesF3()) {
+			return;
+		}
 
 		RenderSystem.setShaderColor(1, 1, 1, 1);
 

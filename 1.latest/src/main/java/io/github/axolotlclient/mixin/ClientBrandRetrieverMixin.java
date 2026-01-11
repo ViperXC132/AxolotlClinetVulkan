@@ -24,6 +24,7 @@ package io.github.axolotlclient.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import io.github.axolotlclient.AxolotlClientCommon;
 import net.minecraft.client.ClientBrandRetriever;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -38,6 +39,9 @@ public abstract class ClientBrandRetrieverMixin {
 
 	@WrapMethod(method = "getClientModName", remap = false)
 	private static String axolotlclient$returnClientBrand(Operation<String> original) {
-		return original.call().replace(VANILLA_NAME, "AxolotlClient");
+		if (AxolotlClientCommon.getInstance().getConfig().modifyClientBrand.get()) {
+			return original.call().replace(VANILLA_NAME, "AxolotlClient");
+		}
+		return original.call();
 	}
 }

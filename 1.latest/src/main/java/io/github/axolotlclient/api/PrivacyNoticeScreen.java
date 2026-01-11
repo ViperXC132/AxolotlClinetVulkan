@@ -62,14 +62,14 @@ public class PrivacyNoticeScreen extends Screen {
 			APIOptions.getInstance().privacyAccepted.set(Options.PrivacyPolicyState.ACCEPTED);
 			accepted.complete(true);
 		}).width(100).build());
+		buttons.addChild(Button.builder(Component.translatable("api.privacyNotice.openPolicy"),
+			buttonWidget -> OSUtil.getOS().open(TERMS_URI)).width(100).build());
 		buttons.addChild(Button.builder(Component.translatable("api.privacyNotice.deny"), buttonWidget -> {
 			minecraft.setScreen(parent);
 			APIOptions.getInstance().enabled.set(false);
 			APIOptions.getInstance().privacyAccepted.set(Options.PrivacyPolicyState.DENIED);
 			accepted.complete(false);
 		}).width(100).build());
-		buttons.addChild(Button.builder(Component.translatable("api.privacyNotice.openPolicy"),
-			buttonWidget -> OSUtil.getOS().open(TERMS_URI)).width(100).build());
 		frame.arrangeElements();
 		frame.visitWidgets(this::addRenderableWidget);
 	}

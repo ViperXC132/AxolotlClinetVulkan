@@ -173,6 +173,9 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		if (!client.options.getCameraType().isFirstPerson() && !showInF5.get()) {
 			return;
 		}
+		if (client.gui.getDebugOverlay().showDebugScreen() && !overridesF3()) {
+			return;
+		}
 
 		graphics.pose().pushMatrix();
 		scale(graphics);
@@ -248,6 +251,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 					targetingEntity &= this.client.crosshairPickEntity.isAlive();
 
 					AttackRange attackRange = this.client.player.getActiveItem().get(DataComponents.ATTACK_RANGE);
+					//noinspection DataFlowIssue
 					targetingEntity &= attackRange == null || attackRange.isInRange(this.client.player, this.client.hitResult.getLocation());
 				}
 
