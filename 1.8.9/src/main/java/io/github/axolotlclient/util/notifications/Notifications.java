@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.util.notifications;
 
+import io.github.axolotlclient.util.notifications.toasts.Toast;
 import io.github.axolotlclient.util.notifications.toasts.ToastManager;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
@@ -36,6 +37,10 @@ public class Notifications implements NotificationProvider {
 
 	public void addStatus(String title, String description, Object... args) {
 		toastManager.addToast(AxolotlClientToast.multiline(client, I18n.translate(title, args), I18n.translate(description, args)));
+	}
+
+	public void addStatus(Toast toast) {
+		toastManager.addToast(toast);
 	}
 }
 

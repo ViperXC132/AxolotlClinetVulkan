@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2026 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -20,27 +20,13 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.util.notifications;
+package io.github.axolotlclient.mixin;
 
-import lombok.Getter;
-import net.minecraft.client.Minecraft;
+import io.github.axolotlclient.util.duck.ToastExtension;
 import net.minecraft.client.gui.components.toasts.Toast;
-import net.minecraft.network.chat.Component;
+import org.spongepowered.asm.mixin.Mixin;
 
-public class Notifications implements NotificationProvider {
+@Mixin(Toast.class)
+public interface ToastMixin extends ToastExtension {
 
-	@Getter
-	private static final Notifications Instance = new Notifications();
-
-	public void addStatus(String titleKey, String descKey, Object... args) {
-		addStatus(Component.translatable(titleKey, args), Component.translatable(descKey, args));
-	}
-
-	public void addStatus(Component title, Component description) {
-		Minecraft.getInstance().getToastManager().addToast(AxolotlClientToast.multiline(Minecraft.getInstance(), title, description));
-	}
-
-	public void addStatus(Toast toast) {
-		Minecraft.getInstance().getToastManager().addToast(toast);
-	}
 }

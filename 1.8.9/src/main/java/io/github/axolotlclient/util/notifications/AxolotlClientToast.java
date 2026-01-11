@@ -28,6 +28,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.util.notifications.toasts.Toast;
 import io.github.axolotlclient.util.notifications.toasts.ToastManager;
@@ -41,6 +42,7 @@ import org.jetbrains.annotations.Nullable;
 @Environment(EnvType.CLIENT)
 public class AxolotlClientToast extends DrawUtil implements Toast {
 	private static final Identifier BACKGROUND_SPRITE = new Identifier("axolotlclient", "textures/gui/sprites/toast/axolotlclient.png");
+	private static final NineSlice SPRITE_SCALING = new NineSlice(160, 64, new Border(17, 30, 4, 4), false);
 	private static final int DISPLAY_TIME_MILLIS = 5000;
 	private static final int MAX_LINE_SIZE = 200;
 	private static final int LINE_SPACING = 12;
@@ -97,10 +99,10 @@ public class AxolotlClientToast extends DrawUtil implements Toast {
 	}
 
 	@Override
-	public void render(TextRenderer font, long startTime) {
+	public void render(AxoRenderContext graphics, TextRenderer font, long startTime) {
 		GlStateManager.disableBlend();
 		Lighting.turnOff();
-		blitSprite(BACKGROUND_SPRITE, 0, 0, width(), height(), new NineSlice(160, 64, new Border(17, 30, 4, 4), false));
+		blitSprite(BACKGROUND_SPRITE, 0, 0, width(), height(), SPRITE_SCALING);
 		Minecraft.getInstance().getTextureManager().bind(AxolotlClient.badgeIcon);
 		drawTexture(4, 4, 0, 0, 15, 15, 15, 15);
 		int textOffset = 22;

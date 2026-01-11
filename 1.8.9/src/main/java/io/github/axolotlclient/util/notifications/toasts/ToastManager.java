@@ -23,12 +23,13 @@
 package io.github.axolotlclient.util.notifications.toasts;
 
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.Deque;
 import java.util.List;
 
 import com.google.common.collect.Queues;
 import com.mojang.blaze3d.platform.GlStateManager;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.bridge.render.AxoWindow;
 import io.github.axolotlclient.util.Util;
 import lombok.Getter;
 import net.fabricmc.api.EnvType;
@@ -36,16 +37,15 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.math.MathHelper;
 import net.ornithemc.osl.lifecycle.api.client.MinecraftClientEvents;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class ToastManager {
 	private static final int SLOT_COUNT = 5;
-	private static final int ALL_SLOTS_OCCUPIED = -1;
 	@Getter
 	final Minecraft minecraft;
 	private final List<ToastInstance<?>> visibleToasts = new ArrayList<>();
-	private final BitSet occupiedSlots = new BitSet(SLOT_COUNT);
 	private final Deque<Toast> queued = Queues.newArrayDeque();
 
 	public ToastManager(Minecraft minecraft) {
@@ -54,58 +54,46 @@ public class ToastManager {
 	}
 
 	public void update() {
+		MutableBoolean mutableBoolean = new MutableBoolean(false);
 		this.visibleToasts.removeIf(toastInstance -> {
+			var vis = toastInstance.visibility;
 			toastInstance.update();
-			if (toastInstance.hasFinishedRendering()) {
-				this.occupiedSlots.clear(toastInstance.firstSlotIndex, toastInstance.firstSlotIndex + toastInstance.occupiedSlotCount);
-				return true;
-			} else {
-				return false;
+			if (toastInstance.visibility != vis && mutableBoolean.isFalse()) {
+				mutableBoolean.setTrue();
+				toastInstance.visibility.playSound(minecraft.getSoundManager());
 			}
+			return toastInstance.hasFinishedRendering();
 		});
-		if (!this.queued.isEmpty() && this.freeSlotCount() > 0) {
+		if (!this.queued.isEmpty()) {
 			this.queued.removeIf(toast -> {
-				int i = toast.occupiedSlotCount();
-				int j = this.findFreeSlotsIndex(i);
-				if (j == ALL_SLOTS_OCCUPIED) {
-					return false;
-				} else {
-					this.visibleToasts.add(new ToastInstance<>(toast, j, i));
-					this.occupiedSlots.set(j, j + i);
+				var toastHeight = toast.height();
+				var y = nextY();
+				var wHeight = AxoWindow.getWindow().br$getScaledHeight();
+				if (visibleToasts.size() < SLOT_COUNT && y <= wHeight / 2f && y + toastHeight < wHeight) {
+					this.visibleToasts.add(new ToastInstance<>(toast));
 					return true;
 				}
+
+				return false;
 			});
 		}
 	}
 
-	public void render() {
+	private int nextY() {
+		return visibleToasts.stream().map(ToastManager.ToastInstance::getToast).mapToInt(Toast::height).sum();
+	}
+
+	public void render(AxoRenderContext graphics) {
 		if (!this.minecraft.options.hideGui) {
 			int i = (int) Util.getWindow().getScaledWidth();
 
+			int y = 0;
 			for (ToastInstance<?> toastInstance : this.visibleToasts) {
-				toastInstance.render(i);
+				toastInstance.y = y;
+				toastInstance.render(graphics, i);
+				y += toastInstance.getToast().height();
 			}
 		}
-	}
-
-	private int findFreeSlotsIndex(int i) {
-		if (this.freeSlotCount() >= i) {
-			int j = 0;
-
-			for (int k = 0; k < SLOT_COUNT; k++) {
-				if (this.occupiedSlots.get(k)) {
-					j = 0;
-				} else if (++j == i) {
-					return k + 1 - j;
-				}
-			}
-		}
-
-		return -1;
-	}
-
-	private int freeSlotCount() {
-		return SLOT_COUNT - this.occupiedSlots.cardinality();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -127,7 +115,6 @@ public class ToastManager {
 	}
 
 	public void clear() {
-		this.occupiedSlots.clear();
 		this.visibleToasts.clear();
 		this.queued.clear();
 	}
@@ -142,11 +129,9 @@ public class ToastManager {
 
 	@Environment(EnvType.CLIENT)
 	class ToastInstance<T extends Toast> {
-		private static final long SLIDE_ANIMATION_DURATION_MS = 600L;
 		@Getter
 		private final T toast;
-		final int firstSlotIndex;
-		final int occupiedSlotCount;
+		int y;
 		private long animationStartTime = -1L;
 		private long becameFullyVisibleAt = -1L;
 		private Toast.Visibility visibility = Toast.Visibility.SHOW;
@@ -154,10 +139,8 @@ public class ToastManager {
 		private float visiblePortion;
 		private boolean hasFinishedRendering;
 
-		ToastInstance(final T toast, final int i, final int j) {
+		ToastInstance(final T toast) {
 			this.toast = toast;
-			this.firstSlotIndex = i;
-			this.occupiedSlotCount = j;
 		}
 
 		public boolean hasFinishedRendering() {
@@ -165,7 +148,7 @@ public class ToastManager {
 		}
 
 		private void calculateVisiblePortion(long l) {
-			float f = MathHelper.clamp((float) (l - this.animationStartTime) / SLIDE_ANIMATION_DURATION_MS, 0.0F, 1.0F);
+			float f = MathHelper.clamp((float) (l - this.animationStartTime) / toast.axolotlclient$animationDuration(), 0.0F, 1.0F);
 			f *= f;
 			if (this.visibility == Toast.Visibility.HIDE) {
 				this.visiblePortion = 1.0F - f;
@@ -178,10 +161,10 @@ public class ToastManager {
 			long l = Minecraft.getTime();
 			if (this.animationStartTime == -1L) {
 				this.animationStartTime = l;
-				this.visibility.playSound(ToastManager.this.minecraft.getSoundManager());
+				this.visibility = Toast.Visibility.SHOW;
 			}
 
-			if (this.visibility == Toast.Visibility.SHOW && l - this.animationStartTime <= SLIDE_ANIMATION_DURATION_MS) {
+			if (this.visibility == Toast.Visibility.SHOW && l - this.animationStartTime <= toast.axolotlclient$animationDuration()) {
 				this.becameFullyVisibleAt = l;
 			}
 
@@ -190,18 +173,20 @@ public class ToastManager {
 			this.toast.update(ToastManager.this, this.fullyVisibleFor);
 			Toast.Visibility visibility = this.toast.getWantedVisibility();
 			if (visibility != this.visibility) {
-				this.animationStartTime = l - (long) ((int) ((1.0F - this.visiblePortion) * SLIDE_ANIMATION_DURATION_MS));
+				this.animationStartTime = l - (long) ((int) ((1.0F - this.visiblePortion) * toast.axolotlclient$animationDuration()));
 				this.visibility = visibility;
-				this.visibility.playSound(ToastManager.this.minecraft.getSoundManager());
 			}
-
-			this.hasFinishedRendering = this.visibility == Toast.Visibility.HIDE && l - this.animationStartTime > SLIDE_ANIMATION_DURATION_MS;
+			boolean finished = this.hasFinishedRendering;
+			this.hasFinishedRendering = this.visibility == Toast.Visibility.HIDE && l - this.animationStartTime > toast.axolotlclient$animationDuration();
+			if (this.hasFinishedRendering && !finished) {
+				this.toast.onFinishedRendering();
+			}
 		}
 
-		public void render(int i) {
+		public void render(AxoRenderContext graphics, int i) {
 			GlStateManager.pushMatrix();
-			GlStateManager.translatef((float) i - (float) this.toast.width() * this.visiblePortion, (float) (this.firstSlotIndex * Toast.SLOT_HEIGHT), 1000.0F);
-			this.toast.render(ToastManager.this.minecraft.textRenderer, this.fullyVisibleFor);
+			GlStateManager.translatef((float) i - (float) this.toast.width() * this.visiblePortion, y, 1000.0F);
+			this.toast.render(graphics, ToastManager.this.minecraft.textRenderer, this.fullyVisibleFor);
 			GlStateManager.popMatrix();
 		}
 	}

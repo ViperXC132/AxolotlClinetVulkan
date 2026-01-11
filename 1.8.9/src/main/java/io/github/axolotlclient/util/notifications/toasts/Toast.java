@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.util.notifications.toasts;
 
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.render.TextRenderer;
@@ -34,12 +35,13 @@ public interface Toast {
 	Object NO_TOKEN = new Object();
 	int DEFAULT_WIDTH = 160;
 	int SLOT_HEIGHT = 32;
+	long SLIDE_ANIMATION_DURATION_MS = 600;
 
 	Visibility getWantedVisibility();
 
 	void update(ToastManager toastManager, long l);
 
-	void render(TextRenderer font, long l);
+	void render(AxoRenderContext graphics, TextRenderer font, long l);
 
 	default Object getToken() {
 		return NO_TOKEN;
@@ -53,8 +55,12 @@ public interface Toast {
 		return SLOT_HEIGHT;
 	}
 
-	default int occupiedSlotCount() {
-		return -Math.floorDiv(-this.height(), SLOT_HEIGHT);
+	default void onFinishedRendering() {
+
+	}
+
+	default long axolotlclient$animationDuration() {
+		return SLIDE_ANIMATION_DURATION_MS;
 	}
 
 	@Environment(EnvType.CLIENT)

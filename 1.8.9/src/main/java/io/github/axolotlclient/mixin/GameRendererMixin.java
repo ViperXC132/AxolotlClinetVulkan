@@ -30,6 +30,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.platform.GLX;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.modules.blur.MenuBlur;
 import io.github.axolotlclient.modules.blur.MotionBlur;
 import io.github.axolotlclient.modules.freelook.Freelook;
@@ -203,7 +204,7 @@ public abstract class GameRendererMixin {
 
 	@Inject(method = "render(FJ)V", at = @At("TAIL"))
 	private void renderNotifications(float f, long l, CallbackInfo ci) {
-		Notifications.getInstance().getToastManager().render();
+		Notifications.getInstance().getToastManager().render(AxoRenderContextImpl.getInstance());
 	}
 
 	@Inject(method = "render(FJ)V", at = @At("TAIL"))

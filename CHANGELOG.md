@@ -9,6 +9,7 @@
 - add hud links (moving one when the bounds of another change)
 - add rounding support to Scoreboard HUDs
 - add XPHud
+- add Screenshot Toasts
 
 ### 3.1.8
 

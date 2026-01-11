@@ -929,5 +929,9 @@
 	"xphud.mode.level_total": "Level, Total XP Points",
 	"xphud.mode.percent_total": "Percentage to next Level, Total XP Points",
 	"xphud.mode.level_percent_total": "Level, Percentage to next Level, Total XP Points",
-	"xphud": "XP HUD"
+	"xphud": "XP HUD",
+	"screenshot_utils.mode": "Display Mode",
+	"screenshot_utils.mode.chat": "Chat",
+	"screenshot_utils.mode.toast": "Toast",
+	"screenshot_utils.mode.chat_and_toast": "Chat And Toast"
 }

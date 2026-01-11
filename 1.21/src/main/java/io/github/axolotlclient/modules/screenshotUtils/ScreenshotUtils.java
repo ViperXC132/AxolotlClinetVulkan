@@ -23,11 +23,12 @@
 package io.github.axolotlclient.modules.screenshotUtils;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BooleanSupplier;
@@ -35,9 +36,12 @@ import java.util.function.BooleanSupplier;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringArrayOption;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.modules.AbstractModule;
+import io.github.axolotlclient.util.CommonUtil;
+import io.github.axolotlclient.util.notifications.Notifications;
 import io.github.axolotlclient.util.options.GenericOption;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -54,8 +58,8 @@ public class ScreenshotUtils extends AbstractModule {
 	private static final ScreenshotUtils Instance = new ScreenshotUtils();
 	private final OptionCategory category = OptionCategory.create("screenshotUtils");
 	private final BooleanOption enabled = new BooleanOption("enabled", false);
-	private final Map<BooleanSupplier, Action> actions = Util.make(() -> {
-		Map<BooleanSupplier, Action> actions = new LinkedHashMap<>();
+	private final EnumOption<Mode> mode = new EnumOption<>("screenshot_utils.mode", Mode.class, Mode.CHAT);
+	private final Map<BooleanSupplier, Action> actions = CommonUtil.make(new LinkedHashMap<>(), actions -> {
 		actions.put(() -> true, new Action("copyAction", Formatting.AQUA,
 			"copy_image",
 			ScreenshotCopying::copy));
@@ -89,20 +93,16 @@ public class ScreenshotUtils extends AbstractModule {
 		actions.put(() -> API.getInstance().isAuthenticated(), new Action("uploadAction", Formatting.AQUA,
 			"upload_image",
 			ImageShare.getInstance()::uploadImage));
-
-		return actions;
 	});
 
-	private final StringArrayOption autoExec = new StringArrayOption("autoExec", Util.make(() -> {
-		List<String> names = new ArrayList<>();
+	private final StringArrayOption autoExec = new StringArrayOption("autoExec", CommonUtil.make(new ArrayList<String>(), names -> {
 		names.add("off");
 		actions.forEach((condition, action) -> names.add(action.getName()));
-		return names.toArray(new String[0]);
-	}), "off");
+	}).toArray(new String[0]), "off");
 
 	@Override
 	public void init() {
-		category.add(enabled, autoExec, new GenericOption("imageViewer", "openViewer", () ->
+		category.add(enabled, mode, autoExec, new GenericOption("imageViewer", "openViewer", () ->
 			client.setScreen(new GalleryScreen(client.currentScreen))));
 
 		AxolotlClient.config().general.add(category);
@@ -119,14 +119,23 @@ public class ScreenshotUtils extends AbstractModule {
 	}
 
 	private @Nullable Text getUtilsText(Path file) {
-		if (!autoExec.get().equals("off")) {
+		boolean autoex = !autoExec.get().equals("off");
+		var mode = this.mode.get();
+		if (mode.isToast && !autoex) {
+			try {
+				Notifications.getInstance().addStatus(new ScreenshotToast(new ImageInstance.LocalImpl(file)));
+			} catch (IOException e) {
+				Notifications.getInstance().addStatus("screenshotUtils", "failed_to_load_toast");
+			}
+		}
+		if (autoex) {
 			actions.forEach((condition, action) -> {
 				if (condition.getAsBoolean() && autoExec.get().equals(action.getName())) {
 					action.getClickEvent(file).doAction();
 				}
 			});
-			return null;
 		}
+		if (autoex || !mode.isChat) return null;
 
 		MutableText message = Text.empty();
 		actions.forEach((condition, action) -> {
@@ -137,18 +146,25 @@ public class ScreenshotUtils extends AbstractModule {
 		return message;
 	}
 
+	@AllArgsConstructor
+	private enum Mode {
+		CHAT(true, false),
+		TOAST(false, true),
+		CHAT_AND_TOAST(true, true);
+		private final boolean isChat, isToast;
+
+		@Override
+		public String toString() {
+			return "screenshot_utils.mode."+ super.toString().toLowerCase(Locale.ROOT);
+		}
+	}
+
 	public interface OnActionCall {
 
 		void doAction(Path file);
 	}
 
-	@AllArgsConstructor
-	public static class Action {
-
-		private final String translationKey;
-		private final Formatting formatting;
-		private final String hoverTextKey;
-		private final OnActionCall clickEvent;
+	public record Action(String translationKey, Formatting formatting, String hoverTextKey, OnActionCall clickEvent) {
 
 		public Text getText(Path file) {
 			return Text.translatable(translationKey).setStyle(Style.EMPTY.withColor(formatting)
