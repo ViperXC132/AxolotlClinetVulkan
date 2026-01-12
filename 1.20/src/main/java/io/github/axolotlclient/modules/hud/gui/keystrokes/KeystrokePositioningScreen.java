@@ -36,17 +36,22 @@ import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.util.ClientColors;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.text.CommonTexts;
 import net.minecraft.text.Text;
+import org.lwjgl.glfw.GLFW;
 
 public class KeystrokePositioningScreen extends Screen {
 	private final Screen parent;
 	private final KeystrokeHud hud;
 	private KeystrokeHud.Keystroke focused;
 	private final KeystrokeHud.Keystroke editing;
+	private static final long MOVE_CURSOR = GLFW.glfwCreateStandardCursor(GLFW.GLFW_RESIZE_ALL_CURSOR);
+	private static final long DEFAULT_CURSOR = GLFW.glfwCreateStandardCursor(GLFW.GLFW_ARROW_CURSOR);
+	private long currentCursor;
 
 	public KeystrokePositioningScreen(Screen parent, KeystrokeHud hud, KeystrokeHud.Keystroke focused) {
 		super(Text.translatable("keystrokes.stroke.move"));
@@ -89,13 +94,31 @@ public class KeystrokePositioningScreen extends Screen {
 		guiGraphics.getMatrices().pop();
 		guiGraphics.fillGradient(0, 0, this.width, this.height, -1072689136, -804253680);
 		super.render(guiGraphics, mouseX, mouseY, partialTick);
+		Optional<KeystrokeHud.Keystroke> hovered = Optional.empty();
 		if (editing != null) {
 			drawStroke(guiGraphics, mouseX, mouseY, editing);
+			if (getScaledRenderPos(editing).isMouseOver(mouseX, mouseY)) {
+				hovered = Optional.of(editing);
+			}
 		} else {
-			hud.keystrokes.forEach(s -> drawStroke(guiGraphics, mouseX, mouseY, s));
+			for (KeystrokeHud.Keystroke k : hud.keystrokes) {
+				var pos = Optional.of(getScaledRenderPos(k));
+				if (pos.get().isMouseOver(mouseX, mouseY)) {
+					hovered = Optional.of(k);
+				}
+				drawStroke(guiGraphics, mouseX, mouseY, k);
+			}
 		}
+		setCursor(hovered.isPresent() ? MOVE_CURSOR : DEFAULT_CURSOR);
 		if (mouseDown && snap != null) {
 			snap.renderSnaps(guiGraphics);
+		}
+	}
+
+	private void setCursor(long cursor) {
+		if (cursor > 0 && cursor != currentCursor) {
+			currentCursor = cursor;
+			GLFW.glfwSetCursor(MinecraftClient.getInstance().getWindow().getHandle(), cursor);
 		}
 	}
 
@@ -210,5 +233,9 @@ public class KeystrokePositioningScreen extends Screen {
 		} else if (snap != null) {
 			snap = null;
 		}
+	}
+	@Override
+	public void removed() {
+		setCursor(DEFAULT_CURSOR);
 	}
 }

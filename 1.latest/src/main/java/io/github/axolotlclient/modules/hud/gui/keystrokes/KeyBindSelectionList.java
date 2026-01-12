@@ -29,14 +29,13 @@ import java.util.function.Consumer;
 
 import com.google.common.collect.ImmutableList;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
+import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarratedElementType;
@@ -45,8 +44,9 @@ import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.network.chat.Component;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 
-@Environment(EnvType.CLIENT)
+@NullMarked
 public class KeyBindSelectionList extends ContainerObjectSelectionList<KeyBindSelectionList.Entry> {
 	private static final int ITEM_HEIGHT = 20;
 	final KeyBindSelectionScreen keyBindsScreen;
@@ -77,7 +77,6 @@ public class KeyBindSelectionList extends ContainerObjectSelectionList<KeyBindSe
 		return 340;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public class CategoryEntry extends KeyBindSelectionList.Entry {
 		final Component name;
 		private final int width;
@@ -119,18 +118,17 @@ public class KeyBindSelectionList extends ContainerObjectSelectionList<KeyBindSe
 		}
 	}
 
-	@Environment(EnvType.CLIENT)
 	public abstract static class Entry extends ContainerObjectSelectionList.Entry<KeyBindSelectionList.Entry> {
 
 	}
 
-	@Environment(EnvType.CLIENT)
 	public class KeyEntry extends KeyBindSelectionList.Entry {
-		private final Component name, boundKey;
+		private final Component boundKey;
 		private final Button changeButton;
+		private final StringWidget name;
 
 		KeyEntry(final KeyMapping key, final Component name) {
-			this.name = name;
+			this.name = new StringWidget(name, minecraft.font).setMaxWidth(100, StringWidget.TextOverflow.SCROLLING);
 			this.boundKey = key.getTranslatedKeyMessage();
 			this.changeButton = Button.builder(Component.translatable("keystrokes.key.select"), button -> {
 					selectionConsumer.accept(key);
@@ -148,7 +146,9 @@ public class KeyBindSelectionList extends ContainerObjectSelectionList<KeyBindSe
 			int k = i - 5 - this.changeButton.getWidth();
 			this.changeButton.setPosition(k, j);
 			this.changeButton.render(guiGraphics, mouseX, mouseY, partialTick);
-			guiGraphics.drawString(minecraft.font, this.name, getContentX(), getContentY() + getContentHeight() / 2 - 9 / 2, -1);
+			this.name.setRectangle(getContentWidth() * 3 / 8, getContentHeight(), getContentX(), getContentY());
+			this.name.setMaxWidth(getContentWidth() * 3 / 8, StringWidget.TextOverflow.SCROLLING);
+			this.name.render(guiGraphics, mouseX, mouseY, partialTick);
 			guiGraphics.drawString(minecraft.font, boundKey, getContentX() + getContentWidth() / 2 - minecraft.font.width(boundKey) / 2, getContentY() + getContentHeight() / 2 - 9 / 2, Colors.GRAY.toInt());
 		}
 

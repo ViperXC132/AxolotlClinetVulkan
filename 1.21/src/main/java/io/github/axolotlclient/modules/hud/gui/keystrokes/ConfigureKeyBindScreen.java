@@ -144,7 +144,7 @@ public class ConfigureKeyBindScreen extends Screen {
 				@Override
 				protected void applyValue() {
 					int size = (int) (value * (sliderMax - sliderMin) + sliderMin);
-					this.value = (size - sliderMin) / (18f - sliderMin);
+					this.value = (size - sliderMin) / ((float)sliderMax - sliderMin);
 					customRender.setSize(size);
 				}
 			};

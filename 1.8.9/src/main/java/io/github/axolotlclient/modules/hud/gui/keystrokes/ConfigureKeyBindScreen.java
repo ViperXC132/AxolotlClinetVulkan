@@ -147,6 +147,7 @@ public class ConfigureKeyBindScreen extends io.github.axolotlclient.AxolotlClien
 					super.setMessage(I18n.translate("keystrokes.stroke.configure_graphics_size", Integer.parseInt(message)));
 				}
 			};
+			sizeSlider.setMessage(""+customRender.getSize());
 			addDrawableChild(sizeSlider);
 			addDrawableChild(new VanillaButtonWidget(rightColX + 98 + 4, rightColY, 48, 20, I18n.translate("keystrokes.stroke.configure_graphics"), btn ->
 				minecraft.openScreen(new AxoGraphicsWidget.AxoGraphicsEditorScreen(this, customRender.getGraphics()))));

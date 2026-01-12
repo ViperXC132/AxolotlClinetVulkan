@@ -32,6 +32,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.ElementPath;
 import net.minecraft.client.gui.GuiGraphics;
@@ -41,6 +42,7 @@ import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.screen.narration.NarrationPart;
 import net.minecraft.client.gui.widget.button.ButtonWidget;
 import net.minecraft.client.gui.widget.list.ElementListWidget;
+import net.minecraft.client.gui.widget.text.TextWidget;
 import net.minecraft.client.option.KeyBind;
 import net.minecraft.text.Text;
 import org.apache.commons.lang3.ArrayUtils;
@@ -125,11 +127,23 @@ public class KeyBindSelectionList extends ElementListWidget<KeyBindSelectionList
 
 	@Environment(EnvType.CLIENT)
 	public class KeyEntry extends Entry {
-		private final Text name, boundKey;
+		private final Text boundKey;
 		private final ButtonWidget changeButton;
+		private final TextWidget name;
 
 		KeyEntry(final KeyBind key, final Text name) {
-			this.name = name;
+			this.name = new TextWidget(name, client.textRenderer) {
+				@Override
+				public void drawWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+					Text text = this.getMessage();
+					TextRenderer textRenderer = this.getTextRenderer();
+					if (textRenderer.getWidth(text) > getWidth()) {
+						drawScrollingText(graphics, textRenderer, 2, -1);
+					} else {
+						graphics.drawShadowedText(textRenderer, text, this.getX(), this.getY() + (this.getHeight() - 9) / 2, this.getTextColor());
+					}
+				}
+			};
 			this.boundKey = key.getKeyName();
 			this.changeButton = ButtonWidget.builder(Text.translatable("keystrokes.key.select"), button -> {
 					selectionConsumer.accept(key);
@@ -147,7 +161,8 @@ public class KeyBindSelectionList extends ElementListWidget<KeyBindSelectionList
 			int k = i - 5 - this.changeButton.getWidth();
 			this.changeButton.setPosition(k, j);
 			this.changeButton.render(guiGraphics, mouseX, mouseY, partialTick);
-			guiGraphics.drawShadowedText(client.textRenderer, this.name, left, top + height / 2 - 9 / 2, -1);
+			name.axolotlclientconfig$setRectangle(width * 3 / 8, height, left, top);
+			name.render(guiGraphics, mouseX, mouseY, partialTick);
 			guiGraphics.drawShadowedText(client.textRenderer, boundKey, left + width / 2 - client.textRenderer.getWidth(boundKey) / 2, top + height / 2 - 9 / 2, Colors.GRAY.toInt());
 		}
 
