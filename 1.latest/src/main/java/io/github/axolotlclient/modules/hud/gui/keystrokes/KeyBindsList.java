@@ -27,8 +27,6 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
@@ -39,8 +37,9 @@ import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NullMarked;
 
-@Environment(EnvType.CLIENT)
+@NullMarked
 public class KeyBindsList extends ContainerObjectSelectionList<KeyBindsList.Entry> {
 	final KeystrokesScreen keyBindsScreen;
 	private int maxNameWidth;
@@ -62,7 +61,7 @@ public class KeyBindsList extends ContainerObjectSelectionList<KeyBindsList.Entr
 				this.maxNameWidth = i;
 			}
 
-			this.addEntry(new KeyEntry(keyMapping, component));
+			this.addEntry(new KeyEntry(keyMapping));
 		}
 
 		addEntry(new SpacerEntry());
@@ -74,7 +73,6 @@ public class KeyBindsList extends ContainerObjectSelectionList<KeyBindsList.Entr
 		return 340;
 	}
 
-	@Environment(EnvType.CLIENT)
 	public abstract static class Entry extends ContainerObjectSelectionList.Entry<Entry> {
 
 	}
@@ -105,14 +103,13 @@ public class KeyBindsList extends ContainerObjectSelectionList<KeyBindsList.Entr
 
 	private static final Component CONFIGURE_BUTTON_TITLE = Component.translatable("keystrokes.stroke.configure");
 
-	@Environment(EnvType.CLIENT)
 	public class KeyEntry extends Entry {
 		private static final Component REMOVE_BUTTON_TITLE = Component.translatable("keystrokes.stroke.remove");
 		private final KeystrokeHud.Keystroke key;
 		private final Component name;
 		private final Button configureButton, removeButton;
 
-		KeyEntry(final KeystrokeHud.Keystroke key, final Component name) {
+		KeyEntry(final KeystrokeHud.Keystroke key) {
 			this.key = key;
 			this.name = key.getKey().getTranslatedKeyMessage();
 			this.configureButton = Button.builder(CONFIGURE_BUTTON_TITLE, button -> minecraft.setScreen(new ConfigureKeyBindScreen(keyBindsScreen, keyBindsScreen.hud, key, false)))
@@ -159,37 +156,43 @@ public class KeyBindsList extends ContainerObjectSelectionList<KeyBindsList.Entr
 
 	public class NewEntry extends Entry {
 
-		private final Button addButton, addSpecialButton;
-		private final KeystrokeHud.Keystroke key = keyBindsScreen.hud.newStroke();
+		private final Button addButton, addSpecialButton, addCustomButton;
 
 		public NewEntry() {
-			this.addButton = Button.builder(Component.translatable("keystrokes.stroke.add"), button -> minecraft.setScreen(new ConfigureKeyBindScreen(keyBindsScreen, keyBindsScreen.hud, key, true)))
-				.bounds(0, 0, 150, 20)
+			this.addButton = Button.builder(Component.translatable("keystrokes.stroke.add"), button -> minecraft.setScreen(new ConfigureKeyBindScreen(keyBindsScreen,
+					keyBindsScreen.hud, keyBindsScreen.hud.newStroke(), true)))
+				.bounds(0, 0, 100, 20)
 				.build();
 			this.addSpecialButton = Button.builder(Component.translatable("keystrokes.stroke.add.special"),
 					button -> minecraft.setScreen(new AddSpecialKeystrokeScreen(keyBindsScreen, keyBindsScreen.hud)))
-				.width(150).build();
+				.width(100).build();
+			this.addCustomButton = Button.builder(Component.translatable("keystrokes.stroke.add.custom"),
+					button -> minecraft.setScreen(new ConfigureKeyBindScreen(keyBindsScreen, keyBindsScreen.hud, keyBindsScreen.hud.newCustomStroke(), true)))
+				.width(100).build();
 		}
 
 		@Override
 		public List<? extends NarratableEntry> narratables() {
-			return List.of(addSpecialButton, addButton);
+			return List.of(addCustomButton, addSpecialButton, addButton);
 		}
 
 		@Override
 		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
-			int i = KeyBindsList.this.scrollBarX() - getContentWidth() / 2 - 10 + 4;
+			int i = KeyBindsList.this.scrollBarX() - getContentWidth()/2 - (300+8)/2 - 10;
 			int j = getContentY() - 2;
+			this.addCustomButton.setPosition(i, j);
+			this.addCustomButton.render(guiGraphics, mouseX, mouseY, partialTick);
+			i += addCustomButton.getWidth() + 4;
+			this.addSpecialButton.setPosition(i, j);
+			this.addSpecialButton.render(guiGraphics, mouseX, mouseY, partialTick);
+			i += addSpecialButton.getWidth() + 4;
 			this.addButton.setPosition(i, j);
 			this.addButton.render(guiGraphics, mouseX, mouseY, partialTick);
-			int k = i - addButton.getWidth() - 8;
-			this.addSpecialButton.setPosition(k, j);
-			this.addSpecialButton.render(guiGraphics, mouseX, mouseY, partialTick);
 		}
 
 		@Override
 		public List<? extends GuiEventListener> children() {
-			return List.of(addSpecialButton, addButton);
+			return List.of(addCustomButton, addSpecialButton, addButton);
 		}
 	}
 }

@@ -32,6 +32,7 @@ import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Graphics;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
+import io.github.axolotlclient.mixin.DynamicTextureAccessor;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.Window;
@@ -41,10 +42,6 @@ import net.minecraft.text.Text;
 import org.jetbrains.annotations.ApiStatus;
 
 public class Util {
-
-	public static String lastgame;
-	public static String game;
-
 	@ApiStatus.Internal
 	public static Window window;
 
@@ -145,13 +142,10 @@ public class Util {
 
 	public static Identifier getTexture(Graphics graphics, String name) {
 		Identifier id = new Identifier("axolotlclient", name.toLowerCase(Locale.ROOT));
-		return getTexture(graphics, id);
-	}
-
-	public static Identifier getTexture(Graphics graphics, Identifier id) {
 		try {
 			DynamicTexture texture;
-			if (Minecraft.getInstance().getTextureManager().get(id) == null) {
+			var previous = Minecraft.getInstance().getTextureManager().get(id);
+			if (previous == null || (previous instanceof DynamicTextureAccessor tex && (tex.getHeight() != graphics.getHeight() || tex.getWidth() != graphics.getWidth()))) {
 				texture = new DynamicTexture(ImageIO.read(new ByteArrayInputStream(graphics.getPixelData())));
 				Minecraft.getInstance().getTextureManager().register(id, texture);
 			} else {

@@ -159,6 +159,16 @@ public class KeystrokePositioningScreen extends Screen {
 			} else {
 				focused = null;
 			}
+		} else if (button == 1 && editing == null) {
+			Optional<KeystrokeHud.Keystroke> entry = Optional.empty();
+			for (KeystrokeHud.Keystroke k : hud.keystrokes) {
+				var pos = getScaledRenderPos(k);
+				if (pos.isMouseOver(mouseX, mouseY)) {
+					entry = Optional.of(k);
+					break;
+				}
+			}
+			entry.ifPresent(stroke -> minecraft.openScreen(new ConfigureKeyBindScreen(this, hud, stroke, false)));
 		}
 	}
 

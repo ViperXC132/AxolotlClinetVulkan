@@ -34,7 +34,10 @@ import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.util.GraphicsImpl;
+import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.config.profiles.ProfileAware;
 import io.github.axolotlclient.mixin.KeyBindAccessor;
@@ -61,6 +64,7 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.resource.Identifier;
 import net.minecraft.text.Formatting;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Nullable;
 
 import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawCenteredString;
 import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawString;
@@ -126,7 +130,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 		keystrokes.add(createFromKey(new Rectangle(36, 18, 17, 17), pos, client.options.rightKey));
 
 		// Space
-		keystrokes.add(new CustomRenderKeystroke(SpecialKeystroke.SPACE));
+		keystrokes.add(new SpecialRenderKeystroke(SpecialKeystroke.SPACE));
 	}
 
 	public void setKeystrokes() {
@@ -240,10 +244,11 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 
 	public interface KeystrokeRenderer {
 
-		void render(Keystroke stroke);
+		void render(Keystroke stroke, AxoRenderContextImpl graphics);
 	}
 
 	public abstract class Keystroke {
+		protected static final Supplier<String> NO_LABEL = () -> Formatting.ITALIC + I18n.translate("keystrokes.stroke.custom_renderer");
 
 		@Getter
 		@Setter
@@ -285,7 +290,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 
 		public void render(AxoRenderContext ctx) {
 			renderStroke(ctx);
-			render.render(this);
+			render.render(this, (AxoRenderContextImpl) ctx);
 		}
 
 		public void renderStroke(AxoRenderContext matrices) {
@@ -335,46 +340,123 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 		public Map<String, Object> serialize() {
 			Map<String, Object> map = new HashMap<>();
 			map.put("key", key.getKeyCode());
+			map.put("key_name", key.getName());
 			map.put("bounds", Map.of("x", bounds.x(), "y", bounds.y(), "width", bounds.width(), "height", bounds.height()));
 			return map;
 		}
 
-		public abstract String getLabel();
+		public String getLabel() {
+			return NO_LABEL.get();
+		}
 
-		public abstract void setLabel(String label);
+		public void setLabel(String label) {
 
-		public abstract boolean isLabelEditable();
+		}
+
+		public boolean isLabelEditable() {
+			return false;
+		}
 	}
 
 	@SuppressWarnings("unchecked")
 	private Keystroke deserializeKey(Map<String, Object> json) {
-		if ("option".equals(json.get("type"))) {
-			KeyBinding key = KeyBindAccessor.getAllKeyBinds().stream().filter(k -> k.getName().equals(json.getOrDefault("key_name", json.get("option")))).findFirst().orElseThrow();
-			return new CustomRenderKeystroke(SpecialKeystroke.byId.get(((String) json.get("special_name")).toLowerCase(Locale.ROOT)),
-				getRectangle((Map<String, ?>) json.get("bounds")), getContentPos(), key);
-		} else {
-			var key = KeyBindAccessor.getAllKeyBinds().stream().filter(k -> k.getName().equals(json.get("key_name"))).findFirst().orElseThrow();
-			return new LabelKeystroke(getRectangle((Map<String, ?>) json.get("bounds")), getContentPos(), key, (String) json.get("label"), (boolean) json.get("synchronize_label"),
-				Justification.valueOf((String) json.getOrDefault("justification", "CENTER")));
-		}
+		var type = (String) json.get("type");
+		return switch (type) {
+			case "custom_render" -> {
+				var key = KeyBindAccessor.getAllKeyBinds().stream().filter(k -> k.getName().equals(json.get("key_name"))).findFirst().orElseThrow();
+				yield new CustomRenderKeystroke(getRectangle((Map<String, ?>) json.get("bounds")), getContentPos(), key, (String) json.get("graphics"));
+			}
+			case "option" -> {
+				var key = KeyBindAccessor.getAllKeyBinds().stream().filter(k -> k.getName().equals(json.getOrDefault("key_name", json.get("option")))).findFirst().orElseThrow();
+				yield new SpecialRenderKeystroke(SpecialKeystroke.byId.get(((String) json.get("special_name")).toLowerCase(Locale.ROOT)),
+					getRectangle((Map<String, ?>) json.get("bounds")), getContentPos(), key);
+			}
+			default -> {
+				var key = KeyBindAccessor.getAllKeyBinds().stream().filter(k -> k.getName().equals(json.get("key_name"))).findFirst().orElseThrow();
+				yield new LabelKeystroke(getRectangle((Map<String, ?>) json.get("bounds")), getContentPos(), key, (String) json.get("label"), (boolean) json.get("synchronize_label"),
+					Justification.valueOf((String) json.getOrDefault("justification", "CENTER")));
+			}
+		};
 	}
 
 	private static Rectangle getRectangle(Map<String, ?> json) {
 		return new Rectangle((int) (long) json.get("x"), (int) (long) json.get("y"), (int) (long) json.get("width"), (int) (long) json.get("height"));
 	}
 
+	public Keystroke newSpecialStroke(SpecialKeystroke stroke) {
+		return new SpecialRenderKeystroke(stroke);
+	}
+
+	public LabelKeystroke newStroke() {
+		return new LabelKeystroke(new Rectangle(0, 0, 17, 17), getContentPos(), null, "", false, Justification.CENTER);
+	}
+
+	public Keystroke newCustomStroke() {
+		return new CustomRenderKeystroke(new Rectangle(0, 0, 17, 17), getContentPos(), null, null);
+	}
+
 	public class CustomRenderKeystroke extends Keystroke {
+		public static final int DEFAULT_SIZE = 9;
 
-		private static final Supplier<String> label = () -> Formatting.ITALIC + I18n.translate("keystrokes.stroke.custom_renderer");
+		@Getter
+		private final GraphicsOption graphics = new GraphicsOption("custom_render_stroke" + hashCode(), DEFAULT_SIZE, DEFAULT_SIZE);
 
+		public CustomRenderKeystroke(Rectangle bounds, DrawPosition offset, KeyBinding key, @Nullable String graphic) {
+			super(bounds, offset, key, (stroke, graphics) -> {
+				var b = stroke.bounds;
+				var xC = b.x() + stroke.offset.x() + b.width() / 2f;
+				var yC = b.y() + stroke.offset.y() + b.height() / 2f;
+				GraphicsOption g = ((CustomRenderKeystroke) stroke).getGraphics();
+				var gW = g.get().getWidth();
+				var gH = g.get().getHeight();
+				int color = stroke.getFGColor().toInt();
+				var texture = io.github.axolotlclient.util.Util.getTexture(g);
+				graphics.br$pushMatrix();
+				graphics.br$translateMatrix(xC - gW / 2f, yC - gH / 2f);
+				if (shadow.get()) {
+					graphics.br$translateMatrix(1, 1);
+					graphics.axolotlclient_rendering$roundedBlit(texture, 0, 0, gW, gH, 0, 1f, 0, 1f, ClientColors.ARGB.scaleRGB(color, 0.25f), 0f);
+					graphics.br$translateMatrix(-1, -1);
+				}
+				graphics.axolotlclient_rendering$roundedBlit(texture, 0, 0, gW, gH, 0, 1f, 0, 1f, color, 0f);
+				graphics.br$popMatrix();
+			});
+			if (graphic != null) {
+				graphics.fromSerializedValue(graphic);
+			}
+		}
+
+		public int getSize() {
+			return graphics.get().getWidth();
+		}
+
+		public void setSize(int size) {
+			if (size != getSize()) {
+				var newGraphics = new GraphicsImpl(size, size);
+				graphics.get().copyTo(newGraphics);
+				graphics.set(newGraphics);
+			}
+		}
+
+		@Override
+		public Map<String, Object> serialize() {
+			var json = super.serialize();
+			json.put("type", "custom_render");
+			json.put("graphics", graphics.toSerializedValue());
+			return json;
+		}
+
+	}
+
+	public class SpecialRenderKeystroke extends Keystroke {
 		private final SpecialKeystroke parent;
 
-		public CustomRenderKeystroke(SpecialKeystroke stroke, Rectangle bounds, DrawPosition offset, KeyBinding key) {
-			super(bounds, offset, key, (s) -> stroke.getRenderer().render(KeystrokeHud.this, s));
+		public SpecialRenderKeystroke(SpecialKeystroke stroke, Rectangle bounds, DrawPosition offset, KeyBinding key) {
+			super(bounds, offset, key, (s, graphics) -> stroke.getRenderer().render(KeystrokeHud.this, s));
 			this.parent = stroke;
 		}
 
-		public CustomRenderKeystroke(SpecialKeystroke stroke) {
+		public SpecialRenderKeystroke(SpecialKeystroke stroke) {
 			this(stroke, stroke.getRect().copy(), KeystrokeHud.this.getContentPos(), stroke.getKey());
 		}
 
@@ -382,33 +464,10 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 		public Map<String, Object> serialize() {
 			Map<String, Object> json = super.serialize();
 			json.put("type", "option");
-			json.put("key_name", key.getName());
 			json.put("special_name", parent.getId());
 			return json;
 		}
 
-		@Override
-		public String getLabel() {
-			return label.get();
-		}
-
-		@Override
-		public void setLabel(String label) {
-
-		}
-
-		@Override
-		public boolean isLabelEditable() {
-			return false;
-		}
-	}
-
-	public Keystroke newSpecialStroke(SpecialKeystroke stroke) {
-		return new CustomRenderKeystroke(stroke);
-	}
-
-	public LabelKeystroke newStroke() {
-		return new LabelKeystroke(new Rectangle(0, 0, 17, 17), getContentPos(), null, "", false, Justification.CENTER);
 	}
 
 	@Setter
@@ -425,16 +484,14 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 		}
 
 		public LabelKeystroke(Rectangle bounds, DrawPosition offset, KeyBinding key, String label, boolean synchronizeLabel, Justification justification) {
-			super(bounds, offset, key, (stroke) -> {
-			});
-			this.label = label;
-			this.render = (stroke) -> {
+			super(bounds, offset, key, (stroke, graphics) -> {
 				Rectangle strokeBounds = stroke.bounds;
-				int x = strokeBounds.x() + stroke.offset.x() + 2 + this.justification.getXOffset(getLabel(), strokeBounds.width() - 3);
+				int x = strokeBounds.x() + stroke.offset.x() + 2 + ((LabelKeystroke) stroke).justification.getXOffset(stroke.getLabel(), strokeBounds.width() - 3);
 				float y = strokeBounds.y() + stroke.offset.y() + ((float) strokeBounds.height() / 2) - 4;
 
-				drawString(getLabel(), x, (int) y, stroke.getFGColor().toInt(), shadow.get());
-			};
+				drawString(stroke.getLabel(), x, (int) y, stroke.getFGColor().toInt(), shadow.get());
+			});
+			this.label = label;
 			setSynchronizeLabel(synchronizeLabel);
 			this.justification = justification;
 		}
@@ -443,7 +500,6 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 		public Map<String, Object> serialize() {
 			Map<String, Object> json = super.serialize();
 			json.put("type", "custom");
-			json.put("key_name", key.getName());
 			json.put("label", label);
 			json.put("synchronize_label", synchronizeLabel);
 			json.put("justification", justification.name());

@@ -385,7 +385,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 		}
 		for (HudEntry hud : getEntries()) {
 			if (hud.isEnabled()) {
-				SnappingHelper.renderLinks(context, hud, hudLinkLineWidth.get()/2f);
+				SnappingHelper.renderLinks(context, hud, hudLinkLineWidth.get() / 2f);
 			}
 		}
 	}
@@ -399,7 +399,13 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 
 	@Override
 	public void reloadConfig() {
-		entries.entrySet().removeIf(entry -> entry.getValue() instanceof CustomHudEntry);
+		entries.entrySet().removeIf(entry -> {
+			if (entry.getValue() instanceof CustomHudEntry custom) {
+				hudCategory.getSubCategoryMap().remove(custom.getAllOptions());
+				return true;
+			}
+			return false;
+		});
 		entries.values().forEach(HudEntry::clearBoundsDependencies);
 		loadCustomEntries();
 		loadHudDependencyLinks();

@@ -28,10 +28,12 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.Integ
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import io.github.axolotlclient.modules.hud.gui.layout.Justification;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import io.github.axolotlclient.util.options.rounded.AxoGraphicsWidget;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
 import net.minecraft.client.gui.widget.ClickableWidget;
+import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.widget.button.ButtonWidget;
 import net.minecraft.client.gui.widget.button.CyclingButtonWidget;
@@ -127,6 +129,28 @@ public class ConfigureKeyBindScreen extends Screen {
 					.initially(s.getJustification()).build(0, 0, 58, 20,
 						Text.translatable("justification"), (btn, val) -> s.setJustification(val)));
 			}
+		}
+		if (stroke instanceof KeystrokeHud.CustomRenderKeystroke customRender) {
+			names.add(new TextWidget(150, 20, Text.translatable("keystrokes.stroke.graphics"), textRenderer));
+			var graphicsLayout = options.add(LinearLayoutWidget.createHorizontal()).setSpacing(4);
+			var sliderMin = 2;
+			var sliderMax = 25;
+			var sizeSlider = new SliderWidget(0, 0, 98, 20, Text.translatable("keystrokes.stroke.configure_graphics_size", customRender.getSize()), (customRender.getSize() - sliderMin) / (18f - sliderMin)) {
+				@Override
+				protected void updateMessage() {
+					setMessage(Text.translatable("keystrokes.stroke.configure_graphics_size", (int) (value * (sliderMax - sliderMin) + sliderMin)));
+				}
+
+				@Override
+				protected void applyValue() {
+					int size = (int) (value * (sliderMax - sliderMin) + sliderMin);
+					this.value = (size - sliderMin) / (18f - sliderMin);
+					customRender.setSize(size);
+				}
+			};
+			graphicsLayout.add(sizeSlider);
+			graphicsLayout.add(ButtonWidget.builder(Text.translatable("keystrokes.stroke.configure_graphics"), btn ->
+				client.setScreen(new AxoGraphicsWidget.AxoGraphicsEditorScreen(this, customRender.getGraphics()))).width(48).build());
 		}
 		names.add(new TextWidget(150, 20, Text.translatable("keystrokes.stroke.width"), textRenderer));
 		options.add(new IntegerWidget(0, 0, 150, 20, width));

@@ -43,6 +43,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 
 public class KeystrokePositioningScreen extends Screen {
 	private final Screen parent;
@@ -72,7 +73,6 @@ public class KeystrokePositioningScreen extends Screen {
 	@Override
 	public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 		guiGraphics.pose().pushMatrix();
-		//guiGraphics.pose().translate(0, 0, -300);
 		super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
 		HudManager.getInstance().renderPlaceholder(guiGraphics, partialTick);
 		guiGraphics.pose().popMatrix();
@@ -93,7 +93,7 @@ public class KeystrokePositioningScreen extends Screen {
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+	public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 		super.render(guiGraphics, mouseX, mouseY, partialTick);
 		if (editing != null) {
 			drawStroke(guiGraphics, mouseX, mouseY, editing);
@@ -121,7 +121,7 @@ public class KeystrokePositioningScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+	public boolean mouseClicked(@NotNull MouseButtonEvent event, boolean doubleClick) {
 		var value = super.mouseClicked(event, doubleClick);
 		if (event.button() == 0) {
 			var mouseX = event.x();
@@ -153,6 +153,18 @@ public class KeystrokePositioningScreen extends Screen {
 			} else {
 				focused = null;
 			}
+		} else if (event.button() == 1 && editing == null) {
+			var mouseX = event.x();
+			var mouseY = event.y();
+			Optional<KeystrokeHud.Keystroke> entry = Optional.empty();
+			for (KeystrokeHud.Keystroke k : hud.keystrokes) {
+				var pos = getScaledRenderPos(k);
+				if (pos.isMouseOver(mouseX, mouseY)) {
+					entry = Optional.of(k);
+					break;
+				}
+			}
+			entry.ifPresent(stroke -> minecraft.setScreen(new ConfigureKeyBindScreen(this, hud, stroke, false)));
 		}
 		return value;
 	}
@@ -164,7 +176,7 @@ public class KeystrokePositioningScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseReleased(MouseButtonEvent event) {
+	public boolean mouseReleased(@NotNull MouseButtonEvent event) {
 		if (focused != null) {
 			hud.saveKeystrokes();
 		}
@@ -175,7 +187,7 @@ public class KeystrokePositioningScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
+	public boolean mouseDragged(@NotNull MouseButtonEvent event, double deltaX, double deltaY) {
 		if (focused != null && mouseDown) {
 			focused.setX((int) Math.round((event.x() - offset.x()) / hud.getScale()));
 			focused.setY((int) Math.round((event.y() - offset.y()) / hud.getScale()));

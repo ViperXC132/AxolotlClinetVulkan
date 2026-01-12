@@ -933,5 +933,9 @@
 	"screenshot_utils.mode": "Display Mode",
 	"screenshot_utils.mode.chat": "Chat",
 	"screenshot_utils.mode.toast": "Toast",
-	"screenshot_utils.mode.chat_and_toast": "Chat And Toast"
+	"screenshot_utils.mode.chat_and_toast": "Chat And Toast",
+	"keystrokes.stroke.graphics": "Graphics",
+	"keystrokes.stroke.configure_graphics_size": "Graphics Size: %d",
+	"keystrokes.stroke.configure_graphics": "Configure Graphics",
+	"keystrokes.stroke.add.custom": "Add Custom Stroke"
 }

@@ -28,6 +28,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.Integ
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import io.github.axolotlclient.modules.hud.gui.layout.Justification;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import io.github.axolotlclient.util.options.rounded.AxoGraphicsWidget;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
@@ -120,6 +121,30 @@ public class ConfigureKeyBindScreen extends Screen {
 					.initially(s.getJustification()).build(rightColX + 30 + 4 + 58 + 4, rightColY, 58, 20,
 						Text.translatable("justification"), (btn, val) -> s.setJustification(val)));
 			}
+			rightColY += 28;
+		}
+		if (stroke instanceof KeystrokeHud.CustomRenderKeystroke customRender) {
+			addDrawableChild(new TextWidget(leftColX, leftColY, 150, 20, Text.translatable("keystrokes.stroke.graphics"), textRenderer));
+			leftColY += 28;
+			var sliderMin = 2;
+			var sliderMax = 25;
+			var sizeSlider = new SliderWidget(rightColX, rightColY, 98, 20, Text.translatable("keystrokes.stroke.configure_graphics_size", customRender.getSize()), (customRender.getSize() - sliderMin) / (18f - sliderMin)) {
+				@Override
+				protected void updateMessage() {
+					setMessage(Text.translatable("keystrokes.stroke.configure_graphics_size", (int) (value * (sliderMax - sliderMin) + sliderMin)));
+				}
+
+				@Override
+				protected void applyValue() {
+					int size = (int) (value * (sliderMax - sliderMin) + sliderMin);
+					this.value = (size - sliderMin) / (18f - sliderMin);
+					customRender.setSize(size);
+				}
+			};
+			addDrawableChild(sizeSlider);
+			addDrawableChild(ButtonWidget.builder(Text.translatable("keystrokes.stroke.configure_graphics"), btn ->
+				client.setScreen(new AxoGraphicsWidget.AxoGraphicsEditorScreen(this, customRender.getGraphics())))
+				.position(rightColX + 98 + 4, rightColY).width(48).build());
 			rightColY += 28;
 		}
 		addDrawableChild(new TextWidget(leftColX, leftColY, 150, 20, Text.translatable("keystrokes.stroke.width"), textRenderer));

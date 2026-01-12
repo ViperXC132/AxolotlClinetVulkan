@@ -10,6 +10,7 @@
 - add rounding support to Scoreboard HUDs
 - add XPHud
 - add Screenshot Toasts
+- add Custom Graphics Keystrokes
 
 ### 3.1.8
 
