@@ -47,8 +47,16 @@ public class ReachHud extends SimpleTextHudEntry {
 	private long lastTime = 0;
 
 	private static double getAttackDistance(AxoEntity attacking, AxoEntity receiving) {
-		Vec3 camera = attacking.br$getRotation(1);
-		return camera.dist(receiving.br$getRotation(1));
+		var recHitboxRadii = receiving.br$getBoundingBoxHalfDimensions();
+		var attPos = attacking.br$getEyePos(1.0f).sub(receiving.br$getPos().add(0, receiving.br$getHeight()/2f, 0)).negate();
+		return Math.max(distToBox(attPos, recHitboxRadii), 0);
+	}
+
+	// The distance to a box defined by its radii (half side length). Also known as the distance field. Remember?
+	// See https://iquilezles.org/articles/distfunctions/
+	private static double distToBox(Vec3 pos, Vec3 boxRadii) {
+		var q = pos.abs().sub(boxRadii);
+		return q.max(0).len() + Math.min(Math.max(q.x(), Math.max(q.y(), q.z())), 0);
 	}
 
 	public ReachHud() {
@@ -59,12 +67,6 @@ public class ReachHud extends SimpleTextHudEntry {
 	public void init() {
 		Events.PLAYER_ATTACK.register((attacking, receiving) -> {
 			double distance = getAttackDistance(attacking, receiving);
-			if (distance < 0) {
-				distance *= -1;
-				// This should not happen...
-				currentDist = "NaN";
-				//return;
-			}
 
 			StringBuilder format = new StringBuilder("0");
 			if (decimalPlaces.get() > 0) {

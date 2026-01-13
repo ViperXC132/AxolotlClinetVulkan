@@ -30,6 +30,7 @@ import net.minecraft.client.entity.particle.Particle;
 import net.minecraft.client.entity.particle.ParticleManager;
 import net.minecraft.entity.particle.ParticleType;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -39,6 +40,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ParticleManager.class)
 public abstract class ParticleManagerMixin {
 
+	@Unique
 	private ParticleType cachedType;
 
 	@Inject(method = "addParticle(IDDDDDD[I)Lnet/minecraft/client/entity/particle/Particle;", at = @At(value = "HEAD"), cancellable = true)

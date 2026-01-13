@@ -107,12 +107,12 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 
 	@Override
 	public void br$rotateMatrix(float ang) {
-		matrices.rotate(Axis.X_POSITIVE.rotation(ang));
+		matrices.rotate(Axis.Z_POSITIVE.rotation(ang));
 	}
 
 	@Override
 	public void br$rotateMatrixAround(float ang, float x, float y) {
-		matrices.rotateAround(Axis.X_POSITIVE.rotation(ang), x, y, 0);
+		matrices.rotateAround(Axis.Z_POSITIVE.rotation(ang), x, y, 0);
 	}
 
 	// scissor

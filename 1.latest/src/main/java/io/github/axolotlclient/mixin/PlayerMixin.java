@@ -22,39 +22,47 @@
 
 package io.github.axolotlclient.mixin;
 
-import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.modules.particles.Particles;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.particle.ParticleTypes;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(PlayerEntity.class)
-public abstract class PlayerEntityMixin {
+@Mixin(Player.class)
+public abstract class PlayerMixin extends Avatar {
 
-	@Shadow
-	public abstract void addCritParticles(Entity target);
-
-	@Shadow
-	public abstract void addEnchantedHitParticles(Entity target);
-
-	@Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
-	private void onAttack(Entity target, CallbackInfo ci) {
-		Events.PLAYER_ATTACK.invoker().accept((PlayerEntity) (Object) this, target);
+	protected PlayerMixin(EntityType<? extends @NotNull LivingEntity> entityType, Level level) {
+		super(entityType, level);
 	}
 
-	@Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;onAttacking(Lnet/minecraft/entity/Entity;)V"))
-	private void onAttack(Entity target, CallbackInfo ci, @Local(ordinal = 2) boolean crit, @Local(ordinal = 1) float enchantedDamage) {
+	@Shadow
+	public abstract void crit(Entity entityHit);
+
+	@Shadow
+	public abstract void magicCrit(Entity entityHit);
+
+	@Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;hurtOrSimulate(Lnet/minecraft/world/damagesource/DamageSource;F)Z"))
+	private void onAttack(Entity target, CallbackInfo ci) {
+		Events.PLAYER_ATTACK.invoker().accept((Player) (Object) this, target);
+	}
+
+	@Inject(method = "attackVisualEffects", at = @At("TAIL"))
+	private void onAttackVisualEffects(Entity target, boolean crit, boolean sweepAttack, boolean fullyCharged, boolean isStabAttack, float enchantedDamage, CallbackInfo ci) {
 		if (Particles.getInstance().getAlwaysOn(ParticleTypes.CRIT) && !crit) {
-			addCritParticles(target);
+			crit(target);
 		}
 		if (Particles.getInstance().getAlwaysOn(ParticleTypes.ENCHANTED_HIT) && enchantedDamage == 0) {
-			addEnchantedHitParticles(target);
+			magicCrit(target);
 		}
 	}
 }

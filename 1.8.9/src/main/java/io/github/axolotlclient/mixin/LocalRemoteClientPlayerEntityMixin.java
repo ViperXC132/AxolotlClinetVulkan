@@ -1,5 +1,5 @@
 /*
- * Copyright © 2023 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2026 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -23,28 +23,20 @@
 package io.github.axolotlclient.mixin;
 
 import io.github.axolotlclient.bridge.events.Events;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.client.entity.living.player.LocalClientPlayerEntity;
+import net.minecraft.client.entity.living.player.RemoteClientPlayerEntity;
 import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.world.World;
+import net.minecraft.entity.living.player.PlayerEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin extends Entity {
+@Mixin({LocalClientPlayerEntity.class, RemoteClientPlayerEntity.class})
+public class LocalRemoteClientPlayerEntityMixin {
 
-	public LivingEntityMixin(EntityType<?> type, World world) {
-		super(type, world);
-	}
-
-	@Inject(method = "handleDamagingEvent", at = @At("TAIL"))
-	private void onDamage(DamageSource damageSource, CallbackInfo ci) {
-		if ((Entity) this instanceof PlayerEntity p) {
-			Events.PLAYER_HURT.invoker().accept(p, damageSource.getAttacker());
-		}
+	@Inject(method = "damage", at = @At("HEAD"))
+	private void onDamage(DamageSource damageSource, float f, CallbackInfoReturnable<Boolean> cir) {
+		Events.PLAYER_HURT.invoker().accept((PlayerEntity) (Object) this, damageSource.getAttacker());
 	}
 }

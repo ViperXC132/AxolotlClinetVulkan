@@ -31,6 +31,7 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 import io.github.axolotlclient.AxolotlClient;
@@ -134,7 +135,7 @@ public class ScreenshotUtils extends AbstractModule {
 		if (autoex) {
 			actions.forEach((condition, action) -> {
 				if (condition.getAsBoolean() && autoExec.get().equals(action.translationKey())) {
-					action.getClickEvent(file).doAction();
+					CompletableFuture.runAsync(action.getClickEvent(file)::doAction, CompletableFuture.delayedExecutor(2, TimeUnit.MILLISECONDS, client));
 				}
 			});
 		}

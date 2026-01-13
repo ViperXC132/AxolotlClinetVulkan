@@ -109,9 +109,14 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 
 					Screen newScreen = RecreatableScreen.tryRecreate(MinecraftClient.getInstance().currentScreen);
 					MinecraftClient.getInstance().setScreen(newScreen);
-				}));
+				}) {
+					@Override
+					public void fromSerializedValue(String value) {
+						super.fromSerializedValue(value);
+						ConfigUI.getInstance().setStyle(get().split("\\.")[1]);
+					}
+				});
 				AxolotlClient.getInstance().getConfigManager().load();
-				ConfigUI.getInstance().setStyle(configStyle.get().split("\\.")[1]);
 			} else {
 				AxolotlClient.getInstance().getConfigManager().load();
 			}

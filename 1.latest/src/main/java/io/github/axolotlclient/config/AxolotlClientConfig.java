@@ -91,17 +91,21 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 				.filter(s -> AxolotlClientCommon.SHADERS_SUPPORTED || !s.startsWith("rounded"))
 				.toArray(String[]::new);
 			if (themes.length > 1) {
-				StringArrayOption configStyle;
-				general.add(configStyle = new StringArrayOption("configStyle", themes,
+				general.add(new StringArrayOption("configStyle", themes,
 					"configStyle." + ConfigUI.getInstance().getCurrentStyle().getName(), s -> {
 					ConfigUI.getInstance().setStyle(s.split("\\.")[1]);
 					Minecraft.getInstance().schedule(() -> {
 						Screen newScreen = RecreatableScreen.tryRecreate(Minecraft.getInstance().screen);
 						Minecraft.getInstance().setScreen(newScreen);
 					});
-				}));
+				}) {
+					@Override
+					public void fromSerializedValue(String value) {
+						super.fromSerializedValue(value);
+						ConfigUI.getInstance().setStyle(get().split("\\.")[1]);
+					}
+				});
 				AxolotlClient.getInstance().getConfigManager().load();
-				ConfigUI.getInstance().setStyle(configStyle.get().split("\\.")[1]);
 			} else {
 				AxolotlClient.getInstance().getConfigManager().load();
 			}

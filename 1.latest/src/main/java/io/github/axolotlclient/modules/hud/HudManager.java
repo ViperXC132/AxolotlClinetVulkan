@@ -26,8 +26,6 @@ import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import io.github.axolotlclient.modules.hud.gui.hud.PackDisplayHud;
 import io.github.axolotlclient.modules.hud.gui.hud.PlayerHud;
-import io.github.axolotlclient.modules.hud.gui.hud.simple.ComboHud;
-import io.github.axolotlclient.modules.hud.gui.hud.simple.ReachHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
@@ -58,9 +56,6 @@ public class HudManager extends HudManagerCommon {
 		add(new KeystrokeHud());
 		add(new PackDisplayHud());
 		add(new PlayerHud());
-
-		((ReachHud) get(ReachHud.ID)).getEnabled().setForceOff(true, "feature.broken");
-		((ComboHud) get(ComboHud.ID)).getEnabled().setForceOff(true, "feature.broken");
 	}
 
 	@Override

@@ -74,4 +74,24 @@ public interface AxoEntity {
 	default UUID br$getUuid() {
 		throw BridgeUtil.noImpl();
 	}
+
+	@RequiresImpl
+	default Vec3 br$getEyePos(float delta) {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default float br$getHeight() {
+		throw BridgeUtil.noImpl();
+	}
+
+	/**
+	 * Get the radii of this entity's bounding box.
+	 *
+	 * @return a vector of half the box's side lengths. The origin of the vector is (0, height/2, 0) relative to the Entity's position.
+	 */
+	@RequiresImpl
+	default Vec3 br$getBoundingBoxHalfDimensions() {
+		throw BridgeUtil.noImpl();
+	}
 }

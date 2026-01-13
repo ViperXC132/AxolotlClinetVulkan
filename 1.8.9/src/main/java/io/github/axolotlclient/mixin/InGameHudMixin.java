@@ -40,6 +40,7 @@ import net.minecraft.client.gui.chat.ChatGui;
 import net.minecraft.client.render.TextRenderer;
 import net.minecraft.client.render.Window;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.entity.vehicle.RideableMinecartEntity;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import org.spongepowered.asm.mixin.Mixin;
@@ -159,6 +160,14 @@ public abstract class InGameHudMixin {
 		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
 		if (HudManager.getInstance().hudsEnabled() && hud.isEnabled()) {
 			return hud.getRawTrueX() * 2 + hud.getWidth();
+		}
+		return original.call(instance);
+	}
+
+	@WrapOperation(method = "renderStatusBars", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/player/PlayerEntity;getArmorProtection()I"))
+	private int axolotlclient$disableArmor(PlayerEntity instance, Operation<Integer> original) {
+		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().inGame() && !BedwarsMod.getInstance().displayArmor.get()) {
+			return 0;
 		}
 		return original.call(instance);
 	}
