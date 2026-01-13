@@ -26,6 +26,7 @@ import java.util.List;
 
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.ButtonWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.Element;
+import io.github.axolotlclient.AxolotlClientConfig.impl.ui.RecreatableScreen;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.TextFieldWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.ElementListWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.VanillaButtonWidget;
@@ -35,8 +36,9 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.resource.language.I18n;
+import org.jetbrains.annotations.NotNull;
 
-public class ProfilesScreen extends io.github.axolotlclient.AxolotlClientConfig.impl.ui.Screen {
+public class ProfilesScreen extends io.github.axolotlclient.AxolotlClientConfig.impl.ui.Screen implements RecreatableScreen {
 
 	private final Screen parent;
 
@@ -62,6 +64,11 @@ public class ProfilesScreen extends io.github.axolotlclient.AxolotlClientConfig.
 	public void closeScreen() {
 		Profiles.getInstance().saveProfiles();
 		minecraft.openScreen(parent);
+	}
+
+	@Override
+	public @NotNull Screen recreate() {
+		return new ProfilesScreen(RecreatableScreen.tryRecreate(parent));
 	}
 
 	public class ProfilesList extends ElementListWidget<ProfilesList.Entry> {

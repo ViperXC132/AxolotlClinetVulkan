@@ -25,6 +25,7 @@ package io.github.axolotlclient.config.screen;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.github.axolotlclient.AxolotlClientConfig.impl.ui.RecreatableScreen;
 import io.github.axolotlclient.config.profiles.Profiles;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -48,7 +49,7 @@ import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
 @NullMarked
-public class ProfilesScreen extends Screen {
+public class ProfilesScreen extends Screen implements RecreatableScreen {
 
 	private final HeaderAndFooterLayout haL = new HeaderAndFooterLayout(this);
 	@Nullable
@@ -89,6 +90,11 @@ public class ProfilesScreen extends Screen {
 	public void onClose() {
 		Profiles.getInstance().saveProfiles();
 		minecraft.setScreen(parent);
+	}
+
+	@Override
+	public Screen recreate() {
+		return new ProfilesScreen(RecreatableScreen.tryRecreate(parent));
 	}
 
 	public class ProfilesList extends ContainerObjectSelectionList<ProfilesList.Entry> {

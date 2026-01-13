@@ -40,6 +40,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringArrayOption;
 import io.github.axolotlclient.api.API;
+import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.modules.AbstractModule;
 import io.github.axolotlclient.util.CommonUtil;
 import io.github.axolotlclient.util.notifications.Notifications;
@@ -135,7 +136,7 @@ public class ScreenshotUtils extends AbstractModule {
 		if (autoex) {
 			actions.forEach((condition, action) -> {
 				if (condition.getAsBoolean() && autoExec.get().equals(action.translationKey())) {
-					CompletableFuture.runAsync(action.getClickEvent(file)::doAction, CompletableFuture.delayedExecutor(2, TimeUnit.MILLISECONDS, client));
+					CompletableFuture.runAsync(action.getClickEvent(file)::doAction, CompletableFuture.delayedExecutor(2, TimeUnit.MILLISECONDS, AxoMinecraftClient.getInstance()));
 				}
 			});
 		}

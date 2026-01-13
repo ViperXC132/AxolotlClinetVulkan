@@ -24,6 +24,7 @@ package io.github.axolotlclient.config.screen;
 
 import java.util.List;
 
+import io.github.axolotlclient.AxolotlClientConfig.impl.ui.RecreatableScreen;
 import io.github.axolotlclient.config.profiles.Profiles;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -40,8 +41,9 @@ import net.minecraft.client.gui.widget.list.ElementListWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.CommonTexts;
 import net.minecraft.text.Text;
+import org.jetbrains.annotations.NotNull;
 
-public class ProfilesScreen extends Screen {
+public class ProfilesScreen extends Screen implements RecreatableScreen {
 
 	private final HeaderFooterLayoutWidget haL = new HeaderFooterLayoutWidget(this);
 	private ProfilesList profilesList;
@@ -80,6 +82,11 @@ public class ProfilesScreen extends Screen {
 		Profiles.getInstance().saveProfiles();
 		//noinspection DataFlowIssue
 		client.setScreen(parent);
+	}
+
+	@Override
+	public @NotNull Screen recreate() {
+		return new ProfilesScreen(RecreatableScreen.tryRecreate(parent));
 	}
 
 	public class ProfilesList extends ElementListWidget<ProfilesList.Entry> {
