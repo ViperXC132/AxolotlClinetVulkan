@@ -23,6 +23,7 @@
 package io.github.axolotlclient.bridge.impl;
 
 import com.mojang.brigadier.CommandDispatcher;
+import io.github.axolotlclient.bridge.commands.AxoClientCmdSrcStack;
 import io.github.axolotlclient.bridge.events.Events;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
@@ -34,7 +35,8 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 
 public class Bridge {
-	@SuppressWarnings({"rawtypes", "unchecked"})
+
+	@SuppressWarnings("unchecked")
 	public static void init() {
 		ClientLifecycleEvents.CLIENT_STARTED.register(minecraft -> Events.CLIENT_START.invoker().run());
 		ClientLifecycleEvents.CLIENT_STOPPING.register(minecraft -> Events.CLIENT_STOP.invoker().run());
@@ -47,6 +49,8 @@ public class Bridge {
 		ClientPlayConnectionEvents.DISCONNECT.register((clientPlayNetworkHandler, minecraftClient) -> Events.DISCONNECT.invoker().run());
 
 		ClientCommandRegistrationCallback.EVENT.register((commandDispatcher, commandBuildContext) ->
-			Events.COMMAND_REGISTER.invoker().accept(() -> (CommandDispatcher) commandDispatcher));
+			Events.COMMAND_REGISTER.invoker().accept(() ->
+				// Interface injection into FAPI doesn't work, therefore this has to be a bit ugly.
+				(CommandDispatcher<AxoClientCmdSrcStack>) (Object) commandDispatcher));
 	}
 }
