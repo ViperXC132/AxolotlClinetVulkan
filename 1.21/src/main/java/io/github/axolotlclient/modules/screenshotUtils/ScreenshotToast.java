@@ -33,33 +33,34 @@ import net.minecraft.client.toast.ToastManager;
 import org.jetbrains.annotations.NotNull;
 
 public class ScreenshotToast implements Toast, ToastExtension {
-	private static final int TOAST_WIDTH = 100;
-	private static final int DISPLAY_TIME_MILLIS = 4000;
+	private static final int TOAST_HEIGHT = 100;
+	private static final int DISPLAY_TIME_MILLIS = 3500;
 	private final ImageInstance image;
-	private final int height;
+	private final int width;
 
 	@SuppressWarnings("resource")
 	public ScreenshotToast(ImageInstance instance) {
 		this.image = instance;
-		this.height = ((int) (instance.image().getHeight() * (TOAST_WIDTH / (float) instance.image().getWidth())));
+		this.width = ((int) (instance.image().getWidth() * (TOAST_HEIGHT / (float) instance.image().getHeight())));
 	}
 
 	@Override
 	public int getWidth() {
-		return 2 + TOAST_WIDTH;
+		return 2 + width;
 	}
 
 	@Override
 	public int getHeight() {
-		return 2 + height;
+		return 2 + TOAST_HEIGHT;
 	}
 
 	@Override
 	public Visibility draw(GuiGraphics guiGraphics, @NotNull ToastManager toastManager, long visibilityTime) {
-		guiGraphics.fill(0, 0, getWidth(), height + 2, -1);
-		float prog = MathUtil.clamp(visibilityTime / 80f, 1f, 0f);
-		guiGraphics.drawTexture(image.id(), 1, 1, 0, 0, TOAST_WIDTH, height, TOAST_WIDTH, height);
-		guiGraphics.br$fillRect(1, 1, TOAST_WIDTH, height, ClientColors.ARGB.white(prog));
+		var color = ScreenshotUtils.getInstance().toastBorderColor.get().toInt();
+		guiGraphics.fill(0, 0, getWidth(), getHeight(), color);
+		guiGraphics.drawTexture(image.id(), 1, 1, 0, 0, width, TOAST_HEIGHT, width, TOAST_HEIGHT);
+		float prog = MathUtil.lerp(MathUtil.clamp(visibilityTime / 300f, 0f, 1f), 1f, 0f);
+		guiGraphics.br$fillRect(1, 1, width, TOAST_HEIGHT, ClientColors.ARGB.color(prog * ClientColors.ARGB.alphaFloat(color), color));
 		var time = DISPLAY_TIME_MILLIS * toastManager.getNotificationDisplayTime();
 		return visibilityTime < time ? Visibility.SHOW : Visibility.HIDE;
 	}

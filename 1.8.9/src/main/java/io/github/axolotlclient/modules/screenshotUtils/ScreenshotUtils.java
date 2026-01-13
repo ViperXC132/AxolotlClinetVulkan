@@ -33,7 +33,9 @@ import java.util.function.BooleanSupplier;
 
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
+import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringArrayOption;
 import io.github.axolotlclient.api.API;
@@ -46,7 +48,6 @@ import io.github.axolotlclient.util.notifications.Notifications;
 import io.github.axolotlclient.util.options.GenericOption;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.*;
 import org.jetbrains.annotations.Nullable;
@@ -55,10 +56,6 @@ public class ScreenshotUtils extends AbstractModule {
 
 	@Getter
 	private static final ScreenshotUtils Instance = new ScreenshotUtils();
-	private final OptionCategory category = OptionCategory.create("screenshotUtils");
-	private final BooleanOption enabled = new BooleanOption("enabled", false);
-	private final EnumOption<Mode> mode = new EnumOption<>("screenshot_utils.mode", Mode.class, Mode.CHAT);
-
 	private final Map<BooleanSupplier, Action> actions = CommonUtil.make(new LinkedHashMap<>(), actions -> {
 		actions.put(() -> true, new Action("copyAction", Formatting.AQUA,
 			"copy_image",
@@ -84,7 +81,7 @@ public class ScreenshotUtils extends AbstractModule {
 			file -> {
 				try {
 					ImageInstance instance = new ImageInstance.LocalImpl(file);
-					Minecraft.getInstance().submit(() -> Minecraft.getInstance().openScreen(ImageScreen.create(null, CompletableFuture.completedFuture(instance), true)));
+					client.submit(() -> client.openScreen(ImageScreen.create(null, CompletableFuture.completedFuture(instance), true)));
 				} catch (Exception ignored) {
 					Util.addMessageToChatHud(new TranslatableText("screenshot.gallery.view.error"));
 				}
@@ -94,19 +91,21 @@ public class ScreenshotUtils extends AbstractModule {
 			"upload_image",
 			ImageShare.getInstance()::uploadImage));
 	});
-
+	private final OptionCategory category = OptionCategory.create("screenshotUtils");
+	private final BooleanOption enabled = new BooleanOption("enabled", false);
+	private final EnumOption<Mode> mode = new EnumOption<>("screenshot_utils.mode", Mode.class, Mode.CHAT);
 	private final StringArrayOption autoExec = new StringArrayOption("autoExec", Util.make(() -> {
 		List<String> names = new ArrayList<>();
 		names.add("off");
 		actions.forEach((condition, action) -> names.add(action.translationKey()));
 		return names.toArray(new String[0]);
-
 	}), "off");
+	public final ColorOption toastBorderColor = new ColorOption("screenshot_utils.mode.toast.border_color", Colors.WHITE);
 
 	@Override
 	public void init() {
 		category.add(enabled, mode, autoExec, new GenericOption("imageViewer", "openViewer", () ->
-			Minecraft.getInstance().openScreen(new GalleryScreen(Minecraft.getInstance().screen))));
+			client.openScreen(new GalleryScreen(client.screen))), toastBorderColor);
 
 		AxolotlClient.config().general.add(category);
 	}
@@ -124,7 +123,7 @@ public class ScreenshotUtils extends AbstractModule {
 	private @Nullable Text getUtilsText(Path file) {
 		boolean autoex = !autoExec.get().equals("off");
 		var mode = this.mode.get();
-		if (mode.isToast && !autoex) {
+		if (mode.isToast) {
 			try {
 				Notifications.getInstance().addStatus(new ScreenshotToast(new ImageInstance.LocalImpl(file)));
 			} catch (IOException e) {

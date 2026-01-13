@@ -22,35 +22,37 @@
 
 package io.github.axolotlclient.modules.screenshotUtils;
 
-import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
+import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.MathUtil;
 import io.github.axolotlclient.util.notifications.toasts.Toast;
 import io.github.axolotlclient.util.notifications.toasts.ToastManager;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.render.TextRenderer;
 import org.jetbrains.annotations.NotNull;
 
 public class ScreenshotToast implements Toast {
-	private static final int TOAST_WIDTH = 100;
-	private static final int DISPLAY_TIME_MILLIS = 4000;
+	private static final int TOAST_HEIGHT = 100;
+	private static final int DISPLAY_TIME_MILLIS = 3500;
 	private final ImageInstance image;
-	private final int height;
+	private final int width;
 	private Toast.Visibility wantedVisibility = Toast.Visibility.HIDE;
 
 	public ScreenshotToast(ImageInstance instance) {
 		this.image = instance;
-		this.height = ((int) (instance.image().getHeight() * (TOAST_WIDTH / (float) instance.image().getWidth())));
+		this.width = ((int) (instance.image().getWidth() * (TOAST_HEIGHT / (float) instance.image().getHeight())));
 	}
 
 	@Override
 	public int width() {
-		return 2 + TOAST_WIDTH;
+		return 2 + width;
 	}
 
 	@Override
 	public int height() {
-		return 2 + height;
+		return 2 + TOAST_HEIGHT;
 	}
 
 	@Override
@@ -66,11 +68,15 @@ public class ScreenshotToast implements Toast {
 
 	@Override
 	public void render(AxoRenderContext graphics, TextRenderer font, long visibilityTime) {
-		graphics.br$fillRect(0, 0, width(), height + 2, -1);
-		float prog = MathUtil.clamp(visibilityTime / 80f, 1f, 0f);
-		var sprite = new AxoSpriteImpl.Simple(image.id(), 0, 0, TOAST_WIDTH, height);
-		graphics.br$drawTexture(1, 1, TOAST_WIDTH, height, sprite);
-		graphics.br$fillRect(1, 1, TOAST_WIDTH, height, ClientColors.ARGB.white(prog));
+		var color = ScreenshotUtils.getInstance().toastBorderColor.get().toInt();
+		graphics.br$fillRect(0, 0, width(), height(), color);
+		GlStateManager.enableTexture();
+		GlStateManager.enableBlend();
+		GlStateManager.color3f(1, 1, 1);
+		Minecraft.getInstance().getTextureManager().bind(image.id());
+		GuiElement.drawTexture(1, 1, 0, 0, width, TOAST_HEIGHT, width, TOAST_HEIGHT);
+		float prog = MathUtil.lerp(MathUtil.clamp(visibilityTime / 300f, 0f, 1f), 1f, 0f);
+		graphics.br$fillRect(1, 1, width, TOAST_HEIGHT, ClientColors.ARGB.color(prog * ClientColors.ARGB.alphaFloat(color), color));
 	}
 
 	@Override
