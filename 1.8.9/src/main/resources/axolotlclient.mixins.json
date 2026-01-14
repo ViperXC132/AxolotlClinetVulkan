@@ -55,6 +55,7 @@
 		"ScreenshotUtilsMixin",
 		"ShaderEffectAccessor",
 		"SharedConstantsMixin",
+		"SimpleTextureMixin",
 		"SoundEngineMixin",
 		"SoundManagerAccessor",
 		"SoundSystemAccessor",
