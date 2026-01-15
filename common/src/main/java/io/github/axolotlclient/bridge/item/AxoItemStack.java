@@ -29,6 +29,7 @@ import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.util.MathUtil;
 import org.jetbrains.annotations.ApiStatus;
 
+@SuppressWarnings("unused")
 public interface AxoItemStack {
 	static AxoItemStack of(AxoItem item, int count) {
 		return PlatformImplInternal.createItemStack(item, count);
@@ -93,7 +94,6 @@ public interface AxoItemStack {
 		return br$getEnchantment(enchant) != 0;
 	}
 
-	@ApiStatus.NonExtendable
 	default int br$getBarColor() {
 		float f = Math.max(0.0F, ((float) this.br$getMaxDamage() - (float) br$getDamage()) / (float) this.br$getMaxDamage());
 		return MathUtil.hsvToRgb(f / 3.0F, 1.0F, 1.0F);

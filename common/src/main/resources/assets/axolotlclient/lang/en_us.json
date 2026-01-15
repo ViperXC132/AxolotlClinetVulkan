@@ -939,5 +939,6 @@
 	"keystrokes.stroke.configure_graphics": "Configure Graphics",
 	"keystrokes.stroke.add.custom": "Add Custom Stroke",
 	"screenshot_utils.mode.toast.border_color": "Toast Border Color",
-	"failed_to_load_toast": "Failed to load Screenshot Toast!"
+	"failed_to_load_toast": "Failed to load Screenshot Toast!",
+	"rescale_grab_corner_color": "Rescale Grab Corner Color"
 }

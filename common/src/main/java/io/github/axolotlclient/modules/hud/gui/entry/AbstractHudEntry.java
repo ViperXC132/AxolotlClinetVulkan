@@ -105,6 +105,7 @@ public abstract class AbstractHudEntry implements HudEntry {
 	}
 
 	public void renderPlaceholderGrabCorners(AxoRenderContext context) {
+		if (!supportsScaling()) return;
 		var bounds = getTrueBounds();
 		var grabTolerance = HudManagerCommon.HUD_RESCALE_GRAB_TOLERANCE;
 		var color = HudManagerCommon.getInstance().grabCornerColor.get().toInt();

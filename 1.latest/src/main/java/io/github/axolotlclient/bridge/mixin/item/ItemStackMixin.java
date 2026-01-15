@@ -58,6 +58,9 @@ public abstract class ItemStackMixin implements AxoItemStack {
 	@Shadow
 	public abstract Component getStyledHoverName();
 
+	@Shadow
+	public abstract int getBarColor();
+
 	@Override
 	public AxoItem br$getItem() {
 		return getItem();
@@ -125,5 +128,10 @@ public abstract class ItemStackMixin implements AxoItemStack {
 	@Override
 	public AxoText br$getHoverName() {
 		return getStyledHoverName();
+	}
+
+	@Override
+	public int br$getBarColor() {
+		return getBarColor();
 	}
 }
