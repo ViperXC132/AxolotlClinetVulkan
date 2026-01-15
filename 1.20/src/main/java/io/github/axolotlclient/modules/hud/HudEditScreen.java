@@ -34,6 +34,7 @@ import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
 import io.github.axolotlclient.modules.hud.gui.component.Positionable;
 import io.github.axolotlclient.modules.hud.snapping.SnappingHelper;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
+import io.github.axolotlclient.util.MathUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.Screen;
@@ -121,24 +122,23 @@ public class HudEditScreen extends Screen {
 			var bounds = entry.get().getTrueBounds();
 			if (mode == ModificationMode.NONE && bounds.isMouseOver(mouseX, mouseY)) {
 				var supportsScaling = entry.get().supportsScaling();
-				var xBound = Math.max(0, mouseX - bounds.x());
-				var yBound = Math.max(0, mouseY - bounds.y());
 				var tolerance = HudManagerCommon.HUD_RESCALE_GRAB_TOLERANCE;
-				if (supportsScaling && xBound < tolerance && yBound < tolerance) {
-					// top-left
-					setCursor(NWSE_RESIZE_CURSOR);
-				} else if (supportsScaling && Math.abs(xBound - bounds.width()) < tolerance && Math.abs(yBound - bounds.height()) < tolerance) {
-					// bottom-right
-					setCursor(NWSE_RESIZE_CURSOR);
-				} else if (supportsScaling && xBound < tolerance && Math.abs(yBound - bounds.height()) < tolerance) {
-					// bottom-left
-					setCursor(NESW_RESIZE_CURSOR);
-				} else if (supportsScaling && yBound < tolerance && Math.abs(xBound - bounds.width()) < tolerance) {
-					// top-right
-					setCursor(NESW_RESIZE_CURSOR);
-				} else {
-					setCursor(MOVE_CURSOR);
+				var toleranceSquared = tolerance*tolerance;
+				var cursor = MOVE_CURSOR;
+				if (supportsScaling) {
+					if (MathUtil.distSq(mouseX, mouseY, bounds.x(), bounds.y()) < toleranceSquared ||
+						MathUtil.distSq(mouseX, mouseY, bounds.xEnd(), bounds.yEnd()) < toleranceSquared) {
+						// top-left
+						// bottom-right
+						cursor = NWSE_RESIZE_CURSOR;
+					} else if (MathUtil.distSq(mouseX, mouseY, bounds.x(), bounds.yEnd()) < toleranceSquared ||
+						MathUtil.distSq(mouseX, mouseY, bounds.xEnd(), bounds.y()) < toleranceSquared) {
+						// bottom-left
+						// top-right
+						cursor = NESW_RESIZE_CURSOR;
+					}
 				}
+				setCursor(cursor);
 			}
 		} else if (current == null) {
 			setCursor(DEFAULT_CURSOR);

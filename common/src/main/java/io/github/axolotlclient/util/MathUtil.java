@@ -52,6 +52,12 @@ public class MathUtil {
 		return value < i ? i - 1 : i;
 	}
 
+	public static float distSq(float x1, float y1, float x2, float y2) {
+		float dx = x1 - x2;
+		float dy = y1 - y2;
+		return dx * dx + dy * dy;
+	}
+
 	public static int hsvToRgb(float hue, float saturation, float value) {
 		int i = (int) (hue * 6.0F) % 6;
 		float f = hue * 6.0F - (float) i;

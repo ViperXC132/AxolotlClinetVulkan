@@ -28,8 +28,8 @@ import java.util.regex.Pattern;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.Request;
 import io.github.axolotlclient.api.types.Status;
+import io.github.axolotlclient.bridge.util.AxoI18n;
 import io.github.axolotlclient.util.GsonHelper;
-import io.github.axolotlclient.util.translation.TranslationProvider;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -59,18 +59,17 @@ public class StatusUpdate {
 	}
 
 	public static Request inGame(SupportedServer server, String gameType, String gameMode, String map) {
-		TranslationProvider tr = API.getInstance().getTranslationProvider();
 		boolean gm = !gameMode.isEmpty();
 		boolean mp = !map.isEmpty();
 		String description;
 		if (gm && mp) {
-			description = tr.translate("api.status.description.in_game.game_mode_map", server.name, gameType, gameMode, map);
+			description = AxoI18n.translate("api.status.description.in_game.game_mode_map", server.name, gameType, gameMode, map);
 		} else if (gm) {
-			description = tr.translate("api.status.description.in_game.game_mode_map", server.name, gameType, gameMode, map);
+			description = AxoI18n.translate("api.status.description.in_game.game_mode_map", server.name, gameType, gameMode, map);
 		} else if (mp) {
-			description = tr.translate("api.status.description.in_game.map", server.name, gameType, map);
+			description = AxoI18n.translate("api.status.description.in_game.map", server.name, gameType, map);
 		} else {
-			description = tr.translate("api.status.description.in_game", server.name, gameType);
+			description = AxoI18n.translate("api.status.description.in_game", server.name, gameType);
 		}
 		var metadata = new Status.Activity.ExternalServerMetadata(server.name, server.ip);
 		return createStatusUpdate(new Status.Activity("api.status.title.in_game", description, API.getInstance().getApiOptions().allowFriendsServerJoin.get() ? metadata : null));

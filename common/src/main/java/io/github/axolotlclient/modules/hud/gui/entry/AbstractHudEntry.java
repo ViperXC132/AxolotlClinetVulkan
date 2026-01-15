@@ -107,7 +107,7 @@ public abstract class AbstractHudEntry implements HudEntry {
 	public void renderPlaceholderGrabCorners(AxoRenderContext context) {
 		if (!supportsScaling()) return;
 		var bounds = getTrueBounds();
-		var grabTolerance = HudManagerCommon.HUD_RESCALE_GRAB_TOLERANCE;
+		var grabTolerance = Math.min(HudManagerCommon.HUD_RESCALE_GRAB_TOLERANCE, Math.min(bounds.width(), bounds.height())/2);
 		var color = HudManagerCommon.getInstance().grabCornerColor.get().toInt();
 		float rounding = grabTolerance-.5f;
 		context.br$fillRectRoundVarying(bounds.x(), bounds.y(), grabTolerance, grabTolerance, color, 0, 0, rounding, 0);

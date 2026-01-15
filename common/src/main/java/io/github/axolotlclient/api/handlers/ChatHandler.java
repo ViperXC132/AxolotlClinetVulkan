@@ -35,6 +35,7 @@ import io.github.axolotlclient.api.requests.UserRequest;
 import io.github.axolotlclient.api.types.Channel;
 import io.github.axolotlclient.api.types.ChatMessage;
 import io.github.axolotlclient.api.util.SocketMessageHandler;
+import io.github.axolotlclient.bridge.util.AxoI18n;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -69,7 +70,7 @@ public class ChatHandler implements SocketMessageHandler {
 		String content = response.getBody("content");
 		ChatMessage message = new ChatMessage(id, channelId, UserRequest.get(sender).join().orElseThrow(), senderName, content, time);
 		if (enableNotifications.showNotification(message)) {
-			notification(API.getInstance().getTranslationProvider().translate("api.chat.newMessageFrom", message.sender().getName()), message.content());
+			notification(AxoI18n.translate("api.chat.newMessageFrom", message.sender().getName()), message.content());
 		}
 		messageConsumer.accept(message);
 	}
