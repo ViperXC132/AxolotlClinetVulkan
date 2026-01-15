@@ -178,6 +178,11 @@ public class AxoRenderContextImpl extends io.github.axolotlclient.rendering.Draw
 	}
 
 	@Override
+	public void br$fillRectRoundVarying(int x, int y, int width, int height, int color, float roundingTL, float roundingBL, float roundingBR, float roundingTR) {
+		axolotlclient_rendering$roundedRectVarying(x, y, x + width, y + height, color, roundingTL, roundingBL, roundingBR, roundingTR);
+	}
+
+	@Override
 	public void br$outlineRectRound(int x, int y, int width, int height, int color, float rounding) {
 		axolotlclient_rendering$outlineRoundedRect(x, y, x + width, y + height, color, rounding, 0.5f);
 	}

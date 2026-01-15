@@ -25,10 +25,10 @@ package io.github.axolotlclient.modules.hud.gui.keystrokes;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.IntegerWidget;
+import io.github.axolotlclient.AxolotlClientConfig.impl.util.ConfigStyles;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import io.github.axolotlclient.modules.hud.gui.layout.Justification;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
-import io.github.axolotlclient.util.options.rounded.AxoGraphicsWidget;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
@@ -128,7 +128,7 @@ public class ConfigureKeyBindScreen extends Screen {
 			leftColY += 28;
 			var sliderMin = 2;
 			var sliderMax = 25;
-			var sizeSlider = new SliderWidget(rightColX, rightColY, 98, 20, Text.translatable("keystrokes.stroke.configure_graphics_size", customRender.getSize()), (customRender.getSize() - sliderMin) / (18f - sliderMin)) {
+			var sizeSlider = new SliderWidget(rightColX, rightColY, 98, 20, Text.translatable("keystrokes.stroke.configure_graphics_size", customRender.getSize()), (customRender.getSize() - sliderMin) / ((float) sliderMax - sliderMin)) {
 				@Override
 				protected void updateMessage() {
 					setMessage(Text.translatable("keystrokes.stroke.configure_graphics_size", (int) (value * (sliderMax - sliderMin) + sliderMin)));
@@ -137,14 +137,14 @@ public class ConfigureKeyBindScreen extends Screen {
 				@Override
 				protected void applyValue() {
 					int size = (int) (value * (sliderMax - sliderMin) + sliderMin);
-					this.value = (size - sliderMin) / ((float)sliderMax - sliderMin);
+					this.value = (size - sliderMin) / ((float) sliderMax - sliderMin);
 					customRender.setSize(size);
 				}
 			};
 			addDrawableChild(sizeSlider);
+			var widget = (PressableWidget) ConfigStyles.createWidget(rightColX + 98 + 4, rightColY, 48, 20, customRender.getGraphics());
 			addDrawableChild(ButtonWidget.builder(Text.translatable("keystrokes.stroke.configure_graphics"), btn ->
-				client.setScreen(new AxoGraphicsWidget.AxoGraphicsEditorScreen(this, customRender.getGraphics())))
-				.position(rightColX + 98 + 4, rightColY).width(48).build());
+				widget.onPress()).position(rightColX + 98 + 4, rightColY).width(48).build());
 			rightColY += 28;
 		}
 		addDrawableChild(new TextWidget(leftColX, leftColY, 150, 20, Text.translatable("keystrokes.stroke.width"), textRenderer));

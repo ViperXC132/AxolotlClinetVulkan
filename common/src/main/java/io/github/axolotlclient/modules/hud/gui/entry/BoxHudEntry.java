@@ -227,6 +227,7 @@ public abstract class BoxHudEntry extends AbstractHudEntry {
 		scale(ctx);
 		renderPlaceholderComponent(ctx, delta);
 		ctx.br$popMatrix();
+		renderPlaceholderGrabCorners(ctx);
 		hovered = false;
 	}
 

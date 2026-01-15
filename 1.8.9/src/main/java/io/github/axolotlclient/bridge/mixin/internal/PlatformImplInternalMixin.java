@@ -24,9 +24,7 @@ package io.github.axolotlclient.bridge.mixin.internal;
 
 import java.util.Objects;
 
-import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
-import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.AxoPlayerListEntry;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffect;
@@ -114,15 +112,6 @@ public abstract class PlatformImplInternalMixin {
 	@Overwrite
 	public static long getMeasuringTimeMs() {
 		return Minecraft.getTime();
-	}
-
-	/**
-	 * @author Flowey
-	 * @reason Implement bridge platform.
-	 */
-	@Overwrite
-	public static AxolotlClientConfigCommon getConfig() {
-		return AxolotlClient.config();
 	}
 
 	/**

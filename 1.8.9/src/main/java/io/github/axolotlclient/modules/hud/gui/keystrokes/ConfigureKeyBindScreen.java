@@ -37,11 +37,11 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.TextFieldWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.IntegerWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.SliderWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.VanillaButtonWidget;
+import io.github.axolotlclient.AxolotlClientConfig.impl.util.ConfigStyles;
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import io.github.axolotlclient.modules.hud.gui.layout.Justification;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
-import io.github.axolotlclient.util.options.rounded.AxoGraphicsWidget;
 import lombok.Getter;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.options.GameOptions;
@@ -147,10 +147,11 @@ public class ConfigureKeyBindScreen extends io.github.axolotlclient.AxolotlClien
 					super.setMessage(I18n.translate("keystrokes.stroke.configure_graphics_size", Integer.parseInt(message)));
 				}
 			};
-			sizeSlider.setMessage(""+customRender.getSize());
+			sizeSlider.setMessage("" + customRender.getSize());
 			addDrawableChild(sizeSlider);
+			var widget = (ButtonWidget) ConfigStyles.createWidget(rightColX + 98 + 4, rightColY, 48, 20, customRender.getGraphics());
 			addDrawableChild(new VanillaButtonWidget(rightColX + 98 + 4, rightColY, 48, 20, I18n.translate("keystrokes.stroke.configure_graphics"), btn ->
-				minecraft.openScreen(new AxoGraphicsWidget.AxoGraphicsEditorScreen(this, customRender.getGraphics()))));
+				widget.onPress()));
 			rightColY += 28;
 		}
 		addDrawableChild(textWidget(leftColX, leftColY, 150, 20, I18n.translate("keystrokes.stroke.width"), textRenderer));

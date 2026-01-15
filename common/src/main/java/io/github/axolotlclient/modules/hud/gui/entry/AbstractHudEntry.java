@@ -52,7 +52,7 @@ import lombok.Setter;
  */
 public abstract class AbstractHudEntry implements HudEntry {
 	@Getter
-	protected final ForceableBooleanOption enabled = DefaultOptions.getEnabled();
+	protected final ForceableBooleanOption enabled = DefaultOptions.getEnabled(this);
 	protected final DoubleOption scale = DefaultOptions.getScale(this);
 	protected final AxoMinecraftClient client = AxoMinecraftClient.getInstance();
 	protected final BooleanOption hide = new BooleanOption("hud.hide", false);
@@ -95,12 +95,24 @@ public abstract class AbstractHudEntry implements HudEntry {
 	}
 
 	public void renderPlaceholderBackground(AxoRenderContext context) {
+		var bounds = getTrueBounds();
 		if (hovered) {
-			context.br$fillRect(getTrueBounds(), ClientColors.SELECTOR_BLUE.withAlpha(100));
+			context.br$fillRect(bounds, ClientColors.SELECTOR_BLUE.withAlpha(100));
 		} else {
-			context.br$fillRect(getTrueBounds(), ClientColors.WHITE.withAlpha(50));
+			context.br$fillRect(bounds, ClientColors.WHITE.withAlpha(50));
 		}
-		context.br$outlineRect(getTrueBounds(), Colors.BLACK);
+		context.br$outlineRect(bounds, Colors.BLACK);
+	}
+
+	public void renderPlaceholderGrabCorners(AxoRenderContext context) {
+		var bounds = getTrueBounds();
+		var grabTolerance = HudManagerCommon.HUD_RESCALE_GRAB_TOLERANCE;
+		var color = HudManagerCommon.getInstance().grabCornerColor.get().toInt();
+		float rounding = grabTolerance-.5f;
+		context.br$fillRectRoundVarying(bounds.x(), bounds.y(), grabTolerance, grabTolerance, color, 0, 0, rounding, 0);
+		context.br$fillRectRoundVarying(bounds.x(), bounds.yEnd() - grabTolerance, grabTolerance, grabTolerance, color, 0, 0, 0, rounding);
+		context.br$fillRectRoundVarying(bounds.xEnd() - grabTolerance, bounds.yEnd() - grabTolerance, grabTolerance, grabTolerance, color, rounding, 0, 0, 0);
+		context.br$fillRectRoundVarying(bounds.xEnd() - grabTolerance, bounds.y(), grabTolerance, grabTolerance, color, 0, rounding, 0, 0);
 	}
 
 	public void scale(AxoRenderContext context) {

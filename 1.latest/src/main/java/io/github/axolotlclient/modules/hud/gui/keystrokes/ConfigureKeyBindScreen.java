@@ -25,10 +25,10 @@ package io.github.axolotlclient.modules.hud.gui.keystrokes;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.IntegerWidget;
+import io.github.axolotlclient.AxolotlClientConfig.impl.util.ConfigStyles;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import io.github.axolotlclient.modules.hud.gui.layout.Justification;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
-import io.github.axolotlclient.util.options.rounded.AxoGraphicsWidget;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.layouts.FrameLayout;
@@ -37,6 +37,7 @@ import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
@@ -131,7 +132,7 @@ public class ConfigureKeyBindScreen extends Screen {
 			var graphicsLayout = options.addChild(LinearLayout.horizontal()).spacing(4);
 			var sliderMin = 2;
 			var sliderMax = 25;
-			var sizeSlider = new AbstractSliderButton(0, 0, 98, 20, Component.translatable("keystrokes.stroke.configure_graphics_size", customRender.getSize()), (customRender.getSize() - sliderMin) / (18f - sliderMin)) {
+			var sizeSlider = new AbstractSliderButton(0, 0, 98, 20, Component.translatable("keystrokes.stroke.configure_graphics_size", customRender.getSize()), (customRender.getSize() - sliderMin) / ((float) sliderMax - sliderMin)) {
 				@Override
 				protected void updateMessage() {
 					setMessage(Component.translatable("keystrokes.stroke.configure_graphics_size", (int) (value * (sliderMax - sliderMin) + sliderMin)));
@@ -140,13 +141,14 @@ public class ConfigureKeyBindScreen extends Screen {
 				@Override
 				protected void applyValue() {
 					int size = (int) (value * (sliderMax - sliderMin) + sliderMin);
-					this.value = (size - sliderMin) / ((float)sliderMax - sliderMin);
+					this.value = (size - sliderMin) / ((float) sliderMax - sliderMin);
 					customRender.setSize(size);
 				}
 			};
 			graphicsLayout.addChild(sizeSlider);
+			var widget = (AbstractButton) ConfigStyles.createWidget(0, 0, 48, 20, customRender.getGraphics());
 			graphicsLayout.addChild(Button.builder(Component.translatable("keystrokes.stroke.configure_graphics"), btn ->
-				minecraft.setScreen(new AxoGraphicsWidget.AxoGraphicsEditorScreen(this, customRender.getGraphics()))).width(48).build());
+				widget.onPress(new KeyEvent(0, 0, 0))).width(48).build());
 		}
 		names.addChild(new StringWidget(150, 20, Component.translatable("keystrokes.stroke.width"), font));
 		options.addChild(new IntegerWidget(0, 0, 150, 20, width));

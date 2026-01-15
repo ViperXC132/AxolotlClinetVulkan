@@ -29,7 +29,6 @@ import java.util.stream.Stream;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
-import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import io.github.axolotlclient.modules.hud.snapping.SnappingHelper;
@@ -83,11 +82,11 @@ public class KeystrokePositioningScreen extends Screen {
 	protected void init() {
 		addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, b -> onClose()).pos(width / 2 - 75, height - 50 + 22).width(150).build());
 		this.addRenderableWidget(Button.builder(Component.translatable("hud.snapping").append(": ")
-				.append(Component.translatable(HudEditScreen.isSnappingEnabled() ? "options.on" : "options.off")),
+				.append(Component.translatable(HudManager.getInstance().isSnappingEnabled() ? "options.on" : "options.off")),
 			buttonWidget -> {
-				HudEditScreen.toggleSnapping();
+				HudManager.getInstance().toggleSnapping();
 				buttonWidget.setMessage(Component.translatable("hud.snapping").append(": ")
-					.append(Component.translatable(HudEditScreen.isSnappingEnabled() ? "options.on" : "options.off")));
+					.append(Component.translatable(HudManager.getInstance().isSnappingEnabled() ? "options.on" : "options.off")));
 				AxolotlClient.getInstance().saveConfig();
 			}).bounds(width / 2 - 50, height - 50, 100, 20).build());
 	}
@@ -216,7 +215,7 @@ public class KeystrokePositioningScreen extends Screen {
 	}
 
 	private void updateSnapState() {
-		if (HudEditScreen.isSnappingEnabled() && focused != null) {
+		if (HudManager.getInstance().isSnappingEnabled() && focused != null) {
 			snap = new SnappingHelper(getAllBounds(), getScaledRenderPos(focused));
 		} else if (snap != null) {
 			snap = null;

@@ -84,9 +84,9 @@ public sealed abstract class WindowAccess permits WindowAccess.GLFWAccess, Windo
 	}
 
 	private static WindowAccess create() {
-		if (GLFW_AVAILABLE) {
+		if (isGlfwAvailable()) {
 			return new GLFWAccess();
-		} else if (SDL_AVAILABLE) {
+		} else if (isSdlAvailable()) {
 			return new SDLAccess();
 		}
 		return new NoOpAccess();
@@ -134,7 +134,9 @@ public sealed abstract class WindowAccess permits WindowAccess.GLFWAccess, Windo
 
 		@Override
 		public void setCursor(long cursor) {
-			SDLMouse.SDL_SetCursor(cursor);
+			if (cursor != 0) {
+				SDLMouse.SDL_SetCursor(cursor);
+			}
 		}
 
 		@Override

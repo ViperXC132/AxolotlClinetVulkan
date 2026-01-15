@@ -233,6 +233,16 @@ public interface AxoRenderContext {
 		throw BridgeUtil.noImpl();
 	}
 
+
+	default void br$fillRectRoundVarying(int x, int y, int width, int height, Color color, float roundingTL, float roundingBL, float roundingBR, float roundingTR) {
+		br$fillRectRoundVarying(x, y, width, height, color.toInt(), roundingTL, roundingBL, roundingBR, roundingTR);
+	}
+
+	@RequiresImpl
+	default void br$fillRectRoundVarying(int x, int y, int width, int height, int color, float roundingTL, float roundingBL, float roundingBR, float roundingTR) {
+		throw BridgeUtil.noImpl();
+	}
+
 	@RequiresImpl
 	default void br$fillRectGradientVert(int x, int y, int width, int height, int color1, int color2) {
 		throw BridgeUtil.noImpl();

@@ -30,8 +30,6 @@ import java.util.stream.Collectors;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
-import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
-import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.util.ConfigStyles;
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
@@ -53,29 +51,12 @@ import net.minecraft.client.resource.language.I18n;
 
 public class HudEditScreen extends Screen {
 
-	private static final BooleanOption snapping = new BooleanOption("snapping", true);
-	private static final OptionCategory hudEditScreenCategory = OptionCategory.create("hudEditScreen");
-	private static final int GRAB_TOLERANCE = 5;
 	private final long MOVE_CURSOR = WindowAccess.getInstance().createCursor(WindowAccess.Cursor.RESIZE_ALL);
 	private final long DEFAULT_CURSOR = WindowAccess.getInstance().createCursor(WindowAccess.Cursor.ARROW);
 	private final long NWSE_RESIZE_CURSOR = WindowAccess.getInstance().createCursor(WindowAccess.Cursor.RESIZE_NWSE),
 		NESW_RESIZE_CURSOR = WindowAccess.getInstance().createCursor(WindowAccess.Cursor.RESIZE_NESW);
 
-	public static boolean isSnappingEnabled() {
-		return snapping.get();
-	}
-
-	public static void toggleSnapping() {
-		snapping.toggle();
-	}
-
-	static {
-		hudEditScreenCategory.add(snapping);
-		AxolotlClient.config().hidden.add(hudEditScreenCategory);
-	}
-
 	private final Screen parent;
-
 	private HudEntry current;
 	private DrawPosition offset = null;
 	private boolean mouseDown;
@@ -95,7 +76,7 @@ public class HudEditScreen extends Screen {
 	}
 
 	private void updateSnapState() {
-		if (snapping.get() && current != null) {
+		if (HudManager.getInstance().isSnappingEnabled() && current != null) {
 			var bounds = SnappingHelper.getNonDependentEntries(current, HudManager.getInstance().getMoveableEntries())
 				.stream()
 				.map(Positionable::getTrueBounds)
@@ -110,7 +91,7 @@ public class HudEditScreen extends Screen {
 	}
 
 	private void setCursor(long cursor) {
-		if (cursor > 0 && cursor != currentCursor) {
+		if (cursor != currentCursor) {
 			currentCursor = cursor;
 			WindowAccess.getInstance().setCursor(cursor);
 		}
@@ -147,7 +128,7 @@ public class HudEditScreen extends Screen {
 				var supportsScaling = entry.get().supportsScaling();
 				var xBound = Math.max(0, mouseX - bounds.x());
 				var yBound = Math.max(0, mouseY - bounds.y());
-				var tolerance = GRAB_TOLERANCE;
+				var tolerance = HudManagerCommon.HUD_RESCALE_GRAB_TOLERANCE;
 				if (supportsScaling && xBound < tolerance && yBound < tolerance) {
 					// top-left
 					setCursor(NWSE_RESIZE_CURSOR);
@@ -321,9 +302,9 @@ public class HudEditScreen extends Screen {
 	protected void buttonClicked(ButtonWidget button) {
 		switch (button.id) {
 			case 3:
-				snapping.toggle();
+				HudManager.getInstance().toggleSnapping();
 				button.message = I18n.translate("hud.snapping") + ": "
-					+ I18n.translate(snapping.get() ? "options.on" : "options.off");
+					+ I18n.translate(HudManager.getInstance().isSnappingEnabled() ? "options.on" : "options.off");
 				AxolotlClient.getInstance().saveConfig();
 				break;
 			case 1:
@@ -343,7 +324,7 @@ public class HudEditScreen extends Screen {
 	public void init() {
 		mode = ModificationMode.NONE;
 		this.buttons.add(new ButtonWidget(3, width / 2 - 50, height / 2 + 12, 100, 20,
-			I18n.translate("hud.snapping") + ": " + I18n.translate(snapping.get() ? "options.on" : "options.off")));
+			I18n.translate("hud.snapping") + ": " + I18n.translate(HudManager.getInstance().isSnappingEnabled() ? "options.on" : "options.off")));
 
 		this.buttons.add(
 			new ButtonWidget(1, width / 2 - 75, height / 2 - 10, 150, 20, I18n.translate("hud.clientOptions")));

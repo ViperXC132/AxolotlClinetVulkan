@@ -32,9 +32,10 @@ import com.google.gson.stream.JsonWriter;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
+import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.FloatOption;
-import io.github.axolotlclient.bridge.Platform;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import io.github.axolotlclient.bridge.key.AxoKeys;
@@ -71,13 +72,17 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 	@Getter
 	private static HudManagerCommon instance;
 
+	public static final int HUD_RESCALE_GRAB_TOLERANCE = 5;
 	private static final String HUD_DEPENDENCIES_SAVE_FILE_NAME = "hud_dependencies.json";
 	private static final String CUSTOM_MODULE_SAVE_FILE_NAME = "custom_hud.json";
 	private final AxoKeybinding key = AxoKeybinding.create(AxoKeys.KEY_RSHIFT, "key.openHud");
 	private final AxoKeybinding toggleHud = AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "key.toggle_hud");
 	private final OptionCategory hudCategory = OptionCategory.create("hud");
+	private final OptionCategory hudEditScreenCategory = OptionCategory.create("hudEditScreen");
+	private final BooleanOption snapping = new BooleanOption("snapping", true);
 	private final BooleanOption enabled = new BooleanOption("enabled", true);
 	private final FloatOption hudLinkLineWidth = new FloatOption("hud.hud_link_line_width", 3f, 1f, 10f);
+	public final ColorOption grabCornerColor = new ColorOption("rescale_grab_corner_color", Colors.PINK);
 	private final Map<AxoIdentifier, HudEntry> entries;
 	private final Deque<HudEntry> visitedEntries = new ArrayDeque<>();
 
@@ -91,8 +96,10 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 	public void init() {
 		key.br$registerOnConsumeClick(this::openScreen);
 		toggleHud.br$registerOnConsumeClick(enabled::toggle);
-		Platform.getConfig().addCategory(hudCategory);
-		hudCategory.add(enabled, hudLinkLineWidth);
+		AxolotlClientCommon.getInstance().getConfig().addCategory(hudCategory);
+		hudCategory.add(enabled, grabCornerColor, hudLinkLineWidth);
+		hudEditScreenCategory.add(snapping);
+		AxolotlClientCommon.getInstance().getConfig().hidden.add(hudEditScreenCategory);
 		add(new PingHud());
 		add(new FPSHud());
 		add(new CPSHud());
@@ -126,6 +133,10 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 
 		entries.values().forEach(HudEntry::init);
 
+		hudCategory.add(new GenericOption("hud.dependency_links", "hud.dependency_links.clear", () -> {
+			entries.values().forEach(HudEntry::clearBoundsDependencies);
+			saveHudDependencyLinks();
+		}));
 		hudCategory.add(new GenericOption("hud.custom_entry", "hud.custom_entry.add", () -> {
 			CustomHudEntry entry = new CustomHudEntry(AxoIdentifier.of("axolotlclient", "custom_hud/" + UUID.randomUUID()));
 			entry.setEnabled(true);
@@ -135,10 +146,6 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 			hudCategory.add(entry.getAllOptions(), false);
 			client.br$reinitScreen();
 			saveCustomEntries();
-		}));
-		hudCategory.add(new GenericOption("hud.dependency_links", "hud.dependency_links.clear", () -> {
-			entries.values().forEach(HudEntry::clearBoundsDependencies);
-			saveHudDependencyLinks();
 		}));
 
 		Events.CLIENT_START.register(() -> {
@@ -428,7 +435,6 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 	}
 
 	public void updateBoundsDependencies(HudEntry origin) {
-		//if (client.br$getScreen() != null) return;
 		if (visitedEntries.contains(origin)) return;
 		visitedEntries.push(origin);
 		var entries = HudManagerCommon.getInstance().getMoveableEntries();
@@ -440,6 +446,14 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 			entry.dependsOnY(origin).ifPresent(type -> type.updatePosY(origin, entry));
 		}
 		visitedEntries.pop();
+	}
+
+	public boolean isSnappingEnabled() {
+		return snapping.get();
+	}
+
+	public void toggleSnapping() {
+		snapping.toggle();
 	}
 
 	protected abstract void openScreen();

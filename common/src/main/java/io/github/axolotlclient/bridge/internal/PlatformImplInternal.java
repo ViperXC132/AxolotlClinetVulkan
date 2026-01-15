@@ -23,7 +23,6 @@
 package io.github.axolotlclient.bridge.internal;
 
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
-import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.AxoPlayerListEntry;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffect;
@@ -44,6 +43,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Internal implementations for static platform methods.
  */
+@SuppressWarnings("unused")
 @ApiStatus.Internal
 public class PlatformImplInternal {
 	@RequiresImpl
@@ -68,11 +68,6 @@ public class PlatformImplInternal {
 
 	@RequiresImpl
 	public static long getMeasuringTimeMs() {
-		throw BridgeUtil.noImpl();
-	}
-
-	@RequiresImpl
-	public static AxolotlClientConfigCommon getConfig() {
 		throw BridgeUtil.noImpl();
 	}
 
