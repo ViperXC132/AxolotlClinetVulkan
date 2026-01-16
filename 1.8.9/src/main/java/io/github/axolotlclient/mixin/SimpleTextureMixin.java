@@ -23,10 +23,16 @@
 package io.github.axolotlclient.mixin;
 
 import java.awt.image.BufferedImage;
+import java.io.InputStream;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import io.github.axolotlclient.AxolotlClientCommon;
+import io.github.axolotlclient.util.AltIcons;
 import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.render.texture.SimpleTexture;
+import net.minecraft.client.resource.Resource;
 import net.minecraft.client.resource.manager.ResourceManager;
 import net.minecraft.resource.Identifier;
 import org.spongepowered.asm.mixin.Final;
@@ -43,12 +49,20 @@ public class SimpleTextureMixin {
 	@Final
 	protected Identifier location;
 
+	@WrapOperation(method = "load", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resource/Resource;asStream()Ljava/io/InputStream;"))
+	private InputStream getAltIcon(Resource instance, Operation<InputStream> original) {
+		if (AxolotlClientCommon.BADGE_PATH.equals(location) && !AxolotlClientCommon.getInstance().getConfig().noAltIcons.get()) {
+			return AltIcons.getAltIcon().orElseGet(() -> original.call(instance));
+		}
+		return original.call(instance);
+	}
+
 	@Inject(method = "load", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/TextureUtil;upload(ILjava/awt/image/BufferedImage;ZZ)I"))
 	private void beforeUpload(ResourceManager resourceManager, CallbackInfo ci, @Local BufferedImage image) {
 		if (this.location.equals(GuiElement.ICONS_LOCATION)) {
 			// Fix the crosshair texture if it has a black background instead of the usual transparent one.
 			// Why would anyone make a broken resource pack??
-			var crosshair = image.getSubimage(0, 0, (int) (image.getWidth()*((float)16/256)), (int) (image.getHeight()*((float)16/256)));
+			var crosshair = image.getSubimage(0, 0, (int) (image.getWidth() * ((float) 16 / 256)), (int) (image.getHeight() * ((float) 16 / 256)));
 			var ints = new int[crosshair.getWidth() * crosshair.getHeight()];
 			crosshair.getRGB(0, 0, crosshair.getWidth(), crosshair.getHeight(), ints, 0, crosshair.getWidth());
 			for (int j = 0; j < ints.length; j++) {

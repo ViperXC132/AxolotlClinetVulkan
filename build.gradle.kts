@@ -2,9 +2,9 @@ import java.nio.file.FileSystems
 import kotlin.io.path.*
 
 plugins {
-	id("io.freefair.lombok") version "9.1.0" apply false
+	id("io.freefair.lombok") version "9.2.0" apply false
 	id("com.modrinth.minotaur") version "2.+" apply false
-	id("com.gradleup.shadow") version "9.+" apply false
+	id("com.gradleup.shadow") version "9.3.1" apply false
 	id("dev.yumi.gradle.licenser") version "2.0.+"
 	id("io.github.p03w.machete") version "2.+" apply false
 	id("fabric-loom") version "1.14.+" apply false

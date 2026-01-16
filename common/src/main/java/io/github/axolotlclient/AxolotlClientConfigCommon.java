@@ -99,6 +99,8 @@ public abstract class AxolotlClientConfigCommon {
 
 	public final BooleanOption noRain = new BooleanOption("noRain", false);
 
+	public final BooleanOption noAltIcons = new BooleanOption("no_alt_icons", false);
+
 	public final OptionCategory config = OptionCategory.create("config");
 	public final OptionCategory hidden = OptionCategory.create("storedOptions");
 	public final BooleanOption someNiceBackground = new BooleanOption("defNoSecret", false);
@@ -150,7 +152,7 @@ public abstract class AxolotlClientConfigCommon {
 			hideChat
 		);
 
-		hidden.add(creditsBGM, someNiceBackground, modifyClientBrand);
+		hidden.add(creditsBGM, someNiceBackground, modifyClientBrand, noAltIcons);
 
 		AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "toggle_hide_chat").br$registerOnConsumeClick(hideChat::toggle);
 	}

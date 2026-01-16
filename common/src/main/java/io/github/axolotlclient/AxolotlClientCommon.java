@@ -181,6 +181,10 @@ public abstract class AxolotlClientCommon {
 		Preconditions.checkState(!initialized);
 		Preconditions.checkState(instance == null);
 
+		Events.END_RESOURCE_RELOAD.register(() -> {
+
+		});
+
 		instance = this;
 		addBuiltinCommonModules();
 

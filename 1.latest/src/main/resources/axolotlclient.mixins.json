@@ -60,6 +60,7 @@
 		"SplashTextResourceSupplierMixin",
 		"SubmitNodeCollectionMixin",
 		"SubmitNodeStorageMixin",
+		"TextureContentsMixin",
 		"TitleScreenMixin",
 		"TntEntityRendererMixin",
 		"ToastInstanceMixin",

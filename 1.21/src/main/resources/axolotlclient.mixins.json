@@ -54,6 +54,7 @@
 		"ShaderEffectAccessor",
 		"SplashOverlayMixin",
 		"SplashTextResourceSupplierMixin",
+		"TextureDataMixin",
 		"TitleScreenMixin",
 		"TntEntityRendererMixin",
 		"ToastInstanceMixin",
