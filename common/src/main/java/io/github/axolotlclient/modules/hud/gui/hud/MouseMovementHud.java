@@ -91,18 +91,16 @@ public class MouseMovementHud extends BoxHudEntry implements DynamicallyPosition
 
 	@Override
 	public void renderComponent(AxoRenderContext context, float delta) {
-		context.br$glColor4(1, 1, 1, 1);
-		context.br$glEnableBlend();
 		int spaceY = getContentY();
 		int spaceX = getContentX();
 
 		float calculatedMouseX = (lastMouseX + ((mouseX - lastMouseX) * delta)) - 5;
 		float calculatedMouseY = (lastMouseY + ((mouseY - lastMouseY) * delta)) - 5;
 
-		context.br$drawTexture(spaceX + (getContentWidth() / 2) - 7 / 2 - 1, spaceY + getContentHeight() / 2 - (7 / 2), 7, 7, Platform.createTexture(mouseMovementIndicatorInner));
+		context.br$drawTexture(Platform.createTexture(mouseMovementIndicatorInner), spaceX + (getContentWidth() / 2) - 7 / 2 - 1, spaceY + getContentHeight() / 2 - (7 / 2), 7, 7);
 		// Woah KodeToad, good use of translate
 		context.br$translateMatrix(calculatedMouseX, calculatedMouseY);
-		context.br$drawTexture(spaceX + (getContentWidth() / 2) - 1, spaceY + getContentHeight() / 2, 11, 11, Platform.createTexture(mouseMovementIndicatorOuter));
+		context.br$drawTexture(Platform.createTexture(mouseMovementIndicatorOuter), spaceX + (getContentWidth() / 2) - 1, spaceY + getContentHeight() / 2, 11, 11);
 	}
 
 	@Override

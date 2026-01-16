@@ -24,6 +24,7 @@ package io.github.axolotlclient.bridge.impl;
 
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.bridge.render.AxoSprite;
+import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.Util;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
@@ -31,33 +32,41 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.Identifier;
 
 public interface AxoSpriteImpl extends AxoSprite {
-	void draw(MinecraftClient client, GuiGraphics stack, int sX, int sY, int sW, int sH);
+	void draw(MinecraftClient client, GuiGraphics stack, int sX, int sY, int sW, int sH, int color);
 
 	record Simple(Identifier id, int x, int y, int width, int height) implements AxoSpriteImpl {
 		@Override
-		public void draw(MinecraftClient client, GuiGraphics stack, int sX, int sY, int sW, int sH) {
+		public void draw(MinecraftClient client, GuiGraphics stack, int sX, int sY, int sW, int sH, int color) {
+			stack.setShaderColor(ClientColors.ARGB.redFloat(color), ClientColors.ARGB.greenFloat(color), ClientColors.ARGB.blueFloat(color), ClientColors.ARGB.alphaFloat(color));
 			stack.drawTexture(id, sX, sY, x, y, sW, sH, width, height);
+			stack.setShaderColor(1, 1, 1, 1);
 		}
 	}
 
 	record Gui(Identifier id) implements AxoSpriteImpl {
 		@Override
-		public void draw(MinecraftClient client, GuiGraphics stack, int sX, int sY, int sW, int sH) {
+		public void draw(MinecraftClient client, GuiGraphics stack, int sX, int sY, int sW, int sH, int color) {
+			stack.setShaderColor(ClientColors.ARGB.redFloat(color), ClientColors.ARGB.greenFloat(color), ClientColors.ARGB.blueFloat(color), ClientColors.ARGB.alphaFloat(color));
 			stack.drawGuiTexture(id, sX, sY, sW, sH);
+			stack.setShaderColor(1, 1, 1, 1);
 		}
 	}
 
 	record Vanilla(Sprite sprite) implements AxoSpriteImpl {
 		@Override
-		public void draw(MinecraftClient client, GuiGraphics stack, int sX, int sY, int sW, int sH) {
+		public void draw(MinecraftClient client, GuiGraphics stack, int sX, int sY, int sW, int sH, int color) {
+			stack.setShaderColor(ClientColors.ARGB.redFloat(color), ClientColors.ARGB.greenFloat(color), ClientColors.ARGB.blueFloat(color), ClientColors.ARGB.alphaFloat(color));
 			stack.drawSprite(sX, sY, 0, sW, sH, sprite);
+			stack.setShaderColor(1, 1, 1, 1);
 		}
 	}
 
 	record Config(GraphicsOption option) implements AxoSpriteImpl {
 		@Override
-		public void draw(MinecraftClient client, GuiGraphics stack, int sX, int sY, int sW, int sH) {
+		public void draw(MinecraftClient client, GuiGraphics stack, int sX, int sY, int sW, int sH, int color) {
+			stack.setShaderColor(ClientColors.ARGB.redFloat(color), ClientColors.ARGB.greenFloat(color), ClientColors.ARGB.blueFloat(color), ClientColors.ARGB.alphaFloat(color));
 			stack.drawTexture(Util.getTexture(option), sX, sY, 0, 0, sW, sH, option.get().getWidth(), option.get().getHeight());
+			stack.setShaderColor(1, 1, 1, 1);
 		}
 	}
 }

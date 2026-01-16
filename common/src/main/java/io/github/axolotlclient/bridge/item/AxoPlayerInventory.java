@@ -34,7 +34,7 @@ public interface AxoPlayerInventory {
 		throw BridgeUtil.noImpl();
 	}
 
-	@RequiresImpl(min = BridgeVersion.V1_16_COMBAT)
+	@RequiresImpl(min = BridgeVersion.V1_20)
 	default AxoItemStack br$getOffHand() {
 		throw BridgeUtil.noImpl();
 	}

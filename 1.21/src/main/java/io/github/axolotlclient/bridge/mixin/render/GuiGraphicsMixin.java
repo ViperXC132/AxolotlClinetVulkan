@@ -22,7 +22,6 @@
 
 package io.github.axolotlclient.bridge.mixin.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
@@ -126,29 +125,6 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 		disableScissor();
 	}
 
-	// GL state management
-	@Override
-	public void br$glEnableBlend() {
-		RenderSystem.enableBlend();
-	}
-
-	@Override
-	public void br$glEnableAlpha() {
-	}
-
-	@Override
-	public void br$glDisableBlend() {
-		RenderSystem.disableBlend();
-	}
-
-	@Override
-	public void br$glDisableAlpha() {
-	}
-
-	@Override
-	public void br$glColor4(float r, float g, float b, float a) {
-	}
-
 	@Override
 	public int br$drawString(String value, int x, int y, int color, boolean shadow) {
 		return drawText(MinecraftClient.getInstance().textRenderer, Text.of(value), x, y, color, shadow);
@@ -181,7 +157,7 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 
 	@Override
 	public void br$fillRectRoundGradient(int x, int y, int width, int height, int colorTopLeft, int colorBottomLeft, int colorBottomRight, int colorTopRight, float roundingPx) {
-		self().axolotlclient_rendering$roundedRectGradient(x, y, x+width, y+height, colorTopLeft, colorBottomLeft, colorBottomRight, colorTopRight, roundingPx);
+		self().axolotlclient_rendering$roundedRectGradient(x, y, x + width, y + height, colorTopLeft, colorBottomLeft, colorBottomRight, colorTopRight, roundingPx);
 	}
 
 	@Override
@@ -210,8 +186,8 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	}
 
 	@Override
-	public void br$drawTexture(int x, int y, int width, int height, AxoSprite sprite) {
-		((AxoSpriteImpl) sprite).draw(MinecraftClient.getInstance(), self(), x, y, width, height);
+	public void br$drawTexture(AxoSprite sprite, int x, int y, int width, int height, int color) {
+		((AxoSpriteImpl) sprite).draw(MinecraftClient.getInstance(), self(), x, y, width, height, color);
 	}
 
 	// item model rendering

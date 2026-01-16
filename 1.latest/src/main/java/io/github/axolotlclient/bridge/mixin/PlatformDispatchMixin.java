@@ -109,8 +109,8 @@ public abstract class PlatformDispatchMixin {
 
 		class Impl implements AxoSprite.Dynamic, AxoSpriteImpl {
 			@Override
-			public void draw(Minecraft client, GuiGraphics stack, int sX, int sY, int sW, int sH) {
-				stack.blit(RenderPipelines.GUI_TEXTURED, icon.textureLocation(), sX, sY, 0, 0, sW, sH, sW, sH, -1);
+			public void draw(Minecraft client, GuiGraphics stack, int sX, int sY, int sW, int sH, int color) {
+				stack.blit(RenderPipelines.GUI_TEXTURED, icon.textureLocation(), sX, sY, 0, 0, sW, sH, sW, sH, color);
 			}
 
 			@Override

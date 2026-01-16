@@ -65,6 +65,11 @@ public abstract class AxoStatusEffectsMixin {
 	@Final
 	public static AxoStatusEffect MINING_FATIGUE;
 
+	@Mutable
+	@Shadow
+	@Final
+	public static AxoStatusEffect HEALTH_BOOST;
+
 	@Inject(method = "<clinit>", at = @At("HEAD"), cancellable = true)
 	private static void setStaticValues(CallbackInfo info) {
 		REGEN = StatusEffects.REGENERATION.value();
@@ -73,6 +78,7 @@ public abstract class AxoStatusEffectsMixin {
 		HASTE = StatusEffects.HASTE.value();
 		BLINDNESS = StatusEffects.BLINDNESS.value();
 		MINING_FATIGUE = StatusEffects.MINING_FATIGUE.value();
+		HEALTH_BOOST = StatusEffects.HEALTH_BOOST.value();
 
 		info.cancel();
 	}

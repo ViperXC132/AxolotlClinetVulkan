@@ -28,7 +28,6 @@ import net.fabricmc.loader.api.FabricLoader;
 @Getter
 public enum BridgeVersion {
 	V1_8("1.8.9"),
-	V1_16_COMBAT("1.16_combat-6"),
 	V1_20("1.20"),
 	V1_21("1.21"),
 	V1_21_11("1.21.11");

@@ -25,31 +25,34 @@ package io.github.axolotlclient.bridge.impl;
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.bridge.render.AxoSprite;
+import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
 import net.minecraft.resource.Identifier;
 
 public interface AxoSpriteImpl extends AxoSprite {
-	void draw(Minecraft client, int sX, int sY, int sW, int sH);
+	void draw(Minecraft client, int sX, int sY, int sW, int sH, int color);
 
 	record Simple(Identifier id, int x, int y, int width, int height) implements AxoSpriteImpl {
 		@Override
-		public void draw(Minecraft client, int sX, int sY, int sW, int sH) {
+		public void draw(Minecraft client, int sX, int sY, int sW, int sH, int color) {
 			GlStateManager.enableTexture();
 			GlStateManager.enableBlend();
-			GlStateManager.color3f(1, 1, 1);
+			GlStateManager.color4f(ClientColors.ARGB.redFloat(color), ClientColors.ARGB.greenFloat(color), ClientColors.ARGB.blueFloat(color), ClientColors.ARGB.alphaFloat(color));
 			client.getTextureManager().bind(id);
 			GuiElement.drawTexture(sX, sY, x, y, sW, sH, width, height);
+			GlStateManager.color4f(1, 1, 1, 1);
 		}
 	}
 
 	record Config(GraphicsOption option) implements AxoSpriteImpl {
 		@Override
-		public void draw(Minecraft client, int sX, int sY, int sW, int sH) {
-			GlStateManager.color3f(1, 1, 1);
+		public void draw(Minecraft client, int sX, int sY, int sW, int sH, int color) {
+			GlStateManager.color4f(ClientColors.ARGB.redFloat(color), ClientColors.ARGB.greenFloat(color), ClientColors.ARGB.blueFloat(color), ClientColors.ARGB.alphaFloat(color));
 			Util.bindTexture(option);
 			GuiElement.drawTexture(sX, sY, 0, 0, sW, sH, option.get().getWidth(), option.get().getHeight());
+			GlStateManager.color4f(1, 1, 1, 1);
 		}
 	}
 }

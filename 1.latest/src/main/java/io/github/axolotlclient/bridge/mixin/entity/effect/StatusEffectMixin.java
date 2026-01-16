@@ -41,11 +41,11 @@ public abstract class StatusEffectMixin implements AxoStatusEffect {
 	@Override
 	public AxoSprite br$getSprite() {
 		var holder = BuiltInRegistries.MOB_EFFECT.wrapAsHolder((MobEffect) (Object) this);
-		return (AxoSpriteImpl) (minecraft, guiGraphics, x, y, w, h) ->
+		return (AxoSpriteImpl) (minecraft, guiGraphics, x, y, w, h, color) ->
 			guiGraphics.blitSprite(
 				RenderPipelines.GUI_TEXTURED,
 				Gui.getMobEffectSprite(holder),
-				x, y, w, h
+				x, y, w, h, color
 			);
 	}
 

@@ -27,5 +27,5 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 
 public interface AxoSpriteImpl extends AxoSprite {
-	void draw(Minecraft client, GuiGraphics stack, int sX, int sY, int sW, int sH);
+	void draw(Minecraft client, GuiGraphics stack, int sX, int sY, int sW, int sH, int color);
 }

@@ -199,7 +199,7 @@ public class PotionsHud extends TextHudEntry {
 
 		var mode = this.mode.get();
 		if (mode.hasIcons) {
-			graphics.br$drawTexture(x, y, 18, 18, type.br$getSprite());
+			graphics.br$drawTexture(type.br$getSprite(), x, y, 18, 18);
 			x += 19;
 		}
 

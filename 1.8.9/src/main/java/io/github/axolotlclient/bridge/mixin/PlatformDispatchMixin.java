@@ -27,6 +27,7 @@ import java.util.Base64;
 import java.util.List;
 
 import com.google.common.hash.Hashing;
+import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.impl.util.GraphicsImpl;
 import io.github.axolotlclient.bridge.PlatformDispatch;
 import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
@@ -34,6 +35,7 @@ import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
 import io.github.axolotlclient.modules.hypixel.autoboop.FilterListConfigurationScreen;
 import io.github.axolotlclient.modules.hypixel.bedwars.SessionStatsHudEntryConfigScreen;
+import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.ThreadExecuter;
 import io.github.axolotlclient.util.Util;
 import net.minecraft.client.Minecraft;
@@ -126,9 +128,11 @@ public abstract class PlatformDispatchMixin {
 
 		class Impl implements AxoSprite.Dynamic, AxoSpriteImpl {
 			@Override
-			public void draw(Minecraft client, int sX, int sY, int sW, int sH) {
+			public void draw(Minecraft client, int sX, int sY, int sW, int sH, int color) {
 				client.getTextureManager().bind(icon);
+				GlStateManager.color4f(ClientColors.ARGB.redFloat(color), ClientColors.ARGB.greenFloat(color), ClientColors.ARGB.blueFloat(color), ClientColors.ARGB.alphaFloat(color));
 				GuiElement.drawTexture(sX, sY, 0, 0, sW, sH, 16, 16);
+				GlStateManager.color4f(1, 1, 1, 1);
 			}
 
 			@Override

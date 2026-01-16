@@ -70,11 +70,11 @@ public abstract class AxoSpritesMixin {
 		var furnaceOffId = Identifier.withDefaultNamespace("textures/block/furnace_front.png");
 		var furnaceOnId = Identifier.withDefaultNamespace("textures/block/furnace_front_on.png");
 		var magnetId = Identifier.fromNamespaceAndPath(AxolotlClientCommon.MODID, "magnet");
-		BADGE = (AxoSpriteImpl) (client, stack, sX, sY, sW, sH) -> stack.blit(RenderPipelines.GUI_TEXTURED, badgeId, sX, sY, 0, 0, sW, sH, 16, 16);
-		BARRIER_ITEM_ICON = (AxoSpriteImpl) (client, stack, sX, sY, sW, sH) -> stack.blit(RenderPipelines.GUI_TEXTURED, barrierId, sX, sY, 0, 0, sW, sH, 16, 16);
-		FURNACE_OFF = (AxoSpriteImpl) (client, stack, sX, sY, sW, sH) -> stack.blit(RenderPipelines.GUI_TEXTURED, furnaceOffId, sX, sY, 0, 0, sW, sH, 16, 16);
-		FURNACE_ON = (AxoSpriteImpl) (client, stack, sX, sY, sW, sH) -> stack.blit(RenderPipelines.GUI_TEXTURED, furnaceOnId, sX, sY, 0, 0, sW, sH, 16, 16);
-		MAGNET_ICON = (AxoSpriteImpl) (client, stack, sX, sY, sW, sH) -> stack.blitSprite(RenderPipelines.GUI_TEXTURED, magnetId, sX, sY, sW, sH);
+		BADGE = (AxoSpriteImpl) (client, stack, sX, sY, sW, sH, color) -> stack.blit(RenderPipelines.GUI_TEXTURED, badgeId, sX, sY, 0, 0, sW, sH, 16, 16, color);
+		BARRIER_ITEM_ICON = (AxoSpriteImpl) (client, stack, sX, sY, sW, sH, color) -> stack.blit(RenderPipelines.GUI_TEXTURED, barrierId, sX, sY, 0, 0, sW, sH, 16, 16, color);
+		FURNACE_OFF = (AxoSpriteImpl) (client, stack, sX, sY, sW, sH, color) -> stack.blit(RenderPipelines.GUI_TEXTURED, furnaceOffId, sX, sY, 0, 0, sW, sH, 16, 16, color);
+		FURNACE_ON = (AxoSpriteImpl) (client, stack, sX, sY, sW, sH, color) -> stack.blit(RenderPipelines.GUI_TEXTURED, furnaceOnId, sX, sY, 0, 0, sW, sH, 16, 16, color);
+		MAGNET_ICON = (AxoSpriteImpl) (client, stack, sX, sY, sW, sH, color) -> stack.blitSprite(RenderPipelines.GUI_TEXTURED, magnetId, sX, sY, sW, sH, color);
 		info.cancel();
 	}
 }

@@ -67,14 +67,11 @@ public class IconHud extends BoxHudEntry implements DynamicallyPositionable {
 	@Override
 	public void renderComponent(AxoRenderContext ctx, float delta) {
 		ctx.br$pushMatrix();
-		ctx.br$glColor4(1, 1, 1, 1);
-		ctx.br$glEnableBlend();
 		float scale = getScale();
 		ctx.br$scaleMatrix(1 / scale, 1 / scale);
 		ctx.br$translateMatrix(getRawTrueContentX(), getRawTrueContentY());
 		ctx.br$scaleMatrix(scale, scale);
-		ctx.br$drawTexture(0, 0, 16, 16, AxoSprites.BADGE);
-		ctx.br$glDisableBlend();
+		ctx.br$drawTexture(AxoSprites.BADGE, 0, 0, 16, 16);
 		ctx.br$popMatrix();
 	}
 

@@ -25,6 +25,7 @@ package io.github.axolotlclient.bridge.entity.effect;
 import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.RequiresImpl;
 
+@SuppressWarnings("unused")
 public class AxoStatusEffects {
 	@RequiresImpl
 	public static final AxoStatusEffect REGEN = BridgeUtil.noImplValue();
@@ -43,4 +44,7 @@ public class AxoStatusEffects {
 
 	@RequiresImpl
 	public static final AxoStatusEffect MINING_FATIGUE = BridgeUtil.noImplValue();
+
+	@RequiresImpl
+	public static final AxoStatusEffect HEALTH_BOOST = BridgeUtil.noImplValue();
 }

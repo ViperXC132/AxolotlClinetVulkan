@@ -90,32 +90,6 @@ public interface AxoRenderContext {
 		throw BridgeUtil.noImpl();
 	}
 
-	// GL state management
-	@RequiresImpl
-	default void br$glEnableBlend() {
-		throw BridgeUtil.noImpl();
-	}
-
-	@RequiresImpl
-	default void br$glEnableAlpha() {
-		throw BridgeUtil.noImpl();
-	}
-
-	@RequiresImpl
-	default void br$glDisableBlend() {
-		throw BridgeUtil.noImpl();
-	}
-
-	@RequiresImpl
-	default void br$glDisableAlpha() {
-		throw BridgeUtil.noImpl();
-	}
-
-	@RequiresImpl
-	default void br$glColor4(float r, float g, float b, float a) {
-		throw BridgeUtil.noImpl();
-	}
-
 	// string rendering
 	@RequiresImpl
 	default int br$drawString(String value, int x, int y, int color, boolean shadow) {
@@ -300,12 +274,17 @@ public interface AxoRenderContext {
 
 	// texture drawing
 	@ApiStatus.NonExtendable
-	default void br$drawTexture(Rectangle coords, AxoSprite texture) {
-		br$drawTexture(coords.x, coords.y, coords.width, coords.height, texture);
+	default void br$drawTexture(AxoSprite texture, Rectangle coords) {
+		br$drawTexture(texture, coords.x, coords.y, coords.width, coords.height);
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawTexture(AxoSprite sprite, int x, int y, int width, int height) {
+		br$drawTexture(sprite, x, y, width, height, -1);
 	}
 
 	@RequiresImpl
-	default void br$drawTexture(int x, int y, int width, int height, AxoSprite sprite) {
+	default void br$drawTexture(AxoSprite sprite, int x, int y, int width, int height, int color) {
 		throw BridgeUtil.noImpl();
 	}
 

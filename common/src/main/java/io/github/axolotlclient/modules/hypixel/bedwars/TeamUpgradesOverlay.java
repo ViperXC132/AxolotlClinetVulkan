@@ -51,7 +51,7 @@ public class TeamUpgradesOverlay extends BoxHudEntry implements DynamicallyPosit
 	private BedwarsTeamUpgrades upgrades = null;
 
 	public TeamUpgradesOverlay(BedwarsMod mod) {
-		super(60, 40, true);
+		super(35, 18, true);
 		this.mod = mod;
 		BedwarsMod.GAME_START_EVENT.register(game -> upgrades = game.getUpgrades());
 		BedwarsMod.GAME_END_EVENT.register(() -> upgrades = null);
@@ -70,12 +70,9 @@ public class TeamUpgradesOverlay extends BoxHudEntry implements DynamicallyPosit
 		}
 
 		int x = position.x() + 1;
-		int y = position.y() + 2;
-		int width = getContentWidth();
-		int height = getContentHeight();
-		context.br$glEnableAlpha();
-		context.br$glEnableBlend();
-		context.br$glColor4(1, 1, 1, 1);
+		int y = position.y() + 1;
+		int width = 18;
+		int height;
 		boolean normalUpgrades = false;
 		if (upgrades != null) {
 			for (TeamUpgrade u : upgrades.upgrades) {
@@ -85,12 +82,11 @@ public class TeamUpgradesOverlay extends BoxHudEntry implements DynamicallyPosit
 				if (u instanceof TrapUpgrade) {
 					continue;
 				}
-				context.br$glColor4(1, 1, 1, 1);
 				u.draw(context, x, y, 16, 16);
 				x += 17;
 				normalUpgrades = true;
 			}
-			setContentWidth(Math.max((x - position.x()) + 1, 18));
+			width = Math.max(x - position.x() - 1, width);
 		}
 		x = position.x() + 1;
 		if (normalUpgrades) {
@@ -98,17 +94,18 @@ public class TeamUpgradesOverlay extends BoxHudEntry implements DynamicallyPosit
 		}
 		if (editMode) {
 			for (TrapUpgrade.TrapType type : trapEdit) {
-				context.br$glColor4(1, 1, 1, 1);
 				type.draw(context, x, y, 16, 16);
 				x += 17;
 			}
-			setContentWidth(Math.max((x - position.x()) + 1, 18));
+			width = Math.max(x - position.x() - 1, width);
 		} else if (upgrades != null) {
 			upgrades.trap.draw(context, x, y, 16, 16);
-			setContentWidth(Math.max(((x + (upgrades.trap.getTrapCount() * 16)) - position.x()) + 1, getContentWidth()));
+			width = Math.max(x + upgrades.trap.getTrapCount() * 16 - position.x() - 1, width);
 		}
-		setContentHeight((y - position.y()) + 19);
+		height = y - position.y() - 1 + 17;
 		if (getContentHeight() != height || getContentWidth() != width) {
+			setContentWidth(width);
+			setContentHeight(height);
 			onBoundsUpdate();
 		}
 	}

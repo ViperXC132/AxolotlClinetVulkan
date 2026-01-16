@@ -240,7 +240,7 @@ public class SnappingHelper {
 				}
 				graphics.br$translateMatrix(-4.5f, -4.5f);
 				graphics.br$rotateMatrixAround((float) Math.toRadians(ang), 4.5f, 4.5f);
-				graphics.br$drawTexture(0, 0, 9, 9, AxoSprites.MAGNET_ICON);
+				graphics.br$drawTexture(AxoSprites.MAGNET_ICON, 0, 0, 9, 9);
 				graphics.br$popMatrix();
 			}
 			union.forEach(e -> {
@@ -286,7 +286,7 @@ public class SnappingHelper {
 					ang += 180;
 				}
 				graphics.br$rotateMatrixAround((float) Math.toRadians(ang), 4.5f, 4.5f);
-				graphics.br$drawTexture(0, 0, 9, 9, AxoSprites.MAGNET_ICON);
+				graphics.br$drawTexture(AxoSprites.MAGNET_ICON, 0, 0, 9, 9);
 				graphics.br$popMatrix();
 			}
 		}
@@ -326,7 +326,7 @@ public class SnappingHelper {
 				if (y1 == cBounds.yEnd()) {
 					graphics.br$rotateMatrixAround((float) Math.PI, 4.5f, 4.5f);
 				}
-				graphics.br$drawTexture(0, 0, 9, 9, AxoSprites.MAGNET_ICON);
+				graphics.br$drawTexture(AxoSprites.MAGNET_ICON, 0, 0, 9, 9);
 				graphics.br$popMatrix();
 			}
 		}

@@ -67,7 +67,6 @@ import net.minecraft.world.scores.Team;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
-@SuppressWarnings("OverwriteModifiers")
 @Mixin(value = PlatformImplInternal.class, remap = false)
 public abstract class PlatformImplInternalMixin {
 	/**
@@ -248,7 +247,7 @@ public abstract class PlatformImplInternalMixin {
 	 */
 	@Overwrite
 	public static AxoSprite createTexture(GraphicsOption option) {
-		return (AxoSpriteImpl) (client, stack, sX, sY, sW, sH) ->
+		return (AxoSpriteImpl) (client, stack, sX, sY, sW, sH, color) ->
 			stack.blit(
 				RenderPipelines.GUI_TEXTURED,
 				io.github.axolotlclient.util.Util.getTexture(option), sX, sY, 0, 0,

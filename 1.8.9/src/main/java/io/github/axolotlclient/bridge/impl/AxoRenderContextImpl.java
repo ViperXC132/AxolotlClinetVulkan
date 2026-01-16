@@ -88,31 +88,6 @@ public class AxoRenderContextImpl extends io.github.axolotlclient.rendering.Draw
 	}
 
 	@Override
-	public void br$glEnableBlend() {
-		GlStateManager.enableBlend();
-	}
-
-	@Override
-	public void br$glEnableAlpha() {
-		GlStateManager.enableAlphaTest();
-	}
-
-	@Override
-	public void br$glDisableBlend() {
-		GlStateManager.disableBlend();
-	}
-
-	@Override
-	public void br$glDisableAlpha() {
-		GlStateManager.disableAlphaTest();
-	}
-
-	@Override
-	public void br$glColor4(float r, float g, float b, float a) {
-		GlStateManager.color4f(r, g, b, a);
-	}
-
-	@Override
 	public void br$fillRect(int x, int y, int width, int height, int color) {
 		DrawUtil.fillRect(x, y, width, height, color);
 	}
@@ -188,8 +163,8 @@ public class AxoRenderContextImpl extends io.github.axolotlclient.rendering.Draw
 	}
 
 	@Override
-	public void br$drawTexture(int x, int y, int width, int height, AxoSprite sprite) {
-		((AxoSpriteImpl) sprite).draw(client, x, y, width, height);
+	public void br$drawTexture(AxoSprite sprite, int x, int y, int width, int height, int color) {
+		((AxoSpriteImpl) sprite).draw(client, x, y, width, height, color);
 	}
 
 	@Override
