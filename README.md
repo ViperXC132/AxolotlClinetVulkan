@@ -1,6 +1,6 @@
 # AxolotlClient-mod
 
-A Complete (nearly) mod to have various features on various Minecraft versions
+A complete mod to have various features on various Minecraft versions
 
 *Also available in other Languages: [Türkçe](doc/README-tr.md), [Deutsch](doc/README-de.md)*
 

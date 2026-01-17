@@ -3,8 +3,11 @@ plugins {
 	id("io.github.p03w.machete")
 }
 
+val minecraftVersion = "1.21.1"
+val mappingsBuild = "9"
+val fapi = "0.116.6"
 group = project.property("maven_group") as String
-version = "${project.property("version")}+${project.property("minecraft_121")}"
+version = "${project.property("version")}+$minecraftVersion"
 base.archivesName = "AxolotlClient"
 
 loom {
@@ -20,16 +23,16 @@ loom {
 }
 
 dependencies {
-	minecraft("com.mojang:minecraft:${project.property("minecraft_121")}")
-	mappings("org.quiltmc:quilt-mappings:${project.property("mappings_121")}:intermediary-v2")
+	minecraft("com.mojang:minecraft:$minecraftVersion")
+	mappings("org.quiltmc:quilt-mappings:$minecraftVersion+build.$mappingsBuild:intermediary-v2")
 
 	modImplementation("net.fabricmc:fabric-loader:${project.property("fabric_loader")}")
 
-	modImplementation("net.fabricmc.fabric-api:fabric-api:${project.property("fapi_121")}+${project.property("minecraft_121")}")
+	modImplementation("net.fabricmc.fabric-api:fabric-api:$fapi+$minecraftVersion")
 
-	modImplementation("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+${project.property("minecraft_121")}")
-	include("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+${project.property("minecraft_121")}")
-	modImplementation(include("io.github.axolotlclient:AxolotlClient-config-rounded:${project.property("config")}+${project.property("minecraft_121")}")!!)
+	modImplementation("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+$minecraftVersion")
+	include("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+$minecraftVersion")
+	modImplementation(include("io.github.axolotlclient:AxolotlClient-config-rounded:${project.property("config")}+$minecraftVersion")!!)
 
 	modCompileOnlyApi("com.terraformersmc:modmenu:8.0.0") {
 		exclude(group = "net.fabricmc")
@@ -113,7 +116,7 @@ modrinth {
 	versionNumber = "${project.version}"
 	versionType = "release"
 	uploadFile = tasks.remapJar.get()
-	gameVersions.set(listOf("${project.property("minecraft_121")}"))
+	gameVersions.set(listOf(minecraftVersion))
 	loaders.set(listOf("quilt", "fabric"))
 	additionalFiles.set(listOf(tasks.remapSourcesJar))
 	dependencies {

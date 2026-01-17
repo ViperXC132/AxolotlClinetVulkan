@@ -29,6 +29,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.options.KeyBinding;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -44,7 +45,7 @@ public abstract class KeyBindingMixin {
 	@Shadow
 	private int keyCode;
 
-	@Inject(method = "set", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/KeyBinding;pressed:Z"))
+	@Inject(method = "set", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/KeyBinding;pressed:Z", opcode = Opcodes.PUTFIELD))
 	private static void axolotlclient$onPress(int keyCode, boolean pressed, CallbackInfo ci, @Local KeyBinding key) {
 		if (pressed) {
 			// TODO: handle event for unbound keys as well

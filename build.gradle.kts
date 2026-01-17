@@ -37,15 +37,6 @@ allprojects {
 		}
 		exclusiveContent {
 			forRepository {
-				maven("https://maven.skye.vg")
-			}
-			filter {
-				includeGroup("link.e4mc")
-				includeModuleByRegex("io.netty.incubator", "netty-incubator-codec-(?:classes|parent)-quic")
-			}
-		}
-		exclusiveContent {
-			forRepository {
 				maven("https://api.modrinth.com/maven")
 			}
 			filter {
