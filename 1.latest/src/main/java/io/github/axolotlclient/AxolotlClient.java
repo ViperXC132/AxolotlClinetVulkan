@@ -31,6 +31,7 @@ import io.github.axolotlclient.api.StatusUpdateProviderImpl;
 import io.github.axolotlclient.bridge.impl.Bridge;
 import io.github.axolotlclient.modules.ModuleLoader;
 import io.github.axolotlclient.modules.auth.Auth;
+import io.github.axolotlclient.modules.blur.MotionBlur;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import io.github.axolotlclient.modules.particles.Particles;
@@ -55,7 +56,7 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 	private void addBuiltinModules() {
 		registerModule(HudManager.getInstance());
 		registerModule(HypixelMods.getInstance());
-		//registerModule(MotionBlur.getInstance()); // TODO this is broken since 1.21.2
+		registerModule(MotionBlur.getInstance());
 		registerModule(ScrollableTooltips.getInstance());
 		registerModule(Particles.getInstance());
 		registerModule(ScreenshotUtils.getInstance());

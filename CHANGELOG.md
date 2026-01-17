@@ -11,6 +11,7 @@
 - add XPHud
 - add Screenshot Toasts
 - add Custom Graphics Keystrokes
+- fix MotionBlur on latest version
 
 ### 3.1.8
 
