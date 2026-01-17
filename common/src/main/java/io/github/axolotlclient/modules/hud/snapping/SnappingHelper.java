@@ -266,7 +266,7 @@ public class SnappingHelper {
 				graphics.br$pushMatrix();
 				graphics.br$translateMatrix(x1, y1);
 				var overlap = Math.min(cBounds.yEnd(), xBounds.yEnd()) - Math.max(cBounds.y(), xBounds.y());
-				if (overlap < 0) {
+				if (overlap < 0 || x1 != x2) {
 					var x = x2 - x1;
 					var y = y2 - y1;
 					var c1 = ClientColors.SELECTOR_GREEN.toInt();
@@ -278,7 +278,7 @@ public class SnappingHelper {
 					graphics.br$translateMatrix(0, touchLen / 2f);
 					graphics.br$rotateMatrix(ang);
 				} else {
-					graphics.br$translateMatrix((x2 - x1) / 2f, (y2 - y1) / 2f);
+					graphics.br$translateMatrix(0.0f, (y2 - y1) / 2f);
 				}
 				graphics.br$translateMatrix(-4.5f, -4.5f);
 				var ang = -90;
@@ -308,7 +308,7 @@ public class SnappingHelper {
 				graphics.br$pushMatrix();
 				var overlap = Math.min(cBounds.xEnd(), yBounds.xEnd()) - Math.max(cBounds.x(), yBounds.x());
 				graphics.br$translateMatrix(x1, y1);
-				if (overlap < 0) {
+				if (overlap < 0 || y1 != y2) {
 					var x = x2 - x1;
 					var y = y2 - y1;
 					var c1 = ClientColors.SELECTOR_GREEN.toInt();
@@ -320,7 +320,7 @@ public class SnappingHelper {
 					graphics.br$translateMatrix(0, touchLen / 2f);
 					graphics.br$rotateMatrix(ang);
 				} else {
-					graphics.br$translateMatrix((x2 - x1) / 2f, (y2 - y1) / 2f);
+					graphics.br$translateMatrix((x2 - x1) / 2f, 0.0f);
 				}
 				graphics.br$translateMatrix(-4.5f, -4.5f);
 				if (y1 == cBounds.yEnd()) {
@@ -389,7 +389,7 @@ public class SnappingHelper {
 	private static void iterateHudDependencyTree(HudEntry entry, Set<HudEntry> set, Map<HudEntry, Set<HudEntry>> dependencies) {
 		set.add(entry);
 		if (dependencies.containsKey(entry)) {
-			dependencies.get(entry).forEach(e -> iterateHudDependencyTree(e, set, dependencies));
+			dependencies.get(entry).stream().filter(e -> !set.contains(e)).forEach(e -> iterateHudDependencyTree(e, set, dependencies));
 		}
 	}
 
