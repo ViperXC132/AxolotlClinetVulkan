@@ -54,6 +54,7 @@ import io.github.axolotlclient.util.FeatureDisablerCommon;
 import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.OSUtil;
 import io.github.axolotlclient.util.notifications.NotificationProvider;
+import lombok.Getter;
 import net.fabricmc.loader.api.FabricLoader;
 
 public abstract class AxolotlClientCommon {
@@ -89,7 +90,8 @@ public abstract class AxolotlClientCommon {
 	private static AxolotlClientCommon instance;
 
 	private AxolotlClientConfigCommon config;
-	private Logger logger;
+	@Getter
+	private final Logger logger = new Logger.Slf4jLogger();
 	private NotificationProvider notificationProvider;
 	private JsonConfigManager configManager;
 	private boolean initialized = false;
@@ -113,11 +115,6 @@ public abstract class AxolotlClientCommon {
 	public ConfigManager getConfigManager() {
 		Preconditions.checkState(initialized && configManager != null);
 		return configManager;
-	}
-
-	public Logger getLogger() {
-		Preconditions.checkState(initialized && logger != null);
-		return logger;
 	}
 
 	public NotificationProvider getNotificationProvider() {
@@ -177,7 +174,7 @@ public abstract class AxolotlClientCommon {
 		configManager.suppressName(config.hidden.getName());
 	}
 
-	protected final void init(Logger logger, NotificationProvider provider) {
+	protected final void init(NotificationProvider provider) {
 		Preconditions.checkState(!initialized);
 		Preconditions.checkState(instance == null);
 
@@ -189,8 +186,6 @@ public abstract class AxolotlClientCommon {
 		addBuiltinCommonModules();
 
 		initialized = true;
-
-		this.logger = logger;
 		Profiles.getInstance().loadProfiles();
 
 		this.notificationProvider = provider;

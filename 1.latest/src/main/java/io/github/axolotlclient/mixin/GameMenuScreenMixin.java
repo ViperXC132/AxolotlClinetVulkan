@@ -26,7 +26,7 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.APIOptions;
@@ -42,6 +42,8 @@ import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
+import org.jspecify.annotations.NonNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -75,9 +77,9 @@ public abstract class GameMenuScreenMixin extends Screen {
 				Component.empty(),
 				button -> minecraft.setScreen(new HudEditScreen(this)), Supplier::get) {
 				@Override
-				public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+				public void renderContents(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 					renderDefaultSprite(graphics);
-					graphics.blit(RenderPipelines.GUI_TEXTURED, AxolotlClient.badgeIcon, this.getX() + 2, this.getY() + 2, 0, 0, this.width - 4, this.height - 4, this.width - 4, this.height - 4);
+					graphics.blit(RenderPipelines.GUI_TEXTURED, (Identifier) AxolotlClientCommon.BADGE_PATH, this.getX() + 2, this.getY() + 2, 0, 0, this.width - 4, this.height - 4, this.width - 4, this.height - 4);
 				}
 			});
 		}

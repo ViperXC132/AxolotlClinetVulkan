@@ -26,6 +26,7 @@ import java.io.IOException;
 
 import com.google.gson.JsonSyntaxException;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.FloatOption;
@@ -71,7 +72,7 @@ public class MotionBlur extends AbstractModule {
 				client.getFramebuffer(), shaderLocation);
 			shader.setupDimensions(client.getWindow().getFramebufferWidth(), client.getWindow().getFramebufferHeight());
 		} catch (JsonSyntaxException | IOException e) {
-			AxolotlClient.LOGGER.error("Could not load motion blur: ", e);
+			AxolotlClientCommon.getInstance().getLogger().error("Could not load motion blur: ", e);
 		}
 	}
 

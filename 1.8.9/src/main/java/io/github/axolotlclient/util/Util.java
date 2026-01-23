@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.function.Supplier;
 
-import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Graphics;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
@@ -161,7 +161,7 @@ public class Util {
 
 			texture.upload();
 		} catch (IOException e) {
-			AxolotlClient.LOGGER.error("Failed to bind texture for " + id + ": ", e);
+			AxolotlClientCommon.getInstance().getLogger().error("Failed to bind texture for " + id + ": ", e);
 		}
 		return id;
 	}

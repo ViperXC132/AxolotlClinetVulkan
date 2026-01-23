@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.modules.AbstractModule;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
@@ -53,7 +53,7 @@ public class SkyResourceManager extends AbstractModule {
 	private static final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 	public void reload(ResourceManager resourceManager) {
-		AxolotlClient.LOGGER.debug("Loading custom skies!");
+		AxolotlClientCommon.getInstance().getLogger().debug("Loading custom skies!");
 		for (Identifier entry : resourceManager
 			.findResources("fabricskyboxes", "sky", identifier -> identifier.getPath().endsWith(".json"))
 			.keySet()) {
@@ -61,36 +61,36 @@ public class SkyResourceManager extends AbstractModule {
 				continue;
 			}
 			try {
-				AxolotlClient.LOGGER.debug("Loading sky: " + entry);
+				AxolotlClientCommon.getInstance().getLogger().debug("Loading sky: " + entry);
 				JsonObject json = gson.fromJson(
 					new BufferedReader(new InputStreamReader(resourceManager.getResource(entry).asStream(), StandardCharsets.UTF_8))
 						.lines().collect(Collectors.joining("\n")),
 					JsonObject.class);
 				if (!json.has("type") || !json.get("type").getAsString().equals("square-textured")) {
-					AxolotlClient.LOGGER.debug("Skipping " + entry + " as we currently cannot load it!");
+					AxolotlClientCommon.getInstance().getLogger().debug("Skipping " + entry + " as we currently cannot load it!");
 					continue;
 				}
 				SkyboxManager.getInstance().addSkybox(new FSBSkyboxInstance(json));
-				AxolotlClient.LOGGER.debug("Loaded sky: " + entry);
+				AxolotlClientCommon.getInstance().getLogger().debug("Loaded sky: " + entry);
 			} catch (Exception e) {
-				AxolotlClient.LOGGER.warn("Failed to load sky: " + entry, e);
+				AxolotlClientCommon.getInstance().getLogger().warn("Failed to load sky: " + entry, e);
 			}
 		}
 
 		for (Identifier entry : resourceManager
 			.findResources("minecraft", "optifine/sky", identifier -> isMCPSky(identifier.getPath()))
 			.keySet()) {
-			AxolotlClient.LOGGER.debug("Loading sky: " + entry);
+			AxolotlClientCommon.getInstance().getLogger().debug("Loading sky: " + entry);
 			loadMCPSky("optifine", entry, resourceManager);
-			AxolotlClient.LOGGER.debug("Loaded sky: " + entry);
+			AxolotlClientCommon.getInstance().getLogger().debug("Loaded sky: " + entry);
 		}
 
 		for (Identifier entry : resourceManager
 			.findResources("minecraft", "mcpatcher/sky", identifier -> isMCPSky(identifier.getPath()))
 			.keySet()) {
-			AxolotlClient.LOGGER.debug("Loading sky: " + entry);
+			AxolotlClientCommon.getInstance().getLogger().debug("Loading sky: " + entry);
 			loadMCPSky("mcpatcher", entry, resourceManager);
-			AxolotlClient.LOGGER.debug("Loaded sky: " + entry);
+			AxolotlClientCommon.getInstance().getLogger().debug("Loaded sky: " + entry);
 		}
 	}
 
@@ -122,8 +122,8 @@ public class SkyResourceManager extends AbstractModule {
 							try {
 								resourceManager.getResource(new Identifier(option[1]));
 							} catch (FileNotFoundException e) {
-								AxolotlClient.LOGGER.warn("Sky " + id + " does not have a valid texture attached to it: ", option[1]);
-								AxolotlClient.LOGGER.warn("Please fix your packs.");
+								AxolotlClientCommon.getInstance().getLogger().warn("Sky " + id + " does not have a valid texture attached to it: ", option[1]);
+								AxolotlClientCommon.getInstance().getLogger().warn("Please fix your packs.");
 								return;
 							}
 						}
@@ -140,7 +140,7 @@ public class SkyResourceManager extends AbstractModule {
 
 			SkyboxManager.getInstance().addSkybox(new MCPSkyboxInstance(object));
 		} catch (Exception e) {
-			AxolotlClient.LOGGER.debug("Error while loading sky", e);
+			AxolotlClientCommon.getInstance().getLogger().debug("Error while loading sky", e);
 		}
 	}
 

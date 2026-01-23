@@ -27,7 +27,7 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.platform.Lighting;
-import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.util.notifications.toasts.Toast;
@@ -103,7 +103,7 @@ public class AxolotlClientToast extends DrawUtil implements Toast {
 		GlStateManager.disableBlend();
 		Lighting.turnOff();
 		blitSprite(BACKGROUND_SPRITE, 0, 0, width(), height(), SPRITE_SCALING);
-		Minecraft.getInstance().getTextureManager().bind(AxolotlClient.badgeIcon);
+		Minecraft.getInstance().getTextureManager().bind((Identifier) AxolotlClientCommon.BADGE_PATH);
 		drawTexture(4, 4, 0, 0, 15, 15, 15, 15);
 		int textOffset = 22;
 		if (this.messageLines.isEmpty()) {

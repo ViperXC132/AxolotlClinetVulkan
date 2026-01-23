@@ -35,7 +35,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.util.UUIDHelper;
@@ -176,7 +175,7 @@ public class ImageScreen extends Screen {
 				minecraft.openScreen(new ImageScreen(parent, remote.toShared(out), freeOnClose));
 			} catch (IOException e) {
 				Notifications.getInstance().addStatus("gallery.image.save.failure", "gallery.image.save.failure.description", e.getMessage());
-				AxolotlClient.LOGGER.warn("Failed to save shared image!", e);
+				AxolotlClientCommon.getInstance().getLogger().warn("Failed to save shared image!", e);
 			}
 		} else if (b.id == 4) {
 			try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
@@ -184,7 +183,7 @@ public class ImageScreen extends Screen {
 				ScreenshotCopying.copy(baos.toByteArray());
 			} catch (IOException e) {
 				Notifications.getInstance().addStatus("gallery.image.copy.failure", "gallery.image.copy.failure.description", e.getMessage());
-				AxolotlClient.LOGGER.warn("Failed to copy shared image!", e);
+				AxolotlClientCommon.getInstance().getLogger().warn("Failed to copy shared image!", e);
 			}
 
 		} else if (b.id == 5) {

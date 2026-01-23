@@ -34,6 +34,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.realmsclient.gui.screens.RealmsNotificationsScreen;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.APIOptions;
@@ -77,7 +78,7 @@ public abstract class TitleScreenMixin extends Screen {
 	private void axolotlclient$inMenu(int y, int spacingY, CallbackInfoReturnable<Integer> cir) {
 		if (minecraft.options.keySaveHotbarActivator.same((KeyMapping) Zoom.getInstance().getKey())) {
 			minecraft.options.keySaveHotbarActivator.setKey(InputConstants.UNKNOWN);
-			AxolotlClient.LOGGER.info("Unbound \"Save Toolbar Activator\" to resolve conflict with the zoom key!");
+			AxolotlClientCommon.getInstance().getLogger().info("Unbound \"Save Toolbar Activator\" to resolve conflict with the zoom key!");
 		}
 		List<AbstractWidget> buttons = Collections.synchronizedList(new ArrayList<>());
 		int leftButtonY = 10;
@@ -88,7 +89,7 @@ public abstract class TitleScreenMixin extends Screen {
 		}
 		if (APIOptions.getInstance().addShortcutButtons.get()) {
 			int shortcutButtonY = leftButtonY;
-			Runnable addApiButtons = () -> minecraft.submit(() -> {
+			Runnable addApiButtons = () -> minecraft.execute(() -> {
 				buttons.add(addRenderableWidget(Button.builder(Component.translatable("api.friends"),
 					w -> minecraft.setScreen(new FriendsScreen(this))).bounds(10, shortcutButtonY, 50, 20).build()));
 				buttons.add(addRenderableWidget(Button.builder(Component.translatable("api.chats"),

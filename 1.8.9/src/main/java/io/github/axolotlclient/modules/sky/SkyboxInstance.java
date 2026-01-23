@@ -31,7 +31,7 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tessellator;
 import com.mojang.blaze3d.vertex.VertexBuffer;
-import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.mixin.TextureManagerAccessor;
 import io.github.axolotlclient.mixin.WorldRendererAccessor;
 import io.github.axolotlclient.util.Util;
@@ -153,7 +153,7 @@ public abstract class SkyboxInstance {
 				case "overlay" -> 7;
 				case "replace" -> 8;
 				default -> {
-					AxolotlClient.LOGGER.warn("Unknown blend: " + str);
+					AxolotlClientCommon.getInstance().getLogger().warn("Unknown blend: " + str);
 					yield 1;
 				}
 			};

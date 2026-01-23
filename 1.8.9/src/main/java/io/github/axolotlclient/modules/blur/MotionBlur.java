@@ -28,6 +28,7 @@ import java.io.InputStream;
 import com.google.gson.JsonSyntaxException;
 import com.mojang.blaze3d.shaders.Uniform;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.FloatOption;
@@ -77,7 +78,7 @@ public class MotionBlur extends AbstractModule {
 					client.getRenderTarget(), shaderLocation);
 				shader.resize(client.width, client.height);
 			} catch (JsonSyntaxException | IOException e) {
-				AxolotlClient.LOGGER.error("Could not load motion blur: ", e);
+				AxolotlClientCommon.getInstance().getLogger().error("Could not load motion blur: ", e);
 			}
 		}
 		if (currentBlur != getBlur()) {

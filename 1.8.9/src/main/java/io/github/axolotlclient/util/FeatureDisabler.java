@@ -24,7 +24,7 @@ package io.github.axolotlclient.util;
 
 import java.util.List;
 
-import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import lombok.Getter;
 import net.ornithemc.osl.networking.api.client.ClientPlayNetworking;
 
@@ -43,7 +43,7 @@ public class FeatureDisabler extends FeatureDisablerCommon {
 				try {
 					FEATURES.get(element).setForceOff(true, "ban_reason");
 				} catch (Exception e) {
-					AxolotlClient.LOGGER.error("Failed to disable " + element + "!");
+					AxolotlClientCommon.getInstance().getLogger().error("Failed to disable " + element + "!");
 				}
 			}
 			return true;

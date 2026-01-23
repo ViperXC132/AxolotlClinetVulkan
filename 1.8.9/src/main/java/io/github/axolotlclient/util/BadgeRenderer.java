@@ -24,6 +24,7 @@ package io.github.axolotlclient.util;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.api.requests.UserRequest;
 import io.github.axolotlclient.modules.hypixel.NickHider;
 import net.minecraft.client.Minecraft;
@@ -31,6 +32,7 @@ import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.render.TextRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.living.player.PlayerEntity;
+import net.minecraft.resource.Identifier;
 
 public class BadgeRenderer {
 	public static void renderNametagBadge(Entity entity) {
@@ -59,7 +61,7 @@ public class BadgeRenderer {
 		if (AxolotlClient.config().customBadge.get())
 			textRenderer.draw(AxolotlClient.config().badgeText.get(), x, 0, -1, AxolotlClient.config().useShadows.get());
 		else {
-			Minecraft.getInstance().getTextureManager().bind(AxolotlClient.badgeIcon);
+			Minecraft.getInstance().getTextureManager().bind((Identifier) AxolotlClientCommon.BADGE_PATH);
 			GuiElement.drawTexture(x, 0, 0, 0, 8, 8, 8, 8);
 		}
 	}

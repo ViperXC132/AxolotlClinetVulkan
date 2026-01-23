@@ -22,7 +22,11 @@
 
 package io.github.axolotlclient.util;
 
-public interface Logger {
+import io.github.axolotlclient.AxolotlClientCommon;
+import net.fabricmc.loader.api.FabricLoader;
+import org.slf4j.LoggerFactory;
+
+public sealed interface Logger permits Logger.Slf4jLogger {
 	void info(String msg, Object... args);
 
 	void warn(String msg, Object... args);
@@ -30,5 +34,33 @@ public interface Logger {
 	void error(String msg, Object... args);
 
 	void debug(String msg, Object... args);
+
+	final class Slf4jLogger implements Logger {
+
+		private final org.slf4j.Logger delegate = LoggerFactory.getLogger("AxolotlClient");
+		private static final String prefix = FabricLoader.getInstance().isDevelopmentEnvironment() ? "" : "(AxolotlClient) ";
+
+		public void info(String msg, Object... args) {
+			//noinspection StringConcatenationArgumentToLogCall
+			delegate.info(prefix + msg, args);
+		}
+
+		public void warn(String msg, Object... args) {
+			//noinspection StringConcatenationArgumentToLogCall
+			delegate.warn(prefix + msg, args);
+		}
+
+		public void error(String msg, Object... args) {
+			//noinspection StringConcatenationArgumentToLogCall
+			delegate.error(prefix + msg, args);
+		}
+
+		public void debug(String msg, Object... args) {
+			if (AxolotlClientCommon.getInstance().getConfig().debugLogOutput.get()) {
+				//noinspection StringConcatenationArgumentToLogCall
+				delegate.info(prefix + "[DEBUG] " + msg, args);
+			}
+		}
+	}
 
 }

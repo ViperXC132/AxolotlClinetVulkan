@@ -29,7 +29,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.mojang.blaze3d.platform.InputUtil;
-import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
@@ -550,7 +549,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 			Files.createDirectories(path.getParent());
 			Files.writeString(path, GsonHelper.GSON.toJson(keystrokes.stream().map(Keystroke::serialize).toList()));
 		} catch (Exception e) {
-			AxolotlClient.LOGGER.warn("Failed to save keystroke configuration!", e);
+			AxolotlClientCommon.getInstance().getLogger().warn("Failed to save keystroke configuration!", e);
 		}
 	}
 
@@ -573,7 +572,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 				saveKeystrokes();
 			}
 		} catch (Exception e) {
-			AxolotlClient.LOGGER.warn("Failed to load keystroke configuration, using defaults!", e);
+			AxolotlClientCommon.getInstance().getLogger().warn("Failed to load keystroke configuration, using defaults!", e);
 		}
 	}
 

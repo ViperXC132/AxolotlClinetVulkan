@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.mojang.blaze3d.texture.NativeImage;
-import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Graphics;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import net.minecraft.client.MinecraftClient;
@@ -124,7 +124,7 @@ public class Util {
 
 			texture.upload();
 		} catch (IOException e) {
-			AxolotlClient.LOGGER.error("Failed to bind texture for " + name + ": ", e);
+			AxolotlClientCommon.getInstance().getLogger().error("Failed to bind texture for " + name + ": ", e);
 		}
 		return id;
 	}

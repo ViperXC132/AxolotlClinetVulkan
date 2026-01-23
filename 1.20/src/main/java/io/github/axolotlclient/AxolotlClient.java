@@ -42,8 +42,6 @@ import io.github.axolotlclient.modules.sky.SkyResourceManager;
 import io.github.axolotlclient.modules.tablist.Tablist;
 import io.github.axolotlclient.util.FeatureDisabler;
 import io.github.axolotlclient.util.FeatureDisablerCommon;
-import io.github.axolotlclient.util.Logger;
-import io.github.axolotlclient.util.LoggerImpl;
 import io.github.axolotlclient.util.notifications.Notifications;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.resource.Resource;
@@ -52,8 +50,6 @@ import net.minecraft.util.Identifier;
 public class AxolotlClient extends AxolotlClientCommon implements ClientModInitializer {
 
 	public static final HashMap<Identifier, Resource> runtimeResources = new HashMap<>();
-	public static final Identifier badgeIcon = new Identifier(MODID, "textures/badge.png");
-	public static final Logger LOGGER = new LoggerImpl();
 
 	private void addBuiltinModules() {
 		registerModule(SkyResourceManager.getInstance());
@@ -80,11 +76,11 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 		addBuiltinModules();
 		addExternalModules();
 
-		init(LOGGER, Notifications.getInstance());
+		init(Notifications.getInstance());
 		new API(new StatusUpdateProviderImpl());
 
-		LOGGER.debug("Debug Output enabled, Logs will be quite verbose!");
-		LOGGER.info("AxolotlClient Initialized");
+		getLogger().debug("Debug Output enabled, Logs will be quite verbose!");
+		getLogger().info("AxolotlClient Initialized");
 	}
 
 	@Override

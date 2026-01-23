@@ -32,6 +32,7 @@ import java.util.List;
 
 import com.mojang.blaze3d.platform.InputUtil;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.APIOptions;
@@ -81,7 +82,7 @@ public abstract class TitleScreenMixin extends Screen {
 	private void axolotlclient$inMenu(int y, int spacingY, CallbackInfo ci) {
 		if (MinecraftClient.getInstance().options.saveToolbarActivatorKey.keyEquals((KeyBind) Zoom.getInstance().getKey())) {
 			MinecraftClient.getInstance().options.saveToolbarActivatorKey.setBoundKey(InputUtil.UNKNOWN_KEY);
-			AxolotlClient.LOGGER.info("Unbound \"Save Toolbar Activator\" to resolve conflict with the zoom key!");
+			AxolotlClientCommon.getInstance().getLogger().info("Unbound \"Save Toolbar Activator\" to resolve conflict with the zoom key!");
 		}
 		List<PressableWidget> buttons = Collections.synchronizedList(new ArrayList<>());
 		int leftButtonY = 10;

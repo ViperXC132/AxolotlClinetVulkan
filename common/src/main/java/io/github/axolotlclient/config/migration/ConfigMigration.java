@@ -46,16 +46,8 @@ public interface ConfigMigration {
 	static void apply(int oldVersion, JsonObject config) {
 		MIGRATIONS.sort(Comparator.comparingInt(ConfigMigration::version));
 		var logger = AxolotlClientCommon.getInstance().getLogger();
+
 		var devEnv = FabricLoader.getInstance().isDevelopmentEnvironment();
-		if (oldVersion == CONFIG_VERSION) {
-			if (devEnv) {
-				logger.info("Skipping config migrations, config is already at version {}", CONFIG_VERSION);
-			}
-			return;
-		} else if (oldVersion > CONFIG_VERSION) {
-			logger.error("Found newer config version!? This shouldn't happen! There may be bugs, you have been warned.");
-			return;
-		}
 		if (devEnv) {
 			logger.info("Applying config migrations to update from {} to {}", oldVersion, CONFIG_VERSION);
 		}
@@ -66,7 +58,7 @@ public interface ConfigMigration {
 				}
 				migration.apply(config);
 			} else if (devEnv) {
-				logger.info("Skipping config migration ->{}", migration.version());
+				logger.debug("Skipping config migration ->{}", migration.version());
 
 			}
 		}

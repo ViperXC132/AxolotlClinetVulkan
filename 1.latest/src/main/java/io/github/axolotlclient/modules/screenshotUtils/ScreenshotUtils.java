@@ -35,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BooleanSupplier;
 
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
@@ -74,7 +75,7 @@ public class ScreenshotUtils extends AbstractModule {
 						Component.literal(I18n.get("screenshot_deleted")
 							.replace("<name>", file.getFileName().toString())));
 				} catch (Exception e) {
-					AxolotlClient.LOGGER.warn("Couldn't delete Screenshot " + file.getFileName().toString());
+					AxolotlClientCommon.getInstance().getLogger().warn("Couldn't delete Screenshot " + file.getFileName().toString());
 				}
 			}));
 
@@ -197,7 +198,7 @@ public class ScreenshotUtils extends AbstractModule {
 			if (file != null) {
 				action.doAction(file);
 			} else {
-				AxolotlClient.LOGGER.warn("How'd you manage to do this? "
+				AxolotlClientCommon.getInstance().getLogger().warn("How'd you manage to do this? "
 					+ "Now there's a screenshot ClickEvent without a File attached to it!");
 			}
 		}

@@ -25,7 +25,7 @@ package io.github.axolotlclient.util.notifications;
 import java.util.List;
 
 import com.google.common.collect.ImmutableList;
-import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -89,7 +89,7 @@ public class AxolotlClientToast extends DrawUtil implements Toast {
 	@Override
 	public Visibility draw(GuiGraphics graphics, ToastManager manager, long startTime) {
 		graphics.drawGuiTexture(BACKGROUND_SPRITE, 0, 0, getWidth(), getHeight());
-		graphics.drawTexture(AxolotlClient.badgeIcon, 4, 4, 0, 0, 15, 15, 15, 15);
+		graphics.drawTexture((Identifier) AxolotlClientCommon.BADGE_PATH, 4, 4, 0, 0, 15, 15, 15, 15);
 		int textOffset = 22;
 		if (this.messageLines.isEmpty()) {
 			graphics.drawText(MinecraftClient.getInstance().textRenderer, title, textOffset, LINE_SPACING, -256, false);

@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.mojang.blaze3d.platform.GlStateManager;
-import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
@@ -149,7 +149,7 @@ public class PackDisplayHud extends TextHudEntry {
 			try {
 				this.texture = new DynamicTexture(pack.getIcon()).getGlId();
 			} catch (Exception e) {
-				AxolotlClient.LOGGER.warn("Pack " + pack.getName()
+				AxolotlClientCommon.getInstance().getLogger().warn("Pack " + pack.getName()
 					+ " somehow threw an error! Please investigate... Does it have an icon?");
 			}
 		}

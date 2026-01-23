@@ -42,6 +42,8 @@ dependencies {
 
 	compileOnly("net.hypixel:mod-api:1.0.1")
 	compileOnly("com.mojang:brigadier:1.0.18")
+
+	compileOnly("org.slf4j:slf4j-api:2.0.1")
 }
 
 tasks.jar {

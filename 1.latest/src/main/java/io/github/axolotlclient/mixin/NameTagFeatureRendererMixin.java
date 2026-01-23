@@ -61,7 +61,7 @@ public abstract class NameTagFeatureRendererMixin {
 				.withLocation(Identifier.fromNamespaceAndPath(AxolotlClientCommon.MODID, "pipeline/badge"))
 				.withDepthTestFunction(DepthTestFunction.LEQUAL_DEPTH_TEST).build())
 		.bufferSize(1536)
-		.withTexture("Sampler0", AxolotlClient.badgeIcon)
+		.withTexture("Sampler0", (Identifier) AxolotlClientCommon.BADGE_PATH)
 		.setTextureTransform(TextureTransform.DEFAULT_TEXTURING)
 		.createRenderSetup());
 

@@ -44,8 +44,6 @@ import io.github.axolotlclient.modules.tablist.Tablist;
 import io.github.axolotlclient.modules.unfocusedFpsLimiter.UnfocusedFpsLimiter;
 import io.github.axolotlclient.util.FeatureDisabler;
 import io.github.axolotlclient.util.FeatureDisablerCommon;
-import io.github.axolotlclient.util.Logger;
-import io.github.axolotlclient.util.LoggerImpl;
 import io.github.axolotlclient.util.notifications.Notifications;
 import net.minecraft.client.resource.Resource;
 import net.minecraft.resource.Identifier;
@@ -53,8 +51,6 @@ import net.minecraft.resource.Identifier;
 public class AxolotlClient extends AxolotlClientCommon {
 
 	public static final HashMap<Identifier, Resource> runtimeResources = new HashMap<>();
-	public static final Identifier badgeIcon = new Identifier(MODID, "textures/badge.png");
-	public static final Logger LOGGER = new LoggerImpl();
 
 	private void addBuiltinModules() {
 		registerModule(SkyResourceManager.getInstance());
@@ -81,11 +77,11 @@ public class AxolotlClient extends AxolotlClientCommon {
 		addBuiltinModules();
 		addExternalModules();
 
-		init(LOGGER, Notifications.getInstance());
+		init(Notifications.getInstance());
 		new API(new StatusUpdateProviderImpl());
 
-		LOGGER.debug("Debug Output enabled, Logs will be quite verbose!");
-		LOGGER.info("AxolotlClient Initialized");
+		getLogger().debug("Debug Output enabled, Logs will be quite verbose!");
+		getLogger().info("AxolotlClient Initialized");
 
 		Bridge.postInit();
 	}

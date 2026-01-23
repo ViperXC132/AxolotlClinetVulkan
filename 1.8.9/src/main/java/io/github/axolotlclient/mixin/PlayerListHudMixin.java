@@ -33,6 +33,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.authlib.GameProfile;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.api.requests.UserRequest;
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.modules.hypixel.NickHider;
@@ -46,6 +47,7 @@ import net.minecraft.client.gui.overlay.PlayerTabOverlay;
 import net.minecraft.client.network.PlayerInfo;
 import net.minecraft.client.render.TextRenderer;
 import net.minecraft.network.Connection;
+import net.minecraft.resource.Identifier;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.text.Text;
@@ -91,7 +93,7 @@ public abstract class PlayerListHudMixin extends GuiElement {
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/TextRenderer;drawWithShadow(Ljava/lang/String;FFI)I", ordinal = 1))
 	public int axolotlclient$moveName2(TextRenderer instance, String string, float x, float y, int color, Operation<Integer> original, @Local GameProfile entry) {
 		if (AxolotlClient.config().showBadges.get() && UserRequest.getOnline(entry.getId().toString())) {
-			axolotlclient$client.getTextureManager().bind(AxolotlClient.badgeIcon);
+			axolotlclient$client.getTextureManager().bind((Identifier) AxolotlClientCommon.BADGE_PATH);
 			GuiElement.drawTexture((int) x, (int) y, 0, 0, 8, 8, 8, 8);
 			x += 10;
 		}

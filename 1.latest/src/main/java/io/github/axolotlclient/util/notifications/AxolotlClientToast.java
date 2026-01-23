@@ -25,7 +25,7 @@ package io.github.axolotlclient.util.notifications;
 import java.util.List;
 
 import com.google.common.collect.ImmutableList;
-import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -98,7 +98,7 @@ public class AxolotlClientToast implements Toast {
 	@Override
 	public void render(GuiGraphics guiGraphics, @NotNull Font font, long visibilityTime) {
 		guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, BACKGROUND_SPRITE, 0, 0, this.width(), this.height());
-		guiGraphics.blit(RenderPipelines.GUI_TEXTURED, AxolotlClient.badgeIcon, 4, 4, 0, 0, 15, 15, 15, 15);
+		guiGraphics.blit(RenderPipelines.GUI_TEXTURED, (Identifier) AxolotlClientCommon.BADGE_PATH, 4, 4, 0, 0, 15, 15, 15, 15);
 		int textOffset = 22;
 		if (this.messageLines.isEmpty()) {
 			guiGraphics.drawString(font, this.title, textOffset, LINE_SPACING, -256, false);
