@@ -17,6 +17,7 @@
 	"DownloadedPackSourceAccessor",
 	"EmitterParticleMixin",
 	"EntityMixin",
+	"FireworkParticlesMixin",
 	"GameMenuScreenMixin",
 	"GameOptionsMixin",
 	"GameRendererAccessor",

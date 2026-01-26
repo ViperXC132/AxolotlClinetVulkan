@@ -51,14 +51,21 @@ public interface ConfigMigration {
 		if (devEnv) {
 			logger.info("Applying config migrations to update from {} to {}", oldVersion, CONFIG_VERSION);
 		}
+		// We cannot use the option as it hasn't been set at this point yet.
+		var debug = false;
+		JsonObject general;
+		if (config.has("general") && (general = config.getAsJsonObject("general")).isJsonObject() &&
+			general.has("debugLogOutput") && general.get("debugLogOutput").getAsBoolean()) {
+			debug = true;
+		}
 		for (var migration : MIGRATIONS) {
 			if (oldVersion < migration.version()) {
 				if (devEnv) {
 					logger.info("Applying config migration ->{}", migration.version());
 				}
 				migration.apply(config);
-			} else if (devEnv) {
-				logger.debug("Skipping config migration ->{}", migration.version());
+			} else if (devEnv && debug) {
+				logger.info("Skipping config migration ->{}", migration.version());
 
 			}
 		}

@@ -60,7 +60,7 @@ public class CoordsHud extends TextHudEntry {
 			format.append("0".repeat(val));
 		}
 		CoordsHud.this.format = new DecimalFormat(format.toString());
-		CoordsHud.this.format.setRoundingMode(RoundingMode.CEILING);
+		CoordsHud.this.format.setRoundingMode(RoundingMode.FLOOR);
 	}, 0, 15);
 	private final BooleanOption minimal = new BooleanOption("minimal", false);
 	private final BooleanOption biome = new BooleanOption("show_biome", false);
@@ -68,12 +68,21 @@ public class CoordsHud extends TextHudEntry {
 	private final StringOption separator = new StringOption("coordshud.separator", ", ");
 	private final ColorOption separatorColor = new ColorOption("coordshud.separator.color", firstColor.getDefault());
 
-	private DecimalFormat format;
+	private DecimalFormat format = new DecimalFormat("0");
 
 	public CoordsHud() {
 		super(79, 31, true);
-		format = new DecimalFormat("0");
-		format.setRoundingMode(RoundingMode.CEILING);
+	}
+
+	@Override
+	public void postConfigLoad() {
+		StringBuilder format = new StringBuilder("0");
+		if (decimalPlaces.get() > 0) {
+			format.append(".");
+			format.append("0".repeat(decimalPlaces.get()));
+		}
+		CoordsHud.this.format = new DecimalFormat(format.toString());
+		CoordsHud.this.format.setRoundingMode(RoundingMode.FLOOR);
 	}
 
 	/**
