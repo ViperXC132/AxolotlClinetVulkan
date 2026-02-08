@@ -198,7 +198,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		AttackIndicatorStatus indicator = this.client.options.attackIndicator().get();
 
 		// Need to not enable blend while the debug HUD is open because it does weird stuff. Why? no idea.
-		boolean blend = color == defaultColor.get() && !type.equals(Crosshair.DIRECTION) && applyBlend.get()
+		boolean blend = ClientColors.ARGB.opaque(color.toInt()) == ClientColors.WHITE.toInt() && !type.equals(Crosshair.DIRECTION) && applyBlend.get()
 			&& !client.gui.getDebugOverlay().showDebugScreen();
 
 		boolean isTex = type.equals(Crosshair.TEXTURE) || type.equals(Crosshair.CUSTOM);

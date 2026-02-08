@@ -71,7 +71,7 @@ public class HypixelAbstractionLayer {
 		}
 
 		API.getInstance().get(request).whenComplete((response, throwable) -> {
-			if (response == Response.CLIENT_ERROR) {
+			if (response == Response.CLIENT_ERROR || (response != null && response.getStatus() == 0)) {
 				return;
 			}
 			if (response == null) {

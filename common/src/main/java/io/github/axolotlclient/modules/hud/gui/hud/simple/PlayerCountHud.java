@@ -52,7 +52,7 @@ public class PlayerCountHud extends SimpleTextHudEntry {
 			return getPlaceholderValue();
 		}
 
-		return String.valueOf(client.br$getWorld().br$getPlayers().size());
+		return String.valueOf(client.br$getOnlinePlayers().size());
 	}
 
 	@Override

@@ -169,7 +169,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		var type = typeOption instanceof Crosshair ? typeOption : ((TargetCrosshair) typeOption).asCrosshair(defaultType);
 		GlStateManager.color4f((float) color.getRed() / 255, (float) color.getGreen() / 255,
 			(float) color.getBlue() / 255, 1F);
-		if (color == defaultColor.get() && applyBlend.get()) {
+		if (ClientColors.ARGB.opaque(color.toInt()) == ClientColors.WHITE.toInt() && applyBlend.get()) {
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(775, 769, 1, 0);
 		}
