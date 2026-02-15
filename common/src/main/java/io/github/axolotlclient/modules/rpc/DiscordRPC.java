@@ -90,6 +90,7 @@ public class DiscordRPC extends AbstractCommonModule {
 
 	public void shutdown() {
 		if (running) {
+			setRichPresence(null);
 			ipcClient.close();
 			running = false;
 		}
