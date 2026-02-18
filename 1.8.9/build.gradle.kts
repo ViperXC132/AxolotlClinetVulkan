@@ -52,7 +52,7 @@ dependencies {
 	localRuntime("org.slf4j:slf4j-jdk14:1.7.36")
 
 	compileOnly("org.lwjgl:lwjgl-glfw:${lwjglVersion}")
-	compileOnly("org.lwjgl:lwjgl-sdl:3.4.0-SNAPSHOT")
+	compileOnly("org.lwjgl:lwjgl-sdl:3.4.1")
 
 	modImplementation("io.github.moehreag:legacy-lwjgl3:$legacyLwjgl3+$minecraftVersion")
 

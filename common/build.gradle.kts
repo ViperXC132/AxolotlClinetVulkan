@@ -29,7 +29,7 @@ dependencies {
 	testRuntimeOnly(compileOnly("it.unimi.dsi:fastutil:8.2.1")!!)
 	testRuntimeOnly(compileOnly("org.lwjgl:lwjgl-glfw:3.3.2")!!)
 	testRuntimeOnly(compileOnly("org.lwjgl:lwjgl-tinyfd:3.2.2")!!)
-	testRuntimeOnly(compileOnly("org.lwjgl:lwjgl-sdl:3.4.0-SNAPSHOT")!!)
+	testRuntimeOnly(compileOnly("org.lwjgl:lwjgl-sdl:3.4.1")!!)
 
 	shadow(implementation("io.github.cdagaming:DiscordIPC:0.11.2") {
 		isTransitive = false
