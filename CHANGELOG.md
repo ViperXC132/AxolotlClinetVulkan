@@ -3,7 +3,7 @@
 ### 3.1.9
 
 - fix bugs with the Bedwars module
-  - remove `Winstreak` bedwars level head mode
+- remove `Winstreak` bedwars level head mode
 - add Bedwars Session statistics HUD
 - fix bugs relating to multiple HUDs
 - add hud links (moving one when the bounds of another change)

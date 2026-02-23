@@ -22,13 +22,6 @@
 
 package io.github.axolotlclient.mixin;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -46,10 +39,8 @@ import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.auth.AuthWidget;
 import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.modules.zoom.Zoom;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -61,6 +52,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(TitleScreen.class)
@@ -74,26 +66,28 @@ public abstract class TitleScreenMixin extends Screen {
 		super(Component.empty());
 	}
 
-	@Inject(method = "createNormalMenuOptions", at = @At("TAIL"))
-	private void axolotlclient$inMenu(int y, int spacingY, CallbackInfoReturnable<Integer> cir) {
+	@Inject(method = "init", at = @At("HEAD"))
+	private void atInit(CallbackInfo ci) {
 		if (minecraft.options.keySaveHotbarActivator.same((KeyMapping) Zoom.getInstance().getKey())) {
 			minecraft.options.keySaveHotbarActivator.setKey(InputConstants.UNKNOWN);
 			AxolotlClientCommon.getInstance().getLogger().info("Unbound \"Save Toolbar Activator\" to resolve conflict with the zoom key!");
 		}
-		List<AbstractWidget> buttons = Collections.synchronizedList(new ArrayList<>());
+	}
+
+	@Inject(method = "createNormalMenuOptions", at = @At("HEAD"))
+	private void addButtonsPre(int y, int rowHeight, CallbackInfoReturnable<Integer> cir) {
 		int leftButtonY = 10;
 		if (Auth.getInstance().showButton.get()) {
 			var button = addRenderableWidget(new AuthWidget(10, leftButtonY));
-			buttons.add(button);
-			leftButtonY += button.getHeight() + 5;
+			leftButtonY += button.getHeight() + 4;
 		}
 		if (APIOptions.getInstance().addShortcutButtons.get()) {
 			int shortcutButtonY = leftButtonY;
 			Runnable addApiButtons = () -> minecraft.execute(() -> {
-				buttons.add(addRenderableWidget(Button.builder(Component.translatable("api.friends"),
-					w -> minecraft.setScreen(new FriendsScreen(this))).bounds(10, shortcutButtonY, 50, 20).build()));
-				buttons.add(addRenderableWidget(Button.builder(Component.translatable("api.chats"),
-					w -> minecraft.setScreen(new ChatListScreen(this))).bounds(10, shortcutButtonY + 25, 50, 20).build()));
+				addRenderableWidget(Button.builder(Component.translatable("api.friends"),
+					w -> minecraft.setScreen(new FriendsScreen(this))).bounds(10, shortcutButtonY, 50, 20).build());
+				addRenderableWidget(Button.builder(Component.translatable("api.chats"),
+					w -> minecraft.setScreen(new ChatListScreen(this))).bounds(10, shortcutButtonY + 24, 50, 20).build());
 			});
 			if (API.getInstance().isSocketConnected()) {
 				addApiButtons.run();
@@ -101,51 +95,32 @@ public abstract class TitleScreenMixin extends Screen {
 				API.addStartupListener(addApiButtons, API.ListenerType.ONCE);
 			}
 		}
+
 		GlobalDataRequest.get().thenAccept(data -> {
 			int buttonY = 10;
 			if (APIOptions.getInstance().updateNotifications.get() &&
 				data.success() &&
 				data.latestVersion().isNewerThan(AxolotlClient.VERSION)) {
-				buttons.add(addRenderableWidget(Button.builder(Component.translatable("api.new_version_available"),
+				addRenderableWidget(Button.builder(Component.translatable("api.new_version_available"),
 						ConfirmLinkScreen.confirmLink(this, "https://modrinth.com/mod/axolotlclient/versions"))
-					.bounds(width - 90, y, 80, 20).build()));
-				buttonY += 22;
+					.bounds(width - 90, buttonY, 80, 20).build());
+				buttonY += 24;
 			}
 			if (APIOptions.getInstance().displayNotes.get() &&
 				data.success() && !data.notes().isEmpty()) {
-				buttons.add(addRenderableWidget(Button.builder(Component.translatable("api.notes"), buttonWidget ->
+				addRenderableWidget(Button.builder(Component.translatable("api.notes"), buttonWidget ->
 						minecraft.setScreen(new NewsScreen(this)))
-					.bounds(width - 90, buttonY, 80, 20).build()));
+					.bounds(width - 90, buttonY, 80, 20).build());
 			}
 		});
-
-		// Thanks modmenu.. >:3
-		if (FabricLoader.getInstance().isModLoaded("modmenu")) {
-			try {
-				Class<?> booleanConfigOpt = MethodHandles.lookup().findClass("com.terraformersmc.modmenu.config.option.BooleanConfigOption");
-				Class<?> enumConfigOpt = MethodHandles.lookup().findClass("com.terraformersmc.modmenu.config.option.EnumConfigOption");
-				Class<?> titleMenuButtonStyle = MethodHandles.lookup().findClass("com.terraformersmc.modmenu.config.ModMenuConfig$TitleMenuButtonStyle");
-				Class<?> modmenuConfig = MethodHandles.lookup().findClass("com.terraformersmc.modmenu.config.ModMenuConfig");
-				MethodHandle modifyTitleScreenHandle = MethodHandles.lookup().findStaticGetter(modmenuConfig, "MODIFY_TITLE_SCREEN", booleanConfigOpt);
-				MethodHandle getValueB = MethodHandles.lookup().findVirtual(booleanConfigOpt, "getValue", MethodType.methodType(boolean.class));
-				MethodHandle getValueE = MethodHandles.lookup().findVirtual(enumConfigOpt, "getValue", MethodType.methodType(Enum.class));
-				var modifyTitleScreen = modifyTitleScreenHandle.invoke();
-				boolean isModifyTitleScreen = (boolean) getValueB.invoke(modifyTitleScreen);
-				MethodHandle modsButtonStyleHandle = MethodHandles.lookup().findStaticGetter(modmenuConfig, "MODS_BUTTON_STYLE", enumConfigOpt);
-				var modsButtonStyle = getValueE.invoke(modsButtonStyleHandle.invoke());
-				var classic = titleMenuButtonStyle.getEnumConstants()[0];
-				if (isModifyTitleScreen && modsButtonStyle == classic) {
-					buttons.forEach(r -> r.setY(r.getY() - 24 / 2));
-				}
-			} catch (Throwable ignored) {
-			}
-		}
 	}
 
 	@Inject(method = "realmsNotificationsEnabled", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$disableRealmsNotifications(CallbackInfoReturnable<Boolean> cir) {
-		this.realmsNotificationsScreen = null;
-		cir.setReturnValue(false);
+		if (AxolotlClientConfigCommon.instance().titleScreenOptionButtonMode.get().showButton()) {
+			this.realmsNotificationsScreen = null;
+			cir.setReturnValue(false);
+		}
 	}
 
 	@WrapOperation(method = "createNormalMenuOptions",
@@ -167,6 +142,8 @@ public abstract class TitleScreenMixin extends Screen {
 
 	@Inject(method = "realmsNotificationsEnabled", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$noRealmsIcons(CallbackInfoReturnable<Boolean> cir) {
-		cir.setReturnValue(false);
+		if (AxolotlClientConfigCommon.instance().titleScreenOptionButtonMode.get().showButton()) {
+			cir.setReturnValue(false);
+		}
 	}
 }
