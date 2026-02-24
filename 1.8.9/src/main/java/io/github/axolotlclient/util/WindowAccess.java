@@ -46,7 +46,9 @@ public sealed abstract class WindowAccess permits WindowAccess.GLFWAccess, Windo
 		RESIZE_ALL,
 		ARROW,
 		RESIZE_NWSE,
-		RESIZE_NESW
+		RESIZE_NESW,
+		RESIZE_NS,
+		RESIZE_EW
 	}
 
 	public abstract long createCursor(Cursor cursor);
@@ -129,6 +131,8 @@ public sealed abstract class WindowAccess permits WindowAccess.GLFWAccess, Windo
 				case ARROW -> SDLMouse.SDL_SYSTEM_CURSOR_DEFAULT;
 				case RESIZE_NWSE -> SDLMouse.SDL_SYSTEM_CURSOR_NWSE_RESIZE;
 				case RESIZE_NESW -> SDLMouse.SDL_SYSTEM_CURSOR_NESW_RESIZE;
+				case RESIZE_NS -> SDLMouse.SDL_SYSTEM_CURSOR_NS_RESIZE;
+				case RESIZE_EW -> SDLMouse.SDL_SYSTEM_CURSOR_EW_RESIZE;
 			});
 		}
 
@@ -166,6 +170,8 @@ public sealed abstract class WindowAccess permits WindowAccess.GLFWAccess, Windo
 				case ARROW -> GLFW.GLFW_ARROW_CURSOR;
 				case RESIZE_NWSE -> GLFW.GLFW_RESIZE_NWSE_CURSOR;
 				case RESIZE_NESW -> GLFW.GLFW_RESIZE_NESW_CURSOR;
+				case RESIZE_NS -> GLFW.GLFW_RESIZE_NS_CURSOR;
+				case RESIZE_EW -> GLFW.GLFW_RESIZE_EW_CURSOR;
 			});
 		}
 

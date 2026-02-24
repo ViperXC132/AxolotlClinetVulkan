@@ -5,6 +5,7 @@
 	"compatibilityLevel": "JAVA_17",
 	"client": [
 		"AddServerScreenMixin",
+		"AxoConfigTextFieldWidgetAccessor",
 		"BeaconBlockEntityRendererMixin",
 		"BiPedModelMixin",
 		"BufferBuilderMixin",

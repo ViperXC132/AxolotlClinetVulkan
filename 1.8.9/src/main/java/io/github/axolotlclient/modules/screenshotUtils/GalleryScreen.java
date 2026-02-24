@@ -39,7 +39,7 @@ import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.requests.FriendRequest;
 import io.github.axolotlclient.api.requests.UserRequest;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
-import io.github.axolotlclient.util.Util;
+import io.github.axolotlclient.util.MathUtil;
 import io.github.axolotlclient.util.Watcher;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
@@ -48,7 +48,6 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.render.TextRenderer;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 public class GalleryScreen extends Screen {
@@ -294,13 +293,13 @@ public class GalleryScreen extends Screen {
 				drawTexture(x, y, 0, 0, getWidth(), getHeight() - font.fontHeight - 2, getWidth(), getHeight() - font.fontHeight - 2);
 				drawScrollingText(font, 2, -1);
 			} else {
-				float delta = (float) easeInOutCubic((Minecraft.getTime() - loadStart) % 1000f / 1000f);
+				float delta = (float) MathUtil.easeInOutCubic((Minecraft.getTime() - loadStart) % 1000f / 1000f);
 
 				fill(getX() + 2, getY() + 2, getXEnd() - 2, getYEnd() - font.fontHeight - 2, bgColor);
-				drawHorizontalGradient(getX() + 2, getY() + 2, getYEnd() - font.fontHeight - 2, lerp(delta, getX() + 2, getXEnd() - 2));
+				drawHorizontalGradient(getX() + 2, getY() + 2, getYEnd() - font.fontHeight - 2, MathUtil.lerp(delta, getX() + 2, getXEnd() - 2));
 
 				fill(getX() + 2, getYEnd() - font.fontHeight - 1, getXEnd() - 2, getYEnd() - 2, bgColor);
-				drawHorizontalGradient(getX() + 2, getYEnd() - font.fontHeight - 1, getYEnd() - 2, lerp(delta, getX() + 2, getXEnd() - 2));
+				drawHorizontalGradient(getX() + 2, getYEnd() - font.fontHeight - 1, getYEnd() - 2, MathUtil.lerp(delta, getX() + 2, getXEnd() - 2));
 			}
 			DrawUtil.outlineRect(getX(), getY(), getWidth(), getHeight(), row.list.isInListContent(mouseX, mouseY) && isHovered() ? -1 : bgColor);
 		}
@@ -333,14 +332,6 @@ public class GalleryScreen extends Screen {
 			consumer.vertex(x2, y2, 0).color(accent >> 16 & 255, accent >> 8 & 255, accent & 255, accent >> 24 & 255);
 			consumer.vertex(x2, y1, 0).color(accent >> 16 & 255, accent >> 8 & 255, accent & 255, accent >> 24 & 255);
 			Tessellator.getInstance().end();
-		}
-
-		private double easeInOutCubic(double x) {
-			return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
-		}
-
-		private int lerp(float delta, int start, int end) {
-			return (int) MathHelper.clamp(Util.lerp(delta, start, end), start, end);
 		}
 
 		protected void drawScrollingText(TextRenderer font, int offset, int color) {

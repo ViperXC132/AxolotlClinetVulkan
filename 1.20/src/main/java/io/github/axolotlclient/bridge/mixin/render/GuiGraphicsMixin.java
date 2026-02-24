@@ -187,6 +187,11 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	}
 
 	@Override
+	public void br$outlineRectRoundVarying(int x, int y, int width, int height, int color, float roundingTL, float roundingBL, float roundingBR, float roundingTR, float outlineWidth) {
+		self().axolotlclient_rendering$outlineRoundedRectVarying(x, y, x+width, y+height, color, roundingTL, roundingBL, roundingBR, roundingTR, outlineWidth);
+	}
+
+	@Override
 	public void br$drawTexture(AxoSprite sprite, int x, int y, int width, int height, int color) {
 		((AxoSpriteImpl) sprite).draw(MinecraftClient.getInstance(), self(), x, y, width, height, color);
 	}

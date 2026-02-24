@@ -52,6 +52,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.util.Util;
 import org.jspecify.annotations.NonNull;
 
+@SuppressWarnings("resource")
 public class ImageScreen extends Screen {
 
 	private final Screen parent;
@@ -111,10 +112,11 @@ public class ImageScreen extends Screen {
 		contents.addChild(new ImageElement(imageWidth, imageHeight));
 		var actions = contents.addChild(LinearLayout.vertical()).spacing(4);
 		if (image instanceof ImageInstance.Local local) {
+			var loc = local.location();
 			if (API.getInstance().isAuthenticated() && !(image instanceof ImageInstance.Remote)) {
 				actions.addChild(Button.builder(Component.translatable("gallery.image.upload"), b -> {
 					b.active = false;
-					ImageShare.getInstance().upload(local.location()).thenAccept(s -> {
+					ImageShare.getInstance().upload(loc).thenAccept(s -> {
 						if (s.isEmpty()) {
 							Notifications.getInstance().addStatus("gallery.image.upload.failure", "gallery.image.upload.failure.description");
 						} else {
@@ -125,8 +127,17 @@ public class ImageScreen extends Screen {
 					});
 				}).width(buttonWidth).build());
 			}
-			actions.addChild(Button.builder(Component.translatable("gallery.image.copy"), b -> ScreenshotCopying.copy(local.location())).width(buttonWidth).build());
-			actions.addChild(Button.builder(Component.translatable("gallery.image.open.external"), b -> Util.getPlatform().openPath(local.location())).width(buttonWidth).build());
+			actions.addChild(Button.builder(Component.translatable("gallery.image.copy"), b -> ScreenshotCopying.copy(loc)).width(buttonWidth).build());
+			actions.addChild(Button.builder(Component.translatable("gallery.image.open.external"), b -> Util.getPlatform().openPath(loc)).width(buttonWidth).build());
+			actions.addChild(Button.builder(Component.translatable("gallery.image.delete"), b -> {
+				try {
+					Files.delete(loc);
+					Notifications.getInstance().addStatus("gallery.image.delete.success", "gallery.image.delete.success.description", loc);
+				} catch (IOException e) {
+					Notifications.getInstance().addStatus("gallery.image.delete.failure", "gallery.image.delete.failure.description", loc);
+					AxolotlClientCommon.getInstance().getLogger().warn("Failed to delete image!", e);
+				}
+			}).width(buttonWidth).build());
 		}
 		if (image instanceof ImageInstance.Remote remote) {
 			if (!(image instanceof ImageInstance.Local)) {
@@ -152,6 +163,7 @@ public class ImageScreen extends Screen {
 			actions.addChild(Button.builder(Component.translatable("gallery.image.open.external.browser"), b -> Util.getPlatform().openUri(remote.url())).width(buttonWidth).build());
 			actions.addChild(Button.builder(Component.translatable("gallery.image.copy_url"), b -> minecraft.keyboardHandler.setClipboard(remote.url())).width(buttonWidth).build());
 		}
+		actions.addChild(Button.builder(Component.translatable("gallery.image.crop"), btn -> minecraft.setScreen(new CropImageScreen(this, image))).width(buttonWidth).build());
 
 		footer.addChild(Button.builder(CommonComponents.GUI_BACK, b -> onClose()).build());
 

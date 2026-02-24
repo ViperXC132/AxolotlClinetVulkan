@@ -28,12 +28,11 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tessellator;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
-import io.github.axolotlclient.util.Util;
+import io.github.axolotlclient.util.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
-import net.minecraft.util.math.MathHelper;
 import org.lwjgl.opengl.GL11;
 
 public class LoadingImageScreen extends Screen {
@@ -96,14 +95,6 @@ public class LoadingImageScreen extends Screen {
 		Tessellator.getInstance().end();
 	}
 
-	private double easeInOutCubic(double x) {
-		return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
-	}
-
-	private int lerp(float delta, int start, int end) {
-		return (int) MathHelper.clamp(Util.lerp(delta, start, end), start, end);
-	}
-
 	private class LoadingWidget extends ButtonWidget {
 
 		public LoadingWidget(int width, int height) {
@@ -114,7 +105,7 @@ public class LoadingImageScreen extends Screen {
 		@Override
 		public void render(Minecraft client, int mouseX, int mouseY) {
 			fill(x, y, x + getWidth(), y + getHeight(), bgColor);
-			drawHorizontalGradient(x, y, y + getHeight(), lerp((float) easeInOutCubic((Minecraft.getTime() - loadStart) % 1000f / 1000f), x, x + getWidth()));
+			drawHorizontalGradient(x, y, y + getHeight(), MathUtil.lerp((float) MathUtil.easeInOutCubic((Minecraft.getTime() - loadStart) % 1000f / 1000f), x, x + getWidth()));
 		}
 
 		private int getHeight() {

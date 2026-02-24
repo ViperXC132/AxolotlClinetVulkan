@@ -163,6 +163,11 @@ public class AxoRenderContextImpl extends io.github.axolotlclient.rendering.Draw
 	}
 
 	@Override
+	public void br$outlineRectRoundVarying(int x, int y, int width, int height, int color, float roundingTL, float roundingBL, float roundingBR, float roundingTR, float outlineWidth) {
+		axolotlclient_rendering$outlineRoundedRectVarying(x, y, x+width, y+height, color, roundingTL, roundingBL, roundingBR, roundingTR, outlineWidth);
+	}
+
+	@Override
 	public void br$drawTexture(AxoSprite sprite, int x, int y, int width, int height, int color) {
 		((AxoSpriteImpl) sprite).draw(client, x, y, width, height, color);
 	}

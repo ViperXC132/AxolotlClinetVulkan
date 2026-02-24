@@ -34,6 +34,7 @@ import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
 import io.github.axolotlclient.modules.hud.gui.component.Positionable;
 import io.github.axolotlclient.modules.hud.snapping.SnappingHelper;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
+import io.github.axolotlclient.util.CursorTypes;
 import io.github.axolotlclient.util.MathUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
@@ -91,13 +92,6 @@ public class HudEditScreen extends Screen {
 		}
 	}
 
-	private void setCursor(long cursor) {
-		if (cursor != currentCursor) {
-			currentCursor = cursor;
-			GLFW.glfwSetCursor(MinecraftClient.getInstance().getWindow().getHandle(), cursor);
-		}
-	}
-
 	@Override
 	public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 		renderBackground(graphics);
@@ -124,24 +118,26 @@ public class HudEditScreen extends Screen {
 				var supportsScaling = entry.get().supportsScaling();
 				var tolerance = HudManagerCommon.HUD_RESCALE_GRAB_TOLERANCE;
 				var toleranceSquared = tolerance*tolerance;
-				var cursor = MOVE_CURSOR;
+				var cursor = CursorTypes.RESIZE_ALL;
 				if (supportsScaling) {
 					if (MathUtil.distSq(mouseX, mouseY, bounds.x(), bounds.y()) < toleranceSquared ||
 						MathUtil.distSq(mouseX, mouseY, bounds.xEnd(), bounds.yEnd()) < toleranceSquared) {
 						// top-left
 						// bottom-right
-						cursor = NWSE_RESIZE_CURSOR;
+						cursor = CursorTypes.RESIZE_NWSE;
 					} else if (MathUtil.distSq(mouseX, mouseY, bounds.x(), bounds.yEnd()) < toleranceSquared ||
 						MathUtil.distSq(mouseX, mouseY, bounds.xEnd(), bounds.y()) < toleranceSquared) {
 						// bottom-left
 						// top-right
-						cursor = NESW_RESIZE_CURSOR;
+						cursor = CursorTypes.RESIZE_NESW;
 					}
 				}
-				setCursor(cursor);
+				currentCursor = cursor;
+				CursorTypes.request(cursor);
 			}
 		} else if (current == null) {
-			setCursor(DEFAULT_CURSOR);
+			currentCursor = DEFAULT_CURSOR;
+			CursorTypes.request(DEFAULT_CURSOR);
 			mode = ModificationMode.NONE;
 		}
 		if (mouseDown && snap != null) {
@@ -181,7 +177,8 @@ public class HudEditScreen extends Screen {
 
 	@Override
 	public void removed() {
-		setCursor(DEFAULT_CURSOR);
+		currentCursor = DEFAULT_CURSOR;
+		CursorTypes.request(DEFAULT_CURSOR);
 		mode = ModificationMode.NONE;
 		super.removed();
 	}
@@ -243,7 +240,8 @@ public class HudEditScreen extends Screen {
 		snap = null;
 		mouseDown = false;
 		mode = ModificationMode.NONE;
-		setCursor(DEFAULT_CURSOR);
+		currentCursor = DEFAULT_CURSOR;
+		CursorTypes.request(DEFAULT_CURSOR);
 		return super.mouseReleased(mouseX, mouseY, button);
 	}
 

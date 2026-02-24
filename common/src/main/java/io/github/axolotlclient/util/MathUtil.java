@@ -53,9 +53,19 @@ public class MathUtil {
 	}
 
 	public static float distSq(float x1, float y1, float x2, float y2) {
-		float dx = x1 - x2;
-		float dy = y1 - y2;
+		var dx = x1 - x2;
+		var dy = y1 - y2;
 		return dx * dx + dy * dy;
+	}
+
+	public static double distSq(double x1, double y1, double x2, double y2) {
+		var dx = x1 - x2;
+		var dy = y1 - y2;
+		return dx * dx + dy * dy;
+	}
+
+	public static double easeInOutCubic(double x) {
+		return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
 	}
 
 	public static int hsvToRgb(float hue, float saturation, float value) {

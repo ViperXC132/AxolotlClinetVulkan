@@ -35,6 +35,7 @@ import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.requests.FriendRequest;
 import io.github.axolotlclient.api.requests.UserRequest;
 import io.github.axolotlclient.util.HorizontalGradientRectangleRenderState;
+import io.github.axolotlclient.util.MathUtil;
 import io.github.axolotlclient.util.Watcher;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
@@ -56,9 +57,8 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
-import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
 
 public class GalleryScreen extends Screen {
 
@@ -257,23 +257,23 @@ public class GalleryScreen extends Screen {
 		}
 
 		@Override
-		public void onPress(InputWithModifiers inputWithModifiers) {
+		public void onPress(@NonNull InputWithModifiers inputWithModifiers) {
 			minecraft.setScreen(ImageScreen.create(GalleryScreen.this, load(), false));
 		}
 
 		@Override
-		protected void renderContents(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+		protected void renderContents(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 			if (load().isDone() && load().join() != null) {
 				guiGraphics.blit(RenderPipelines.GUI_TEXTURED, load().join().id(), getX(), getY(), 0, 0, getWidth(), getHeight() - font.lineHeight - 2, getWidth(), getHeight() - font.lineHeight - 2);
 				renderDefaultLabel(guiGraphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
 			} else {
-				float delta = (float) easeInOutCubic((Util.getMillis() - loadStart) % 1000f / 1000f);
+				float delta = (float) MathUtil.easeInOutCubic((Util.getMillis() - loadStart) % 1000f / 1000f);
 
 				guiGraphics.fill(getX() + 2, getY() + 2, getRight() - 2, getBottom() - font.lineHeight - 2, bgColor);
-				drawHorizontalGradient(guiGraphics, getX() + 2, getY() + 2, getBottom() - font.lineHeight - 2, lerp(delta, getX() + 2, getRight() - 2));
+				drawHorizontalGradient(guiGraphics, getX() + 2, getY() + 2, getBottom() - font.lineHeight - 2, MathUtil.lerp(delta, getX() + 2, getRight() - 2));
 
 				guiGraphics.fill(getX() + 2, getBottom() - font.lineHeight - 1, getRight() - 2, getBottom() - 2, bgColor);
-				drawHorizontalGradient(guiGraphics, getX() + 2, getBottom() - font.lineHeight - 1, getBottom() - 2, lerp(delta, getX() + 2, getRight() - 2));
+				drawHorizontalGradient(guiGraphics, getX() + 2, getBottom() - font.lineHeight - 1, getBottom() - 2, MathUtil.lerp(delta, getX() + 2, getRight() - 2));
 			}
 			guiGraphics.br$outlineRect(getX(), getY(), getWidth(), getHeight(), isHoveredOrFocused() ? -1 : bgColor);
 		}
@@ -282,21 +282,13 @@ public class GalleryScreen extends Screen {
 			HorizontalGradientRectangleRenderState.create(guiGraphics, x1, y1, x2, y2, ImageEntry.bgColor, ImageEntry.accent).submit();
 		}
 
-		private double easeInOutCubic(double x) {
-			return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
-		}
-
-		private int lerp(float delta, int start, int end) {
-			return (int) Mth.clamp(Mth.lerp(delta, start, end), start, end);
-		}
-
 		@Override
-		protected @NotNull MutableComponent createNarrationMessage() {
+		protected @NonNull MutableComponent createNarrationMessage() {
 			return wrapDefaultNarrationMessage(Component.translatable("gallery.image.view"));
 		}
 
 		@Override
-		protected void renderScrollingStringOverContents(ActiveTextCollector activeTextCollector, Component component, int i) {
+		protected void renderScrollingStringOverContents(ActiveTextCollector activeTextCollector, @NonNull Component component, int i) {
 			activeTextCollector.acceptScrollingWithDefaultCenter(component, this.getX() + i,
 				this.getX() + this.getWidth() - i, this.getY() + getHeight() - font.lineHeight - 1,
 				this.getY() + this.getHeight());
@@ -316,12 +308,12 @@ public class GalleryScreen extends Screen {
 		}
 
 		@Override
-		public @NotNull List<? extends NarratableEntry> narratables() {
+		public @NonNull List<? extends NarratableEntry> narratables() {
 			return buttons;
 		}
 
 		@Override
-		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+		public void renderContent(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
 			if (Math.max(getContentX(), list.getX()) <= Math.min(getContentX() + getContentWidth(), list.getX() + list.getWidth()) - 1 &&
 				Math.max(getContentY() - getContentHeight(), list.getY()) <= Math.min(getContentY() + getContentHeight() * 2, list.getY() + list.getHeight()) - 1) {
 				buttons.forEach(e -> {
@@ -369,7 +361,7 @@ public class GalleryScreen extends Screen {
 		}
 
 		@Override
-		public @NotNull List<? extends GuiEventListener> children() {
+		public @NonNull List<? extends GuiEventListener> children() {
 			return buttons;
 		}
 	}

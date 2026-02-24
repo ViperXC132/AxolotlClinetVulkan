@@ -187,6 +187,21 @@ public interface AxoRenderContext {
 		throw BridgeUtil.noImpl();
 	}
 
+	default void br$fillRectWithCutout(int x, int y, int width, int height, int color, int cutoutX, int cutoutY, int cutoutWidth, int cutoutHeight) {
+		if (cutoutX > x) {
+			br$fillRect(x, y, cutoutX - x, height, color);
+		}
+		if (cutoutY > y) {
+			br$fillRect(cutoutX, y, cutoutWidth, cutoutY - y, color);
+		}
+		if (cutoutWidth < width) {
+			br$fillRect(cutoutX + cutoutWidth, y, x + width - (cutoutX + cutoutWidth), height, color);
+		}
+		if (cutoutHeight < height) {
+			br$fillRect(cutoutX, cutoutY + cutoutHeight, cutoutWidth, y + height - (cutoutY + cutoutHeight), color);
+		}
+	}
+
 	@ApiStatus.NonExtendable
 	default void br$fillRectRound(Rectangle rect, Color color, float rounding) {
 		br$fillRectRound(rect.x, rect.y, rect.width, rect.height, color.toInt(), rounding);
@@ -269,6 +284,11 @@ public interface AxoRenderContext {
 
 	@RequiresImpl
 	default void br$outlineRectRound(int x, int y, int width, int height, int color, float rounding) {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default void br$outlineRectRoundVarying(int x, int y, int width, int height, int color, float roundingTL, float roundingBL, float roundingBR, float roundingTR, float outlineWidth) {
 		throw BridgeUtil.noImpl();
 	}
 
