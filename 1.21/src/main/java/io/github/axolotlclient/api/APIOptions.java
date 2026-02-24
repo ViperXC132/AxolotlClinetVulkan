@@ -58,24 +58,38 @@ public class APIOptions extends Options {
 
 		openPrivacyNoteScreen = () -> {
 			var fut = new CompletableFuture<Boolean>();
-			client.execute(() -> client.setScreen(new PrivacyNoticeScreen(client.currentScreen, fut)));
+			var parent = client.currentScreen;
+			client.execute(() -> client.setScreen(new PrivacyNoticeScreen(parent, fut)));
 			return fut;
 		};
 		KeyBinds.getInstance().registerWithSimpleAction(new KeyBind("api.chats.sidebar.open",
 				InputUtil.KEY_O_CODE, "category.axolotlclient"),
 			() -> {
 				if (API.getInstance().isAuthenticated()) {
-					client.setScreen(new ChatsSidebar(client.currentScreen));
+					var parent = client.currentScreen;
+					client.setScreen(new ChatsSidebar(parent));
 				}
 			});
 		category.add(new GenericOption("viewFriends", "clickToOpen",
-			() -> client.setScreen(new FriendsScreen(client.currentScreen))));
+			() -> {
+				var parent = client.currentScreen;
+				client.setScreen(new FriendsScreen(parent));
+			}));
 		category.add(new GenericOption("viewChats", "clickToOpen",
-			() -> client.setScreen(new ChatListScreen(client.currentScreen))));
+			() -> {
+				var parent = client.currentScreen;
+				client.setScreen(new ChatListScreen(parent));
+			}));
 		category.add(new GenericOption("api.channels.invites.view", "clickToOpen",
-			() -> client.setScreen(new ChannelInvitesScreen(client.currentScreen))));
+			() -> {
+				var parent = client.currentScreen;
+				client.setScreen(new ChannelInvitesScreen(parent));
+			}));
 		account.add(new GenericOption("api.account.usernames", "clickToOpen",
-			() -> client.setScreen(new UsernameManagementScreen(client.currentScreen))));
+			() -> {
+				var parent = client.currentScreen;
+				client.setScreen(new UsernameManagementScreen(parent));
+			}));
 		account.add(new GenericOption("api.account.export", "api.account.export_data", () -> ThreadExecuter.scheduleTask(() -> {
 			if (!API.getInstance().isAuthenticated()) {
 				API.getInstance().getNotificationProvider().addStatus("api.account.export.failure.title", "api.error.unauthenticated");

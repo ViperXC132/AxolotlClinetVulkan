@@ -59,24 +59,38 @@ public class APIOptions extends Options {
 
 		openPrivacyNoteScreen = () -> {
 			var fut = new CompletableFuture<Boolean>();
-			client.submit(() -> client.openScreen(new PrivacyNoticeScreen(client.screen, fut)));
+			var parent = client.screen;
+			client.submit(() -> client.openScreen(new PrivacyNoticeScreen(parent, fut)));
 			return fut;
 		};
 		KeyBinding openSidebar = new KeyBinding("api.chats.sidebar.open", Keyboard.KEY_O, "category.axolotlclient");
 		KeyBindingEvents.REGISTER_KEYBINDS.register(registry -> registry.register(openSidebar));
 		MinecraftClientEvents.TICK_END.register(minecraft -> {
 			if (openSidebar.consumeClick() && API.getInstance().isAuthenticated()) {
-				minecraft.openScreen(new ChatsSidebar(client.screen));
+				var parent = client.screen;
+				minecraft.openScreen(new ChatsSidebar(parent));
 			}
 		});
 		category.add(new GenericOption("viewFriends", "clickToOpen",
-			() -> client.openScreen(new FriendsScreen(client.screen))));
+			() -> {
+				var parent = client.screen;
+				client.openScreen(new FriendsScreen(parent));
+			}));
 		category.add(new GenericOption("viewChats", "clickToOpen",
-			() -> client.openScreen(new ChatListScreen(client.screen))));
+			() -> {
+				var parent = client.screen;
+				client.openScreen(new ChatListScreen(parent));
+			}));
 		category.add(new GenericOption("api.channels.invites.view", "clickToOpen",
-			() -> client.openScreen(new ChannelInvitesScreen(client.screen))));
+			() -> {
+				var parent = client.screen;
+				client.openScreen(new ChannelInvitesScreen(parent));
+			}));
 		account.add(new GenericOption("api.account.usernames", "clickToOpen",
-			() -> client.openScreen(new UsernameManagementScreen(client.screen))));
+			() -> {
+				var parent = client.screen;
+				client.openScreen(new UsernameManagementScreen(parent));
+			}));
 		account.add(new GenericOption("api.account.export", "api.account.export_data", () -> ThreadExecuter.scheduleTask(() -> {
 			if (!API.getInstance().isAuthenticated()) {
 				API.getInstance().getNotificationProvider().addStatus("api.account.export.failure.title", "api.error.unauthenticated");
