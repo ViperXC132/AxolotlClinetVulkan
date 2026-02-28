@@ -43,7 +43,7 @@ public class E4mcMixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-		return FabricLoader.getInstance().isModLoaded("e4mc_minecraft");
+		return FabricLoader.getInstance().isModLoaded("e4mc_minecraft") || FabricLoader.getInstance().isModLoaded("e4mc");
 	}
 
 	@Override

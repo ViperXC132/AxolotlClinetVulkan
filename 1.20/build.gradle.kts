@@ -50,7 +50,7 @@ dependencies {
 	//modImplementation("com.noxcrew.noxesium:api:$noxesiumVersion")
 	//localRuntime("org.khelekore:prtree:1.5")
 
-	modCompileOnly("maven.modrinth:e4mc:5.5.4-fabric")
+	modCompileOnly("maven.modrinth:e4mc:6.0.6-fabric")
 
 	implementation("net.hypixel:mod-api:1.0.1")
 	include(modImplementation("io.github.moehreag.hypixel:mod-api-fabric:1.0.1+build.2+mc1.20.1")!!)
