@@ -96,12 +96,10 @@ public class PlayerHud extends PlayerHudCommon {
 
 		float lerpY = (lastYOffset + ((yOffset - lastYOffset) * delta));
 
-		float scale = getScale() * 40;
-
 		Quaternionf quaternion = new Quaternionf().rotateZ((float) Math.PI);
 
 		// Rotate to whatever is wanted. Also make sure to offset the yaw
-		float deltaYaw = client.player.getYaw(delta);
+		float deltaYaw = client.player.headYaw;
 		if (dynamicRotation.get()) {
 			deltaYaw -= (lastYawOffset + ((yawOffset - lastYawOffset) * delta));
 		}
@@ -112,8 +110,8 @@ public class PlayerHud extends PlayerHudCommon {
 		currentlyRendering = true;
 		InventoryScreen.drawEntity((GuiGraphics) ctx,
 			(int) (x / getScale() + getContentWidth() / 2f),
-			(int) (y + getContentHeight() - lerpY),
-			(int) scale,
+			(int) (y / getScale() + getContentHeight() * .925f - lerpY),
+			40,
 			quaternion,
 			quaternionf2,
 			client.player);

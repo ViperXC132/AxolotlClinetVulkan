@@ -98,7 +98,7 @@ public class PlayerHud extends PlayerHudCommon {
 		Quaternionf quaternion = Axis.Z_POSITIVE.rotationDegrees(180.0F);
 
 		// Rotate to whatever is wanted. Also make sure to offset the yaw
-		float deltaYaw = client.player.getYaw(delta);
+		float deltaYaw = client.player.headYaw;
 		if (dynamicRotation.get()) {
 			deltaYaw -= (lastYawOffset + ((yawOffset - lastYawOffset) * delta));
 		}
@@ -111,7 +111,7 @@ public class PlayerHud extends PlayerHudCommon {
 		currentlyRendering = true;
 		InventoryScreen.drawEntity(graphics,
 			((float) (x / getScale() + getContentWidth() / 2f)),
-			((float) (y / getScale() + getContentHeight() - lerpY)),
+			((float) (y / getScale() + getContentHeight() * 0.925f - lerpY)),
 			40, new Vector3f(), quaternion, quaternionf2, client.player);
 		currentlyRendering = false;
 

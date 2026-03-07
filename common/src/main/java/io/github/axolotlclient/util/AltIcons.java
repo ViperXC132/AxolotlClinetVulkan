@@ -71,17 +71,18 @@ public class AltIcons {
 	public static Optional<InputStream> getAltIcon() {
 		var current = MonthDay.from(ZonedDateTime.now());
 		if (current.getMonth().equals(Month.JUNE)) {
-			return Optional.of(read("@FOX_PRIDE@"));
+			return Optional.ofNullable(read("@FOX_PRIDE@"));
 		}
 		var tvd = MonthDay.of(Month.MARCH, 31);
 		var tdor = MonthDay.of(Month.NOVEMBER, 20);
 		if (current.equals(tvd) || current.equals(tdor)) {
-			return Optional.of(read("@FOX_TRANS@"));
+			return Optional.ofNullable(read("@FOX_TRANS@"));
 		}
 		return Optional.empty();
 	}
 
 	private static InputStream read(String s) {
+		if (s.contains("@")) return null;
 		return Base64.getDecoder().wrap(new ByteArrayInputStream(s.getBytes(StandardCharsets.ISO_8859_1)));
 	}
 }
