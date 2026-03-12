@@ -402,8 +402,10 @@ public class CropImageScreen extends Screen {
 
 		@Override
 		public void onRelease(MouseButtonEvent event) {
+			if (currentHandle != null) {
+				super.playDownSound(minecraft.getSoundManager());
+			}
 			currentHandle = null;
-			super.playDownSound(minecraft.getSoundManager());
 			super.onRelease(event);
 		}
 
@@ -533,25 +535,25 @@ public class CropImageScreen extends Screen {
 			var trueDragX1 = Math.round((dragX1 - imgX) / imgWidth * image.image().getWidth());
 			var trueDragY = Math.round((dragY - imgY) / imgHeight * image.image().getHeight());
 			var trueDragY1 = Math.round((dragY1 - imgY) / imgHeight * image.image().getHeight());
-			if (posX != null) {
+			if (posX != null && !posX.isFocused()) {
 				var res = ((EditBoxAccessor) posX).getResponder();
 				posX.setResponder(null);
 				posX.setValue(String.valueOf(trueDragX));
 				posX.setResponder(res);
 			}
-			if (posY != null) {
+			if (posY != null && !posY.isFocused()) {
 				var res = ((EditBoxAccessor) posY).getResponder();
 				posY.setResponder(null);
 				posY.setValue(String.valueOf(trueDragY));
 				posY.setResponder(res);
 			}
-			if (posW != null) {
+			if (posW != null && !posW.isFocused()) {
 				var res = ((EditBoxAccessor) posW).getResponder();
 				posW.setResponder(null);
 				posW.setValue(String.valueOf(trueDragX1 - trueDragX));
 				posW.setResponder(res);
 			}
-			if (posH != null) {
+			if (posH != null && !posH.isFocused()) {
 				var res = ((EditBoxAccessor) posH).getResponder();
 				posH.setResponder(null);
 				posH.setValue(String.valueOf(trueDragY1 - trueDragY));
@@ -573,6 +575,7 @@ public class CropImageScreen extends Screen {
 			var pH = Integer.parseInt(hValue);
 			var iW = image.image().getWidth();
 			var iH = image.image().getHeight();
+			if (pX < 0 || pX > iW || pY < 0 || pY > iH || pW < 0 || pW > iW || pH < 0 || pH > iH) return;
 			var dragAreaPercentageX0 = (float) pX / iW;
 			var dragAreaPercentageY0 = (float) pY / iH;
 			var dragAreaPercentageX1 = (float) (pX + pW) / iW;
@@ -581,9 +584,12 @@ public class CropImageScreen extends Screen {
 			dragX1 = MathUtil.clamp(imgX + dragAreaPercentageX1 * imgWidth, imgX, imgX + imgWidth);
 			dragY = MathUtil.clamp(imgY + dragAreaPercentageY0 * imgHeight, imgY, imgY + imgHeight);
 			dragY1 = MathUtil.clamp(imgY + dragAreaPercentageY1 * imgHeight, imgY, imgY + imgHeight);
-			scale = 1f;
-			translateX = 0f;
-			translateY = 0f;
+			var wScale = imgWidth / (dragX1 - dragX);
+			var hScale = imgHeight / (dragY1 - dragY);
+			scale = Math.abs(wScale - 1) < Math.abs(hScale - 1) ? wScale : hScale;
+			translateX = -CropImageScreen.this.width / 2f - scale * (-CropImageScreen.this.width / 2f + dragX) + getX() + getWidth()/2f - (dragX1 - dragX)*scale/2f;
+			translateY = -CropImageScreen.this.height / 2f - scale * (-CropImageScreen.this.height / 2f + dragY) + getY() + getHeight()/2f - (dragY1-dragY)*scale/2f;
+			updateEditBoxContents();
 		}
 
 		@AllArgsConstructor
