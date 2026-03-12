@@ -22,16 +22,20 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud;
 
+import com.mojang.blaze3d.lighting.DiffuseLighting;
+import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.PlayerDirectionChangeEvent;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -87,6 +91,7 @@ public class PlayerHud extends PlayerHudCommon {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void renderPlayer(AxoRenderContext ctx, boolean placeholder, double x, double y, float delta) {
 		var client = MinecraftClient.getInstance();
@@ -108,13 +113,28 @@ public class PlayerHud extends PlayerHudCommon {
 		quaternion.mul(quaternionf2);
 
 		currentlyRendering = true;
-		InventoryScreen.drawEntity((GuiGraphics) ctx,
-			(int) (x / getScale() + getContentWidth() / 2f),
-			(int) (y / getScale() + getContentHeight() * .925f - lerpY),
-			40,
-			quaternion,
-			quaternionf2,
-			client.player);
+		int x1 = (int) (x / getScale() + getContentWidth() / 2f);
+		int y1 = (int) (y / getScale() + getContentHeight() * .925f - lerpY);
+		GuiGraphics graphics = (GuiGraphics) ctx;
+		graphics.getMatrices().push();
+		graphics.getMatrices().translate(x1, y1, 50.0);
+		graphics.getMatrices().multiplyMatrix(new Matrix4f().scaling(40, 40, -40));
+		graphics.getMatrices().multiply(quaternion);
+		DiffuseLighting.setupInventoryEntityLighting();
+		EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
+		if (quaternionf2 != null) {
+			quaternionf2.conjugate();
+			entityRenderDispatcher.setRotation(quaternionf2);
+		}
+
+		entityRenderDispatcher.setRenderShadows(false);
+		RenderSystem.runAsFancy(
+			() -> entityRenderDispatcher.render((LivingEntity) client.player, 0.0, 0.0, 0.0, 0.0F, delta, graphics.getMatrices(), graphics.getVertexConsumers(), 15728880)
+		);
+		graphics.draw();
+		entityRenderDispatcher.setRenderShadows(true);
+		graphics.getMatrices().pop();
+		DiffuseLighting.setup3DGuiLighting();
 		currentlyRendering = false;
 	}
 

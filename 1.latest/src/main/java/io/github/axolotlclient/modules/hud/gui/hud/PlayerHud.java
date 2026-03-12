@@ -127,7 +127,8 @@ public class PlayerHud extends PlayerHudCommon {
 			new Vector3f(0, (client.player.getBbHeight() / 2f) - lerpY / 40, 0),
 			quaternion,
 			quaternionf2,
-			client.player);
+			client.player,
+			delta);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -141,7 +142,8 @@ public class PlayerHud extends PlayerHudCommon {
 		Vector3f vector3f,
 		Quaternionf quaternionf,
 		@Nullable Quaternionf quaternionf2,
-		LivingEntity livingEntity
+		LivingEntity livingEntity,
+		float delta
 	) {
 		Minecraft mc = Minecraft.getInstance();
 		EntityRenderDispatcher entityRenderDispatcher = mc.getEntityRenderDispatcher();
@@ -151,7 +153,7 @@ public class PlayerHud extends PlayerHudCommon {
 		if (reusedPlayerRendererState == null) {
 			reusedPlayerRendererState = entityRenderer.createRenderState();
 		}
-		entityRenderer.extractRenderState(livingEntity, reusedPlayerRendererState, 1.0f);
+		entityRenderer.extractRenderState(livingEntity, reusedPlayerRendererState, delta);
 		reusedPlayerRendererState.nameTag = null;
 		((GuiGraphicsAccessor) guiGraphics).getGuiRenderState().submitPicturesInPictureState(new PlayerHudEntityRenderState(reusedPlayerRendererState, vector3f, quaternionf, quaternionf2, i, j, k, l, f, ((GuiGraphicsAccessor) guiGraphics).getScissorStack().peek(), renderer));
 	}
