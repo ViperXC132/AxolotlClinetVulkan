@@ -36,6 +36,7 @@ public class Skyblock implements AbstractHypixelMod {
 
 	@Override
 	public void init() {
+		category.add(rotationLocked);
 		AxoKeybinding.create(null, "lockRotation")
 			.br$registerOnConsumeClick(rotationLocked::toggle);
 	}

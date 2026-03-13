@@ -32,6 +32,8 @@ import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
 import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.mixin.MinecraftServerAccessor;
 import io.github.axolotlclient.modules.hypixel.autoboop.FilterListConfigurationScreen;
+import io.github.axolotlclient.modules.hypixel.bedwars.SessionStatsHudEntryConfigScreen;
+import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.ThreadExecuter;
 import net.minecraft.class_9191;
 import net.minecraft.client.MinecraftClient;
@@ -147,9 +149,11 @@ public abstract class PlatformDispatchMixin {
 
 		class Impl implements AxoSprite.Dynamic, AxoSpriteImpl {
 			@Override
-			public void draw(MinecraftClient client, GuiGraphics stack, int sX, int sY, int sW, int sH) {
+			public void draw(MinecraftClient client, GuiGraphics stack, int sX, int sY, int sW, int sH, int color) {
 				client.getTextureManager().bindTexture(iconId);
+				stack.setShaderColor(ClientColors.ARGB.redFloat(color), ClientColors.ARGB.greenFloat(color), ClientColors.ARGB.blueFloat(color), ClientColors.ARGB.alphaFloat(color));
 				stack.drawTexture(iconId, sX, sY, 0, 0, sW, sH, sW, sH);
+				stack.setShaderColor(1, 1, 1, 1);
 			}
 
 			@Override
@@ -171,5 +175,14 @@ public abstract class PlatformDispatchMixin {
 	@Overwrite
 	public static void autoBoop$openFiltersScreen(List<String> filters) {
 		MinecraftClient.getInstance().setScreen(new FilterListConfigurationScreen(filters, MinecraftClient.getInstance().currentScreen));
+	}
+
+	/**
+	 * @author moehreag
+	 * @reason Implement bridge.
+	 */
+	@Overwrite
+	public static void bedwars$sessionstats$openEntryConfigScreen() {
+		MinecraftClient.getInstance().setScreen(new SessionStatsHudEntryConfigScreen(MinecraftClient.getInstance().currentScreen));
 	}
 }

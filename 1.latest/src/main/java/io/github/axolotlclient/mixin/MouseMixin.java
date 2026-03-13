@@ -48,7 +48,7 @@ public abstract class MouseMixin {
 	@ModifyArg(method = "onScroll",
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/ScrollWheelHandler;getNextScrollWheelSelection(DII)I"))
 	private double axolotlclient$scrollZoom(double scrollAmount) {
-		if (scrollAmount != 0 && Zoom.scroll(scrollAmount)) {
+		if (scrollAmount != 0 && Zoom.getInstance().scroll(scrollAmount)) {
 			return 0;
 		}
 

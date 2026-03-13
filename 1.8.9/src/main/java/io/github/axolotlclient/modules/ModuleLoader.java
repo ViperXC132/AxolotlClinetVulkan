@@ -25,7 +25,7 @@ package io.github.axolotlclient.modules;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.config.screen.CreditsScreen;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.metadata.ModMetadata;
@@ -58,7 +58,7 @@ public class ModuleLoader {
 							authorsNContributors.toArray(new String[0]));
 					}
 				} catch (Exception e) {
-					AxolotlClient.LOGGER.warn("Skipping module: " + entrypoint.getProvider().getMetadata().getName()
+					AxolotlClientCommon.getInstance().getLogger().warn("Skipping module: " + entrypoint.getProvider().getMetadata().getName()
 						+ " because of error:", e);
 				}
 			});

@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.*;
 
 import com.mojang.blaze3d.platform.NativeImage;
-import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Graphics;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import net.minecraft.ChatFormatting;
@@ -96,10 +96,16 @@ public class Util {
 		Identifier id = Identifier.fromNamespaceAndPath("axolotlclient", "graphics_" + name.toLowerCase(Locale.ROOT));
 		try {
 			DynamicTexture texture;
-			if (!textures.containsKey(id)) {
+			boolean reuse = textures.containsKey(id);
+			if (reuse) {
+				var img = textures.get(id);
+				reuse = img.getPixels().getWidth() == graphics.getWidth() && img.getPixels().getHeight() == graphics.getHeight();
+			}
+			if (!reuse) {
 				texture = new DynamicTexture(id::toString, NativeImage.read(graphics.getPixelData()));
+				var prev = textures.put(id, texture);
+				if (prev != null) prev.close();
 				Minecraft.getInstance().getTextureManager().register(id, texture);
-				textures.put(id, texture);
 			} else {
 				texture = textures.get(id);
 				for (int x = 0; x < graphics.getWidth(); x++) {
@@ -111,7 +117,7 @@ public class Util {
 
 			texture.upload();
 		} catch (IOException e) {
-			AxolotlClient.LOGGER.error("Failed to bind texture for " + name + ": ", e);
+			AxolotlClientCommon.getInstance().getLogger().error("Failed to bind texture for " + name + ": ", e);
 		}
 		return id;
 	}

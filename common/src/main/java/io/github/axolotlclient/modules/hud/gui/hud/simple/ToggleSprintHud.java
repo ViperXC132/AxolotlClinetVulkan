@@ -33,6 +33,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringOption;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import io.github.axolotlclient.bridge.key.AxoKeys;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoI18n;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui.entry.SimpleTextHudEntry;
@@ -53,6 +54,7 @@ public class ToggleSprintHud extends SimpleTextHudEntry {
 	private final BooleanOption toggleSprint = new BooleanOption("toggleSprint", false);
 	private final BooleanOption randomPlaceholder = new BooleanOption("randomPlaceholder", false);
 	private final StringOption placeholder = new StringOption("placeholder", "No keys pressed");
+	private final BooleanOption hideInsteadOfPlaceholder = new BooleanOption("togglesprint.hide_instead_of_placeholder", true);
 
 	private final AxoKeybinding sprintToggle = AxoKeybinding.create(AxoKeys.KEY_K, "key.toggleSprint");
 	private final AxoKeybinding sneakToggle = AxoKeybinding.create(AxoKeys.KEY_I, "key.toggleSneak");
@@ -100,7 +102,20 @@ public class ToggleSprintHud extends SimpleTextHudEntry {
 		options.add(toggleSneak);
 		options.add(randomPlaceholder);
 		options.add(placeholder);
+		options.add(hideInsteadOfPlaceholder);
 		return options;
+	}
+
+	@Override
+	public void render(AxoRenderContext ctx, float delta) {
+		if (hideInsteadOfPlaceholder.get() &&
+			!client.br$getGameOptions().br$getSneakKeybind().br$isPressed() &&
+			!client.br$getGameOptions().br$getSprintKeybind().br$isPressed() &&
+			(!toggleSneak.get() || !sneakToggled.get()) && (!toggleSprint.get() || !sprintToggled.get())) {
+			return;
+		}
+
+		super.render(ctx, delta);
 	}
 
 	@Override

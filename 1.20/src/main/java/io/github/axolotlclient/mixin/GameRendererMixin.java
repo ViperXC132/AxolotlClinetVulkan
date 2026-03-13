@@ -66,8 +66,8 @@ public abstract class GameRendererMixin {
 		if (this.renderingPanorama) {
 			return original.call(camera, partialTick, useFovSetting);
 		}
-		Zoom.update();
-		return Zoom.getFov(original.call(camera, partialTick, useFovSetting), partialTick);
+		Zoom.getInstance().update();
+		return Zoom.getInstance().getFov(original.call(camera, partialTick, useFovSetting).floatValue(), partialTick);
 	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;getFramebuffer()Lcom/mojang/blaze3d/framebuffer/Framebuffer;"))

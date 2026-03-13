@@ -38,7 +38,7 @@ public abstract class GlStateManagerMixin {
 	private static void nightMode(float f, float g, float h, float i, CallbackInfo ci,
 								  @Local(ordinal = 2, argsOnly = true) LocalFloatRef blue) {
 		if (AxolotlClient.config().nightMode.get()) {
-			blue.set(blue.get()/2f);
+			blue.set(blue.get() / 2f);
 		}
 	}
 }

@@ -69,11 +69,11 @@ public class PrivacyNoticeScreen extends Screen {
 	}
 
 	private void addButtons(int y) {
-		buttons.add(new ButtonWidget(1, width / 2 - 50, y, 100, 20,
+		buttons.add(new ButtonWidget(1, width / 2 - 50 - 104, y, 100, 20,
 			I18n.translate("api.privacyNotice.accept")));
-		buttons.add(new ButtonWidget(0, width / 2 + 55, y, 100, 20,
+		buttons.add(new ButtonWidget(0, width / 2 - 50 + 104, y, 100, 20,
 			I18n.translate("api.privacyNotice.deny")));
-		buttons.add(new ButtonWidget(2, width / 2 - 155, y, 100, 20,
+		buttons.add(new ButtonWidget(2, width / 2 - 50, y, 100, 20,
 			I18n.translate("api.privacyNotice.openPolicy")));
 	}
 

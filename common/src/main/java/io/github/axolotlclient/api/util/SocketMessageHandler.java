@@ -24,6 +24,7 @@ package io.github.axolotlclient.api.util;
 
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.Response;
+import io.github.axolotlclient.bridge.util.AxoI18n;
 
 public interface SocketMessageHandler {
 
@@ -34,7 +35,7 @@ public interface SocketMessageHandler {
 	}
 
 	default String translate(String key, Object... args) {
-		return API.getInstance().getTranslationProvider().translate(key, args);
+		return AxoI18n.translate(key, args);
 	}
 
 	default void notification(String titleKey, String descKey, Object... args) {

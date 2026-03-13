@@ -25,6 +25,7 @@ package io.github.axolotlclient.modules.hud.gui.keystrokes;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.IntegerWidget;
+import io.github.axolotlclient.AxolotlClientConfig.impl.util.ConfigStyles;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import io.github.axolotlclient.modules.hud.gui.layout.Justification;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
@@ -36,8 +37,10 @@ import net.minecraft.client.gui.layouts.LayoutSettings;
 import net.minecraft.client.gui.layouts.LinearLayout;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 
 public class ConfigureKeyBindScreen extends Screen {
 
@@ -72,7 +75,7 @@ public class ConfigureKeyBindScreen extends Screen {
 		labelFrame.setMinWidth(super.width);
 		labelFrame.addChild(new AbstractWidget(0, 0, 200, 40, Component.empty()) {
 			@Override
-			protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+			protected void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 				var rect = stroke.getRenderPosition();
 				guiGraphics.pose().pushMatrix();
 				guiGraphics.pose().translate(getX(), getY());
@@ -86,7 +89,7 @@ public class ConfigureKeyBindScreen extends Screen {
 			}
 
 			@Override
-			protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+			protected void updateWidgetNarration(@NotNull NarrationElementOutput narrationElementOutput) {
 
 			}
 		}).active = false;
@@ -123,6 +126,29 @@ public class ConfigureKeyBindScreen extends Screen {
 					.create(0, 0, 58, 20, Component.translatable("justification"),
 						(btn, val) -> s.setJustification(val)));
 			}
+		}
+		if (stroke instanceof KeystrokeHud.CustomRenderKeystroke customRender) {
+			names.addChild(new StringWidget(150, 20, Component.translatable("keystrokes.stroke.graphics"), font));
+			var graphicsLayout = options.addChild(LinearLayout.horizontal()).spacing(4);
+			var sliderMin = 2;
+			var sliderMax = 25;
+			var sizeSlider = new AbstractSliderButton(0, 0, 98, 20, Component.translatable("keystrokes.stroke.configure_graphics_size", customRender.getSize()), (customRender.getSize() - sliderMin) / ((float) sliderMax - sliderMin)) {
+				@Override
+				protected void updateMessage() {
+					setMessage(Component.translatable("keystrokes.stroke.configure_graphics_size", (int) (value * (sliderMax - sliderMin) + sliderMin)));
+				}
+
+				@Override
+				protected void applyValue() {
+					int size = (int) (value * (sliderMax - sliderMin) + sliderMin);
+					this.value = (size - sliderMin) / ((float) sliderMax - sliderMin);
+					customRender.setSize(size);
+				}
+			};
+			graphicsLayout.addChild(sizeSlider);
+			var widget = (AbstractButton) ConfigStyles.createWidget(0, 0, 48, 20, customRender.getGraphics());
+			graphicsLayout.addChild(Button.builder(Component.translatable("keystrokes.stroke.configure_graphics"), btn ->
+				widget.onPress(new KeyEvent(0, 0, 0))).width(48).build());
 		}
 		names.addChild(new StringWidget(150, 20, Component.translatable("keystrokes.stroke.width"), font));
 		options.addChild(new IntegerWidget(0, 0, 150, 20, width));

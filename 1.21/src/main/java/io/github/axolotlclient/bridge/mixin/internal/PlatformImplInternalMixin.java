@@ -25,9 +25,7 @@ package io.github.axolotlclient.bridge.mixin.internal;
 import java.util.Objects;
 
 import com.mojang.blaze3d.platform.InputUtil;
-import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
-import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.AxoPlayerListEntry;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffect;
@@ -58,10 +56,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Holder;
 import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Util;
+import net.minecraft.world.GameMode;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -128,15 +128,6 @@ public abstract class PlatformImplInternalMixin {
 	 * @reason Implement bridge platform.
 	 */
 	@Overwrite
-	public static AxolotlClientConfigCommon getConfig() {
-		return AxolotlClient.config();
-	}
-
-	/**
-	 * @author Flowey
-	 * @reason Implement bridge platform.
-	 */
-	@Overwrite
 	public static int getCurrentFps() {
 		return MinecraftClientAccessor.axolotlclient$getCurrentFps();
 	}
@@ -160,6 +151,15 @@ public abstract class PlatformImplInternalMixin {
 	@Overwrite
 	public static AxoIdentifier createIdentifier(String ns, String path) {
 		return Identifier.of(ns, path);
+	}
+
+	/**
+	 * @author moehreag
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static AxoIdentifier parseIdentifier(String id) {
+		return Identifier.parse(id);
 	}
 
 	/**
@@ -231,12 +231,14 @@ public abstract class PlatformImplInternalMixin {
 	 */
 	@Overwrite
 	public static String getTabNameFor(AxoPlayerListEntry player) {
-		return Formatting.strip(
-			MinecraftClient.getInstance().inGameHud
-				.getPlayerListHud()
-				.getPlayerName((PlayerListEntry) player)
-				.getString()
-		);
+		// Inlined PlayerListHud#getDisplayName to avoid StackOverflowError due to mixin
+		PlayerListEntry p = (PlayerListEntry) player;
+		if (p.getDisplayName() != null) {
+			MutableText name = p.getDisplayName().copy();
+			return Formatting.strip((p.getGameMode() == GameMode.SPECTATOR ? name.formatted(Formatting.ITALIC) : name).getString());
+		}
+		MutableText name = Team.decorateName(p.getScoreboardTeam(), Text.literal(p.getProfile().getName()));
+		return Formatting.strip((p.getGameMode() == GameMode.SPECTATOR ? name.formatted(Formatting.ITALIC) : name).getString());
 	}
 
 	/**

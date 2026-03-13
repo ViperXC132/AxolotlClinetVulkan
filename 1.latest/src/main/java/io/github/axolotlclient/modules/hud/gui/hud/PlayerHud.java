@@ -36,6 +36,7 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -66,12 +67,15 @@ public class PlayerHud extends PlayerHudCommon {
 		super.tick();
 		var client = Minecraft.getInstance();
 		if (client.player != null && client.player.isVisuallySwimming()) {
-			float rawPitch = client.player.isInWater() ? -90.0F - client.player.getXRot() : -90.0F;
+			float rawPitch = client.player.isInWater() ? client.player.getXRot() : 0.0F;
 			float pitch = Mth.lerp(client.player.getSwimAmount(1), 0.0F, rawPitch);
 			float height = client.player.getBbHeight();
 			// sin = opposite / hypotenuse
-			float offset = (float) (Math.sin(Math.toRadians(pitch)) * height);
-			yOffset = Math.abs(offset);
+			float offset = (float) (Math.sin(Math.toRadians(pitch)) * height) * 20;
+			yOffset = -(offset);
+			if (pitch > 0) {
+				yOffset -= (float) (((1 / (1 + Math.exp(pitch / 4))) - .5) * 40);
+			}
 		} else if (client.player != null && client.player.isFallFlying()) {
 			// Elytra!
 
@@ -79,11 +83,12 @@ public class PlayerHud extends PlayerHudCommon {
 			float k = Mth.clamp(j * j / 100.0F, 0.0F, 1.0F);
 
 			float pitch = k * (-90.0F - client.player.getXRot()) + 90;
-			float height = client.player.getBbHeight() / 2f;
+			float height = client.player.getBbHeight();
 			// sin = opposite / hypotenuse
-			yOffset = (float) (Math.sin(Math.toRadians(pitch)) * height);
+			float offset = (float) (Math.sin(Math.toRadians(pitch)) * height) * 50;
+			yOffset = -offset;
 			if (pitch < 0) {
-				yOffset -= (float) (((1 / (1 + Math.exp(-pitch / 4))) - .5) * 2);
+				yOffset -= (float) (((1 / (1 + Math.exp(-pitch / 4))) - .5) * 40);
 			}
 		} else {
 			yOffset *= .8f;
@@ -98,18 +103,6 @@ public class PlayerHud extends PlayerHudCommon {
 			return;
 		}
 
-		if (!placeholder && autoHide.get()) {
-			if (isPerformingAction()) {
-				hide = -1;
-			} else if (hide == -1) {
-				hide = System.currentTimeMillis();
-			}
-
-			if (hide != -1 && System.currentTimeMillis() - hide > 500) {
-				return;
-			}
-		}
-
 		float lerpY = (lastYOffset + ((yOffset - lastYOffset) * delta));
 
 		float scale = getScale() * 40;
@@ -117,7 +110,7 @@ public class PlayerHud extends PlayerHudCommon {
 		Quaternionf quaternion = new Quaternionf().rotateZ((float) Math.PI);
 
 		// Rotate to whatever is wanted. Also make sure to offset the yaw
-		float deltaYaw = client.player.getYRot(delta);
+		float deltaYaw = client.player.getYHeadRot();
 		if (dynamicRotation.get()) {
 			deltaYaw -= (lastYawOffset + ((yawOffset - lastYawOffset) * delta));
 		}
@@ -131,10 +124,11 @@ public class PlayerHud extends PlayerHudCommon {
 			(int) (x + getContentWidth() * getScale()),
 			(int) (y + getContentHeight() * getScale()),
 			scale / client.player.getScale(),
-			new Vector3f(0, client.player.getBbHeight() / 2f - lerpY * client.player.getScale(), 0),
+			new Vector3f(0, (client.player.getBbHeight() / 2f) - lerpY / 40, 0),
 			quaternion,
 			quaternionf2,
-			client.player);
+			client.player,
+			delta);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -148,22 +142,24 @@ public class PlayerHud extends PlayerHudCommon {
 		Vector3f vector3f,
 		Quaternionf quaternionf,
 		@Nullable Quaternionf quaternionf2,
-		LivingEntity livingEntity
+		LivingEntity livingEntity,
+		float delta
 	) {
 		Minecraft mc = Minecraft.getInstance();
 		EntityRenderDispatcher entityRenderDispatcher = mc.getEntityRenderDispatcher();
 		if (renderer == null)
 			renderer = new PlayerHudEntityRenderer(mc.renderBuffers().bufferSource(), entityRenderDispatcher);
-		EntityRenderer<LivingEntity, LivingEntityRenderState> entityRenderer = (EntityRenderer<LivingEntity, LivingEntityRenderState>) entityRenderDispatcher.getRenderer(livingEntity);
+		EntityRenderer<@NotNull LivingEntity, @NotNull LivingEntityRenderState> entityRenderer = (EntityRenderer<@NotNull LivingEntity, @NotNull LivingEntityRenderState>) entityRenderDispatcher.getRenderer(livingEntity);
 		if (reusedPlayerRendererState == null) {
 			reusedPlayerRendererState = entityRenderer.createRenderState();
 		}
-		entityRenderer.extractRenderState(livingEntity, reusedPlayerRendererState, 1.0f);
+		entityRenderer.extractRenderState(livingEntity, reusedPlayerRendererState, delta);
 		reusedPlayerRendererState.nameTag = null;
 		((GuiGraphicsAccessor) guiGraphics).getGuiRenderState().submitPicturesInPictureState(new PlayerHudEntityRenderState(reusedPlayerRendererState, vector3f, quaternionf, quaternionf2, i, j, k, l, f, ((GuiGraphicsAccessor) guiGraphics).getScissorStack().peek(), renderer));
 	}
 
-	private boolean isPerformingAction() {
+	@Override
+	protected boolean isPerformingAction() {
 		// inspired by tr7zw's mod
 		LocalPlayer player = Minecraft.getInstance().player;
 		//noinspection DataFlowIssue

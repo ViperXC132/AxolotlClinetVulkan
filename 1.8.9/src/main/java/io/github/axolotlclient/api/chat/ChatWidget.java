@@ -214,7 +214,7 @@ public class ChatWidget extends EntryListWidget {
 					.spacer();
 				if (!origin.sender().equals(API.getInstance().getSelf())) {
 					builder.entry("api.friends.chat", buttonWidget -> ChannelRequest.getOrCreateDM(origin.sender())
-						.whenCompleteAsync((channel, throwable) -> client.submit(() -> client.openScreen(new ChatScreen(screen.getParent(), channel)))))
+							.whenCompleteAsync((channel, throwable) -> client.submit(() -> client.openScreen(new ChatScreen(screen.getParent(), channel)))))
 						.spacer();
 				}
 				builder.entry("api.chat.report.message", buttonWidget -> {

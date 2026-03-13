@@ -43,7 +43,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 @Environment(EnvType.CLIENT)
 public class SpecialKeystrokeSelectionList extends ElementListWidget<SpecialKeystrokeSelectionList.Entry> {
-	private static final int ITEM_HEIGHT = 20;
+	private static final int ITEM_HEIGHT = 24;
 	final AddSpecialKeystrokeScreen keyBindsScreen;
 
 	public SpecialKeystrokeSelectionList(AddSpecialKeystrokeScreen keyBindsScreen, Minecraft minecraft) {

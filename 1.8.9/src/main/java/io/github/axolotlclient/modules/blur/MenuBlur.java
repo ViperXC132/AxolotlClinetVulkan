@@ -27,6 +27,7 @@ import java.io.InputStream;
 
 import com.mojang.blaze3d.shaders.Uniform;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
@@ -106,7 +107,7 @@ public class MenuBlur extends AbstractModule {
 						client.getRenderTarget(), shaderLocation);
 					shader.resize(client.width, client.height);
 				} catch (IOException e) {
-					AxolotlClient.LOGGER.error("Failed to load Menu Blur: ", e);
+					AxolotlClientCommon.getInstance().getLogger().error("Failed to load Menu Blur: ", e);
 					return;
 				}
 			}

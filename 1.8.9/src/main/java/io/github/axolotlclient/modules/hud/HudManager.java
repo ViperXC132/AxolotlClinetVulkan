@@ -22,13 +22,12 @@
 
 package io.github.axolotlclient.modules.hud;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.hud.ChatHud;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import io.github.axolotlclient.modules.hud.gui.hud.PackDisplayHud;
 import io.github.axolotlclient.modules.hud.gui.hud.PlayerHud;
-import io.github.axolotlclient.modules.hud.gui.hud.simple.ComboHud;
-import io.github.axolotlclient.modules.hud.gui.hud.simple.ReachHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
@@ -60,9 +59,6 @@ public class HudManager extends HudManagerCommon {
 		add(new PackDisplayHud());
 		add(new PlayerHud());
 		add(new ChatHud());
-
-		((ReachHud) get(ReachHud.ID)).getEnabled().setForceOff(true, "feature.broken");
-		((ComboHud) get(ComboHud.ID)).getEnabled().setForceOff(true, "feature.broken");
 	}
 
 	@Override
@@ -70,6 +66,8 @@ public class HudManager extends HudManagerCommon {
 		final var mc = ((Minecraft) client);
 		mc.profiler.push("Hud render");
 		if (!(mc.screen instanceof HudEditScreen)) {
+			GlStateManager.enableBlend();
+			GlStateManager.color3f(1, 1, 1);
 			super.render(context, delta);
 		}
 		mc.profiler.pop();

@@ -22,8 +22,7 @@
 
 package io.github.axolotlclient.modules.hud.gui.entry;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
@@ -33,7 +32,9 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.DoubleOption;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoWindow;
+import io.github.axolotlclient.modules.hud.HudManagerCommon;
 import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
+import io.github.axolotlclient.modules.hud.gui.layout.SnapAnchorType;
 import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
@@ -51,12 +52,14 @@ import lombok.Setter;
  */
 public abstract class AbstractHudEntry implements HudEntry {
 	@Getter
-	protected final ForceableBooleanOption enabled = DefaultOptions.getEnabled();
+	protected final ForceableBooleanOption enabled = DefaultOptions.getEnabled(this);
 	protected final DoubleOption scale = DefaultOptions.getScale(this);
 	protected final AxoMinecraftClient client = AxoMinecraftClient.getInstance();
 	protected final BooleanOption hide = new BooleanOption("hud.hide", false);
 	private final DoubleOption x = DefaultOptions.getX(getDefaultX(), this);
 	private final DoubleOption y = DefaultOptions.getY(getDefaultY(), this);
+	private final Map<HudEntry, SnapAnchorType> xDependencies = new HashMap<>();
+	private final Map<HudEntry, SnapAnchorType> yDependencies = new HashMap<>();
 	@Setter
 	@Getter
 	protected int width;
@@ -92,12 +95,25 @@ public abstract class AbstractHudEntry implements HudEntry {
 	}
 
 	public void renderPlaceholderBackground(AxoRenderContext context) {
+		var bounds = getTrueBounds();
 		if (hovered) {
-			context.br$fillRect(getTrueBounds(), ClientColors.SELECTOR_BLUE.withAlpha(100));
+			context.br$fillRect(bounds, ClientColors.SELECTOR_BLUE.withAlpha(100));
 		} else {
-			context.br$fillRect(getTrueBounds(), ClientColors.WHITE.withAlpha(50));
+			context.br$fillRect(bounds, ClientColors.WHITE.withAlpha(50));
 		}
-		context.br$outlineRect(getTrueBounds(), Colors.BLACK);
+		context.br$outlineRect(bounds, Colors.BLACK);
+	}
+
+	public void renderPlaceholderGrabCorners(AxoRenderContext context) {
+		if (!supportsScaling()) return;
+		var bounds = getTrueBounds();
+		var grabTolerance = Math.min(HudManagerCommon.HUD_RESCALE_GRAB_TOLERANCE, Math.min(bounds.width(), bounds.height())/2);
+		var color = HudManagerCommon.getInstance().grabCornerColor.get().toInt();
+		float rounding = grabTolerance-.5f;
+		context.br$fillRectRoundVarying(bounds.x(), bounds.y(), grabTolerance, grabTolerance, color, 0, 0, rounding, 0);
+		context.br$fillRectRoundVarying(bounds.x(), bounds.yEnd() - grabTolerance, grabTolerance, grabTolerance, color, 0, 0, 0, rounding);
+		context.br$fillRectRoundVarying(bounds.xEnd() - grabTolerance, bounds.yEnd() - grabTolerance, grabTolerance, grabTolerance, color, rounding, 0, 0, 0);
+		context.br$fillRectRoundVarying(bounds.xEnd() - grabTolerance, bounds.y(), grabTolerance, grabTolerance, color, 0, rounding, 0, 0);
 	}
 
 	public void scale(AxoRenderContext context) {
@@ -213,6 +229,7 @@ public abstract class AbstractHudEntry implements HudEntry {
 	@Override
 	public void onBoundsUpdate() {
 		setBounds();
+		HudManagerCommon.getInstance().updateBoundsDependencies(this);
 	}
 
 	public OptionCategory getAllOptions() {
@@ -273,5 +290,49 @@ public abstract class AbstractHudEntry implements HudEntry {
 	@Override
 	public boolean supportsScaling() {
 		return supportsScaling;
+	}
+
+	@Override
+	public Optional<SnapAnchorType> dependsOnX(HudEntry entry) {
+		return Optional.ofNullable(xDependencies.get(entry));
+	}
+
+	@Override
+	public Optional<SnapAnchorType> dependsOnY(HudEntry entry) {
+		return Optional.ofNullable(yDependencies.get(entry));
+	}
+
+	@Override
+	public void addBoundsDependency(HudEntry dependency, SnapAnchorType type) {
+		switch (type) {
+			case X_X, X_XEND, XEND_X, XEND_XEND -> xDependencies.put(dependency, type);
+			case Y_Y, Y_YEND, YEND_Y, YEND_YEND -> yDependencies.put(dependency, type);
+		}
+	}
+
+	@Override
+	public void clearBoundsDependencies() {
+		xDependencies.clear();
+		yDependencies.clear();
+	}
+
+	@Override
+	public void removeBoundsDependencyX(HudEntry entry) {
+		xDependencies.remove(entry);
+	}
+
+	@Override
+	public void removeBoundsDependencyY(HudEntry entry) {
+		yDependencies.remove(entry);
+	}
+
+	@Override
+	public Map<HudEntry, SnapAnchorType> getDependenciesX() {
+		return xDependencies;
+	}
+
+	@Override
+	public Map<HudEntry, SnapAnchorType> getDependenciesY() {
+		return yDependencies;
 	}
 }

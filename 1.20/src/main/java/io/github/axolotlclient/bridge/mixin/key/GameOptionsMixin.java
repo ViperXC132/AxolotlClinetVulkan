@@ -27,6 +27,7 @@ import io.github.axolotlclient.bridge.AxoPerspective;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.KeyBind;
+import net.minecraft.client.option.Option;
 import net.minecraft.client.option.Perspective;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -55,6 +56,13 @@ public abstract class GameOptionsMixin implements AxoGameOptions {
 
 	@Shadow
 	public abstract void setPerspective(Perspective perspective);
+
+	@Shadow
+	public boolean cinematicCamera;
+
+	@Shadow
+	@Final
+	private Option<Double> mouseSensitivity;
 
 	@Override
 	public AxoKeybinding br$getSprintKeybind() {
@@ -92,5 +100,25 @@ public abstract class GameOptionsMixin implements AxoGameOptions {
 			case THIRD_PERSON_BACK -> Perspective.THIRD_PERSON_BACK;
 			case THIRD_PERSON_FRONT -> Perspective.THIRD_PERSON_FRONT;
 		});
+	}
+
+	@Override
+	public boolean br$getSmoothCamera() {
+		return cinematicCamera;
+	}
+
+	@Override
+	public void br$setSmoothCamera(boolean smoothCamera) {
+		cinematicCamera = smoothCamera;
+	}
+
+	@Override
+	public double br$getSensitivity() {
+		return mouseSensitivity.get();
+	}
+
+	@Override
+	public void br$setSensitivity(double sensitivity) {
+		mouseSensitivity.set(sensitivity);
 	}
 }

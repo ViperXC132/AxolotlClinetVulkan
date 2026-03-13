@@ -26,6 +26,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.api.requests.UserRequest;
 import io.github.axolotlclient.modules.hypixel.LevelHead;
 import io.github.axolotlclient.modules.hypixel.NickHider;
@@ -43,6 +44,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -92,7 +94,7 @@ public abstract class EntityRendererMixin<T extends Entity> {
 							matrices.peek().getModel(), vertexConsumers, TextRenderer.TextLayerType.NORMAL, 0, light);
 					} else {
 						RenderSystem.setShader(GameRenderer::getPositionTexShader);
-						RenderSystem.setShaderTexture(0, AxolotlClient.badgeIcon);
+						RenderSystem.setShaderTexture(0, (Identifier) AxolotlClientCommon.BADGE_PATH);
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder builder = tessellator.getBufferBuilder();
 						Matrix4f matrix4f = matrices.peek().getModel();

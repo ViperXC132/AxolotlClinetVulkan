@@ -20,6 +20,7 @@
 		"ControlsOptionsScreenMixin",
 		"DebugHudMixin",
 		"DownloadingTerrainScreenMixin",
+		"DynamicTextureAccessor",
 		"EmitterParticleMixin",
 		"EntityMixin",
 		"EntityRenderDispatcherMixin",
@@ -37,6 +38,7 @@
 		"KeyboardInputMixin",
 		"LivingEntityMixin",
 		"LivingEntityRendererMixin",
+		"LocalRemoteClientPlayerEntityMixin",
 		"MinecraftClientAccessor",
 		"MinecraftClientMixin",
 		"ParticleAccessor",
@@ -53,6 +55,7 @@
 		"ScreenshotUtilsMixin",
 		"ShaderEffectAccessor",
 		"SharedConstantsMixin",
+		"SimpleTextureMixin",
 		"SoundEngineMixin",
 		"SoundManagerAccessor",
 		"SoundSystemAccessor",
@@ -72,5 +75,8 @@
 	],
 	"injectors": {
 		"defaultRequire": 1
+	},
+	"mixinextras": {
+		"minVersion": "0.5.0"
 	}
 }

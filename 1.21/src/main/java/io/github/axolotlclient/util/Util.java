@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Locale;
 
 import com.mojang.blaze3d.texture.NativeImage;
-import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Graphics;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import net.minecraft.client.MinecraftClient;
@@ -97,7 +97,8 @@ public class Util {
 		Identifier id = Identifier.of("axolotlclient", "graphics_" + name.toLowerCase(Locale.ROOT));
 		try {
 			NativeImageBackedTexture texture;
-			if (MinecraftClient.getInstance().getTextureManager().getOrDefault(id, null) == null) {
+			var previous = MinecraftClient.getInstance().getTextureManager().getOrDefault(id, null);
+			if (previous == null || (previous instanceof NativeImageBackedTexture tex && (tex.getImage().getHeight() != graphics.getHeight() || tex.getImage().getWidth() != graphics.getWidth()))) {
 				texture = new NativeImageBackedTexture(NativeImage.read(graphics.getPixelData()));
 				MinecraftClient.getInstance().getTextureManager().registerTexture(id, texture);
 			} else {
@@ -111,12 +112,8 @@ public class Util {
 
 			texture.upload();
 		} catch (IOException e) {
-			AxolotlClient.LOGGER.error("Failed to bind texture for " + name + ": ", e);
+			AxolotlClientCommon.getInstance().getLogger().error("Failed to bind texture for " + name + ": ", e);
 		}
 		return id;
-	}
-
-	public static double lerp(double start, double end, double percent) {
-		return start + ((end - start) * percent);
 	}
 }

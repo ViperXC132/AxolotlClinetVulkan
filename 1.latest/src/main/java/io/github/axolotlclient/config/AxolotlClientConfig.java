@@ -36,6 +36,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringArrayOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.RecreatableScreen;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
+import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.config.screen.CreditsScreen;
 import io.github.axolotlclient.config.screen.ProfilesScreen;
 import io.github.axolotlclient.mixin.OverlayTextureAccessor;
@@ -91,17 +92,24 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 				.filter(s -> AxolotlClientCommon.SHADERS_SUPPORTED || !s.startsWith("rounded"))
 				.toArray(String[]::new);
 			if (themes.length > 1) {
-				StringArrayOption configStyle;
-				general.add(configStyle = new StringArrayOption("configStyle", themes,
+				general.add(new StringArrayOption("configStyle", themes,
 					"configStyle." + ConfigUI.getInstance().getCurrentStyle().getName(), s -> {
 					ConfigUI.getInstance().setStyle(s.split("\\.")[1]);
-					Minecraft.getInstance().schedule(() -> {
+
+					AxoMinecraftClient.getInstance().execute(() -> {
 						Screen newScreen = RecreatableScreen.tryRecreate(Minecraft.getInstance().screen);
-						Minecraft.getInstance().setScreen(newScreen);
+						if (newScreen != null) {
+							Minecraft.getInstance().setScreen(newScreen);
+						}
 					});
-				}));
+				}) {
+					@Override
+					public void fromSerializedValue(String value) {
+						super.fromSerializedValue(value);
+						changeListener.onChange(get());
+					}
+				});
 				AxolotlClient.getInstance().getConfigManager().load();
-				ConfigUI.getInstance().setStyle(configStyle.get().split("\\.")[1]);
 			} else {
 				AxolotlClient.getInstance().getConfigManager().load();
 			}

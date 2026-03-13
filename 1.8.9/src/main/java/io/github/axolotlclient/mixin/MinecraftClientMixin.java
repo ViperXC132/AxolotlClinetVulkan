@@ -120,7 +120,8 @@ public abstract class MinecraftClientMixin {
 	// Don't ask me why we need both here, but otherwise it looks ugly
 	@WrapOperation(method = "renderMojangLogo", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferBuilder;color(IIII)Lcom/mojang/blaze3d/vertex/BufferBuilder;"))
 	public BufferBuilder axolotlclient$loadingScreenColor(BufferBuilder instance, int red, int green, int blue, int alpha, Operation<BufferBuilder> original) {
-		if (!AxolotlClient.config().customLoadingScreenColor.get()) return original.call(instance, red, green, blue, alpha);
+		if (!AxolotlClient.config().customLoadingScreenColor.get())
+			return original.call(instance, red, green, blue, alpha);
 		return original.call(instance, AxolotlClient.config().loadingScreenColor.get().getRed(),
 			AxolotlClient.config().loadingScreenColor.get().getGreen(),
 			AxolotlClient.config().loadingScreenColor.get().getBlue(),
@@ -129,7 +130,8 @@ public abstract class MinecraftClientMixin {
 
 	@WrapOperation(method = "renderLoadingScreen", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferBuilder;color(IIII)Lcom/mojang/blaze3d/vertex/BufferBuilder;"))
 	public BufferBuilder axolotlclient$loadingScreenBg(BufferBuilder instance, int red, int green, int blue, int alpha, Operation<BufferBuilder> original) {
-		if (!AxolotlClient.config().customLoadingScreenColor.get()) return original.call(instance, red, green, blue, alpha);
+		if (!AxolotlClient.config().customLoadingScreenColor.get())
+			return original.call(instance, red, green, blue, alpha);
 		return original.call(instance, AxolotlClient.config().loadingScreenColor.get().getRed(),
 			AxolotlClient.config().loadingScreenColor.get().getGreen(),
 			AxolotlClient.config().loadingScreenColor.get().getBlue(),
@@ -163,7 +165,7 @@ public abstract class MinecraftClientMixin {
 	@Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;getEventDWheel()I"), remap = false)
 	public int axolotlclient$onScroll() {
 		int amount = Mouse.getEventDWheel();
-		if (amount != 0 && Zoom.scroll(amount)) {
+		if (amount != 0 && Zoom.getInstance().scroll(amount)) {
 			return 0;
 		}
 		return amount;
@@ -176,7 +178,7 @@ public abstract class MinecraftClientMixin {
 		}
 	}
 
-	@Inject(method = "onResolutionChanged()V", at = @At(value = "TAIL"))
+	@Inject(method = "onResolutionChanged(II)V", at = @At(value = "TAIL"))
 	public void axolotlclient$onResize(CallbackInfo ci) {
 		Util.window = null;
 		HudManager.getInstance().refreshAllBounds();
@@ -202,5 +204,10 @@ public abstract class MinecraftClientMixin {
 	@Inject(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/TitleScreen;<init>()V"))
 	private void onGameLoad(CallbackInfo ci) {
 		Events.GAME_LOAD_EVENT.invoker().invoke((Minecraft) (Object) this);
+	}
+
+	@Inject(method = "<init>", at = @At("TAIL"))
+	private void onClientInit(RunArgs runArgs, CallbackInfo ci) {
+		new AxolotlClient().onInitializeClient();
 	}
 }

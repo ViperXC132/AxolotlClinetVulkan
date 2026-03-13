@@ -52,7 +52,8 @@ public class ScreenshotCopying {
 		try {
 			Class.forName("org.lwjgl.sdl.SDL");
 			sdl = true;
-		} catch (Throwable ignored) {}
+		} catch (Throwable ignored) {
+		}
 		SDL_AVAILABLE = sdl;
 		boolean wayland = false;
 		if (!sdl) {

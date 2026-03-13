@@ -58,22 +58,36 @@ public class APIOptions extends Options {
 
 		openPrivacyNoteScreen = () -> {
 			var fut = new CompletableFuture<Boolean>();
-			client.execute(() -> client.setScreen(new PrivacyNoticeScreen(client.screen, fut)));
+			var parent = client.screen;
+			client.execute(() -> client.setScreen(new PrivacyNoticeScreen(parent, fut)));
 			return fut;
 		};
 		KeyBinds.getInstance().registerWithSimpleAction(
 			new KeyMapping("api.chats.sidebar.open", InputConstants.KEY_O, KeyBinds.CATEGORY_AXOLOTLCLIENT), () -> {
 				if (API.getInstance().isAuthenticated()) {
-					client.setScreen(new ChatsSidebar(client.screen));
+					var parent = client.screen;
+					client.setScreen(new ChatsSidebar(parent));
 				}
 			});
 		category.add(
-			new GenericOption("viewFriends", "clickToOpen", () -> client.setScreen(new FriendsScreen(client.screen))));
+			new GenericOption("viewFriends", "clickToOpen", () -> {
+				var parent = client.screen;
+				client.setScreen(new FriendsScreen(parent));
+			}));
 		category.add(
-			new GenericOption("viewChats", "clickToOpen", () -> client.setScreen(new ChatListScreen(client.screen))));
-		category.add(new GenericOption("api.channels.invites.view", "clickToOpen", () -> client.setScreen(new ChannelInvitesScreen(client.screen))));
+			new GenericOption("viewChats", "clickToOpen", () -> {
+				var parent = client.screen;
+				client.setScreen(new ChatListScreen(parent));
+			}));
+		category.add(new GenericOption("api.channels.invites.view", "clickToOpen", () -> {
+			var parent = client.screen;
+			client.setScreen(new ChannelInvitesScreen(parent));
+		}));
 		account.add(new GenericOption("api.account.usernames", "clickToOpen",
-			() -> client.setScreen(new UsernameManagementScreen(client.screen))
+			() -> {
+				var parent = client.screen;
+				client.setScreen(new UsernameManagementScreen(parent));
+			}
 		));
 		account.add(new GenericOption("api.account.export", "api.account.export_data", () -> ThreadExecuter.scheduleTask(() -> {
 			if (!API.getInstance().isAuthenticated()) {

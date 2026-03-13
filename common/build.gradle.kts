@@ -1,3 +1,6 @@
+import org.objectweb.asm.*
+import java.util.*
+
 plugins {
 	id("java")
 	id("com.gradleup.shadow")
@@ -13,7 +16,7 @@ dependencies {
 	compileOnly("org.jetbrains:annotations:24.0.0")
 
 	// take the oldest version just to build against
-	testRuntimeOnly(compileOnly("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+${project.property("minecraft_18")}") {
+	testRuntimeOnly(compileOnly("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+1.8.9") {
 		isTransitive = false
 	})
 	testRuntimeOnly(testCompileOnly(compileOnly("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:${project.property("config")}")!!)!!)
@@ -26,9 +29,9 @@ dependencies {
 	testRuntimeOnly(compileOnly("it.unimi.dsi:fastutil:8.2.1")!!)
 	testRuntimeOnly(compileOnly("org.lwjgl:lwjgl-glfw:3.3.2")!!)
 	testRuntimeOnly(compileOnly("org.lwjgl:lwjgl-tinyfd:3.2.2")!!)
-	testRuntimeOnly(compileOnly("org.lwjgl:lwjgl-sdl:3.4.0-SNAPSHOT")!!)
+	testRuntimeOnly(compileOnly("org.lwjgl:lwjgl-sdl:3.4.1")!!)
 
-	shadow(implementation("io.github.cdagaming:DiscordIPC:0.11.0") {
+	shadow(implementation("io.github.cdagaming:DiscordIPC:0.11.2") {
 		isTransitive = false
 	})
 	shadow(implementation("com.kohlschutter.junixsocket:junixsocket-common:2.10.1")!!)
@@ -39,6 +42,8 @@ dependencies {
 
 	compileOnly("net.hypixel:mod-api:1.0.1")
 	compileOnly("com.mojang:brigadier:1.0.18")
+
+	compileOnly("org.slf4j:slf4j-api:2.0.1")
 }
 
 tasks.jar {
@@ -54,6 +59,49 @@ tasks.processResources {
 
 	filesMatching("fabric.mod.json") {
 		expand("version" to version)
+	}
+	exclude("blobfox_*.png")
+}
+
+tasks.compileJava {
+	inputs.files(sourceSets.main.get().resources.files.filter { it.name.startsWith("blobfox_") })
+	actions.addLast {
+		val foxes = inputs.files.files.filter { it.name.startsWith("blobfox_") }
+		val pride = foxes.first { it.name == "blobfox_pride_128.png" }
+		val trans = foxes.first { it.name == "blobfox_pride_trans_128.png" }
+		outputs.files.files.let { c -> c.forEach {
+			d -> d.walkTopDown().filter { f -> f.name.startsWith("AltIcons") }
+				.forEach {
+					val reader = ClassReader(it.readBytes())
+					val writer = ClassWriter(0)
+					val visitor = object : ClassVisitor(Opcodes.ASM9, writer) {
+					override fun visitMethod(
+						access: Int,
+							name: String?,
+							descriptor: String?,
+							signature: String?,
+							exceptions: Array<out String?>?
+						): MethodVisitor? {
+							val mv = super.visitMethod(access, name, descriptor, signature, exceptions)
+							if (name == "getAltIcon") {
+								return object : MethodVisitor(Opcodes.ASM9, mv) {
+									override fun visitLdcInsn(value: Any?) {
+										super.visitLdcInsn(when (value) {
+											"@FOX_PRIDE@" -> Base64.getEncoder().encodeToString(pride.readBytes())
+											"@FOX_TRANS@" -> Base64.getEncoder().encodeToString(trans.readBytes())
+											else -> value
+										})
+									}
+								}
+							}
+							return mv
+						}
+					}
+					reader.accept(visitor, 0)
+					it.writeBytes(writer.toByteArray())
+				}
+			}
+		}
 	}
 }
 
@@ -107,7 +155,7 @@ publishing {
 			val repository = if (project.version.toString().contains("beta") || project.version.toString()
 					.contains("alpha")
 			) "snapshots" else "releases"
-			url = uri("https://moehreag.duckdns.org/maven/$repository")
+			url = uri("https://maven.axolotlclient.com/$repository")
 			credentials(PasswordCredentials::class)
 			authentication {
 				create<BasicAuthentication>("basic")

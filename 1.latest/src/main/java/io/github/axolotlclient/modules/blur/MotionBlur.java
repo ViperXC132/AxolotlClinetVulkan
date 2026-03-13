@@ -22,12 +22,7 @@
 
 package io.github.axolotlclient.modules.blur;
 
-import java.util.OptionalInt;
-
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.framegraph.FrameGraphBuilder;
 import com.mojang.blaze3d.resource.CrossFrameResourcePool;
-import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
@@ -47,9 +42,8 @@ public class MotionBlur extends AbstractModule {
 	public final BooleanOption inGuis = new BooleanOption("inGuis", false);
 	public final OptionCategory category = OptionCategory.create("motionBlur");
 	private final Identifier postChainId = Identifier.fromNamespaceAndPath("axolotlclient", "motion_blur");
-	private GpuBuffer uniformBuffer;
 
-	private static float getBlur() {
+	public static float getBlur() {
 		return getInstance().strength.get() / 100F;
 	}
 
@@ -60,23 +54,13 @@ public class MotionBlur extends AbstractModule {
 		AxolotlClient.config().rendering.add(category);
 	}
 
+	@SuppressWarnings("deprecation")
 	public void render(CrossFrameResourcePool pool) {
-		if (uniformBuffer == null) {
-			uniformBuffer = RenderSystem.getDevice().createBuffer(postChainId::toString, GpuBuffer.USAGE_UNIFORM | GpuBuffer.USAGE_MAP_WRITE, 4);
-		}
 		PostChain shader = client.getShaderManager().getPostChain(postChainId, LevelTargetBundle.MAIN_TARGETS);
 		if (shader != null) {
 			var target = client.getMainRenderTarget();
-			try (var mapped = RenderSystem.getDevice().createCommandEncoder().mapBuffer(uniformBuffer, false, true)) {
-				mapped.data().putFloat(getBlur());
-			}
-			FrameGraphBuilder frameGraphBuilder = new FrameGraphBuilder();
-			try (var renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(postChainId::toString, target.getColorTextureView(), OptionalInt.empty())) {
-				PostChain.TargetBundle targetBundle = PostChain.TargetBundle.of(PostChain.MAIN_TARGET_ID, frameGraphBuilder.importExternal("main", target));
-				renderPass.setUniform("BlendFactor", uniformBuffer);
-				shader.addToFrame(frameGraphBuilder, target.width, target.height, targetBundle);
-			}
-			frameGraphBuilder.execute(pool);
+			shader.process(target, pool);
+			// Uniform is set in PostPassMixin
 		}
 	}
 }

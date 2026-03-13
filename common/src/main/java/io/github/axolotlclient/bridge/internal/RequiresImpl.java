@@ -32,11 +32,12 @@ import io.github.axolotlclient.bridge.BridgeVersion;
 @Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RequiresImpl {
-    @Target(ElementType.TYPE)
-    @Retention(RetentionPolicy.RUNTIME)
-    @interface Inherits {
-    }
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@interface Inherits {
+	}
 
-    BridgeVersion min() default BridgeVersion.V1_8;
-    BridgeVersion max() default BridgeVersion.V1_21_11;
+	BridgeVersion min() default BridgeVersion.V1_8;
+
+	BridgeVersion max() default BridgeVersion.V1_21_11;
 }

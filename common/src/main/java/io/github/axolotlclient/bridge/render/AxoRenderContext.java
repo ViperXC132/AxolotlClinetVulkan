@@ -53,6 +53,32 @@ public interface AxoRenderContext {
 		throw BridgeUtil.noImpl();
 	}
 
+	/**
+	 * Rotate the current matrix
+	 *
+	 * @param ang the angle, in radians.
+	 * @see Math#toRadians(double)
+	 */
+	@RequiresImpl
+	default void br$rotateMatrix(float ang) {
+		throw BridgeUtil.noImpl();
+	}
+
+	/**
+	 * Rotate the current matrix
+	 *
+	 * @param ang the angle, in radians.
+	 * @param x   the x-coordinate of the rotation origin
+	 * @param y   the y-coordinate of the rotation origin
+	 * @see Math#toRadians(double)
+	 */
+	default void br$rotateMatrixAround(float ang, float x, float y) {
+		// naive default impl, may be overridden if a better impl is available in a version.
+		br$translateMatrix(x, y);
+		br$rotateMatrix(ang);
+		br$translateMatrix(-x, -y);
+	}
+
 	// scissor
 	@RequiresImpl
 	default void br$pushScissor(int x, int y, int w, int h) {
@@ -61,32 +87,6 @@ public interface AxoRenderContext {
 
 	@RequiresImpl
 	default void br$popScissor() {
-		throw BridgeUtil.noImpl();
-	}
-
-	// GL state management
-	@RequiresImpl
-	default void br$glEnableBlend() {
-		throw BridgeUtil.noImpl();
-	}
-
-	@RequiresImpl
-	default void br$glEnableAlpha() {
-		throw BridgeUtil.noImpl();
-	}
-
-	@RequiresImpl
-	default void br$glDisableBlend() {
-		throw BridgeUtil.noImpl();
-	}
-
-	@RequiresImpl
-	default void br$glDisableAlpha() {
-		throw BridgeUtil.noImpl();
-	}
-
-	@RequiresImpl
-	default void br$glColor4(float r, float g, float b, float a) {
 		throw BridgeUtil.noImpl();
 	}
 
@@ -207,6 +207,40 @@ public interface AxoRenderContext {
 		throw BridgeUtil.noImpl();
 	}
 
+
+	default void br$fillRectRoundVarying(int x, int y, int width, int height, Color color, float roundingTL, float roundingBL, float roundingBR, float roundingTR) {
+		br$fillRectRoundVarying(x, y, width, height, color.toInt(), roundingTL, roundingBL, roundingBR, roundingTR);
+	}
+
+	@RequiresImpl
+	default void br$fillRectRoundVarying(int x, int y, int width, int height, int color, float roundingTL, float roundingBL, float roundingBR, float roundingTR) {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default void br$fillRectGradientVert(int x, int y, int width, int height, int color1, int color2) {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default void br$fillRectGradientHoriz(int x, int y, int width, int height, int color1, int color2) {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default void br$fillRectRoundGradient(int x, int y, int width, int height, int colorTopLeft, int colorBottomLeft, int colorBottomRight, int colorTopRight, float roundingPx) {
+		throw BridgeUtil.noImpl();
+	}
+
+	default void br$fillSegment(int x0, int y0, int x1, int y1, int color, float radius) {
+		br$fillSegment(x0, y0, x1, y1, color, color, color, color, radius);
+	}
+
+	@RequiresImpl
+	default void br$fillSegment(int x0, int y0, int x1, int y1, int colorX0Y0, int colorX0Y1, int colorX1Y1, int colorX1Y0, float radius) {
+
+	}
+
 	// outlineRect overloads
 	@ApiStatus.NonExtendable
 	default void br$outlineRect(Rectangle rect, Color color) {
@@ -240,12 +274,17 @@ public interface AxoRenderContext {
 
 	// texture drawing
 	@ApiStatus.NonExtendable
-	default void br$drawTexture(Rectangle coords, AxoSprite texture) {
-		br$drawTexture(coords.x, coords.y, coords.width, coords.height, texture);
+	default void br$drawTexture(AxoSprite texture, Rectangle coords) {
+		br$drawTexture(texture, coords.x, coords.y, coords.width, coords.height);
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawTexture(AxoSprite sprite, int x, int y, int width, int height) {
+		br$drawTexture(sprite, x, y, width, height, -1);
 	}
 
 	@RequiresImpl
-	default void br$drawTexture(int x, int y, int width, int height, AxoSprite sprite) {
+	default void br$drawTexture(AxoSprite sprite, int x, int y, int width, int height, int color) {
 		throw BridgeUtil.noImpl();
 	}
 

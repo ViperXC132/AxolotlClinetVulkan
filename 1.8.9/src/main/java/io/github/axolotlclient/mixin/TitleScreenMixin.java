@@ -76,7 +76,7 @@ public abstract class TitleScreenMixin extends Screen {
 		int leftButtonY = 10;
 		if (Auth.getInstance().showButton.get()) {
 			buttons.add(new AuthWidget(10, leftButtonY));
-			leftButtonY += 25;
+			leftButtonY += 24;
 		}
 		this.buttons.addAll(buttons);
 		if (APIOptions.getInstance().addShortcutButtons.get()) {
@@ -85,7 +85,7 @@ public abstract class TitleScreenMixin extends Screen {
 				ButtonWidget friends = new ButtonWidget(142, 10, y, 50, 20, I18n.translate("api.friends"));
 				this.buttons.add(friends);
 				buttons.add(friends);
-				ButtonWidget chats = new ButtonWidget(42, 10, y + 25, 50, 20, I18n.translate("api.chats"));
+				ButtonWidget chats = new ButtonWidget(42, 10, y + 24, 50, 20, I18n.translate("api.chats"));
 				this.buttons.add(chats);
 				buttons.add(chats);
 			};
@@ -103,7 +103,7 @@ public abstract class TitleScreenMixin extends Screen {
 				ButtonWidget newVersion = new ButtonWidget(182, width - 90, buttonY, 80, 20, I18n.translate("api.new_version_available"));
 				this.buttons.add(newVersion);
 				buttons.add(newVersion);
-				buttonY += 22;
+				buttonY += 24;
 			}
 			if (APIOptions.getInstance().displayNotes.get() &&
 				data.success() && !data.notes().isEmpty()) {

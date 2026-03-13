@@ -160,9 +160,7 @@ public class CompassHud extends TextHudEntry {
 			}
 
 			float targetOpacity = 1 - Math.abs((halfWidth - trueDist)) / halfWidth;
-			context.br$glColor4(1, 1, 1, targetOpacity);
 			if (indicator == Indicator.CARDINAL) {
-				// We have to call .color() here so that transparency stays
 				context.br$fillRect(innerX, y, 1, 9, majorIndicatorColor.get()
 					.withAlpha((int) (majorIndicatorColor.get().getAlpha() * targetOpacity)));
 				Color color = cardinalColor.get();
@@ -183,7 +181,6 @@ public class CompassHud extends TextHudEntry {
 			}
 		}
 
-		context.br$glColor4(1, 1, 1, 1);
 		context.br$popMatrix();
 	}
 

@@ -28,14 +28,12 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffects;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoItems;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoSprites;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMode;
-import io.github.axolotlclient.util.ClientColors;
 import lombok.AllArgsConstructor;
 
 /**
@@ -92,12 +90,9 @@ public class TrapUpgrade extends TeamUpgrade {
 	@Override
 	public void draw(AxoRenderContext context, int x, int y, int width, int height) {
 		if (traps.isEmpty()) {
-			Color color = ClientColors.DARK_GRAY;
-			context.br$glColor4(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
-			context.br$drawTexture(x, y, 16, 16, AxoSprites.BARRIER_ITEM_ICON);
+			context.br$drawTexture(AxoSprites.BARRIER_ITEM_ICON, x, y, 16, 16);
 		} else {
 			for (TrapType type : traps) {
-				context.br$glColor4(1, 1, 1, 1);
 				type.draw(context, x, y, width, height);
 				x += width + 1;
 			}
@@ -116,13 +111,13 @@ public class TrapUpgrade extends TeamUpgrade {
 	@AllArgsConstructor
 	public enum TrapType {
 		ITS_A_TRAP((r, x, y, width, height, unused) ->
-			r.br$drawTexture(x, y, 16, 16, AxoStatusEffects.BLINDNESS.br$getSprite())),
+			r.br$drawTexture(AxoStatusEffects.BLINDNESS.br$getSprite(), x - 1, y - 1, 18, 18)),
 		COUNTER_OFFENSIVE((r, x, y, width, height, unused) ->
-			r.br$drawTexture(x, y, 16, 16, AxoStatusEffects.SPEED.br$getSprite())),
+			r.br$drawTexture(AxoStatusEffects.SPEED.br$getSprite(), x - 1, y - 1, 18, 18)),
 		ALARM((r, x, y, width, height, unused) ->
-			r.br$renderGuiItemModel(AxoItemStack.of(AxoItems.ENDER_EYE), x, y)),
+			r.br$renderGuiItemModel(AxoItemStack.of(AxoItems.ENDER_EYE), x - 1, y - 1)),
 		MINER_FATIGUE((r, x, y, width, height, unused) ->
-			r.br$drawTexture(x, y, 16, 16, AxoStatusEffects.MINING_FATIGUE.br$getSprite()));
+			r.br$drawTexture(AxoStatusEffects.MINING_FATIGUE.br$getSprite(), x - 1, y - 1, 18, 18));
 		private final TeamUpgradeRenderer renderer;
 
 		public static TrapType getFuzzy(String s) {

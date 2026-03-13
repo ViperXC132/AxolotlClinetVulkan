@@ -80,6 +80,7 @@ public class ClientColors {
 		return start + (add);
 	}
 
+	@SuppressWarnings("unused")
 	public class ARGB {
 
 		public static int alpha(int color) {
@@ -123,18 +124,18 @@ public class ClientColors {
 		public static int scaleRGB(int color, float redScale, float greenScale, float blueScale) {
 			return color(
 				alpha(color),
-				clamp((int) (red(color) * redScale), 0, 255),
-				clamp((int) (green(color) * greenScale), 0, 255),
-				clamp((int) (blue(color) * blueScale), 0, 255)
+				MathUtil.clamp((int) (red(color) * redScale), 0, 255),
+				MathUtil.clamp((int) (green(color) * greenScale), 0, 255),
+				MathUtil.clamp((int) (blue(color) * blueScale), 0, 255)
 			);
 		}
 
 		public static int scaleRGB(int color, int scale) {
 			return color(
 				alpha(color),
-				clamp((long) red(color) * scale / 255L, 0, 255),
-				clamp((long) green(color) * scale / 255L, 0, 255),
-				clamp((long) blue(color) * scale / 255L, 0, 255)
+				MathUtil.clamp(red(color) * scale / 255, 0, 255),
+				MathUtil.clamp(green(color) * scale / 255, 0, 255),
+				MathUtil.clamp(blue(color) * scale / 255, 0, 255)
 			);
 		}
 
@@ -144,10 +145,10 @@ public class ClientColors {
 		}
 
 		public static int lerp(float delta, int color1, int color2) {
-			int i = lerpInt(delta, alpha(color1), alpha(color2));
-			int j = lerpInt(delta, red(color1), red(color2));
-			int k = lerpInt(delta, green(color1), green(color2));
-			int l = lerpInt(delta, blue(color1), blue(color2));
+			int i = MathUtil.lerp(delta, alpha(color1), alpha(color2));
+			int j = MathUtil.lerp(delta, red(color1), red(color2));
+			int k = MathUtil.lerp(delta, green(color1), green(color2));
+			int l = MathUtil.lerp(delta, blue(color1), blue(color2));
 			return color(i, j, k, l);
 		}
 
@@ -163,8 +164,8 @@ public class ClientColors {
 			return alpha << 24 | color & 16777215;
 		}
 
-		public static int color(float f, int i) {
-			return as8BitChannel(f) << 24 | i & 16777215;
+		public static int color(float alpha, int color) {
+			return as8BitChannel(alpha) << 24 | color & 16777215;
 		}
 
 		public static int white(float alpha) {
@@ -180,7 +181,7 @@ public class ClientColors {
 		}
 
 		public static int as8BitChannel(float value) {
-			return floor(value * 255.0F);
+			return MathUtil.floor(value * 255.0F);
 		}
 
 		public static float alphaFloat(int color) {
@@ -203,21 +204,4 @@ public class ClientColors {
 			return value / 255.0F;
 		}
 	}
-
-	private static int clamp(long value, int min, int max) {
-		if (min > max) {
-			throw new IllegalArgumentException(min + " > " + max);
-		}
-		return (int) Math.min(max, Math.max(value, min));
-	}
-
-	private static int lerpInt(float delta, int start, int end) {
-		return start + floor(delta * (end - start));
-	}
-
-	private static int floor(float value) {
-		int i = (int) value;
-		return value < i ? i - 1 : i;
-	}
-
 }

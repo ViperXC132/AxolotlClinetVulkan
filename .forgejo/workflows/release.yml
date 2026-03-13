@@ -29,7 +29,7 @@ jobs:
           cache-read-only: true
 
       - name: Build
-        run: ./gradlew build collectBuilds
+        run: ./gradlew build collectBuilds --stacktrace
 
       - name: Generate Version Changelog
         run: ./gradlew generateVersionChangelog

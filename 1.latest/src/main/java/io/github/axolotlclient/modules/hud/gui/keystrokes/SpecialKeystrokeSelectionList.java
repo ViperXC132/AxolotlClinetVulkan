@@ -38,10 +38,11 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.network.chat.Component;
 import org.apache.commons.lang3.ArrayUtils;
+import org.jspecify.annotations.NullMarked;
 
-@Environment(EnvType.CLIENT)
+@NullMarked
 public class SpecialKeystrokeSelectionList extends ContainerObjectSelectionList<SpecialKeystrokeSelectionList.Entry> {
-	private static final int ITEM_HEIGHT = 20;
+	private static final int ITEM_HEIGHT = 24;
 	final AddSpecialKeystrokeScreen keyBindsScreen;
 
 	public SpecialKeystrokeSelectionList(AddSpecialKeystrokeScreen keyBindsScreen, Minecraft minecraft) {
@@ -88,13 +89,13 @@ public class SpecialKeystrokeSelectionList extends ContainerObjectSelectionList<
 			this.addButton.render(guiGraphics, mouseX, mouseY, partialTick);
 			guiGraphics.pose().pushMatrix();
 			var rect = keystroke.getRenderPosition();
-			float scale = Math.min((float) height / rect.height(), (float) 100 / rect.width());
+			float scale = Math.min((float) getContentHeight() / rect.height(), (float) 100 / rect.width());
 			guiGraphics.pose().translate(getContentX(), getContentY());
 			guiGraphics.pose().scale(scale, scale);
 			guiGraphics.pose().translate(-rect.x(), -rect.y());
 			keystroke.render(guiGraphics);
 			guiGraphics.pose().popMatrix();
-			guiGraphics.drawString(minecraft.font, boundKey, getContentX() + 110 + (k - getContentX() - 110) / 3, getContentY() + height / 2 - 9 / 2, Colors.GRAY.toInt());
+			guiGraphics.drawString(minecraft.font, boundKey, getContentX() + 110 + (k - getContentX() - 110) / 3, getContentY() + getContentHeight() / 2 - 9 / 2, Colors.GRAY.toInt());
 		}
 
 		@Override

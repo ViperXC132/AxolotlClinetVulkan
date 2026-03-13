@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.bridge.math;
 
+@SuppressWarnings("unused")
 public record Vec3(double x, double y, double z) {
 	public Vec3 x(double x) {
 		return new Vec3(x, y, z);
@@ -44,11 +45,19 @@ public record Vec3(double x, double y, double z) {
 	}
 
 	public Vec3 add(Vec3 rhs) {
-		return new Vec3(x + rhs.x, y + rhs.y, z + rhs.z);
+		return add(rhs.x, rhs.y, rhs.z);
+	}
+
+	public Vec3 add(double x, double y, double z) {
+		return new Vec3(this.x + x, this.y + y, this.z + z);
 	}
 
 	public Vec3 sub(Vec3 rhs) {
-		return new Vec3(x - rhs.x, y - rhs.y, z - rhs.z);
+		return sub(rhs.x, rhs.y, rhs.z);
+	}
+
+	public Vec3 sub(double x, double y, double z) {
+		return new Vec3(this.x - x, this.y - y, this.z - z);
 	}
 
 	public double distSq(Vec3 rhs) {
@@ -61,5 +70,33 @@ public record Vec3(double x, double y, double z) {
 
 	public double dist(Vec3 rhs) {
 		return Math.sqrt(distSq(rhs));
+	}
+
+	public Vec3 abs() {
+		return new Vec3(Math.abs(x), Math.abs(y), Math.abs(z));
+	}
+
+	public Vec3 max(double val) {
+		return new Vec3(Math.max(x, val), Math.max(y, val), Math.max(z, val));
+	}
+
+	public Vec3 min(double val) {
+		return new Vec3(Math.min(x, val), Math.min(y, val), Math.min(z, val));
+	}
+
+	public Vec3 div(double scalar) {
+		return div(scalar, scalar, scalar);
+	}
+
+	public Vec3 div(Vec3 d) {
+		return div(d.x, d.y, d.z);
+	}
+
+	public Vec3 div(double x, double y, double z) {
+		return new Vec3(x()/x, y()/y, z()/z);
+	}
+
+	public Vec3 negate() {
+		return new Vec3(-x, -y, -z);
 	}
 }

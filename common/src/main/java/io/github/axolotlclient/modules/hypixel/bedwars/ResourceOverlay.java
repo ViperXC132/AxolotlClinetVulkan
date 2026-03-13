@@ -34,11 +34,11 @@ import io.github.axolotlclient.bridge.item.AxoItems;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.util.ItemUtil;
 
 public class ResourceOverlay extends BoxHudEntry {
 	public final static AxoIdentifier ID = AxoIdentifier.of("axolotlclient", "bedwars_resources");
-	private final BooleanOption renderWhenRelevant = new BooleanOption(ID.br$getPath() + ".renderWhenRelevant", true);
 	private static final List<AxoItem> RESOURCES = List.of(AxoItems.IRON_INGOT, AxoItems.GOLD_INGOT, AxoItems.DIAMOND, AxoItems.EMERALD);
 	private static final Map<AxoItem, Integer> PLACEHOLDER = Map.of(
 		AxoItems.IRON_INGOT, 43,
@@ -46,6 +46,8 @@ public class ResourceOverlay extends BoxHudEntry {
 		AxoItems.DIAMOND, 7,
 		AxoItems.EMERALD, 4
 	);
+	private final BooleanOption renderWhenRelevant = new BooleanOption(ID.br$getPath() + ".renderWhenRelevant", true);
+	private final BooleanOption hideIfEmpty = DefaultOptions.getHideIfEmpty();
 	private final BedwarsMod mod;
 
 	public ResourceOverlay(BedwarsMod mod) {
@@ -56,6 +58,9 @@ public class ResourceOverlay extends BoxHudEntry {
 	@Override
 	public void render(AxoRenderContext context, float delta) {
 		if (!renderWhenRelevant.get() || mod.inGame()) {
+			if (hideIfEmpty.get() && RESOURCES.stream().mapToInt(s -> ItemUtil.getTotal(client, s)).noneMatch(i -> i > 0)) {
+				return;
+			}
 			super.render(context, delta);
 		}
 	}
@@ -93,6 +98,7 @@ public class ResourceOverlay extends BoxHudEntry {
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
+		options.add(hideIfEmpty);
 		options.add(renderWhenRelevant);
 		return options;
 	}

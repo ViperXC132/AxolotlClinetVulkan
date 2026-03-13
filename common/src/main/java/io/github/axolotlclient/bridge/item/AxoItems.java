@@ -27,6 +27,7 @@ import io.github.axolotlclient.bridge.internal.BridgeUtil;
 import io.github.axolotlclient.bridge.internal.RequiresImpl;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("unused")
 public class AxoItems {
 	@RequiresImpl
 	public static final AxoItem AIR = BridgeUtil.noImplValue();
@@ -73,10 +74,10 @@ public class AxoItems {
 	@RequiresImpl
 	public static final AxoItem DIAMOND_BOOTS = BridgeUtil.noImplValue();
 
-	@RequiresImpl(min = BridgeVersion.V1_16_COMBAT)
+	@RequiresImpl(min = BridgeVersion.V1_20)
 	public static final @Nullable AxoItem TIPPED_ARROW = BridgeUtil.noImplValue();
 
-	@RequiresImpl(min = BridgeVersion.V1_16_COMBAT)
+	@RequiresImpl(min = BridgeVersion.V1_20)
 	public static final @Nullable AxoItem SPECTRAL_ARROW = BridgeUtil.noImplValue();
 
 	@RequiresImpl
@@ -84,6 +85,15 @@ public class AxoItems {
 
 	@RequiresImpl
 	public static final AxoItem STONE_PICKAXE = BridgeUtil.noImplValue();
+
+	@RequiresImpl
+	public static final AxoItem IRON_PICKAXE = BridgeUtil.noImplValue();
+
+	@RequiresImpl
+	public static final AxoItem GOLD_PICKAXE = BridgeUtil.noImplValue();
+
+	@RequiresImpl
+	public static final AxoItem DIAMOND_PICKAXE = BridgeUtil.noImplValue();
 
 	@RequiresImpl
 	public static final AxoItem STONE_AXE = BridgeUtil.noImplValue();

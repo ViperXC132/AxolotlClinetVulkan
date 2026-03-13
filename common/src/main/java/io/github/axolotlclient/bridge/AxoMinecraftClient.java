@@ -24,6 +24,8 @@ package io.github.axolotlclient.bridge;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.Executor;
 
 import io.github.axolotlclient.bridge.entity.AxoEntity;
@@ -91,6 +93,16 @@ public interface AxoMinecraftClient extends Executor {
 
 	@RequiresImpl
 	default Collection<? extends AxoPlayerListEntry> br$getOnlinePlayers() {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default Optional<AxoPlayerListEntry> br$getOnlinePlayer(UUID uuid) {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default Optional<AxoPlayerListEntry> br$getOnlinePlayer(String name) {
 		throw BridgeUtil.noImpl();
 	}
 

@@ -22,13 +22,12 @@
 
 package io.github.axolotlclient.modules.hud;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import io.github.axolotlclient.bridge.Platform;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.modules.AbstractCommonModule;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import lombok.Getter;
 
 public class ClickInputTracker extends AbstractCommonModule {
@@ -66,14 +65,14 @@ public class ClickInputTracker extends AbstractCommonModule {
 	}
 
 	public static class ClickList {
-		private final List<Long> clicks;
+		private final LongSet clicks;
 
 		public ClickList() {
-			clicks = new ArrayList<>();
+			clicks = new LongOpenHashSet();
 		}
 
 		public void update() {
-			clicks.removeIf((click) -> Platform.getMeasuringTimeMs() - click > 1000);
+			clicks.removeIf((long click) -> Platform.getMeasuringTimeMs() - click > 1000);
 		}
 
 		public void click() {

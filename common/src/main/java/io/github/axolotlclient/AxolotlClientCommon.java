@@ -49,10 +49,12 @@ import io.github.axolotlclient.modules.hud.ClickInputTracker;
 import io.github.axolotlclient.modules.render.BeaconBeam;
 import io.github.axolotlclient.modules.rpc.DiscordRPC;
 import io.github.axolotlclient.modules.tnttime.TntTime;
+import io.github.axolotlclient.modules.zoom.Zoom;
 import io.github.axolotlclient.util.FeatureDisablerCommon;
 import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.OSUtil;
 import io.github.axolotlclient.util.notifications.NotificationProvider;
+import lombok.Getter;
 import net.fabricmc.loader.api.FabricLoader;
 
 public abstract class AxolotlClientCommon {
@@ -88,7 +90,8 @@ public abstract class AxolotlClientCommon {
 	private static AxolotlClientCommon instance;
 
 	private AxolotlClientConfigCommon config;
-	private Logger logger;
+	@Getter
+	private final Logger logger = new Logger.Slf4jLogger();
 	private NotificationProvider notificationProvider;
 	private JsonConfigManager configManager;
 	private boolean initialized = false;
@@ -104,14 +107,14 @@ public abstract class AxolotlClientCommon {
 		return config;
 	}
 
+	/**
+	 * @return The config manager
+	 * @implNote Do not use to save the config as files other than the main config need to be saved as well
+	 * @see #saveConfig()
+	 */
 	public ConfigManager getConfigManager() {
 		Preconditions.checkState(initialized && configManager != null);
 		return configManager;
-	}
-
-	public Logger getLogger() {
-		Preconditions.checkState(initialized && logger != null);
-		return logger;
 	}
 
 	public NotificationProvider getNotificationProvider() {
@@ -131,6 +134,7 @@ public abstract class AxolotlClientCommon {
 		registerModule(TntTime.getInstance());
 		registerModule(DiscordRPC.getInstance());
 		registerModule(getApiOptions());
+		registerModule(Zoom.getInstance());
 	}
 
 	// init logic
@@ -170,16 +174,18 @@ public abstract class AxolotlClientCommon {
 		configManager.suppressName(config.hidden.getName());
 	}
 
-	protected final void init(Logger logger, NotificationProvider provider) {
+	protected final void init(NotificationProvider provider) {
 		Preconditions.checkState(!initialized);
 		Preconditions.checkState(instance == null);
+
+		Events.END_RESOURCE_RELOAD.register(() -> {
+
+		});
 
 		instance = this;
 		addBuiltinCommonModules();
 
 		initialized = true;
-
-		this.logger = logger;
 		Profiles.getInstance().loadProfiles();
 
 		this.notificationProvider = provider;

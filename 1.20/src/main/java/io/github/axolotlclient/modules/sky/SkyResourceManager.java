@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.modules.AbstractCommonModule;
 import lombok.Getter;
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
@@ -82,8 +82,8 @@ public class SkyResourceManager extends AbstractCommonModule implements SimpleSy
 							}
 						}
 						if (MinecraftClient.getInstance().getResourceManager().getResource(new Identifier(option[1])).isEmpty()) {
-							AxolotlClient.LOGGER.warn("Sky " + id + " does not have a valid texture attached to it: ", option[1]);
-							AxolotlClient.LOGGER.warn("Please fix your packs.");
+							AxolotlClientCommon.getInstance().getLogger().warn("Sky " + id + " does not have a valid texture attached to it: ", option[1]);
+							AxolotlClientCommon.getInstance().getLogger().warn("Please fix your packs.");
 							return null;
 						}
 					}
@@ -107,7 +107,7 @@ public class SkyResourceManager extends AbstractCommonModule implements SimpleSy
 
 	@Override
 	public void reload(ResourceManager manager) {
-		AxolotlClient.LOGGER.debug("Loading Custom Skies!");
+		AxolotlClientCommon.getInstance().getLogger().debug("Loading Custom Skies!");
 		SkyboxManager.getInstance().clearSkyboxes();
 
 		for (Map.Entry<Identifier, Resource> entry : manager
@@ -115,16 +115,16 @@ public class SkyResourceManager extends AbstractCommonModule implements SimpleSy
 			if (entry.getKey().getNamespace().equals("celestial")) { // Skip Celestial Packs, we cannot load them.
 				continue;
 			}
-			AxolotlClient.LOGGER.debug("Loading FSB sky from " + entry.getKey());
+			AxolotlClientCommon.getInstance().getLogger().debug("Loading FSB sky from " + entry.getKey());
 			try (BufferedReader reader = entry.getValue().openBufferedReader()) {
 				JsonObject json = gson.fromJson(reader.lines().collect(Collectors.joining("\n")), JsonObject.class);
 				if (!json.has("type") || !json.get("type").getAsString().equals("square-textured")) {
-					AxolotlClient.LOGGER.debug("Skipping " + entry + " as we currently cannot load it!");
+					AxolotlClientCommon.getInstance().getLogger().debug("Skipping " + entry + " as we currently cannot load it!");
 					continue;
 				}
 				SkyboxManager.getInstance().addSkybox(new FSBSkyboxInstance(
 					json));
-				AxolotlClient.LOGGER.debug("Loaded FSB sky from " + entry.getKey());
+				AxolotlClientCommon.getInstance().getLogger().debug("Loaded FSB sky from " + entry.getKey());
 			} catch (IOException ignored) {
 			}
 		}
@@ -132,29 +132,29 @@ public class SkyResourceManager extends AbstractCommonModule implements SimpleSy
 		for (Map.Entry<Identifier, Resource> entry : manager
 			.findResources("mcpatcher/sky", identifier -> isMCPSky(identifier.getPath()))
 			.entrySet()) {
-			AxolotlClient.LOGGER.debug("Loading MCP sky from " + entry.getKey());
+			AxolotlClientCommon.getInstance().getLogger().debug("Loading MCP sky from " + entry.getKey());
 			JsonObject json = loadMCPSky("mcpatcher", entry.getKey(), entry.getValue());
 			if (json == null) {
 				continue;
 			}
 			SkyboxManager.getInstance()
 				.addSkybox(new MCPSkyboxInstance(json));
-			AxolotlClient.LOGGER.debug("Loaded MCP sky from " + entry.getKey());
+			AxolotlClientCommon.getInstance().getLogger().debug("Loaded MCP sky from " + entry.getKey());
 		}
 
 		for (Map.Entry<Identifier, Resource> entry : manager
 			.findResources("optifine/sky", identifier -> isMCPSky(identifier.getPath())).entrySet()) {
-			AxolotlClient.LOGGER.debug("Loading OF sky from " + entry.getKey());
+			AxolotlClientCommon.getInstance().getLogger().debug("Loading OF sky from " + entry.getKey());
 			JsonObject json = loadMCPSky("optifine", entry.getKey(), entry.getValue());
 			if (json == null) {
 				continue;
 			}
 			SkyboxManager.getInstance()
 				.addSkybox(new MCPSkyboxInstance(json));
-			AxolotlClient.LOGGER.debug("Loaded OF sky from " + entry.getKey());
+			AxolotlClientCommon.getInstance().getLogger().debug("Loaded OF sky from " + entry.getKey());
 		}
 
-		AxolotlClient.LOGGER.debug("Finished Loading Custom Skies!");
+		AxolotlClientCommon.getInstance().getLogger().debug("Finished Loading Custom Skies!");
 	}
 
 	private boolean isMCPSky(String path) {

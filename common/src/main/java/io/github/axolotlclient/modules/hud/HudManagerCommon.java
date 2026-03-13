@@ -32,8 +32,10 @@ import com.google.gson.stream.JsonWriter;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
+import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
-import io.github.axolotlclient.bridge.Platform;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.FloatOption;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import io.github.axolotlclient.bridge.key.AxoKeys;
@@ -52,6 +54,8 @@ import io.github.axolotlclient.modules.hud.gui.hud.item.ArrowHud;
 import io.github.axolotlclient.modules.hud.gui.hud.item.ItemUpdateHud;
 import io.github.axolotlclient.modules.hud.gui.hud.simple.*;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.InventoryHud;
+import io.github.axolotlclient.modules.hud.gui.layout.SnapAnchorType;
+import io.github.axolotlclient.modules.hud.snapping.SnappingHelper;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.util.GsonHelper;
@@ -68,12 +72,19 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 	@Getter
 	private static HudManagerCommon instance;
 
-	private final static String CUSTOM_MODULE_SAVE_FILE_NAME = "custom_hud.json";
+	public static final int HUD_RESCALE_GRAB_TOLERANCE = 5;
+	private static final String HUD_DEPENDENCIES_SAVE_FILE_NAME = "hud_dependencies.json";
+	private static final String CUSTOM_MODULE_SAVE_FILE_NAME = "custom_hud.json";
 	private final AxoKeybinding key = AxoKeybinding.create(AxoKeys.KEY_RSHIFT, "key.openHud");
 	private final AxoKeybinding toggleHud = AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "key.toggle_hud");
 	private final OptionCategory hudCategory = OptionCategory.create("hud");
+	private final OptionCategory hudEditScreenCategory = OptionCategory.create("hudEditScreen");
+	private final BooleanOption snapping = new BooleanOption("snapping", true);
 	private final BooleanOption enabled = new BooleanOption("enabled", true);
+	private final FloatOption hudLinkLineWidth = new FloatOption("hud.hud_link_line_width", 3f, 1f, 10f);
+	public final ColorOption grabCornerColor = new ColorOption("rescale_grab_corner_color", Colors.PINK);
 	private final Map<AxoIdentifier, HudEntry> entries;
+	private final Deque<HudEntry> visitedEntries = new ArrayDeque<>();
 
 	protected HudManagerCommon() {
 		Preconditions.checkState(instance == null, "singleton already initialized");
@@ -85,8 +96,10 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 	public void init() {
 		key.br$registerOnConsumeClick(this::openScreen);
 		toggleHud.br$registerOnConsumeClick(enabled::toggle);
-		Platform.getConfig().addCategory(hudCategory);
-		hudCategory.add(enabled);
+		AxolotlClientCommon.getInstance().getConfig().addCategory(hudCategory);
+		hudCategory.add(enabled, grabCornerColor, hudLinkLineWidth);
+		hudEditScreenCategory.add(snapping);
+		AxolotlClientCommon.getInstance().getConfig().hidden.add(hudEditScreenCategory);
 		add(new PingHud());
 		add(new FPSHud());
 		add(new CPSHud());
@@ -109,17 +122,23 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 		add(new MouseMovementHud());
 		add(new DayCounterHud());
 		add(new InventoryHud());
+		add(new XPHud());
 
 		addExtraHud();
 
 		addNonConfigured(BedwarsMod.getInstance().getUpgradesOverlay());
 		addNonConfigured(BedwarsMod.getInstance().getResourceOverlay());
 		addNonConfigured(BedwarsMod.getInstance().getStatsOverlay());
+		addNonConfigured(BedwarsMod.getInstance().getSessionStatsOverlay());
 
 		entries.values().forEach(HudEntry::init);
 
+		hudCategory.add(new GenericOption("hud.dependency_links", "hud.dependency_links.clear", () -> {
+			entries.values().forEach(HudEntry::clearBoundsDependencies);
+			saveHudDependencyLinks();
+		}));
 		hudCategory.add(new GenericOption("hud.custom_entry", "hud.custom_entry.add", () -> {
-			CustomHudEntry entry = new CustomHudEntry();
+			CustomHudEntry entry = new CustomHudEntry(AxoIdentifier.of("axolotlclient", "custom_hud/" + UUID.randomUUID()));
 			entry.setEnabled(true);
 			entry.init();
 			entry.onBoundsUpdate();
@@ -129,8 +148,14 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 			saveCustomEntries();
 		}));
 
-		Events.CLIENT_START.register(this::loadCustomEntries);
-		Events.CLIENT_STOP.register(this::saveCustomEntries);
+		Events.CLIENT_START.register(() -> {
+			loadCustomEntries();
+			loadHudDependencyLinks();
+		});
+		Events.CLIENT_STOP.register(() -> {
+			saveCustomEntries();
+			saveHudDependencyLinks();
+		});
 	}
 
 	@Override
@@ -144,14 +169,93 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 	}
 
 	@SuppressWarnings("unchecked")
+	private void loadHudDependencyLinks() {
+		try {
+			var path = AxolotlClientCommon.resolveProfileConfigFile(HUD_DEPENDENCIES_SAVE_FILE_NAME);
+			if (Files.exists(path)) {
+				var obj = (Map<String, Object>) GsonHelper.read(Files.readString(path));
+				obj.forEach((name, o) -> {
+					var hudId = AxoIdentifier.parse(name);
+					var hud = get(hudId);
+					if (hud == null) return;
+					var deps = (Map<String, Object>) o;
+					if (deps.containsKey("x")) {
+						((Map<String, String>) deps.get("x")).forEach((id, type) -> {
+							var dep = get(AxoIdentifier.parse(id));
+							if (dep == null) return;
+							var anchorType = SnapAnchorType.fromName(type);
+							if (anchorType == null) return;
+							hud.addBoundsDependency(dep, anchorType);
+						});
+					}
+					if (deps.containsKey("y")) {
+						((Map<String, String>) deps.get("y")).forEach((id, type) -> {
+							var dep = get(AxoIdentifier.parse(id));
+							if (dep == null) return;
+							var anchorType = SnapAnchorType.fromName(type);
+							if (anchorType == null) return;
+							hud.addBoundsDependency(dep, anchorType);
+						});
+					}
+				});
+			}
+		} catch (Exception e) {
+			AxolotlClientCommon.getInstance().getLogger().warn("Failed to load hud dependency links!", e);
+		}
+	}
+
+	public void saveHudDependencyLinks() {
+		try {
+			var path = AxolotlClientCommon.resolveProfileConfigFile(HUD_DEPENDENCIES_SAVE_FILE_NAME);
+			Files.createDirectories(path.getParent());
+			var writer = Files.newBufferedWriter(path);
+			var json = new JsonWriter(writer);
+			json.beginObject();
+			for (Map.Entry<AxoIdentifier, HudEntry> entry : entries.entrySet()) {
+				HudEntry hudEntry = entry.getValue();
+				var dependenciesX = hudEntry.getDependenciesX();
+				var dependenciesY = hudEntry.getDependenciesY();
+				if (dependenciesX.isEmpty() && dependenciesY.isEmpty()) continue;
+				json.name(hudEntry.getId().toString());
+				json.beginObject();
+				if (!dependenciesX.isEmpty()) {
+					json.name("x").beginObject();
+					for (Map.Entry<HudEntry, SnapAnchorType> e : dependenciesX.entrySet()) {
+						json.name(e.getKey().getId().toString()).value(e.getValue().getName());
+					}
+					json.endObject();
+				}
+				if (!dependenciesY.isEmpty()) {
+					json.name("y").beginObject();
+					for (Map.Entry<HudEntry, SnapAnchorType> e : dependenciesY.entrySet()) {
+						json.name(e.getKey().getId().toString()).value(e.getValue().getName());
+					}
+					json.endObject();
+				}
+				json.endObject();
+			}
+			json.endObject();
+			json.close();
+		} catch (Exception e) {
+			AxolotlClientCommon.getInstance().getLogger().warn("Failed to save hud dependency links!", e);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
 	public void loadCustomEntries() {
 		try {
 			var path = AxolotlClientCommon.resolveProfileConfigFile(CUSTOM_MODULE_SAVE_FILE_NAME);
 			if (Files.exists(path)) {
 				var obj = (List<Object>) GsonHelper.read(Files.readString(path));
 				obj.forEach(o -> {
-					CustomHudEntry entry = new CustomHudEntry();
 					var values = (Map<String, Object>) o;
+					AxoIdentifier id;
+					if (values.containsKey("id")) {
+						id = AxoIdentifier.parse((String) values.get("id"));
+					} else {
+						id = AxoIdentifier.of("axolotlclient", "custom_hud/" + UUID.randomUUID());
+					}
+					CustomHudEntry entry = new CustomHudEntry(id);
 					entry.getAllOptions().getOptions().forEach(opt -> {
 						if (values.containsKey(opt.getName())) {
 							opt.fromSerializedValue((String) values.get(opt.getName()));
@@ -179,6 +283,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 				HudEntry hudEntry = entry.getValue();
 				if (hudEntry instanceof CustomHudEntry hud) {
 					json.beginObject();
+					json.name("id").value(hud.getId().toString());
 					for (Option<?> opt : hud.getCategory().getOptions()) {
 						var value = opt.toSerializedValue();
 						if (value != null) {
@@ -274,7 +379,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 	public final List<HudEntry> getMoveableEntries() {
 		if (!entries.isEmpty()) {
 			return entries.values().stream().filter((entry) -> entry.isEnabled() && entry.movable())
-				.collect(Collectors.toList());
+				.collect(Collectors.toCollection(ArrayList::new));
 		}
 		return new ArrayList<>();
 	}
@@ -285,19 +390,32 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 				hud.renderPlaceholder(context, delta);
 			}
 		}
+		for (HudEntry hud : getEntries()) {
+			if (hud.isEnabled()) {
+				SnappingHelper.renderLinks(context, hud, hudLinkLineWidth.get() / 2f);
+			}
+		}
 	}
 
 	public final List<Rectangle> getAllBounds() {
 		return getMoveableEntries()
 			.stream()
 			.map(Positionable::getTrueBounds)
-			.collect(Collectors.toList());
+			.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	@Override
 	public void reloadConfig() {
-		entries.entrySet().removeIf(entry -> entry.getValue() instanceof CustomHudEntry);
+		entries.entrySet().removeIf(entry -> {
+			if (entry.getValue() instanceof CustomHudEntry custom) {
+				hudCategory.getSubCategoryMap().remove(custom.getAllOptions());
+				return true;
+			}
+			return false;
+		});
+		entries.values().forEach(HudEntry::clearBoundsDependencies);
 		loadCustomEntries();
+		loadHudDependencyLinks();
 		for (var hud : getEntries()) {
 			if (hud instanceof ProfileAware p) {
 				p.reloadConfig();
@@ -308,11 +426,34 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 	@Override
 	public void saveConfig() {
 		saveCustomEntries();
+		saveHudDependencyLinks();
 		for (var hud : getEntries()) {
 			if (hud instanceof ProfileAware p) {
 				p.saveConfig();
 			}
 		}
+	}
+
+	public void updateBoundsDependencies(HudEntry origin) {
+		if (visitedEntries.contains(origin)) return;
+		visitedEntries.push(origin);
+		var entries = HudManagerCommon.getInstance().getMoveableEntries();
+		entries.remove(origin);
+		entries.removeIf(e -> visitedEntries.stream().anyMatch(v -> v.dependsOnX(e).isPresent()));
+		entries.removeIf(e -> visitedEntries.stream().anyMatch(v -> v.dependsOnY(e).isPresent()));
+		for (HudEntry entry : entries) {
+			entry.dependsOnX(origin).ifPresent(type -> type.updatePosX(origin, entry));
+			entry.dependsOnY(origin).ifPresent(type -> type.updatePosY(origin, entry));
+		}
+		visitedEntries.pop();
+	}
+
+	public boolean isSnappingEnabled() {
+		return snapping.get();
+	}
+
+	public void toggleSnapping() {
+		snapping.toggle();
 	}
 
 	protected abstract void openScreen();

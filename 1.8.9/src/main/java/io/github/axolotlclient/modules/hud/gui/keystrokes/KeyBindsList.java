@@ -61,7 +61,7 @@ public class KeyBindsList extends ElementListWidget<KeyBindsList.Entry> {
 				this.maxNameWidth = i;
 			}
 
-			this.addEntry(new KeyEntry(keyMapping, component));
+			this.addEntry(new KeyEntry(keyMapping));
 		}
 
 		addEntry(new SpacerEntry());
@@ -105,7 +105,7 @@ public class KeyBindsList extends ElementListWidget<KeyBindsList.Entry> {
 		private final String name;
 		private final ButtonWidget configureButton, removeButton;
 
-		KeyEntry(final KeystrokeHud.Keystroke key, final String name) {
+		KeyEntry(final KeystrokeHud.Keystroke key) {
 			this.key = key;
 			this.name = GameOptions.getKeyName(key.getKey().getKeyCode());
 			this.configureButton = new VanillaButtonWidget(0, 0, 75, 20, CONFIGURE_BUTTON_TITLE, button -> client.openScreen(new ConfigureKeyBindScreen(keyBindsScreen, keyBindsScreen.hud, key, false)));
@@ -144,29 +144,35 @@ public class KeyBindsList extends ElementListWidget<KeyBindsList.Entry> {
 
 	public class NewEntry extends Entry {
 
-		private final ButtonWidget addButton, addSpecialButton;
+		private final ButtonWidget addButton, addSpecialButton, addCustomButton;
 		private final KeystrokeHud.Keystroke key = keyBindsScreen.hud.newStroke();
 
 		public NewEntry() {
-			this.addButton = new VanillaButtonWidget(0, 0, 150, 20, I18n.translate("keystrokes.stroke.add"), button -> client.openScreen(new ConfigureKeyBindScreen(keyBindsScreen, keyBindsScreen.hud, key, true)));
-			this.addSpecialButton = new VanillaButtonWidget(0, 0, 150, 20, I18n.translate("keystrokes.stroke.add.special"),
+			this.addButton = new VanillaButtonWidget(0, 0, 100, 20, I18n.translate("keystrokes.stroke.add"),
+				button -> client.openScreen(new ConfigureKeyBindScreen(keyBindsScreen, keyBindsScreen.hud, key, true)));
+			this.addSpecialButton = new VanillaButtonWidget(0, 0, 100, 20, I18n.translate("keystrokes.stroke.add.special"),
 				button -> client.openScreen(new AddSpecialKeystrokeScreen(keyBindsScreen, keyBindsScreen.hud)));
+			this.addCustomButton = new VanillaButtonWidget(0, 0, 100, 20, I18n.translate("keystrokes.stroke.add.custom"),
+				button -> client.openScreen(new ConfigureKeyBindScreen(keyBindsScreen, keyBindsScreen.hud, keyBindsScreen.hud.newCustomStroke(), true)));
 		}
 
 		@Override
 		public void render(int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
-			int i = KeyBindsList.this.getScrollbarPositionX() - width / 2 - 10 + 4;
+			int i = KeyBindsList.this.getScrollbarPositionX() - width / 2 - (300+8)/2 - 12;
 			int j = top - 2;
+			this.addCustomButton.setPosition(i, j);
+			this.addCustomButton.render(mouseX, mouseY, partialTick);
+			i += addCustomButton.getWidth() + 4;
+			this.addSpecialButton.setPosition(i, j);
+			this.addSpecialButton.render(mouseX, mouseY, partialTick);
+			i += addSpecialButton.getWidth() + 4;
 			this.addButton.setPosition(i, j);
 			this.addButton.render(mouseX, mouseY, partialTick);
-			int k = i - addButton.getWidth() - 8;
-			this.addSpecialButton.setPosition(k, j);
-			this.addSpecialButton.render(mouseX, mouseY, partialTick);
 		}
 
 		@Override
 		public List<? extends Element> children() {
-			return List.of(addSpecialButton, addButton);
+			return List.of(addCustomButton, addSpecialButton, addButton);
 		}
 	}
 }

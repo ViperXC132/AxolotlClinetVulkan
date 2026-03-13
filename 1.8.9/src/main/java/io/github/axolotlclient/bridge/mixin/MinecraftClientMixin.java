@@ -158,6 +158,18 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	}
 
 	@Override
+	public Optional<AxoPlayerListEntry> br$getOnlinePlayer(UUID uuid) {
+		return player == null ? Optional.empty()
+			: Optional.ofNullable(player.networkHandler.getOnlinePlayer(uuid));
+	}
+
+	@Override
+	public Optional<AxoPlayerListEntry> br$getOnlinePlayer(String name) {
+		return player == null ? Optional.empty()
+			: Optional.ofNullable(player.networkHandler.getOnlinePlayer(name));
+	}
+
+	@Override
 	public void br$sendToClient(AxoText msg) {
 		gui.getChat().addMessage((Text) msg);
 	}

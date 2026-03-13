@@ -23,6 +23,9 @@
 package io.github.axolotlclient.bridge.impl;
 
 import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.Tessellator;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
@@ -33,8 +36,9 @@ import io.github.axolotlclient.modules.hud.util.ItemUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.opengl.GL11;
 
-public class AxoRenderContextImpl implements AxoRenderContext {
+public class AxoRenderContextImpl extends io.github.axolotlclient.rendering.DrawUtil implements AxoRenderContext {
 	@Nullable
 	private static AxoRenderContextImpl INSTANCE;
 
@@ -69,6 +73,11 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 	}
 
 	@Override
+	public void br$rotateMatrix(float ang) {
+		GlStateManager.rotatef((float) Math.toDegrees(ang), 0, 0, 1);
+	}
+
+	@Override
 	public void br$pushScissor(int x, int y, int w, int h) {
 		io.github.axolotlclient.AxolotlClientConfig.impl.util.DrawUtil.pushScissor(x, y, w, h);
 	}
@@ -79,33 +88,58 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 	}
 
 	@Override
-	public void br$glEnableBlend() {
-		GlStateManager.enableBlend();
-	}
-
-	@Override
-	public void br$glEnableAlpha() {
-		GlStateManager.enableAlphaTest();
-	}
-
-	@Override
-	public void br$glDisableBlend() {
-		GlStateManager.disableBlend();
-	}
-
-	@Override
-	public void br$glDisableAlpha() {
-		GlStateManager.disableAlphaTest();
-	}
-
-	@Override
-	public void br$glColor4(float r, float g, float b, float a) {
-		GlStateManager.color4f(r, g, b, a);
-	}
-
-	@Override
 	public void br$fillRect(int x, int y, int width, int height, int color) {
 		DrawUtil.fillRect(x, y, width, height, color);
+	}
+
+	@Override
+	public void br$fillRectGradientVert(int x, int y, int width, int height, int color1, int color2) {
+		GlStateManager.disableTexture();
+		GlStateManager.enableBlend();
+		GlStateManager.disableAlphaTest();
+		GlStateManager.blendFuncSeparate(770, 771, 1, 0);
+		GlStateManager.shadeModel(7425);
+		BufferBuilder consumer = Tessellator.getInstance().getBuilder();
+		consumer.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_COLOR);
+		consumer.vertex(x + width, y, 0).color(color1 >> 16 & 255, color1 >> 8 & 255, color1 & 255, color1 >> 24 & 255);
+		consumer.vertex(x, y, 0).color(color1 >> 16 & 255, color1 >> 8 & 255, color1 & 255, color1 >> 24 & 255);
+		consumer.vertex(x, y + height, 0).color(color2 >> 16 & 255, color2 >> 8 & 255, color2 & 255, color2 >> 24 & 255);
+		consumer.vertex(x + width, y + height, 0).color(color2 >> 16 & 255, color2 >> 8 & 255, color2 & 255, color2 >> 24 & 255);
+		Tessellator.getInstance().end();
+		GlStateManager.shadeModel(7424);
+		GlStateManager.disableBlend();
+		GlStateManager.enableAlphaTest();
+		GlStateManager.enableTexture();
+	}
+
+	@Override
+	public void br$fillRectGradientHoriz(int x, int y, int width, int height, int color1, int color2) {
+		GlStateManager.disableTexture();
+		GlStateManager.enableBlend();
+		GlStateManager.disableAlphaTest();
+		GlStateManager.blendFuncSeparate(770, 771, 1, 0);
+		GlStateManager.shadeModel(7425);
+		BufferBuilder consumer = Tessellator.getInstance().getBuilder();
+		consumer.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_COLOR);
+		consumer.vertex(x, y, 0).color(color1 >> 16 & 255, color1 >> 8 & 255, color1 & 255, color1 >> 24 & 255);
+		consumer.vertex(x, y + height, 0).color(color1 >> 16 & 255, color1 >> 8 & 255, color1 & 255, color1 >> 24 & 255);
+		consumer.vertex(x + width, y + height, 0).color(color2 >> 16 & 255, color2 >> 8 & 255, color2 & 255, color2 >> 24 & 255);
+		consumer.vertex(x + width, y, 0).color(color2 >> 16 & 255, color2 >> 8 & 255, color2 & 255, color2 >> 24 & 255);
+		Tessellator.getInstance().end();
+		GlStateManager.shadeModel(7424);
+		GlStateManager.disableBlend();
+		GlStateManager.enableAlphaTest();
+		GlStateManager.enableTexture();
+	}
+
+	@Override
+	public void br$fillRectRoundGradient(int x, int y, int width, int height, int colorTopLeft, int colorBottomLeft, int colorBottomRight, int colorTopRight, float roundingPx) {
+		axolotlclient_rendering$roundedRectGradient(x, y, x + width, y + height, colorTopLeft, colorBottomLeft, colorBottomRight, colorTopRight, roundingPx);
+	}
+
+	@Override
+	public void br$fillSegment(int x0, int y0, int x1, int y1, int colorX0Y0, int colorX0Y1, int colorX1Y1, int colorX1Y0, float radius) {
+		axolotlclient_rendering$segment(x0, y0, x1, y1, colorX0Y0, colorX0Y1, colorX1Y1, colorX1Y0, radius);
 	}
 
 	@Override
@@ -115,17 +149,22 @@ public class AxoRenderContextImpl implements AxoRenderContext {
 
 	@Override
 	public void br$fillRectRound(int x, int y, int width, int height, int color, float rounding) {
-		io.github.axolotlclient.rendering.DrawUtil.get().axolotlclient_rendering$roundedRect(x, y, x + width, y + height, color, rounding);
+		axolotlclient_rendering$roundedRect(x, y, x + width, y + height, color, rounding);
+	}
+
+	@Override
+	public void br$fillRectRoundVarying(int x, int y, int width, int height, int color, float roundingTL, float roundingBL, float roundingBR, float roundingTR) {
+		axolotlclient_rendering$roundedRectVarying(x, y, x + width, y + height, color, roundingTL, roundingBL, roundingBR, roundingTR);
 	}
 
 	@Override
 	public void br$outlineRectRound(int x, int y, int width, int height, int color, float rounding) {
-		io.github.axolotlclient.rendering.DrawUtil.get().axolotlclient_rendering$outlineRoundedRect(x, y, x + width, y + height, color, rounding, 0.5f);
+		axolotlclient_rendering$outlineRoundedRect(x, y, x + width, y + height, color, rounding, 0.5f);
 	}
 
 	@Override
-	public void br$drawTexture(int x, int y, int width, int height, AxoSprite sprite) {
-		((AxoSpriteImpl) sprite).draw(client, x, y, width, height);
+	public void br$drawTexture(AxoSprite sprite, int x, int y, int width, int height, int color) {
+		((AxoSpriteImpl) sprite).draw(client, x, y, width, height, color);
 	}
 
 	@Override

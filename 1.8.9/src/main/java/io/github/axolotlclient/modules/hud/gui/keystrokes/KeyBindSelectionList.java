@@ -33,6 +33,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.ButtonWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.Element;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.ElementListWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.VanillaButtonWidget;
+import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -125,7 +126,11 @@ public class KeyBindSelectionList extends ElementListWidget<KeyBindSelectionList
 			int k = i - 5 - this.changeButton.getWidth();
 			this.changeButton.setPosition(k, j);
 			this.changeButton.render(mouseX, mouseY, partialTick);
-			client.textRenderer.drawWithShadow(this.name, left, top + height / 2f - 9 / 2f, -1);
+			if (client.textRenderer.getWidth(this.name) <= width * 3 / 8) {
+				client.textRenderer.drawWithShadow(this.name, left, top + height / 2f - 9 / 2f, -1);
+			} else {
+				DrawUtil.drawScrollableText(client.textRenderer, this.name, left, top, left + width * 3 / 8, top + height, -1);
+			}
 			client.textRenderer.drawWithShadow(boundKey, left + width / 2f - client.textRenderer.getWidth(boundKey) / 2f, top + height / 2f - 9 / 2f, Colors.GRAY.toInt());
 		}
 

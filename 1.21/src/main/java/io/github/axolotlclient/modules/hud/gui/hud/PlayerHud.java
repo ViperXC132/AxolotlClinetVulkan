@@ -22,14 +22,16 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud;
 
+import com.mojang.blaze3d.lighting.DiffuseLighting;
+import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.PlayerDirectionChangeEvent;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.util.math.Axis;
 import net.minecraft.util.math.MathHelper;
 import org.joml.Quaternionf;
@@ -85,6 +87,7 @@ public class PlayerHud extends PlayerHudCommon {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void renderPlayer(AxoRenderContext ctx, boolean placeholder, double x, double y, float delta) {
 		var client = MinecraftClient.getInstance();
@@ -93,26 +96,12 @@ public class PlayerHud extends PlayerHudCommon {
 			return;
 		}
 
-		if (!placeholder && autoHide.get()) {
-			if (isPerformingAction()) {
-				hide = -1;
-			} else if (hide == -1) {
-				hide = System.currentTimeMillis();
-			}
-
-			if (hide != -1 && System.currentTimeMillis() - hide > 500) {
-				return;
-			}
-		}
-
 		float lerpY = (lastYOffset + ((yOffset - lastYOffset) * delta));
-
-		float scale = getScale() * 40;
 
 		Quaternionf quaternion = Axis.Z_POSITIVE.rotationDegrees(180.0F);
 
 		// Rotate to whatever is wanted. Also make sure to offset the yaw
-		float deltaYaw = client.player.getYaw(delta);
+		float deltaYaw = client.player.headYaw;
 		if (dynamicRotation.get()) {
 			deltaYaw -= (lastYawOffset + ((yawOffset - lastYawOffset) * delta));
 		}
@@ -123,17 +112,37 @@ public class PlayerHud extends PlayerHudCommon {
 		float pastYaw = client.player.getYaw();
 		float pastPrevYaw = client.player.prevYaw;
 		currentlyRendering = true;
-		InventoryScreen.drawEntity(graphics,
-			((float) (x + getTrueContentWidth() / 2f)) / getScale(),
-			((float) (y + getTrueContentHeight() * client.player.getHeight() / 2f - lerpY)) / getScale(),
-			scale, new Vector3f(), quaternion, quaternionf2, client.player);
+		float x1 = ((float) (x / getScale() + getContentWidth() / 2f));
+		float y1 = ((float) (y / getScale() + getContentHeight() * 0.925f - lerpY));
+		Vector3f offset = new Vector3f();
+		var pose = graphics.getMatrices();
+		pose.push();
+		pose.translate(x1, y1, 50.0);
+		pose.scale((float) 40, (float) 40, -(float) 40);
+		pose.translate(offset.x, offset.y, offset.z);
+		pose.rotate(quaternion);
+		DiffuseLighting.setupInventoryShaderLighting();
+		EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
+		if (quaternionf2 != null) {
+			entityRenderDispatcher.setRotation(quaternionf2.conjugate(new Quaternionf()).rotateY((float) Math.PI));
+		}
+
+		entityRenderDispatcher.setRenderShadows(false);
+		RenderSystem.runAsFancy(
+			() -> entityRenderDispatcher.render(client.player, 0.0, 0.0, 0.0, 0.0F, delta, pose, graphics.getVertexConsumers(), 15728880)
+		);
+		graphics.draw();
+		entityRenderDispatcher.setRenderShadows(true);
+		pose.pop();
+		DiffuseLighting.setup3DGuiLighting();
 		currentlyRendering = false;
 
 		client.player.setYaw(pastYaw);
 		client.player.prevYaw = pastPrevYaw;
 	}
 
-	private boolean isPerformingAction() {
+	@Override
+	protected boolean isPerformingAction() {
 		// inspired by tr7zw's mod
 		ClientPlayerEntity player = MinecraftClient.getInstance().player;
 		//noinspection DataFlowIssue

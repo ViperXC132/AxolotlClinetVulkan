@@ -33,30 +33,30 @@ import io.github.axolotlclient.config.migration.impl.*;
 import net.fabricmc.loader.api.FabricLoader;
 
 public interface ConfigMigration {
-	int CONFIG_VERSION = 6;
+	int CONFIG_VERSION = 7;
 	List<ConfigMigration> MIGRATIONS = new ArrayList<>(List.of(
 		new V2Migration(),
 		new V3Migration(),
 		new V4Migration(),
 		new V5Migration(),
-		new V6Migration()
+		new V6Migration(),
+		new V7Migration()
 	));
 
 	static void apply(int oldVersion, JsonObject config) {
 		MIGRATIONS.sort(Comparator.comparingInt(ConfigMigration::version));
 		var logger = AxolotlClientCommon.getInstance().getLogger();
+
 		var devEnv = FabricLoader.getInstance().isDevelopmentEnvironment();
-		if (oldVersion == CONFIG_VERSION) {
-			if (devEnv) {
-				logger.info("Skipping config migrations, config is already at version {}", CONFIG_VERSION);
-			}
-			return;
-		} else if (oldVersion > CONFIG_VERSION) {
-			logger.error("Found newer config version!? This shouldn't happen! There may be bugs, you have been warned.");
-			return;
-		}
 		if (devEnv) {
 			logger.info("Applying config migrations to update from {} to {}", oldVersion, CONFIG_VERSION);
+		}
+		// We cannot use the option as it hasn't been set at this point yet.
+		var debug = false;
+		JsonObject general;
+		if (config.has("general") && (general = config.getAsJsonObject("general")).isJsonObject() &&
+			general.has("debugLogOutput") && general.get("debugLogOutput").getAsBoolean()) {
+			debug = true;
 		}
 		for (var migration : MIGRATIONS) {
 			if (oldVersion < migration.version()) {
@@ -64,7 +64,7 @@ public interface ConfigMigration {
 					logger.info("Applying config migration ->{}", migration.version());
 				}
 				migration.apply(config);
-			} else if (devEnv) {
+			} else if (devEnv && debug) {
 				logger.info("Skipping config migration ->{}", migration.version());
 
 			}

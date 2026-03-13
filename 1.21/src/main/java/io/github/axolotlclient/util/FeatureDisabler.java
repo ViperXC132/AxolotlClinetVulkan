@@ -25,7 +25,7 @@ package io.github.axolotlclient.util;
 import java.util.List;
 
 import com.mojang.serialization.Codec;
-import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
@@ -48,15 +48,15 @@ public class FeatureDisabler extends FeatureDisablerCommon {
 		PayloadTypeRegistry.playS2C().register(CHANNEL_ID, FeaturePayload.CODEC);
 		ClientPlayConnectionEvents.INIT.register((handler0, client0) ->
 			ClientPlayNetworking.registerGlobalReceiver(CHANNEL_ID, (payload, ctx) -> {
-			for (String feature : payload.features) {
-				try {
-					ForceableBooleanOption e = FEATURES.get(feature);
-					e.setForceOff(true, "ban_reason");
-				} catch (Exception e) {
-					AxolotlClient.LOGGER.error("Failed to disable " + feature + "!");
+				for (String feature : payload.features) {
+					try {
+						ForceableBooleanOption e = FEATURES.get(feature);
+						e.setForceOff(true, "ban_reason");
+					} catch (Exception e) {
+						AxolotlClientCommon.getInstance().getLogger().error("Failed to disable " + feature + "!");
+					}
 				}
-			}
-		}));
+			}));
 	}
 
 	private record FeaturePayload(List<String> features) implements CustomPayload {

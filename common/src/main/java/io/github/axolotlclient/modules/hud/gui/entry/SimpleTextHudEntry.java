@@ -75,14 +75,29 @@ public abstract class SimpleTextHudEntry extends TextHudEntry {
 
 	@Override
 	public void renderComponent(AxoRenderContext render, float delta) {
-		render.br$glEnableBlend();
 		DrawPosition pos = getContentPos();
 		String value = applyOptions(getValue(), getLabel());
 
 		int valueWidth = render.br$getFont().br$getWidth(value);
+		updateBounds(valueWidth);
+		render.br$drawString(value,
+			pos.x() + justification.get().getXOffset(valueWidth, getContentWidth() - 4) + 2,
+			pos.y() + (Math.round((float) getContentHeight() / 2)) - 4, getTextColor().toInt(), shadow.get());
+	}
+
+	@Override
+	public void renderPlaceholderComponent(AxoRenderContext ctx, float delta) {
+		DrawPosition pos = getContentPos();
+		String value = applyOptions(getPlaceholderValue(), getPlaceholderLabel());
+		int valueWidth = ctx.br$getFont().br$getWidth(value);
+		updateBounds(valueWidth);
+		ctx.br$drawString(value, pos.x() + justification.get().getXOffset(valueWidth, getContentWidth() - 4) + 2,
+			pos.y() + (Math.round((float) getContentHeight() / 2)) - 4, getTextColor().toInt(), shadow.get());
+	}
+
+	private void updateBounds(int valueWidth) {
 		int elementWidth = valueWidth + 4;
 		int elementHeight = client.br$getFont().br$getFontHeight() + 4;
-
 		boolean boundsChanged = false;
 		int minW = minWidth.get();
 		if (elementWidth < minW) {
@@ -108,17 +123,6 @@ public abstract class SimpleTextHudEntry extends TextHudEntry {
 		if (boundsChanged) {
 			onBoundsUpdate();
 		}
-		render.br$drawString(value,
-			pos.x() + justification.get().getXOffset(valueWidth, getContentWidth() - 4) + 2,
-			pos.y() + (Math.round((float) getContentHeight() / 2)) - 4, getTextColor().toInt(), shadow.get());
-	}
-
-	@Override
-	public void renderPlaceholderComponent(AxoRenderContext ctx, float delta) {
-		DrawPosition pos = getContentPos();
-		String value = applyOptions(getPlaceholderValue(), getPlaceholderLabel());
-		ctx.br$drawString(value, pos.x() + justification.get().getXOffset(value, getContentWidth() - 4) + 2,
-			pos.y() + (Math.round((float) getContentHeight() / 2)) - 4, getTextColor().toInt(), shadow.get());
 	}
 
 	protected String applyOptions(String value, String desc) {

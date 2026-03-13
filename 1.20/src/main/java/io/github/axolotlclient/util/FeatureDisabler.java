@@ -25,7 +25,7 @@ package io.github.axolotlclient.util;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import lombok.Getter;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -44,7 +44,7 @@ public class FeatureDisabler extends FeatureDisablerCommon {
 					try {
 						FEATURES.get(element.getAsString()).setForceOff(true, "ban_reason");
 					} catch (Exception e) {
-						AxolotlClient.LOGGER.error("Failed to disable " + element.getAsString() + "!");
+						AxolotlClientCommon.getInstance().getLogger().error("Failed to disable " + element.getAsString() + "!");
 					}
 				}
 			})

@@ -92,7 +92,7 @@ public class ItemUtil {
 	public static List<ItemStorage> storageFromItem(List<AxoItemStack> items) {
 		ArrayList<ItemStorage> storage = new ArrayList<>();
 		for (AxoItemStack item : items) {
-			if (item == null) {
+			if (item == null || item.br$isEmpty()) {
 				continue;
 			}
 			Optional<ItemStorage> s = getItemFromItem(item, storage);

@@ -25,7 +25,7 @@ package io.github.axolotlclient.util;
 import java.util.List;
 
 import com.mojang.serialization.Codec;
-import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import io.netty.buffer.ByteBuf;
 import lombok.Getter;
@@ -37,12 +37,13 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.Identifier;
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NullMarked;
 
 public class FeatureDisabler extends FeatureDisablerCommon {
 	@Getter
 	private static final FeatureDisablerCommon instance = new FeatureDisabler();
 
-	private static final CustomPacketPayload.Type<FeaturePayload> CHANNEL_ID =
+	private static final CustomPacketPayload.Type<@NotNull FeaturePayload> CHANNEL_ID =
 		new CustomPacketPayload.Type<>((Identifier) CHANNEL_NAME);
 
 	@Override
@@ -50,23 +51,24 @@ public class FeatureDisabler extends FeatureDisablerCommon {
 		PayloadTypeRegistry.playS2C().register(CHANNEL_ID, FeaturePayload.CODEC);
 		ClientPlayConnectionEvents.INIT.register((handler0, client0) ->
 			ClientPlayNetworking.registerGlobalReceiver(CHANNEL_ID, (payload, ctx) -> {
-			for (String feature : payload.features) {
-				try {
-					ForceableBooleanOption e = FEATURES.get(feature);
-					e.setForceOff(true, "ban_reason");
-				} catch (Exception e) {
-					AxolotlClient.LOGGER.error("Failed to disable " + feature + "!");
+				for (String feature : payload.features) {
+					try {
+						ForceableBooleanOption e = FEATURES.get(feature);
+						e.setForceOff(true, "ban_reason");
+					} catch (Exception e) {
+						AxolotlClientCommon.getInstance().getLogger().error("Failed to disable " + feature + "!");
+					}
 				}
-			}
-		}));
+			}));
 	}
 
+	@NullMarked
 	private record FeaturePayload(List<String> features) implements CustomPacketPayload {
 		public static final StreamCodec<ByteBuf, FeaturePayload> CODEC =
 			ByteBufCodecs.fromCodec(Codec.STRING.listOf().xmap(FeaturePayload::new, FeaturePayload::features));
 
 		@Override
-		public @NotNull Type<? extends CustomPacketPayload> type() {
+		public Type<? extends CustomPacketPayload> type() {
 			return CHANNEL_ID;
 		}
 	}

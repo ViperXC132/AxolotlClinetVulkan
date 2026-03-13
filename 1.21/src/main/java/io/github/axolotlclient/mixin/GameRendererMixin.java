@@ -34,6 +34,7 @@ import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.DeltaTracker;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.resource.ResourceFactory;
 import net.minecraft.util.math.Axis;
 import net.minecraft.util.math.MathHelper;
 import org.joml.Matrix4f;
@@ -67,8 +68,8 @@ public abstract class GameRendererMixin {
 		if (this.renderingPanorama) {
 			return original.call(camera, partialTick, useFovSetting);
 		}
-		Zoom.update();
-		return Zoom.getFov(original.call(camera, partialTick, useFovSetting), partialTick);
+		Zoom.getInstance().update();
+		return Zoom.getInstance().getFov(original.call(camera, partialTick, useFovSetting).floatValue(), partialTick);
 	}
 
 	@Inject(method = "render",
@@ -77,18 +78,22 @@ public abstract class GameRendererMixin {
 		axolotlclient$motionBlur(tracker, tick, null);
 	}
 
+	@Inject(method = "loadBlur", at = @At("TAIL"))
+	private void loadMotionBlurShader(ResourceFactory factory, CallbackInfo ci) {
+		MotionBlur.getInstance().load();
+	}
+
 	@Inject(method = "render", at = @At("TAIL"))
 	public void axolotlclient$motionBlur(DeltaTracker tracker, boolean tick, CallbackInfo ci) {
-		if (ci != null && !MotionBlur.getInstance().inGuis.get()) {
+		MotionBlur blur = MotionBlur.getInstance();
+		if (ci != null && !blur.inGuis.get()) {
 			return;
 		}
 
 		this.client.getProfiler().push("Motion Blur");
 
-		if (MotionBlur.getInstance().enabled.get()) {
-			MotionBlur blur = MotionBlur.getInstance();
-			blur.onUpdate();
-			blur.shader.render(tracker.getLastDuration());
+		if (blur.enabled.get()) {
+			blur.onUpdate(tracker.getLastDuration());
 		}
 
 		this.client.getProfiler().pop();

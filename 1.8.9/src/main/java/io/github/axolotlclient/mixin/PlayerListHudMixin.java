@@ -26,11 +26,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import com.llamalad7.mixinextras.expression.Definition;
+import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.authlib.GameProfile;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.api.requests.UserRequest;
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.modules.hypixel.NickHider;
@@ -44,10 +47,11 @@ import net.minecraft.client.gui.overlay.PlayerTabOverlay;
 import net.minecraft.client.network.PlayerInfo;
 import net.minecraft.client.render.TextRenderer;
 import net.minecraft.network.Connection;
+import net.minecraft.resource.Identifier;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.text.Text;
-import org.spongepowered.asm.mixin.Final;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -63,10 +67,6 @@ public abstract class PlayerListHudMixin extends GuiElement {
 	private Text header;
 	@Shadow
 	private Text footer;
-
-	@Shadow
-	@Final
-	private Minecraft minecraft;
 
 	@Inject(method = "getDisplayName", at = @At("HEAD"), cancellable = true)
 	public void axolotlclient$nickHider(PlayerInfo playerEntry, CallbackInfoReturnable<String> cir) {
@@ -93,7 +93,7 @@ public abstract class PlayerListHudMixin extends GuiElement {
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/TextRenderer;drawWithShadow(Ljava/lang/String;FFI)I", ordinal = 1))
 	public int axolotlclient$moveName2(TextRenderer instance, String string, float x, float y, int color, Operation<Integer> original, @Local GameProfile entry) {
 		if (AxolotlClient.config().showBadges.get() && UserRequest.getOnline(entry.getId().toString())) {
-			axolotlclient$client.getTextureManager().bind(AxolotlClient.badgeIcon);
+			axolotlclient$client.getTextureManager().bind((Identifier) AxolotlClientCommon.BADGE_PATH);
 			GuiElement.drawTexture((int) x, (int) y, 0, 0, 8, 8, 8, 8);
 			x += 10;
 		}
@@ -107,7 +107,8 @@ public abstract class PlayerListHudMixin extends GuiElement {
 
 	@Inject(method = "renderPing", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$numericalPing(int width, int x, int y, PlayerInfo entry, CallbackInfo ci) {
-		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().blockLatencyIcon() && (BedwarsMod.getInstance().isWaiting() || BedwarsMod.getInstance().inGame())) {
+		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().customTabList.get() &&
+			BedwarsMod.getInstance().blockLatencyIcon() && (BedwarsMod.getInstance().isWaiting() || BedwarsMod.getInstance().inGame())) {
 			ci.cancel();
 		} else if (Tablist.getInstance().renderNumericPing(width, x, y, entry)) {
 			ci.cancel();
@@ -130,7 +131,7 @@ public abstract class PlayerListHudMixin extends GuiElement {
 		return false;
 	}
 
-	@Inject(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;header:Lnet/minecraft/text/Text;"))
+	@Inject(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;header:Lnet/minecraft/text/Text;", opcode = Opcodes.GETFIELD))
 	private void axolotlclient$setRenderHeaderFooter(int width, Scoreboard scoreboard, ScoreboardObjective playerListScoreboardObjective, CallbackInfo ci) {
 		if (!Tablist.getInstance().showHeader.get()) {
 			header = null;
@@ -158,6 +159,9 @@ public abstract class PlayerListHudMixin extends GuiElement {
 		if (!BedwarsMod.getInstance().isEnabled()) {
 			return;
 		}
+		if (!BedwarsMod.getInstance().customTabList.get()) {
+			return;
+		}
 
 		BedwarsGame game = BedwarsMod.getInstance().getGame().orElse(null);
 		if (game == null) {
@@ -180,10 +184,16 @@ public abstract class PlayerListHudMixin extends GuiElement {
 		ordinal = 7
 	)
 	public int axolotlclient$changeWidth(int value) {
-		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().blockLatencyIcon() && (BedwarsMod.getInstance().isWaiting() || BedwarsMod.getInstance().inGame())) {
+		if (!BedwarsMod.getInstance().isEnabled()) {
+			return value;
+		}
+		if (!BedwarsMod.getInstance().customTabList.get()) {
+			return value;
+		}
+		if (BedwarsMod.getInstance().blockLatencyIcon() && (BedwarsMod.getInstance().isWaiting() || BedwarsMod.getInstance().inGame())) {
 			value -= 9;
 		}
-		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().isWaiting()) {
+		if (BedwarsMod.getInstance().isWaiting()) {
 			value += 20;
 		}
 		return value;
@@ -194,24 +204,32 @@ public abstract class PlayerListHudMixin extends GuiElement {
 		if (!BedwarsMod.getInstance().isEnabled()) {
 			return;
 		}
+		if (!BedwarsMod.getInstance().customTabList.get()) {
+			return;
+		}
 		BedwarsGame game = BedwarsMod.getInstance().getGame().orElse(null);
 		if (game == null || !game.isStarted()) {
 			return;
 		}
-		BedwarsPlayer player = game.getPlayer(playerEntry.getProfile().getName()).orElse(null);
+		BedwarsPlayer player = game.getPlayer(playerEntry.getProfile().getId()).orElse(null);
 		if (player == null) {
 			return;
 		}
 		cir.setReturnValue(player.getTabListDisplay());
 	}
 
+	@Definition(id = "sortedCopy", method = "Lcom/google/common/collect/Ordering;sortedCopy(Ljava/lang/Iterable;)Ljava/util/List;")
+	@Expression("? = ?.sortedCopy(?)")
 	@SuppressWarnings("unchecked")
-	@ModifyVariable(method = "render", at = @At(value = "INVOKE_ASSIGN", target = "Lcom/google/common/collect/Ordering;sortedCopy(Ljava/lang/Iterable;)Ljava/util/List;", remap = false))
+	@ModifyVariable(method = "render", at = @At(value = "MIXINEXTRAS:EXPRESSION", shift = At.Shift.AFTER))
 	public List<PlayerInfo> axolotlclient$overrideSortedPlayers(List<PlayerInfo> original) {
 		if (!BedwarsMod.getInstance().inGame()) {
 			return original;
 		}
-		List<? super PlayerInfo> players = BedwarsMod.getInstance().getGame().orElseThrow().getTabPlayerList(Collections.unmodifiableList(original));
+		if (!BedwarsMod.getInstance().customTabList.get()) {
+			return original;
+		}
+		List<?> players = BedwarsMod.getInstance().getGame().orElseThrow().getTabPlayerList(Collections.unmodifiableList(original));
 		if (players == null) {
 			return original;
 		}
@@ -223,6 +241,9 @@ public abstract class PlayerListHudMixin extends GuiElement {
 		if (!BedwarsMod.getInstance().inGame()) {
 			return;
 		}
+		if (!BedwarsMod.getInstance().customTabHeader.get()) {
+			return;
+		}
 		this.header = (Text) BedwarsMod.getInstance().getGame().orElseThrow().getTopBarText();
 		ci.cancel();
 	}
@@ -230,6 +251,9 @@ public abstract class PlayerListHudMixin extends GuiElement {
 	@Inject(method = "setFooter", at = @At("HEAD"), cancellable = true)
 	public void axolotlclient$changeFooter(Text footer, CallbackInfo ci) {
 		if (!BedwarsMod.getInstance().inGame()) {
+			return;
+		}
+		if (!BedwarsMod.getInstance().customTabFooter.get()) {
 			return;
 		}
 		this.footer = (Text) BedwarsMod.getInstance().getGame().orElseThrow().getBottomBarText();

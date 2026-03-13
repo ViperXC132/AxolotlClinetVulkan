@@ -35,7 +35,9 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.ButtonWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.ClickableWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.TextFieldWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.IntegerWidget;
+import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.SliderWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.VanillaButtonWidget;
+import io.github.axolotlclient.AxolotlClientConfig.impl.util.ConfigStyles;
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import io.github.axolotlclient.modules.hud.gui.layout.Justification;
@@ -132,6 +134,24 @@ public class ConfigureKeyBindScreen extends io.github.axolotlclient.AxolotlClien
 					.initially(s.getJustification()).build(rightColX + 30 + 4 + 58 + 4, rightColY, 58, 20,
 						I18n.translate("justification"), (btn, val) -> s.setJustification(val)));
 			}
+			rightColY += 28;
+		}
+		if (stroke instanceof KeystrokeHud.CustomRenderKeystroke customRender) {
+			addDrawableChild(textWidget(leftColX, leftColY, 150, 20, I18n.translate("keystrokes.stroke.graphics"), textRenderer));
+			leftColY += 28;
+			var sliderMin = 2;
+			var sliderMax = 25;
+			var sizeSlider = new SliderWidget<>(rightColX, rightColY, 98, 20, new IntegerOption("", customRender.getSize(), customRender::setSize, sliderMin, sliderMax)) {
+				@Override
+				public void setMessage(String message) {
+					super.setMessage(I18n.translate("keystrokes.stroke.configure_graphics_size", Integer.parseInt(message)));
+				}
+			};
+			sizeSlider.setMessage("" + customRender.getSize());
+			addDrawableChild(sizeSlider);
+			var widget = (ButtonWidget) ConfigStyles.createWidget(rightColX + 98 + 4, rightColY, 48, 20, customRender.getGraphics());
+			addDrawableChild(new VanillaButtonWidget(rightColX + 98 + 4, rightColY, 48, 20, I18n.translate("keystrokes.stroke.configure_graphics"), btn ->
+				widget.onPress()));
 			rightColY += 28;
 		}
 		addDrawableChild(textWidget(leftColX, leftColY, 150, 20, I18n.translate("keystrokes.stroke.width"), textRenderer));

@@ -192,24 +192,24 @@ public class SkinManagementScreen extends Screen {
 			return;
 		}
 		loadingFuture.thenAcceptAsync(profile -> {
-				cachedProfile = profile;
-				initDisplay();
-				addWidgets.run();
-			}).exceptionally(t -> {
-				if (t.getCause() instanceof CancellationException) {
-					client.setScreen(parent);
-					return null;
-				}
-				AxolotlClientCommon.getInstance().getLogger().error("Failed to load skins!", t);
-				var error = Text.translatable("skins.error.failed_to_load");
-				var errorDesc = Text.translatable("skins.error.failed_to_load_desc");
-				clearChildren();
-				addDrawableSelectableElement(titleWidget);
-				addDrawableSelectableElement(new TextWidget(width / 2 - textRenderer.getWidth(error) / 2, height / 2 - textRenderer.fontHeight - 2, textRenderer.getWidth(error), textRenderer.fontHeight, error, textRenderer));
-				addDrawableSelectableElement(new TextWidget(width / 2 - textRenderer.getWidth(errorDesc) / 2, height / 2 + 1, textRenderer.getWidth(errorDesc), textRenderer.fontHeight, errorDesc, textRenderer));
-				addDrawableSelectableElement(back);
+			cachedProfile = profile;
+			initDisplay();
+			addWidgets.run();
+		}).exceptionally(t -> {
+			if (t.getCause() instanceof CancellationException) {
+				client.setScreen(parent);
 				return null;
-			});
+			}
+			AxolotlClientCommon.getInstance().getLogger().error("Failed to load skins!", t);
+			var error = Text.translatable("skins.error.failed_to_load");
+			var errorDesc = Text.translatable("skins.error.failed_to_load_desc");
+			clearChildren();
+			addDrawableSelectableElement(titleWidget);
+			addDrawableSelectableElement(new TextWidget(width / 2 - textRenderer.getWidth(error) / 2, height / 2 - textRenderer.fontHeight - 2, textRenderer.getWidth(error), textRenderer.fontHeight, error, textRenderer));
+			addDrawableSelectableElement(new TextWidget(width / 2 - textRenderer.getWidth(errorDesc) / 2, height / 2 + 1, textRenderer.getWidth(errorDesc), textRenderer.fontHeight, errorDesc, textRenderer));
+			addDrawableSelectableElement(back);
+			return null;
+		});
 	}
 
 	private void promptForSkinDownload() {

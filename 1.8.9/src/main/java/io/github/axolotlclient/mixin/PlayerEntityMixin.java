@@ -23,9 +23,7 @@
 package io.github.axolotlclient.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.events.Events;
-import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.modules.particles.Particles;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.Minecraft;
@@ -36,6 +34,7 @@ import net.minecraft.entity.particle.ParticleType;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -44,41 +43,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends Entity {
 
+	@Shadow
+	public abstract void addCritParticles(Entity entity);
+
+	@Shadow
+	public abstract void addEnchantedCritParticles(Entity entity);
+
 	public PlayerEntityMixin(World world) {
 		super(world);
-	}
-
-	@Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/player/PlayerEntity;getAttribute(Lnet/minecraft/entity/living/attribute/EntityAttribute;)Lnet/minecraft/entity/living/attribute/EntityAttributeInstance;"))
-	public void axolotlclient$getReach(Entity entity, CallbackInfo ci) {
-		Events.PLAYER_ATTACK.invoker().accept((AxoPlayer) this, entity);
-	}
-
-	@Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/player/PlayerEntity;setAttackTarget(Lnet/minecraft/entity/Entity;)V"))
-	public void axolotlclient$alwaysCrit(Entity entity, CallbackInfo ci, @Local(ordinal = 0) boolean bl, @Local(ordinal = 1) float g) {
-		if (Particles.getInstance().getAlwaysOn(ParticleType.CRIT) && !bl) {
-			Minecraft.getInstance().player.addCritParticles(entity);
-		}
-		if (Particles.getInstance().getAlwaysOn(ParticleType.CRIT_MAGIC) && !(g > 0)) {
-			Minecraft.getInstance().player.addEnchantedCritParticles(entity);
-		}
-	}
-
-	@Inject(method = "damage", at = @At("HEAD"))
-	public void axolotlclient$damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-		Events.PLAYER_HURT.invoker().accept((AxoPlayer) this, source.getAttacker());
-	}
-
-	@Inject(
-		method = "getArmorProtection",
-		at = @At(
-			"HEAD"
-		),
-		cancellable = true
-	)
-	public void axolotlclient$disableArmor(CallbackInfoReturnable<Integer> ci) {
-		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().inGame() && !BedwarsMod.getInstance().displayArmor.get()) {
-			ci.setReturnValue(0);
-		}
 	}
 
 	@Inject(method = "trySleep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;getBlockState(Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/block/state/BlockState;"), cancellable = true)
@@ -86,5 +58,23 @@ public abstract class PlayerEntityMixin extends Entity {
 		if (world.getBlockState(blockPos).getBlock().is(Blocks.AIR)) {
 			cir.setReturnValue(PlayerEntity.SleepAllowedStatus.OTHER_PROBLEM);
 		}
+	}
+
+	@Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
+	private void onAttack(Entity target, CallbackInfo ci, @Local(ordinal = 0) boolean crit, @Local(ordinal = 1) float enchantedDamage) {
+		if (Minecraft.getInstance().isOnSameThread()) {
+			Events.PLAYER_ATTACK.invoker().accept((PlayerEntity) (Object) this, target);
+			if (Particles.getInstance().getAlwaysOn(ParticleType.CRIT) && !crit) {
+				addCritParticles(target);
+			}
+			if (Particles.getInstance().getAlwaysOn(ParticleType.CRIT_MAGIC) && enchantedDamage == 0) {
+				addEnchantedCritParticles(target);
+			}
+		}
+	}
+
+	@Inject(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
+	private void onDamage(DamageSource damageSource, float f, CallbackInfoReturnable<Boolean> cir) {
+		Events.PLAYER_HURT.invoker().accept((PlayerEntity) (Object) this, damageSource.getAttacker());
 	}
 }

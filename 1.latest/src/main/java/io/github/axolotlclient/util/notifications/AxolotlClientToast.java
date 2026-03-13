@@ -25,7 +25,7 @@ package io.github.axolotlclient.util.notifications;
 import java.util.List;
 
 import com.google.common.collect.ImmutableList;
-import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -46,8 +46,6 @@ public class AxolotlClientToast implements Toast {
 	private static final int MARGIN = 10;
 	private final Component title;
 	private final List<FormattedCharSequence> messageLines;
-	private long lastChanged;
-	private boolean changed;
 	private final int width;
 	private Toast.Visibility wantedVisibility = Toast.Visibility.HIDE;
 
@@ -72,7 +70,7 @@ public class AxolotlClientToast implements Toast {
 		this.width = width;
 	}
 
-	private static ImmutableList<FormattedCharSequence> nullToEmpty(@Nullable Component message) {
+	private static ImmutableList<@NotNull FormattedCharSequence> nullToEmpty(@Nullable Component message) {
 		return message == null ? ImmutableList.of() : ImmutableList.of(message.getVisualOrderText());
 	}
 
@@ -92,21 +90,15 @@ public class AxolotlClientToast implements Toast {
 	}
 
 	@Override
-	public void update(ToastManager toastManager, long visibilityTime) {
-		if (this.changed) {
-			this.lastChanged = visibilityTime;
-			this.changed = false;
-		}
-
-		double d = (double) DISPLAY_TIME_MILLIS * toastManager.getNotificationDisplayTimeMultiplier();
-		long l = visibilityTime - this.lastChanged;
-		this.wantedVisibility = (double) l < d ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
+	public void update(@NotNull ToastManager toastManager, long visibilityTime) {
+		var time = DISPLAY_TIME_MILLIS * toastManager.getNotificationDisplayTimeMultiplier();
+		this.wantedVisibility = visibilityTime < time ? Toast.Visibility.SHOW : Toast.Visibility.HIDE;
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, Font font, long visibilityTime) {
+	public void render(GuiGraphics guiGraphics, @NotNull Font font, long visibilityTime) {
 		guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, BACKGROUND_SPRITE, 0, 0, this.width(), this.height());
-		guiGraphics.blit(RenderPipelines.GUI_TEXTURED, AxolotlClient.badgeIcon, 4, 4, 0, 0, 15, 15, 15, 15);
+		guiGraphics.blit(RenderPipelines.GUI_TEXTURED, (Identifier) AxolotlClientCommon.BADGE_PATH, 4, 4, 0, 0, 15, 15, 15, 15);
 		int textOffset = 22;
 		if (this.messageLines.isEmpty()) {
 			guiGraphics.drawString(font, this.title, textOffset, LINE_SPACING, -256, false);

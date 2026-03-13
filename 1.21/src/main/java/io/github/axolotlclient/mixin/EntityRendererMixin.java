@@ -26,6 +26,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.api.requests.UserRequest;
 import io.github.axolotlclient.modules.hypixel.LevelHead;
 import io.github.axolotlclient.modules.hypixel.NickHider;
@@ -43,6 +44,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -51,7 +53,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityRenderer.class)
-public abstract class EntityRendererMixin<T extends Entity> {
+public abstract class EntityRendererMixin {
 
 	@Inject(method = "renderLabelIfPresent", at = @At(value = "INVOKE",
 		target = "Lnet/minecraft/client/font/TextRenderer;draw(Lnet/minecraft/text/Text;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/render/VertexConsumerProvider;Lnet/minecraft/client/font/TextRenderer$TextLayerType;II)I",
@@ -87,7 +89,7 @@ public abstract class EntityRendererMixin<T extends Entity> {
 						);
 					} else {
 						RenderSystem.setShader(GameRenderer::getPositionTexShader);
-						RenderSystem.setShaderTexture(0, AxolotlClient.badgeIcon);
+						RenderSystem.setShaderTexture(0, (Identifier) AxolotlClientCommon.BADGE_PATH);
 						Tessellator tessellator = Tessellator.getInstance();
 						BufferBuilder builder = tessellator.begin(VertexFormat.DrawMode.QUADS, VertexFormats.POSITION_TEXTURE);
 

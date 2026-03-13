@@ -36,14 +36,12 @@ import io.github.axolotlclient.api.requests.AccountSettingsRequest;
 import io.github.axolotlclient.api.requests.GlobalDataRequest;
 import io.github.axolotlclient.api.types.*;
 import io.github.axolotlclient.api.util.*;
-import io.github.axolotlclient.bridge.util.AxoI18n;
 import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.util.GsonHelper;
 import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.NetworkUtil;
 import io.github.axolotlclient.util.ThreadExecuter;
 import io.github.axolotlclient.util.notifications.NotificationProvider;
-import io.github.axolotlclient.util.translation.TranslationProvider;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -55,8 +53,7 @@ public class API {
 	private final Logger logger;
 	@Getter
 	private final NotificationProvider notificationProvider = AxolotlClientCommon.getInstance().getNotificationProvider();
-	@Getter
-	private final TranslationProvider translationProvider = AxoI18n::translate;
+
 	private final StatusUpdateProvider statusUpdateProvider;
 	@Getter
 	private final Options apiOptions;
@@ -136,7 +133,7 @@ public class API {
 
 		if (result.getStatus() != MojangAuth.Status.SUCCESS) {
 			logger.error("Failed to authenticate with Mojang! Status: ", result.getStatus());
-			return CompletableFuture.failedFuture(new UnsupportedOperationException("Failed to authenticate with mojang, status: "+result.getStatus()));
+			return CompletableFuture.failedFuture(new UnsupportedOperationException("Failed to authenticate with mojang, status: " + result.getStatus()));
 		}
 
 		logDetailed("Requesting authentication from backend...");
@@ -372,7 +369,7 @@ public class API {
 	private CompletableFuture<?> scheduleRestart() {
 		if (restartingFuture != null) {
 			restartingFuture.cancel(true);
-			nextRestartSecs = Math.min(nextRestartSecs*2, 60);
+			nextRestartSecs = Math.min(nextRestartSecs * 2, 60);
 		} else {
 			nextRestartSecs = 2;
 		}

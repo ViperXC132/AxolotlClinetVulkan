@@ -3,8 +3,11 @@ plugins {
 	id("io.github.p03w.machete")
 }
 
+val minecraftVersion = "1.20.1"
+val mappingsBuild = "23"
+val fapi = "0.92.2"
 group = project.property("maven_group")!!
-version = "${project.property("version")}+${project.property("minecraft_120")}"
+version = "${project.property("version")}+$minecraftVersion"
 base.archivesName = "AxolotlClient"
 
 loom {
@@ -25,16 +28,16 @@ repositories {
 }
 
 dependencies {
-	minecraft("com.mojang:minecraft:${project.property("minecraft_120")}")
-	mappings("org.quiltmc:quilt-mappings:${project.property("mappings_120")}:intermediary-v2")
+	minecraft("com.mojang:minecraft:$minecraftVersion")
+	mappings("org.quiltmc:quilt-mappings:$minecraftVersion+build.$mappingsBuild:intermediary-v2")
 
 	modImplementation("net.fabricmc:fabric-loader:${project.property("fabric_loader")}")
 
-	modImplementation("net.fabricmc.fabric-api:fabric-api:${project.property("fapi_120")}+${project.property("minecraft_120")}")
+	modImplementation("net.fabricmc.fabric-api:fabric-api:$fapi+$minecraftVersion")
 
-	modImplementation("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+${project.property("minecraft_120")}")
-	include("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+${project.property("minecraft_120")}")
-	modImplementation(include("io.github.axolotlclient:AxolotlClient-config-rounded:${project.property("config")}+${project.property("minecraft_120")}")!!)
+	modImplementation("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+$minecraftVersion")
+	include("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+$minecraftVersion")
+	modImplementation(include("io.github.axolotlclient:AxolotlClient-config-rounded:${project.property("config")}+$minecraftVersion")!!)
 
 	modCompileOnlyApi("com.terraformersmc:modmenu:8.0.0") {
 		exclude(group = "net.fabricmc")
@@ -47,7 +50,7 @@ dependencies {
 	//modImplementation("com.noxcrew.noxesium:api:$noxesiumVersion")
 	//localRuntime("org.khelekore:prtree:1.5")
 
-	modCompileOnly("link.e4mc:e4mc_minecraft-fabric:5.3.1")
+	modCompileOnly("maven.modrinth:e4mc:6.0.6-fabric")
 
 	implementation("net.hypixel:mod-api:1.0.1")
 	include(modImplementation("io.github.moehreag.hypixel:mod-api-fabric:1.0.1+build.2+mc1.20.1")!!)
@@ -92,7 +95,7 @@ publishing {
 		maven {
 			name = "owlMaven"
 			val repository = if (project.version.toString().contains("beta") || project.version.toString().contains("alpha")) "snapshots" else "releases"
-			url = uri("https://moehreag.duckdns.org/maven/$repository")
+			url = uri("https://maven.axolotlclient.com/$repository")
 			credentials(PasswordCredentials::class)
 			authentication {
 				create<BasicAuthentication>("basic")
@@ -111,7 +114,7 @@ modrinth {
 	versionNumber = "${project.version}"
 	versionType = "release"
 	uploadFile = tasks.remapJar.get()
-	gameVersions.set(listOf("${project.property("minecraft_120")}"))
+	gameVersions.set(listOf(minecraftVersion))
 	loaders.set(listOf("quilt", "fabric"))
 	additionalFiles.set(listOf(tasks.remapSourcesJar))
 	dependencies {

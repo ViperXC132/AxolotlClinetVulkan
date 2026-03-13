@@ -36,7 +36,7 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import io.github.axolotlclient.AxolotlClientCommon;
-import io.github.axolotlclient.api.API;
+import io.github.axolotlclient.bridge.util.AxoI18n;
 import io.github.axolotlclient.util.GsonHelper;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -62,24 +62,18 @@ public class Status {
 	}
 
 	public String getDescription() {
-		return activity == null || activity.description.isEmpty() ? "" :
-			API.getInstance().getTranslationProvider()
-				.translate(activity.description);
+		return activity == null || activity.description.isEmpty() ? "" : AxoI18n.translate(activity.description);
 	}
 
 	public String getTitle() {
 		if (!isOnline()) {
-			return API.getInstance().getTranslationProvider().translate("api.status.title.offline");
+			return AxoI18n.translate("api.status.title.offline");
 		}
-		return activity == null || activity.title.isEmpty() ? API.getInstance().getTranslationProvider().translate("api.status.title.online") :
-			API.getInstance().getTranslationProvider()
-				.translate(activity.title);
+		return AxoI18n.translate(activity == null || activity.title.isEmpty() ? "api.status.title.online" : activity.title);
 	}
 
 	public String getLastOnline() {
-		return lastOnline == null ? null :
-			API.getInstance().getTranslationProvider()
-				.translate("api.status.last_online", lastOnline.atZone(ZoneId.systemDefault()).format(AxolotlClientCommon.getInstance().getConfig().getDateTimeFormatter()));
+		return lastOnline == null ? null : AxoI18n.translate("api.status.last_online", lastOnline.atZone(ZoneId.systemDefault()).format(AxolotlClientCommon.getInstance().getConfig().getDateTimeFormatter()));
 	}
 
 	public void setOnline(boolean online) {
@@ -163,10 +157,13 @@ public class Status {
 					JsonObject metadataObj = GsonHelper.GSON.fromJson(in, JsonObject.class);
 					String type = metadataObj.get("type").getAsString();
 					MetadataAttributes attributes = switch (type) {
-						case WorldHostMetadata.ID -> GsonHelper.GSON.fromJson(metadataObj.get("attributes"), WorldHostMetadata.class);
-						case E4mcMetadata.ID -> GsonHelper.GSON.fromJson(metadataObj.get("attributes"), E4mcMetadata.class);
-						case ExternalServerMetadata.ID -> GsonHelper.GSON.fromJson(metadataObj.get("attributes"), ExternalServerMetadata.class);
-						default -> throw new IllegalArgumentException("Unsupported attributes id: "+type);
+						case WorldHostMetadata.ID ->
+							GsonHelper.GSON.fromJson(metadataObj.get("attributes"), WorldHostMetadata.class);
+						case E4mcMetadata.ID ->
+							GsonHelper.GSON.fromJson(metadataObj.get("attributes"), E4mcMetadata.class);
+						case ExternalServerMetadata.ID ->
+							GsonHelper.GSON.fromJson(metadataObj.get("attributes"), ExternalServerMetadata.class);
+						default -> throw new IllegalArgumentException("Unsupported attributes id: " + type);
 					};
 					return new Metadata(type, attributes);
 				}

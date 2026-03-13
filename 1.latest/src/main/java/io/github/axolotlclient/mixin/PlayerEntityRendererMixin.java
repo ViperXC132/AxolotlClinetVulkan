@@ -33,7 +33,6 @@ import io.github.axolotlclient.modules.hypixel.NickHider;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.util.duck.SubmitNodeCollectorExtension;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.entity.player.AvatarRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
@@ -58,7 +57,9 @@ public abstract class PlayerEntityRendererMixin {
 			var mc = Minecraft.getInstance();
 			if (mc.player != null) {
 				Level level = Minecraft.getInstance().level;
+				if (level == null) return;
 				Entity player = level.getEntity(state.id);
+				if (player == null) return; // some mods seem to create players without adding them to a level for gui rendering. why?
 				boolean self = player.getUUID() == mc.player.getUUID();
 				if (self && NickHider.getInstance().hideOwnName.get()) {
 					component = (Component) NickHider.getInstance().editComponent(component, player.getName().getString(), NickHider.getInstance().hiddenNameSelf.get());
@@ -74,8 +75,8 @@ public abstract class PlayerEntityRendererMixin {
 	public void axolotlclient$addBadges(AvatarRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
 		if (!state.isDiscrete) {
 			if (AxolotlClient.config().showBadges.get()) {
-				Player entity = (Player) Minecraft.getInstance().level.getEntity(state.id);
-				if (entity != null && UserRequest.getOnline(entity.getStringUUID())) {
+				Entity entity = Minecraft.getInstance().level.getEntity(state.id);
+				if (entity instanceof Player player && UserRequest.getOnline(player.getStringUUID())) {
 					((SubmitNodeCollectorExtension) submitNodeCollector).axolotlclient$lastNameTagSubmitHasBadge();
 				}
 			}
@@ -85,10 +86,10 @@ public abstract class PlayerEntityRendererMixin {
 	@Inject(method = "submitNameTag(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V"))
 	private void addLevel(AvatarRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
 		if (Minecraft.getInstance().getCurrentServer() != null && Minecraft.getInstance().getCurrentServer().ip.endsWith("hypixel.net")) {
-			AbstractClientPlayer entity = (AbstractClientPlayer) Minecraft.getInstance().level.getEntity(state.id);
-			if (entity != null) {
+			var entity = Minecraft.getInstance().level.getEntity(state.id);
+			if (entity instanceof Player player) {
 				if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().inGame() && BedwarsMod.getInstance().bedwarsLevelHead.get()) {
-					String text = BedwarsMod.getInstance().getGame().get().getLevelHead(entity);
+					String text = BedwarsMod.getInstance().getGame().get().getLevelHead(player);
 					if (text != null) {
 						var y = state.showExtraEars ? -20 : -10;
 
@@ -100,7 +101,7 @@ public abstract class PlayerEntityRendererMixin {
 						((SubmitNodeCollectorExtension) submitNodeCollector).axolotlclient$lastNameTagSubmitIsLevelHead();
 					}
 				} else if (LevelHead.getInstance().enabled.get()) {
-					String text = LevelHead.getInstance().getDisplayString(entity.getStringUUID());
+					String text = LevelHead.getInstance().getDisplayString(player.getStringUUID());
 
 					var y = state.showExtraEars ? -20 : -10;
 

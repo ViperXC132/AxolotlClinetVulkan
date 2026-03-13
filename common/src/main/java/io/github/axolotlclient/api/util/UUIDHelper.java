@@ -42,7 +42,7 @@ public class UUIDHelper {
 		return new CachedAPI<>(val -> {
 			URI uri;
 			try {
-				uri = new URI(endpoint+val);
+				uri = new URI(endpoint + val);
 			} catch (Exception e) {
 				return CompletableFuture.completedFuture(Optional.empty());
 			}

@@ -188,7 +188,7 @@ public class BridgeValidationPostprocessor implements IMixinConfigPlugin {
 
 		mixinInfo.getClassNode(0).interfaces.forEach(s -> {
 			final var ifs = remainingInjections.get(targetClassName);
-			if(ifs != null) {
+			if (ifs != null) {
 				ifs.remove(s);
 			}
 		});

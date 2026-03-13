@@ -22,7 +22,7 @@
 
 package io.github.axolotlclient.bridge.mixin.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.render.AxoFont;
@@ -33,14 +33,19 @@ import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.Axis;
 import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(GuiGraphics.class)
 public abstract class GuiGraphicsMixin implements AxoRenderContext {
@@ -67,6 +72,18 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	public abstract void drawItemInSlot(TextRenderer textRenderer, ItemStack stack, int x, int y,
 										@Nullable String countOverride);
 
+	@Shadow
+	public abstract void fillGradient(int startX, int startY, int endX, int endY, int startColor, int endColor);
+
+	@Shadow
+	@Final
+	private MinecraftClient client;
+
+	@Unique
+	private @NotNull GuiGraphics self() {
+		return (GuiGraphics) (Object) this;
+	}
+
 	@Override
 	public void br$popMatrix() {
 		matrices.pop();
@@ -87,6 +104,16 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 		matrices.translate(x, y, 0);
 	}
 
+	@Override
+	public void br$rotateMatrix(float ang) {
+		matrices.rotate(Axis.Z_POSITIVE.rotation(ang));
+	}
+
+	@Override
+	public void br$rotateMatrixAround(float ang, float x, float y) {
+		matrices.rotateAround(Axis.Z_POSITIVE.rotation(ang), x, y, 0);
+	}
+
 	// scissor
 	@Override
 	public void br$pushScissor(int x, int y, int w, int h) {
@@ -96,29 +123,6 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	@Override
 	public void br$popScissor() {
 		disableScissor();
-	}
-
-	// GL state management
-	@Override
-	public void br$glEnableBlend() {
-		RenderSystem.enableBlend();
-	}
-
-	@Override
-	public void br$glEnableAlpha() {
-	}
-
-	@Override
-	public void br$glDisableBlend() {
-		RenderSystem.disableBlend();
-	}
-
-	@Override
-	public void br$glDisableAlpha() {
-	}
-
-	@Override
-	public void br$glColor4(float r, float g, float b, float a) {
 	}
 
 	@Override
@@ -137,23 +141,53 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	}
 
 	@Override
+	public void br$fillRectGradientVert(int x, int y, int width, int height, int color1, int color2) {
+		fillGradient(x, y, x + width, y + height, color1, color2);
+	}
+
+	@Override
+	public void br$fillRectGradientHoriz(int x, int y, int width, int height, int color1, int color2) {
+		VertexConsumer consumer = client.getBufferBuilders().getEntityVertexConsumers().getBuffer(RenderLayer.getGui());
+		Matrix4f matrix4f = matrices.peek().getModel();
+		consumer.xyz(matrix4f, x, y, 0).color(color1);
+		consumer.xyz(matrix4f, x, y + height, 0).color(color1);
+		consumer.xyz(matrix4f, x + width, y + height, 0).color(color2);
+		consumer.xyz(matrix4f, x + width, y, 0).color(color2);
+	}
+
+	@Override
+	public void br$fillRectRoundGradient(int x, int y, int width, int height, int colorTopLeft, int colorBottomLeft, int colorBottomRight, int colorTopRight, float roundingPx) {
+		self().axolotlclient_rendering$roundedRectGradient(x, y, x + width, y + height, colorTopLeft, colorBottomLeft, colorBottomRight, colorTopRight, roundingPx);
+	}
+
+	@Override
+	public void br$fillSegment(int x0, int y0, int x1, int y1, int colorX0Y0, int colorX0Y1, int colorX1Y1, int colorX1Y0, float radius) {
+		self().axolotlclient_rendering$segment(x0, y0, x1, y1, colorX0Y0, colorX0Y1, colorX1Y1, colorX1Y0, radius);
+	}
+
+	@Override
 	public void br$outlineRect(int x, int y, int width, int height, int color) {
-		DrawUtil.outlineRect((GuiGraphics) (Object) this, x, y, width, height, color);
+		DrawUtil.outlineRect(self(), x, y, width, height, color);
 	}
 
 	@Override
 	public void br$fillRectRound(int x, int y, int width, int height, int color, float rounding) {
-		((GuiGraphics) (Object) this).axolotlclient_rendering$roundedRect(x, y, x + width, y + height, color, rounding);
+		self().axolotlclient_rendering$roundedRect(x, y, x + width, y + height, color, rounding);
+	}
+
+	@Override
+	public void br$fillRectRoundVarying(int x, int y, int width, int height, int color, float roundingTL, float roundingBL, float roundingBR, float roundingTR) {
+		self().axolotlclient_rendering$roundedRectVarying(x, y, x + width, y + height, color, roundingTL, roundingBL, roundingBR, roundingTR);
 	}
 
 	@Override
 	public void br$outlineRectRound(int x, int y, int width, int height, int color, float rounding) {
-		((GuiGraphics) (Object) this).axolotlclient_rendering$outlineRoundedRect(x, y, x + width, y + height, color, rounding, 0.5f);
+		self().axolotlclient_rendering$outlineRoundedRect(x, y, x + width, y + height, color, rounding, 0.5f);
 	}
 
 	@Override
-	public void br$drawTexture(int x, int y, int width, int height, AxoSprite sprite) {
-		((AxoSpriteImpl) sprite).draw(MinecraftClient.getInstance(), (GuiGraphics) (Object) this, x, y, width, height);
+	public void br$drawTexture(AxoSprite sprite, int x, int y, int width, int height, int color) {
+		((AxoSpriteImpl) sprite).draw(MinecraftClient.getInstance(), self(), x, y, width, height, color);
 	}
 
 	// item model rendering

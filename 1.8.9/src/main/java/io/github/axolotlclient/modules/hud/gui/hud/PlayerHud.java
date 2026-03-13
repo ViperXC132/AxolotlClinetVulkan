@@ -73,26 +73,14 @@ public class PlayerHud extends PlayerHudCommon {
 			return;
 		}
 
-		if (!placeholder && autoHide.get()) {
-			if (isPerformingAction()) {
-				hide = -1;
-			} else if (hide == -1) {
-				hide = System.currentTimeMillis();
-			}
-
-			if (hide != -1 && System.currentTimeMillis() - hide > 500) {
-				return;
-			}
-		}
-
 		float lerpY = (lastYOffset + ((yOffset - lastYOffset) * delta));
 
 		GlStateManager.color4f(1, 1, 1, 1);
 		GlStateManager.enableColorMaterial();
 		GlStateManager.pushMatrix();
 		GlStateManager.translated(
-			x + getTrueContentWidth() / 2f,
-			y + getTrueContentHeight() * client.player.height / 2f - lerpY,
+			x + getContentWidth() / 2f * getScale(),
+			y + getContentHeight() * getScale() * client.player.height / 2f - lerpY,
 			1050);
 		GlStateManager.scalef(1, 1, -1);
 
@@ -145,7 +133,8 @@ public class PlayerHud extends PlayerHudCommon {
 		GlStateManager.activeTexture(GLX.GL_TEXTURE0);
 	}
 
-	private boolean isPerformingAction() {
+	@Override
+	protected boolean isPerformingAction() {
 		// inspired by tr7zw's mod
 		LocalClientPlayerEntity player = Minecraft.getInstance().player;
 		return player.isSneaking() || player.isSprinting() || player.abilities.flying

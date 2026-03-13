@@ -27,6 +27,7 @@ import java.util.UUID;
 import io.github.axolotlclient.bridge.entity.AxoEntity;
 import io.github.axolotlclient.bridge.math.Vec3;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -74,6 +75,15 @@ public abstract class EntityMixin implements AxoEntity {
 	@Shadow
 	private int networkId;
 
+	@Shadow
+	public abstract Vec3d getEyePosition(float f);
+
+	@Shadow
+	public float height;
+
+	@Shadow
+	public abstract Box getShape();
+
 	@Override
 	public @Nullable AxoEntity br$getVehicle() {
 		return vehicle;
@@ -118,5 +128,22 @@ public abstract class EntityMixin implements AxoEntity {
 	@Override
 	public int br$getNetId() {
 		return networkId;
+	}
+
+	@Override
+	public Vec3 br$getEyePos(float delta) {
+		var pos = getEyePosition(delta);
+		return new Vec3(pos.x, pos.y, pos.z);
+	}
+
+	@Override
+	public float br$getHeight() {
+		return height;
+	}
+
+	@Override
+	public Vec3 br$getBoundingBoxHalfDimensions() {
+		var box = getShape();
+		return new Vec3(box.maxX - box.minX, box.maxY - box.minY, box.maxZ - box.minZ).div(2);
 	}
 }

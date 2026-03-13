@@ -43,7 +43,7 @@ public class BeaconBeam extends AbstractCommonModule {
 	public void init() {
 		beams.add(showBeaconBeams);
 
-		if(!BridgeVersion.V1_8.isCurrent()) {
+		if (!BridgeVersion.V1_8.isCurrent()) {
 			beams.add(showEndGatewayBeams);
 		}
 

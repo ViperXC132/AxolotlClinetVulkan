@@ -70,13 +70,13 @@ public class LevelHead implements AbstractHypixelMod {
 		return category;
 	}
 
-    @Getter
-    @AllArgsConstructor
-    public enum Mode {
-        NETWORK(HypixelAbstractionLayer.getInstance().getNetworkLevelApi()),
-        BEDWARS(HypixelAbstractionLayer.getInstance().getBedwarsLevelApi()),
-        SKYWARS(HypixelAbstractionLayer.getInstance().getSkywarsExpApi());
+	@Getter
+	@AllArgsConstructor
+	public enum Mode {
+		NETWORK(HypixelAbstractionLayer.getInstance().getNetworkLevelApi()),
+		BEDWARS(HypixelAbstractionLayer.getInstance().getBedwarsLevelApi()),
+		SKYWARS(HypixelAbstractionLayer.getInstance().getSkywarsExpApi());
 
-        private final CachedAPI<String, Integer> api;
-    }
+		private final CachedAPI<String, Integer> api;
+	}
 }

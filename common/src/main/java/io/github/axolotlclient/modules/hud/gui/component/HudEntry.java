@@ -22,7 +22,11 @@
 
 package io.github.axolotlclient.modules.hud.gui.component;
 
+import java.util.Map;
+import java.util.Optional;
+
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.modules.hud.gui.layout.SnapAnchorType;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
@@ -73,4 +77,20 @@ public interface HudEntry extends Identifiable, Configurable, Positionable {
 	boolean isHidden();
 
 	boolean supportsScaling();
+
+	Optional<SnapAnchorType> dependsOnX(HudEntry entry);
+
+	Optional<SnapAnchorType> dependsOnY(HudEntry entry);
+
+	void addBoundsDependency(HudEntry dependency, SnapAnchorType type);
+
+	void removeBoundsDependencyX(HudEntry entry);
+
+	void removeBoundsDependencyY(HudEntry entry);
+
+	void clearBoundsDependencies();
+
+	Map<HudEntry, SnapAnchorType> getDependenciesX();
+
+	Map<HudEntry, SnapAnchorType> getDependenciesY();
 }

@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.util.UUIDHelper;
@@ -146,7 +145,7 @@ public class ImageScreen extends Screen {
 						client.setScreen(new ImageScreen(parent, remote.toShared(out), freeOnClose));
 					} catch (IOException e) {
 						Notifications.getInstance().addStatus("gallery.image.save.failure", "gallery.image.save.failure.description", e.getMessage());
-						AxolotlClient.LOGGER.warn("Failed to save shared image!", e);
+						AxolotlClientCommon.getInstance().getLogger().warn("Failed to save shared image!", e);
 					}
 				}).width(buttonWidth).build());
 				actions.add(ButtonWidget.builder(Text.translatable("gallery.image.copy"), b -> {
@@ -154,7 +153,7 @@ public class ImageScreen extends Screen {
 						ScreenshotCopying.copy(image.image().getBytes());
 					} catch (IOException e) {
 						Notifications.getInstance().addStatus("gallery.image.copy.failure", "gallery.image.copy.failure.description", e.getMessage());
-						AxolotlClient.LOGGER.warn("Failed to copy shared image!", e);
+						AxolotlClientCommon.getInstance().getLogger().warn("Failed to copy shared image!", e);
 					}
 				}).width(buttonWidth).build());
 			}

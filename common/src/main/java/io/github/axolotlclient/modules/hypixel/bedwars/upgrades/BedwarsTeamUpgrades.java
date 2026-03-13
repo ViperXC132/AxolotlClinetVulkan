@@ -25,12 +25,10 @@ package io.github.axolotlclient.modules.hypixel.bedwars.upgrades;
 
 import java.util.regex.Pattern;
 
-import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffects;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoItems;
 import io.github.axolotlclient.bridge.render.AxoSprites;
-import io.github.axolotlclient.util.ClientColors;
 
 /**
  * @author DarkKronicle
@@ -40,9 +38,9 @@ public class BedwarsTeamUpgrades {
 
 	public final TrapUpgrade trap = new TrapUpgrade();
 
-	public final TeamUpgrade sharpness = new BinaryUpgrade(
+	public final TeamUpgrade sharpness = new TieredUpgrade(
 		"sharp", Pattern.compile("^\\b[A-Za-z0-9_§]{3,16}\\b purchased Sharpened Swords"),
-		8, 4, (context, x, y, width, height, upgradeLevel) -> {
+		new int[]{8, 32}, new int[]{4, 16}, (context, x, y, width, height, upgradeLevel) -> {
 		if (upgradeLevel == 0) {
 			context.br$renderGuiItemModel(AxoItemStack.of(AxoItems.STONE_SWORD), x, y);
 		} else {
@@ -52,13 +50,8 @@ public class BedwarsTeamUpgrades {
 
 	public final TeamUpgrade healPool = new BinaryUpgrade(
 		"healpool", Pattern.compile("^\\b[A-Za-z0-9_§]{3,16}\\b purchased Heal Pool\\s*$"), 3, 1,
-		(context, x, y, width, height, upgradeLevel) -> {
-		if (upgradeLevel == 0) {
-			Color color = ClientColors.DARK_GRAY;
-			context.br$glColor4(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
-		}
-		context.br$drawTexture(x, y, 16, 16, AxoStatusEffects.REGEN.br$getSprite());
-	});
+		(context, x, y, width, height, upgradeLevel) ->
+			context.br$drawTexture(AxoStatusEffects.REGEN.br$getSprite(), x - 1, y - 1, 18, 18));
 
 	public final TeamUpgrade protection = new TieredUpgrade(
 		"prot", Pattern.compile("^\\b[A-Za-z0-9_§]{3,16}\\b purchased Reinforced Armor .{1,3}\\s*$"),
@@ -95,31 +88,26 @@ public class BedwarsTeamUpgrades {
 	public final TeamUpgrade maniacMiner = new TieredUpgrade(
 		"haste", Pattern.compile("^\\b[A-Za-z0-9_§]{3,16}\\b purchased Maniac Miner .{1,3}\\s*$"),
 		new int[]{2, 4}, new int[]{4, 6}, (context, x, y, width, height, upgradeLevel) -> {
-		if (upgradeLevel == 1) {
-			Color color = ClientColors.GRAY;
-			context.br$glColor4(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
-		} else if (upgradeLevel == 0) {
-			Color color = ClientColors.DARK_GRAY;
-			context.br$glColor4(color.getRed() / 255F, color.getGreen() / 255F, color.getBlue() / 255F, color.getAlpha() / 255F);
-		}
-		context.br$drawTexture(x, y, 16, 16, AxoStatusEffects.HASTE.br$getSprite());
+		context.br$drawTexture(AxoStatusEffects.HASTE.br$getSprite(), x - 1, y - 1, 18, 18);
+		context.br$drawString(String.valueOf(upgradeLevel), x + width - 4, y + height - 6, -1);
 	});
 
 	public final TeamUpgrade forge = new TieredUpgrade(
 		"forge", Pattern.compile("^\\b[A-Za-z0-9_§]{3,16}\\b purchased (?:Iron|Golden|Emerald|Molten) Forge\\s*$"),
 		new int[]{2, 4}, new int[]{4, 6}, (context, x, y, width, height, upgradeLevel) -> {
 		if (upgradeLevel == 0) {
-			context.br$drawTexture(x, y, width, height, AxoSprites.FURNACE_OFF);
+			context.br$drawTexture(AxoSprites.FURNACE_OFF, x, y, width, height);
 		} else {
+			int color = -1;
 			if (upgradeLevel == 2) {
-				context.br$glColor4(1, 1, 0, 1);
+				color = 0xFFFFFF00;
 			} else if (upgradeLevel == 3) {
-				context.br$glColor4(0, 1, 0, 1);
+				color = 0xFF00FF00;
 			} else if (upgradeLevel == 4) {
-				context.br$glColor4(1, 0, 0, 1);
+				color = 0xFFFF0000;
 			}
 
-			context.br$drawTexture(x, y, width, height, AxoSprites.FURNACE_ON);
+			context.br$drawTexture(AxoSprites.FURNACE_ON, x, y, width, height, color);
 			context.br$drawString(String.valueOf(upgradeLevel), x + width - 4, y + height - 6, -1, true);
 		}
 	});

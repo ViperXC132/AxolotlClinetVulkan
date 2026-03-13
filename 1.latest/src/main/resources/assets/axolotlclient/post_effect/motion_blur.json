@@ -1,15 +1,17 @@
 {
 	"targets": {
 		"swap": {},
-		"previous": {}
+		"previous": {
+			"persistent": true
+		}
 	},
 	"passes": [
 		{
-			"vertex_shader": "minecraft:post/sobel",
+			"vertex_shader": "minecraft:core/screenquad",
 			"fragment_shader": "axolotlclient:post/motion_blur",
 			"inputs": [
 				{
-					"sampler_name": "Diffuse",
+					"sampler_name": "In",
 					"target": "minecraft:main"
 				},
 				{
@@ -29,8 +31,8 @@
 			"output": "swap"
 		},
 		{
-			"vertex_shader": "minecraft:post/blit",
-			"fragment_shader": "minecraft:post/blit",
+			"vertex_shader": "minecraft:core/screenquad",
+			"fragment_shader": "minecraft:core/blit_screen",
 			"inputs": [
 				{
 					"sampler_name": "In",
@@ -40,8 +42,8 @@
 			"output": "previous"
 		},
 		{
-			"vertex_shader": "minecraft:post/blit",
-			"fragment_shader": "minecraft:post/blit",
+			"vertex_shader": "minecraft:core/screenquad",
+			"fragment_shader": "minecraft:core/blit_screen",
 			"inputs": [
 				{
 					"sampler_name": "In",

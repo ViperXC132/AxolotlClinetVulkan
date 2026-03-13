@@ -22,16 +22,20 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud;
 
+import com.mojang.blaze3d.lighting.DiffuseLighting;
+import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.PlayerDirectionChangeEvent;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screen.ingame.InventoryScreen;
 import net.minecraft.client.network.ClientPlayerEntity;
+import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -77,7 +81,8 @@ public class PlayerHud extends PlayerHudCommon {
 			float pitch = k * (-90.0F - client.player.getPitch()) + 90;
 			float height = client.player.getHeight();
 			// sin = opposite / hypotenuse
-			yOffset = (float) (Math.sin(Math.toRadians(pitch)) * height);
+			float offset = (float) (Math.sin(Math.toRadians(pitch)) * height) * 50;
+			yOffset = 35 - offset;
 			if (pitch < 0) {
 				yOffset -= (float) (((1 / (1 + Math.exp(-pitch / 4))) - .5) * 20);
 			}
@@ -86,6 +91,7 @@ public class PlayerHud extends PlayerHudCommon {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void renderPlayer(AxoRenderContext ctx, boolean placeholder, double x, double y, float delta) {
 		var client = MinecraftClient.getInstance();
@@ -93,21 +99,7 @@ public class PlayerHud extends PlayerHudCommon {
 			return;
 		}
 
-		if (!placeholder && autoHide.get()) {
-			if (isPerformingAction()) {
-				hide = -1;
-			} else if (hide == -1) {
-				hide = System.currentTimeMillis();
-			}
-
-			if (hide != -1 && System.currentTimeMillis() - hide > 500) {
-				return;
-			}
-		}
-
 		float lerpY = (lastYOffset + ((yOffset - lastYOffset) * delta));
-
-		float scale = getScale() * 40;
 
 		Quaternionf quaternion = new Quaternionf().rotateZ((float) Math.PI);
 
@@ -121,17 +113,33 @@ public class PlayerHud extends PlayerHudCommon {
 		quaternion.mul(quaternionf2);
 
 		currentlyRendering = true;
-		InventoryScreen.drawEntity((GuiGraphics) ctx,
-			(int) (x + getTrueContentWidth() / 2f),
-			(int) (y + getTrueContentHeight() * client.player.getHeight() / 2f - lerpY),
-			(int) scale,
-			quaternion,
-			quaternionf2,
-			client.player);
+		int x1 = (int) (x / getScale() + getContentWidth() / 2f);
+		int y1 = (int) (y / getScale() + getContentHeight() * .925f - lerpY);
+		GuiGraphics graphics = (GuiGraphics) ctx;
+		graphics.getMatrices().push();
+		graphics.getMatrices().translate(x1, y1, 50.0);
+		graphics.getMatrices().multiplyMatrix(new Matrix4f().scaling(40, 40, -40));
+		graphics.getMatrices().multiply(quaternion);
+		DiffuseLighting.setupInventoryEntityLighting();
+		EntityRenderDispatcher entityRenderDispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
+		if (quaternionf2 != null) {
+			quaternionf2.conjugate();
+			entityRenderDispatcher.setRotation(quaternionf2);
+		}
+
+		entityRenderDispatcher.setRenderShadows(false);
+		RenderSystem.runAsFancy(
+			() -> entityRenderDispatcher.render((LivingEntity) client.player, 0.0, 0.0, 0.0, 0.0F, delta, graphics.getMatrices(), graphics.getVertexConsumers(), 15728880)
+		);
+		graphics.draw();
+		entityRenderDispatcher.setRenderShadows(true);
+		graphics.getMatrices().pop();
+		DiffuseLighting.setup3DGuiLighting();
 		currentlyRendering = false;
 	}
 
-	private boolean isPerformingAction() {
+	@Override
+	protected boolean isPerformingAction() {
 		// inspired by tr7zw's mod
 		ClientPlayerEntity player = MinecraftClient.getInstance().player;
 		//noinspection DataFlowIssue

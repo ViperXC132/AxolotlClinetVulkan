@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2026 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -22,47 +22,39 @@
 
 package io.github.axolotlclient.mixin;
 
-import io.github.axolotlclient.bridge.entity.AxoPlayer;
+import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.modules.particles.Particles;
-import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerEntity.class)
-public abstract class PlayerEntityMixin extends LivingEntity {
+public abstract class PlayerEntityMixin {
 
-	private PlayerEntityMixin(EntityType<? extends LivingEntity> entityType, World world) {
-		super(entityType, world);
-	}
+	@Shadow
+	public abstract void addCritParticles(Entity target);
 
-	@Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;getAttributeValue(Lnet/minecraft/registry/Holder;)D"))
-	private void axolotlclient$getReach(Entity entity, CallbackInfo ci) {
-		Events.PLAYER_ATTACK.invoker().accept((AxoPlayer) this, entity);
+	@Shadow
+	public abstract void addEnchantedHitParticles(Entity target);
+
+	@Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
+	private void onAttack(Entity target, CallbackInfo ci) {
+		Events.PLAYER_ATTACK.invoker().accept((PlayerEntity) (Object) this, target);
 	}
 
 	@Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerEntity;onAttacking(Lnet/minecraft/entity/Entity;)V"))
-	private void axolotlclient$alwaysCrit(Entity entity, CallbackInfo ci) {
-		if (Particles.getInstance().getAlwaysOn(ParticleTypes.CRIT)) {
-			MinecraftClient.getInstance().player.addCritParticles(entity);
+	private void onAttack(Entity target, CallbackInfo ci, @Local(ordinal = 2) boolean crit, @Local(ordinal = 1) float enchantedDamage) {
+		if (Particles.getInstance().getAlwaysOn(ParticleTypes.CRIT) && !crit) {
+			addCritParticles(target);
 		}
-		if (Particles.getInstance().getAlwaysOn(ParticleTypes.ENCHANTED_HIT)) {
-			MinecraftClient.getInstance().player.addEnchantedHitParticles(entity);
+		if (Particles.getInstance().getAlwaysOn(ParticleTypes.ENCHANTED_HIT) && enchantedDamage == 0) {
+			addEnchantedHitParticles(target);
 		}
-	}
-
-	@Inject(method = "damage", at = @At("HEAD"))
-	private void axolotlclient$damage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
-		Events.PLAYER_HURT.invoker().accept((AxoPlayer) this, source.getAttacker());
 	}
 }

@@ -117,7 +117,7 @@ public class IPHud extends TextHudEntry {
 		if (showIcon.get() && sprite != null) {
 			int imageSize = getContentHeight() - 2;
 			textX += imageSize / 2;
-			graphics.br$drawTexture(pos.x() + 1, pos.y() + 1, imageSize, imageSize, sprite);
+			graphics.br$drawTexture(sprite, pos.x() + 1, pos.y() + 1, imageSize, imageSize);
 		}
 
 		graphics.br$drawCenteredString(getValue(), textX, pos.y() + getContentHeight() / 2 - client.br$getFont().br$getFontHeight() / 2, textColor.get().toInt(), true);

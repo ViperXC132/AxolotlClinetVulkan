@@ -35,12 +35,11 @@ import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
+import io.github.axolotlclient.util.ClientColors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.util.ColorUtil;
 import net.minecraft.scoreboard.*;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -112,102 +111,114 @@ public class ScoreboardHud extends TextHudEntry {
 		ScoreboardObjective scoreboardObjective2 = scoreboardObjective != null ? scoreboardObjective
 			: scoreboard.getObjectiveForSlot(ScoreboardDisplaySlot.SIDEBAR);
 		if (scoreboardObjective2 != null) {
-			this.renderScoreboardSidebar(graphics, scoreboardObjective2);
+			this.renderScoreboardSidebar(graphics, scoreboardObjective2, false);
 		}
 	}
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
-		renderScoreboardSidebar((GuiGraphics) graphics, placeholder);
+		renderScoreboardSidebar((GuiGraphics) graphics, placeholder, true);
 	}
 
 	// Abusing this could break some stuff/could allow for unfair advantages. The goal is not to do this, so it won't
 	// show any more information than it would have in vanilla.
-	private void renderScoreboardSidebar(GuiGraphics graphics, ScoreboardObjective objective) {
-		TextRenderer font = client.textRenderer;
-		Scoreboard scoreboard = objective.getScoreboard();
-		NumberFormatOverride numberFormat = objective.getNumberFormatOverrideOrElse(StyledNumberFormat.RED);
+	private void renderScoreboardSidebar(GuiGraphics graphics, ScoreboardObjective objective, boolean placeholder) {
+		var font = client.textRenderer;
+		var scoreboard = objective.getScoreboard();
+		var numberFormat = objective.getNumberFormatOverrideOrElse(StyledNumberFormat.RED);
 
 		@Environment(EnvType.CLIENT)
 		record DisplayEntry(Text name, Text score, int scoreWidth) {
 		}
 
-		DisplayEntry[] entries = scoreboard.getEntriesForObjective(objective)
-			.stream()
+		DisplayEntry[] entries = scoreboard.getEntriesForObjective(objective).stream()
 			.filter(entry -> !entry.isHidden())
-			.sorted(Comparator.comparing(ScoreboardEntry::value)
-				.reversed()
+			.sorted(Comparator.comparing(ScoreboardEntry::value).reversed()
 				.thenComparing(ScoreboardEntry::owner, String.CASE_INSENSITIVE_ORDER))
 			.limit(15L)
 			.map(entry -> {
-				Team playerTeam = scoreboard.getPlayerTeam(entry.owner());
-				Text componentx = entry.getDisplay();
-				Text component2 = Team.decorateName(playerTeam, componentx);
-				Text component3 = entry.getNumber(numberFormat);
-				int ix = font.getWidth(component3);
-				return new DisplayEntry(component2, component3, ix);
-			})
-			.toArray(DisplayEntry[]::new);
-		Text title = objective.getDisplayName();
-		int titleWidth = font.getWidth(title);
+				var team = scoreboard.getPlayerTeam(entry.owner());
+				var value = entry.getNumber(numberFormat);
+				return new DisplayEntry(Team.decorateName(team, entry.getDisplay()), value, font.getWidth(value));
+			}).toArray(DisplayEntry[]::new);
+		var title = objective.getDisplayName();
+		int titleWidth = font.getWidth(title) + 2;
 		int maxWidth = titleWidth;
 		int textOffset = font.getWidth(": ");
 
-		for (DisplayEntry entry : entries) {
-			maxWidth = Math.max(maxWidth, font.getWidth(entry.name) + (entry.scoreWidth > 0 && scores.get() ? textOffset + entry.scoreWidth : 0));
+		for (DisplayEntry lv : entries) {
+			maxWidth = Math.max(maxWidth, font.getWidth(lv.name) + (lv.scoreWidth > 0 && scores.get() ?
+				textOffset + lv.scoreWidth : 0));
 		}
 
 		maxWidth += 3;
-		int m = entries.length;
-		int mainHeight = m * 9;
+		int entryCount = entries.length;
+		int mainHeight = entryCount * font.fontHeight;
 
 		int newHeight = mainHeight + 10 + topPadding.get() * 2;
 
 		boolean updated = false;
-		if (newHeight + 1 != height) {
-			setHeight(newHeight + 1);
+		if (newHeight + 1 != getContentHeight()) {
+			setContentHeight(newHeight + 1);
 			updated = true;
 		}
-		if (maxWidth + 1 != width) {
-			setWidth(maxWidth + 1);
+		if (maxWidth + 1 != getContentWidth()) {
+			setContentWidth(maxWidth + 1);
 			updated = true;
 		}
 		if (updated) {
 			onBoundsUpdate();
 		}
 
-		Rectangle bounds = getBounds();
+		Rectangle bounds = getContentBounds();
 
 		int yEnd = bounds.y() + bounds.height();
-		int textX = bounds.x() + 3;
+		int textX = bounds.x() + 2;
 		int xEnd = bounds.x() + bounds.width() - 1;
 		int titleEnd = yEnd - mainHeight;
-		if (background.get()) {
-			graphics.fill(textX - 2, titleEnd - 9 - 1 - topPadding.get() * 2, xEnd, titleEnd - 1, topColor.get().toInt());
-			graphics.fill(textX - 2, titleEnd - 1, xEnd, yEnd, backgroundColor.get().toInt());
+		var bgBounds = getBounds();
+		var maxRounding = Math.min(Math.min(font.fontHeight + topPadding.get() * 2 + backgroundPadding.get(), titleEnd - 1 - bgBounds.y()), xEnd - textX - 3) / 2f;
+		float rounding = Math.min(maxRounding, backgroundRounding.get());
+		if (!placeholder && background.get()) {
+			if (roundBackground.get()) {
+				graphics.axolotlclient_rendering$roundedRectVarying(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), titleEnd - 1,
+					topColor.get().toInt(), rounding, 0, 0, rounding);
+				graphics.axolotlclient_rendering$roundedRectVarying(bgBounds.x(), titleEnd - 1, bgBounds.xEnd(), bgBounds.yEnd(),
+					backgroundColor.get().toInt(), 0, rounding, rounding, 0);
+			} else {
+				graphics.fill(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), titleEnd - 1, topColor.get().toInt());
+				graphics.fill(bgBounds.x(), titleEnd - 1, bgBounds.xEnd(), bgBounds.yEnd(), backgroundColor.get().toInt());
+			}
+		} else {
+			graphics.br$fillRect(bgBounds.x()+1, bgBounds.y()+1, bgBounds.width()-2, titleEnd - 1 - bgBounds.y()-1, ClientColors.DARK_GRAY.withAlpha(100));
 		}
-		graphics.drawText(font, title, textX + maxWidth / 2 - titleWidth / 2, titleEnd - 9 - topPadding.get(), ColorUtil.Argb32.of(textAlpha.get(), -1), shadow.get());
+		graphics.drawText(font, title, textX + maxWidth / 2 - titleWidth / 2, titleEnd - font.fontHeight - topPadding.get(),
+			ClientColors.ARGB.color(textAlpha.get(), -1), shadow.get());
 
-		for (int v = 0; v < m; v++) {
-			DisplayEntry lv2 = entries[v];
-			int w = yEnd - (m - v) * 9;
-			graphics.drawText(font, lv2.name, textX, w, ColorUtil.Argb32.of(textAlpha.get(), -1), shadow.get());
+		for (int v = 0; v < entryCount; v++) {
+			DisplayEntry entry = entries[v];
+			int y = yEnd - (entryCount - v) * font.fontHeight;
+			graphics.drawText(font, entry.name, textX, y, ClientColors.ARGB.color(textAlpha.get(), -1), shadow.get());
 			if (scores.get()) {
-				graphics.drawText(font, lv2.score, xEnd - lv2.scoreWidth, w, scoreColor.get().toInt(), shadow.get());
+				graphics.drawText(font, entry.score, xEnd - entry.scoreWidth, y, scoreColor.get().toInt(),
+					shadow.get());
 			}
 		}
 
-		if (outline.get() && outlineColor.get().getAlpha() > 0) {
-			DrawUtil.outlineRect(graphics, bounds, outlineColor.get());
+		if (!placeholder) {
+			if (outline.get() && outlineColor.get().getAlpha() > 0) {
+				if (roundBackground.get()) {
+					graphics.axolotlclient_rendering$outlineRoundedRect(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), bgBounds.yEnd(), outlineColor.get().toInt(), rounding, 0.5f);
+				} else {
+					DrawUtil.outlineRect(graphics, bgBounds, outlineColor.get());
+				}
+			}
 		}
 	}
 
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
-		options.remove(backgroundPadding);
-		options.remove(backgroundRounding);
-		options.remove(roundBackground);
 		options.set(options.indexOf(super.backgroundColor), backgroundColor);
 		options.add(hide);
 		options.add(topColor);

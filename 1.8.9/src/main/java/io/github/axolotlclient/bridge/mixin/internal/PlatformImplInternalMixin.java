@@ -24,9 +24,7 @@ package io.github.axolotlclient.bridge.mixin.internal;
 
 import java.util.Objects;
 
-import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
-import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.AxoPlayerListEntry;
 import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffect;
@@ -121,15 +119,6 @@ public abstract class PlatformImplInternalMixin {
 	 * @reason Implement bridge platform.
 	 */
 	@Overwrite
-	public static AxolotlClientConfigCommon getConfig() {
-		return AxolotlClient.config();
-	}
-
-	/**
-	 * @author Flowey
-	 * @reason Implement bridge platform.
-	 */
-	@Overwrite
 	public static int getCurrentFps() {
 		return Minecraft.getCurrentFps();
 	}
@@ -153,6 +142,15 @@ public abstract class PlatformImplInternalMixin {
 	@Overwrite
 	public static AxoIdentifier createIdentifier(String ns, String path) {
 		return new Identifier(ns, path);
+	}
+
+	/**
+	 * @author moehreag
+	 * @reason Implement bridge platform.
+	 */
+	@Overwrite
+	public static AxoIdentifier parseIdentifier(String id) {
+		return new Identifier(id);
 	}
 
 	/**
@@ -228,7 +226,10 @@ public abstract class PlatformImplInternalMixin {
 	 */
 	@Overwrite
 	public static String getTabNameFor(AxoPlayerListEntry player) {
-		return Minecraft.getInstance().gui.getPlayerTabOverlay().getDisplayName((PlayerInfo) player);
+		// Inlined PlayerTabOverlay#getDisplayName to avoid StackOverflowError due to mixin
+		var p = (PlayerInfo) player;
+		var displayName = p.getDisplayName();
+		return displayName != null ? displayName.getFormattedString() : Team.getMemberDisplayName(p.getTeam(), p.getProfile().getName());
 	}
 
 	/**

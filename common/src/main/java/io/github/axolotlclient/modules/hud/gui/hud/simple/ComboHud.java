@@ -51,16 +51,16 @@ public class ComboHud extends SimpleTextHudEntry {
 	@Override
 	public void init() {
 		Events.PLAYER_ATTACK.register((player, attacked) -> target = attacked.br$getNetId());
-		Events.PLAYER_HURT.register((player, entity) -> {
-			if(client.br$getPlayer() == null || entity == null) {
+		Events.PLAYER_HURT.register((player, attacker) -> {
+			if (client.br$getPlayer() == null) {
 				return;
 			}
 
 			// if the entity that was hurt is the client player
-			if (entity.br$getNetId() == client.br$getPlayer().br$getNetId()) {
+			if (player.br$getNetId() == client.br$getPlayer().br$getNetId()) {
 				target = -1;
 				count = 0;
-			} else if (entity.br$getNetId() == target) {
+			} else if (player.br$getNetId() == target && attacker != null && attacker.br$getNetId() == client.br$getPlayer().br$getNetId()) {
 				count++;
 				lastTime = Platform.getMeasuringTimeMs();
 			}
@@ -69,12 +69,11 @@ public class ComboHud extends SimpleTextHudEntry {
 
 	@Override
 	public String getValue() {
-		if (count == 0) {
-			return AxoI18n.translate("combocounter.no_hits");
-		}
 		if (lastTime + 2000 < Platform.getMeasuringTimeMs()) {
 			count = 0;
-			return "0 hits";
+		}
+		if (count == 0) {
+			return AxoI18n.translate("combocounter.no_hits");
 		}
 		if (count == 1) {
 			return AxoI18n.translate("combocounter.one_hit");
@@ -84,6 +83,6 @@ public class ComboHud extends SimpleTextHudEntry {
 
 	@Override
 	public String getPlaceholderValue() {
-		return AxoI18n.translate("hits", 3);
+		return AxoI18n.translate("combocounter.hits", 3);
 	}
 }

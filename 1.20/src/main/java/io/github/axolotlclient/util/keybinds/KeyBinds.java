@@ -23,9 +23,9 @@
 package io.github.axolotlclient.util.keybinds;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import com.google.common.collect.Lists;
 import io.github.axolotlclient.mixin.KeyBindAccessor;
 import lombok.Getter;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -35,9 +35,12 @@ public class KeyBinds {
 	@Getter
 	private final static KeyBinds instance = new KeyBinds();
 
-	private final List<KeyBind> binds = new ArrayList<>();
+	private List<KeyBind> binds = new ArrayList<>();
 
 	public KeyBind register(KeyBind bind) {
+		if (binds == null) {
+			throw new IllegalStateException("Keybind registered too late!");
+		}
 		binds.add(bind);
 
 		if (!KeyBindAccessor.getOrderByCategories().containsKey(bind.getCategory())) {
@@ -58,8 +61,11 @@ public class KeyBinds {
 	}
 
 	public KeyBind[] process(KeyBind[] keys) {
-		List<KeyBind> keyBinds = Lists.newArrayList(keys);
-		keyBinds.addAll(binds);
+		List<KeyBind> keyBinds = new ArrayList<>();
+		Collections.addAll(keyBinds, keys);
+		var registered = binds;
+		binds = null;
+		keyBinds.addAll(registered);
 		return keyBinds.toArray(KeyBind[]::new);
 	}
 }

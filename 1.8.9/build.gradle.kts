@@ -4,9 +4,14 @@ plugins {
 	id("io.github.p03w.machete")
 }
 
-group = project.property("maven_group")!!
-version = "${project.property("version")}+${project.property("minecraft_18")}"
+val minecraftVersion = "1.8.9"
+val featherBuild = "27"
+val lwjglVersion = "3.3.6"
+val legacyLwjgl3 = "1.2.10"
+val osl = "0.16.3"
 base.archivesName = "AxolotlClient"
+group = project.property("maven_group")!!
+version = "${project.property("version")}+$minecraftVersion"
 
 loom {
 	accessWidenerPath.set(file("src/main/resources/axolotlclient.accesswidener"))
@@ -22,24 +27,22 @@ loom {
 }
 
 dependencies {
-	minecraft("com.mojang:minecraft:${project.property("minecraft_18")}")
-	mappings("net.ornithemc:feather:${project.property("mappings_18")}")
+	minecraft("com.mojang:minecraft:$minecraftVersion")
+	mappings("net.ornithemc:feather:$minecraftVersion+build.$featherBuild")
 
 	modImplementation("net.fabricmc:fabric-loader:${project.property("fabric_loader")}")
 
-	modImplementation("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+${project.property("minecraft_18")}")
-	include("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+${project.property("minecraft_18")}")
-	modImplementation(include("io.github.axolotlclient:AxolotlClient-config-rounded:${project.property("config")}+${project.property("minecraft_18")}")!!)
+	modImplementation("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+$minecraftVersion")
+	include("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+$minecraftVersion")
+	modImplementation(include("io.github.axolotlclient:AxolotlClient-config-rounded:${project.property("config")}+$minecraftVersion")!!)
 
-	ploceus.dependOsl(project.property("osl") as String)
+	ploceus.dependOsl(osl)
 
-	modImplementation("com.terraformersmc:modmenu:0.1.1+mc1.8.9")
+	modImplementation("com.terraformersmc:modmenu:0.3.1+mc1.8.9")
 
 	implementation(include(project(path = ":common", configuration = "shadow"))!!)
 
 	modApi(include("io.github.moehreag:search-in-resources:1.0.6+1.8.9")!!)
-
-	val lwjglVersion = "3.3.6"
 
 	include("org.apache.logging.log4j:log4j-slf4j-impl:2.0-beta9") {
 		exclude(group = "org.apache.logging.log4j", module = "log4j-api")
@@ -49,9 +52,9 @@ dependencies {
 	localRuntime("org.slf4j:slf4j-jdk14:1.7.36")
 
 	compileOnly("org.lwjgl:lwjgl-glfw:${lwjglVersion}")
-	compileOnly("org.lwjgl:lwjgl-sdl:3.4.0-SNAPSHOT")
+	compileOnly("org.lwjgl:lwjgl-sdl:3.4.1")
 
-	modImplementation("io.github.moehreag:legacy-lwjgl3:${project.property("legacy_lwgjl3")}")
+	modImplementation("io.github.moehreag:legacy-lwjgl3:$legacyLwjgl3+$minecraftVersion")
 
 	include(implementation("org.lwjgl", "lwjgl-tinyfd", lwjglVersion))
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-linux"))
@@ -64,7 +67,7 @@ dependencies {
 	include(modImplementation("io.github.moehreag.hypixel:mod-api-fabric:1.0.1+build.4+mc1.8.9")!!)
 	include(implementation("com.mojang:brigadier:1.0.18")!!)
 
-	compileOnly("link.e4mc:e4mc_minecraft:5.3.1")
+	modCompileOnly("maven.modrinth:e4mc-retro:R6GoyDZn")
 }
 
 configurations.configureEach {
@@ -123,7 +126,7 @@ publishing {
 			val repository = if (project.version.toString().contains("beta") || project.version.toString()
 					.contains("alpha")
 			) "snapshots" else "releases"
-			url = uri("https://moehreag.duckdns.org/maven/$repository")
+			url = uri("https://maven.axolotlclient.com/$repository")
 			credentials(PasswordCredentials::class)
 			authentication {
 				create<BasicAuthentication>("basic")
@@ -142,7 +145,7 @@ modrinth {
 	versionNumber = "${project.version}"
 	versionType = "release"
 	uploadFile = tasks.remapJar.get()
-	gameVersions.set(listOf("${project.property("minecraft_18")}"))
+	gameVersions.set(listOf(minecraftVersion))
 	loaders.set(listOf("ornithe"))
 	additionalFiles.set(listOf(tasks.remapSourcesJar))
 	dependencies {

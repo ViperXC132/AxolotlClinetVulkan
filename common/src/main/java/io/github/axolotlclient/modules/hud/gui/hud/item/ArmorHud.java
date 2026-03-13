@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud.item;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Stream;
@@ -38,6 +40,8 @@ import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
+import io.github.axolotlclient.modules.hud.gui.layout.CardinalOrder;
+import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.ItemUtil;
@@ -67,9 +71,24 @@ public class ArmorHud extends TextHudEntry {
 	private final ColorOption durabilityNumColor = new ColorOption("armorhud.durability_num_color", Colors.WHITE);
 	private final EnumOption<MainHandItemPosition> mainHandItemPosition = new EnumOption<>("armorhud" +
 		".main_hand_item_position", MainHandItemPosition.class, MainHandItemPosition.BOTTOM);
+	private final EnumOption<CardinalOrder> order = DefaultOptions.getCardinalOrder(CardinalOrder.LEFT_RIGHT);
+	private final BooleanOption reverseArmorOrder = new BooleanOption("armorhud.reverse_armor_order", false);
+	private final BooleanOption hideIfEmpty = DefaultOptions.getHideIfEmpty();
 
 	public ArmorHud() {
 		super(20, 100, true);
+	}
+
+	@Override
+	public void render(AxoRenderContext ctx, float delta) {
+		final var player = client.br$getPlayer();
+		if (player == null) {
+			return;
+		}
+		if (hideIfEmpty.get() && Stream.concat(Stream.of(player.br$getInventory().br$getMainHand()), player.br$getInventory().br$getArmor().stream()).allMatch(AxoItemStack::br$isEmpty)) {
+			return;
+		}
+		super.render(ctx, delta);
 	}
 
 	@Override
@@ -105,72 +124,183 @@ public class ArmorHud extends TextHudEntry {
 		boolean showDurability = showDurabilityNumber.get();
 		boolean showMaxDurability = showMaxDurabilityNumber.get();
 
-		int labelWidth = (showDurability || showMaxDurability) ?
-			Stream.concat(Stream.of(mainHand), armor.stream())
-				.map(stack -> {
-					String text = showDurability && showMaxDurability
-						? (stack.br$getMaxDamage() - stack.br$getDamage()) + "/" + stack.br$getMaxDamage()
-						: String.valueOf(showDurability ? stack.br$getMaxDamage() - stack.br$getDamage()
-						: stack.br$getMaxDamage());
-					return context.br$getFont().br$getWidth(text) + 2;
-				}).mapToInt(Integer::intValue).max().orElse(0) : 0;
-
-		width += labelWidth;
-		if (width != getContentWidth()) {
-			setContentWidth(width);
-			boundsChanged = true;
+		if (reverseArmorOrder.get()) {
+			armor = new ArrayList<>(armor);
+			Collections.reverse(armor);
 		}
 
-		DrawPosition pos = getContentPos();
 		MainHandItemPosition mhPos = mainHandItemPosition.get();
-
-		if (mhPos == MainHandItemPosition.DISABLED) {
-			height -= 20;
+		if (hideIfEmpty.get() && mhPos != MainHandItemPosition.DISABLED && mainHand.br$isEmpty()) {
+			mhPos = MainHandItemPosition.DISABLED;
 		}
-
-		if (height != getContentHeight()) {
-			setContentHeight(height);
-			boundsChanged = true;
-		}
-		if (boundsChanged) {
-			onBoundsUpdate();
-		}
-
-		int lastY = 2 + (height - 20);
-
-		if (mhPos == MainHandItemPosition.BOTTOM) {
-			renderMainItem(context, mainHand, pos.x() + 2, pos.y() + lastY, labelWidth, mainHandCount);
-			lastY -= 20;
-		}
-
-		for (AxoItemStack stack : armor) {
-			String label = null;
-
-			if (showProtLvl.get() && stack.br$hasEnchantment(AxoEnchants.PROTECTION)) {
-				label = String.valueOf(stack.br$getEnchantment(AxoEnchants.PROTECTION));
+		var order = this.order.get();
+		if (order.isXAxis()) {
+			int labelWidth = (showDurability || showMaxDurability) ?
+				(mhPos == MainHandItemPosition.DISABLED ? armor.stream() : Stream.concat(Stream.of(mainHand), armor.stream()))
+					.mapToInt(stack -> {
+						String text = showDurability && showMaxDurability
+							? (stack.br$getMaxDamage() - stack.br$getDamage()) + "/" + stack.br$getMaxDamage()
+							: String.valueOf(showDurability ? stack.br$getMaxDamage() - stack.br$getDamage()
+							: stack.br$getMaxDamage());
+						return context.br$getFont().br$getWidth(text) + 2;
+					}).max().orElse(0) : 0;
+			width += labelWidth;
+			if (width != getContentWidth()) {
+				setContentWidth(width);
+				boundsChanged = true;
 			}
 
-			renderItem(context, stack, pos.x() + 2, pos.y() + lastY, labelWidth, label);
-			lastY -= 20;
-		}
+			if (mhPos == MainHandItemPosition.DISABLED) {
+				height -= 20;
+			}
 
-		if (mhPos == MainHandItemPosition.TOP) {
-			renderMainItem(context, mainHand, pos.x() + 2, pos.y() + lastY, labelWidth, mainHandCount);
+			if (height != getContentHeight()) {
+				setContentHeight(height);
+				boundsChanged = true;
+			}
+			if (boundsChanged) {
+				onBoundsUpdate();
+			}
+			DrawPosition pos = getContentPos();
+
+			int lastY = 2 + (height - 20);
+
+			if (mhPos == MainHandItemPosition.BOTTOM) {
+				var x = pos.x() + 2;
+				var y = pos.y() + lastY;
+				if (order.getDirection() == 1) {
+					renderDurabilityNumberXAxis(context, mainHand, x, y);
+					renderMainItem(context, mainHand, x + labelWidth, y, mainHandCount);
+				} else {
+					renderMainItem(context, mainHand, x, y, mainHandCount);
+					renderDurabilityNumberXAxis(context, mainHand, x + 18, y);
+				}
+				lastY -= 20;
+			}
+
+			for (AxoItemStack stack : armor) {
+				String label = null;
+
+				if (showProtLvl.get() && stack.br$hasEnchantment(AxoEnchants.PROTECTION)) {
+					label = String.valueOf(stack.br$getEnchantment(AxoEnchants.PROTECTION));
+				}
+
+				var x = pos.x() + 2;
+				var y = pos.y() + lastY;
+				if (order.getDirection() == 1) {
+					renderDurabilityNumberXAxis(context, stack, x, y);
+					renderItem(context, stack, x + labelWidth, y, label);
+				} else {
+					renderItem(context, stack, x, y, label);
+					renderDurabilityNumberXAxis(context, stack, x + 18, y);
+				}
+				lastY -= 20;
+			}
+
+			if (mhPos == MainHandItemPosition.TOP) {
+				var x = pos.x() + 2;
+				var y = pos.y() + lastY;
+				if (order.getDirection() == 1) {
+					renderDurabilityNumberXAxis(context, mainHand, x, y);
+					renderMainItem(context, mainHand, x + labelWidth, y, mainHandCount);
+				} else {
+					renderMainItem(context, mainHand, x, y, mainHandCount);
+					renderDurabilityNumberXAxis(context, mainHand, x + 18, y);
+				}
+			}
+		} else {
+			int labelWidth = showDurability || showMaxDurability ?
+				(mhPos == MainHandItemPosition.DISABLED ? armor.stream() : Stream.concat(Stream.of(mainHand), armor.stream()))
+					.mapToInt(stack -> {
+						if (showDurability && showMaxDurability) {
+							var text1 = String.valueOf(stack.br$getMaxDamage() - stack.br$getDamage());
+							var text2 = "/" + stack.br$getMaxDamage();
+							int t1W = context.br$getFont().br$getWidth(text1);
+							int t2W = context.br$getFont().br$getWidth(text2);
+							return Math.max(t1W, t2W);
+						} else if (showDurability) {
+							return context.br$getFont().br$getWidth(String.valueOf(stack.br$getMaxDamage() - stack.br$getDamage()));
+						}
+						return context.br$getFont().br$getWidth(String.valueOf(stack.br$getMaxDamage()));
+					}).map(i -> i + 2).max().orElse(0) : 0;
+			{
+				int n = width;
+				width = height - 6;
+				height = n;
+			}
+			if (showDurability) {
+				height += 10;
+			}
+			if (showMaxDurability) {
+				height += 10;
+			}
+			if (labelWidth > 0) {
+				width = (mhPos == MainHandItemPosition.DISABLED ? 4 : 5) * labelWidth + 2;
+			}
+			if (width != getContentWidth()) {
+				setContentWidth(width);
+				boundsChanged = true;
+			}
+			if (height != getContentHeight()) {
+				setContentHeight(height);
+				boundsChanged = true;
+			}
+			if (boundsChanged) {
+				onBoundsUpdate();
+			}
+			DrawPosition pos = getContentPos();
+			var x = pos.x() + 2;
+			var y = pos.y() + 2;
+			int stackWidth = 18;
+			labelWidth = Math.max(stackWidth, labelWidth);
+			if (mhPos == MainHandItemPosition.TOP) {
+				if (order == CardinalOrder.TOP_DOWN) {
+					var numHeight = renderDurabilityNumberYAxis(context, mainHand, x + labelWidth / 2, y);
+					renderMainItem(context, mainHand, x - stackWidth / 2 + labelWidth / 2, y + numHeight, mainHandCount);
+				} else {
+					renderMainItem(context, mainHand, x - stackWidth / 2 + labelWidth / 2, y, mainHandCount);
+					renderDurabilityNumberYAxis(context, mainHand, x + labelWidth / 2, y + 18);
+				}
+				x += labelWidth;
+			}
+			for (var stack : armor) {
+				String label = null;
+
+				if (showProtLvl.get() && stack.br$hasEnchantment(AxoEnchants.PROTECTION)) {
+					label = String.valueOf(stack.br$getEnchantment(AxoEnchants.PROTECTION));
+				}
+
+				if (order == CardinalOrder.TOP_DOWN) {
+					var numHeight = renderDurabilityNumberYAxis(context, stack, x + labelWidth / 2, y);
+					renderItem(context, stack, x - stackWidth / 2 + labelWidth / 2, y + numHeight, label);
+				} else {
+					renderItem(context, stack, x - stackWidth / 2 + labelWidth / 2, y, label);
+					renderDurabilityNumberYAxis(context, stack, x + labelWidth / 2, y + 18);
+				}
+				x += labelWidth;
+			}
+			if (mhPos == MainHandItemPosition.BOTTOM) {
+				if (order == CardinalOrder.TOP_DOWN) {
+					var numHeight = renderDurabilityNumberYAxis(context, mainHand, x + labelWidth / 2, y);
+					renderMainItem(context, mainHand, x - stackWidth / 2 + labelWidth / 2, y + numHeight, mainHandCount);
+				} else {
+					renderMainItem(context, mainHand, x - stackWidth / 2 + labelWidth / 2, y, mainHandCount);
+					renderDurabilityNumberYAxis(context, mainHand, x + labelWidth / 2, y + 18);
+				}
+			}
 		}
 	}
 
-	public void renderMainItem(AxoRenderContext graphics, AxoItemStack stack, int x, int y, int offset, int mainHandCount) {
-		renderItem(graphics, stack, x, y, offset, mainHandCount == 1 ? null : String.valueOf(mainHandCount));
+	public void renderMainItem(AxoRenderContext graphics, AxoItemStack stack, int x, int y, int mainHandCount) {
+		renderItem(graphics, stack, x, y, mainHandCount == 1 ? null : String.valueOf(mainHandCount));
 	}
 
-	public void renderItem(AxoRenderContext graphics, AxoItemStack stack, int x, int y, int offset, String labelOverride) {
-		renderDurabilityNumber(graphics, stack, x, y);
-		x += offset;
+	public void renderItem(AxoRenderContext graphics, AxoItemStack stack, int x, int y, String labelOverride) {
 		graphics.br$renderGuiItemModel(stack, x, y);
 		graphics.br$renderGuiItemOverlay(stack, x, y, labelOverride, textColor.get().toInt(), shadow.get());
 	}
 
-	private void renderDurabilityNumber(AxoRenderContext graphics, AxoItemStack stack, int x, int y) {
+	private void renderDurabilityNumberXAxis(AxoRenderContext graphics, AxoItemStack stack, int x, int y) {
 		boolean showDurability = showDurabilityNumber.get();
 		boolean showMaxDurability = showMaxDurabilityNumber.get();
 		if (stack.br$isEmpty() || !(showMaxDurability || showDurability) || stack.br$getMaxDamage() == 0) {
@@ -183,6 +313,34 @@ public class ArmorHud extends TextHudEntry {
 		int textY = y + 10 - graphics.br$getFont().br$getFontHeight() / 2;
 		graphics.br$drawString(text, x, textY, customDurabilityNumColor.get() ? durabilityNumColor.get().toInt() :
 			ClientColors.ARGB.opaque(stack.br$getBarColor()), true);
+	}
+
+	private int renderDurabilityNumberYAxis(AxoRenderContext graphics, AxoItemStack stack, int x, int y) {
+		boolean showDurability = showDurabilityNumber.get();
+		boolean showMaxDurability = showMaxDurabilityNumber.get();
+		if (!(showMaxDurability || showDurability)) {
+			return 0;
+		}
+		if (stack.br$isEmpty() || stack.br$getMaxDamage() == 0) {
+			return showDurability && showMaxDurability ? 20 : 10;
+		}
+		int textY = y + 10 / 2 - graphics.br$getFont().br$getFontHeight() / 2;
+		if (showDurability && showMaxDurability) {
+			var text1 = String.valueOf(stack.br$getMaxDamage() - stack.br$getDamage());
+			var text2 = "/" + stack.br$getMaxDamage();
+			int t1W = graphics.br$getFont().br$getWidth(text1);
+			int t2W = graphics.br$getFont().br$getWidth(text2);
+			graphics.br$drawString(text1, x - t1W / 2, textY, customDurabilityNumColor.get() ? durabilityNumColor.get().toInt() :
+				ClientColors.ARGB.opaque(stack.br$getBarColor()), true);
+			graphics.br$drawString(text2, x - t2W / 2, textY + 10, customDurabilityNumColor.get() ? durabilityNumColor.get().toInt() :
+				ClientColors.ARGB.opaque(stack.br$getBarColor()), true);
+			return 20;
+		} else {
+			var text = String.valueOf(showDurability ? stack.br$getMaxDamage() - stack.br$getDamage() : stack.br$getMaxDamage());
+			graphics.br$drawString(text, x - graphics.br$getFont().br$getWidth(text)/2, textY, customDurabilityNumColor.get() ? durabilityNumColor.get().toInt() :
+				ClientColors.ARGB.opaque(stack.br$getBarColor()), true);
+			return 10;
+		}
 	}
 
 	@Override
@@ -199,6 +357,9 @@ public class ArmorHud extends TextHudEntry {
 		options.add(customDurabilityNumColor);
 		options.add(durabilityNumColor);
 		options.add(mainHandItemPosition);
+		options.add(order);
+		options.add(reverseArmorOrder);
+		options.add(hideIfEmpty);
 		return options;
 	}
 

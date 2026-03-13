@@ -158,6 +158,21 @@ public abstract class AxoItemsMixin {
 	@Final
 	public static AxoItem ENDER_EYE;
 
+	@Shadow
+	@Mutable
+	@Final
+	public static AxoItem DIAMOND_PICKAXE;
+
+	@Shadow
+	@Mutable
+	@Final
+	public static AxoItem GOLD_PICKAXE;
+
+	@Shadow
+	@Mutable
+	@Final
+	public static AxoItem IRON_PICKAXE;
+
 	@Inject(method = "<clinit>", at = @At("HEAD"), cancellable = true)
 	private static void setStaticValues(CallbackInfo info) {
 		AIR = AirItemImpl.getInstance();
@@ -184,6 +199,9 @@ public abstract class AxoItemsMixin {
 		STONE_HOE = Items.STONE_HOE;
 		GLOWSTONE_DUST = Items.GLOWSTONE_DUST;
 		ENDER_EYE = Items.ENDER_EYE;
+		DIAMOND_PICKAXE = Items.DIAMOND_PICKAXE;
+		GOLD_PICKAXE = Items.GOLDEN_PICKAXE;
+		IRON_PICKAXE = Items.IRON_PICKAXE;
 		info.cancel();
 	}
 }

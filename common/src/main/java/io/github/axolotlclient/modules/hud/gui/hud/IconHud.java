@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Locale;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoSprites;
@@ -42,6 +43,7 @@ public class IconHud extends BoxHudEntry implements DynamicallyPositionable {
 
 	public IconHud() {
 		super(16, 16, true);
+		background = new BooleanOption("background", false);
 	}
 
 	@Override
@@ -65,14 +67,11 @@ public class IconHud extends BoxHudEntry implements DynamicallyPositionable {
 	@Override
 	public void renderComponent(AxoRenderContext ctx, float delta) {
 		ctx.br$pushMatrix();
-		ctx.br$glColor4(1, 1, 1, 1);
-		ctx.br$glEnableBlend();
 		float scale = getScale();
 		ctx.br$scaleMatrix(1 / scale, 1 / scale);
 		ctx.br$translateMatrix(getRawTrueContentX(), getRawTrueContentY());
 		ctx.br$scaleMatrix(scale, scale);
-		ctx.br$drawTexture(0, 0, 16, 16, AxoSprites.BADGE);
-		ctx.br$glDisableBlend();
+		ctx.br$drawTexture(AxoSprites.BADGE, 0, 0, 16, 16);
 		ctx.br$popMatrix();
 	}
 
@@ -116,7 +115,6 @@ public class IconHud extends BoxHudEntry implements DynamicallyPositionable {
 		public boolean showsInGui() {
 			return true;
 		}
-
 
 		@Override
 		public String toString() {

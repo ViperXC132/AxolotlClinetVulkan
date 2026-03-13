@@ -29,7 +29,6 @@ import java.util.stream.Stream;
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
-import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import io.github.axolotlclient.modules.hud.snapping.SnappingHelper;
@@ -43,6 +42,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 
 public class KeystrokePositioningScreen extends Screen {
 	private final Screen parent;
@@ -72,7 +72,6 @@ public class KeystrokePositioningScreen extends Screen {
 	@Override
 	public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 		guiGraphics.pose().pushMatrix();
-		//guiGraphics.pose().translate(0, 0, -300);
 		super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
 		HudManager.getInstance().renderPlaceholder(guiGraphics, partialTick);
 		guiGraphics.pose().popMatrix();
@@ -83,17 +82,17 @@ public class KeystrokePositioningScreen extends Screen {
 	protected void init() {
 		addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, b -> onClose()).pos(width / 2 - 75, height - 50 + 22).width(150).build());
 		this.addRenderableWidget(Button.builder(Component.translatable("hud.snapping").append(": ")
-				.append(Component.translatable(HudEditScreen.isSnappingEnabled() ? "options.on" : "options.off")),
+				.append(Component.translatable(HudManager.getInstance().isSnappingEnabled() ? "options.on" : "options.off")),
 			buttonWidget -> {
-				HudEditScreen.toggleSnapping();
+				HudManager.getInstance().toggleSnapping();
 				buttonWidget.setMessage(Component.translatable("hud.snapping").append(": ")
-					.append(Component.translatable(HudEditScreen.isSnappingEnabled() ? "options.on" : "options.off")));
-				AxolotlClient.getInstance().getConfigManager().save();
+					.append(Component.translatable(HudManager.getInstance().isSnappingEnabled() ? "options.on" : "options.off")));
+				AxolotlClient.getInstance().saveConfig();
 			}).bounds(width / 2 - 50, height - 50, 100, 20).build());
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+	public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 		super.render(guiGraphics, mouseX, mouseY, partialTick);
 		if (editing != null) {
 			drawStroke(guiGraphics, mouseX, mouseY, editing);
@@ -121,7 +120,7 @@ public class KeystrokePositioningScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+	public boolean mouseClicked(@NotNull MouseButtonEvent event, boolean doubleClick) {
 		var value = super.mouseClicked(event, doubleClick);
 		if (event.button() == 0) {
 			var mouseX = event.x();
@@ -153,6 +152,18 @@ public class KeystrokePositioningScreen extends Screen {
 			} else {
 				focused = null;
 			}
+		} else if (event.button() == 1 && editing == null) {
+			var mouseX = event.x();
+			var mouseY = event.y();
+			Optional<KeystrokeHud.Keystroke> entry = Optional.empty();
+			for (KeystrokeHud.Keystroke k : hud.keystrokes) {
+				var pos = getScaledRenderPos(k);
+				if (pos.isMouseOver(mouseX, mouseY)) {
+					entry = Optional.of(k);
+					break;
+				}
+			}
+			entry.ifPresent(stroke -> minecraft.setScreen(new ConfigureKeyBindScreen(this, hud, stroke, false)));
 		}
 		return value;
 	}
@@ -164,7 +175,7 @@ public class KeystrokePositioningScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseReleased(MouseButtonEvent event) {
+	public boolean mouseReleased(@NotNull MouseButtonEvent event) {
 		if (focused != null) {
 			hud.saveKeystrokes();
 		}
@@ -175,19 +186,19 @@ public class KeystrokePositioningScreen extends Screen {
 	}
 
 	@Override
-	public boolean mouseDragged(MouseButtonEvent event, double deltaX, double deltaY) {
+	public boolean mouseDragged(@NotNull MouseButtonEvent event, double deltaX, double deltaY) {
 		if (focused != null && mouseDown) {
 			focused.setX((int) Math.round((event.x() - offset.x()) / hud.getScale()));
 			focused.setY((int) Math.round((event.y() - offset.y()) / hud.getScale()));
 			if (snap != null) {
-				Integer snapX, snapY;
+				Optional<Integer> snapX, snapY;
 				var rect = getScaledRenderPos(focused);
 				snap.setCurrent(rect);
-				if ((snapX = snap.getCurrentXSnap()) != null) {
-					focused.setX(Math.round(snapX / hud.getScale()));
+				if ((snapX = snap.getCurrentXSnap()).isPresent()) {
+					focused.setX(Math.round(snapX.get() / hud.getScale()));
 				}
-				if ((snapY = snap.getCurrentYSnap()) != null) {
-					focused.setY(Math.round(snapY / hud.getScale()));
+				if ((snapY = snap.getCurrentYSnap()).isPresent()) {
+					focused.setY(Math.round(snapY.get() / hud.getScale()));
 				}
 			}
 			return true;
@@ -204,7 +215,7 @@ public class KeystrokePositioningScreen extends Screen {
 	}
 
 	private void updateSnapState() {
-		if (HudEditScreen.isSnappingEnabled() && focused != null) {
+		if (HudManager.getInstance().isSnappingEnabled() && focused != null) {
 			snap = new SnappingHelper(getAllBounds(), getScaledRenderPos(focused));
 		} else if (snap != null) {
 			snap = null;

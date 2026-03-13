@@ -56,4 +56,24 @@ public interface AxoGameOptions {
 	default void br$setCameraType(AxoPerspective perspective) {
 		throw BridgeUtil.noImpl();
 	}
+
+	@RequiresImpl
+	default boolean br$getSmoothCamera() {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default void br$setSmoothCamera(boolean smoothCamera) {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default double br$getSensitivity() {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default void br$setSensitivity(double sensitivity) {
+		throw BridgeUtil.noImpl();
+	}
 }

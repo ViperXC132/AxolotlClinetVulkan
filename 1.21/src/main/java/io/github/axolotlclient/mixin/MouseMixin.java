@@ -53,7 +53,7 @@ public abstract class MouseMixin {
 
 	@ModifyArg(method = "onMouseScroll", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;scrollInHotbar(D)V"))
 	private double axolotlclient$scrollZoom(double scrollAmount) {
-		if (scrollAmount != 0 && Zoom.scroll(scrollAmount)) {
+		if (scrollAmount != 0 && Zoom.getInstance().scroll(scrollAmount)) {
 			return 0;
 		}
 

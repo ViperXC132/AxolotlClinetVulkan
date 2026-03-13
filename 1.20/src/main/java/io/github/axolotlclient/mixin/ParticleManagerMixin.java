@@ -23,15 +23,12 @@
 package io.github.axolotlclient.mixin;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Queue;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.Tessellator;
+import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.modules.particles.Particles;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleManager;
-import net.minecraft.client.particle.ParticleTextureSheet;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -40,16 +37,17 @@ import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(ParticleManager.class)
 public abstract class ParticleManagerMixin {
 
+	@Unique
 	private ParticleType<?> cachedType;
 
 	@Inject(method = "addParticle(Lnet/minecraft/particle/ParticleEffect;DDDDDD)Lnet/minecraft/client/particle/Particle;", at = @At(value = "HEAD"), cancellable = true)
@@ -89,12 +87,10 @@ public abstract class ParticleManagerMixin {
 		return instance.removeAll(collection);
 	}
 
-	@Inject(method = "renderParticles", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/Particle;buildGeometry(Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/client/render/Camera;F)V"), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
+	@Inject(method = "renderParticles", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/Particle;buildGeometry(Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/client/render/Camera;F)V"))
 	private void axolotlclient$applyOptions(MatrixStack matrices, VertexConsumerProvider.Immediate immediate,
 											LightmapTextureManager lightmapTextureManager, Camera camera, float f, CallbackInfo ci,
-											MatrixStack matrixStack, Iterator<Particle> var7, ParticleTextureSheet particleTextureSheet,
-											Iterable<Particle> iterable, Tessellator tessellator, BufferBuilder bufferBuilder, Iterator<Particle> var12,
-											Particle particle) {
+											@Local Particle particle) {
 		if (Particles.getInstance().particleMap.containsKey(particle)) {
 			Particles.getInstance().applyOptions(particle);
 		}

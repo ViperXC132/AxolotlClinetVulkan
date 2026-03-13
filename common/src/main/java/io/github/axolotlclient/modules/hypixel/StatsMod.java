@@ -184,9 +184,9 @@ public class StatsMod implements AbstractHypixelMod {
 		}),
 		new Entry("duels", (c, uuid, username, data) ->
 			List.of(
-			translatable("playerstats.duels.title", data.formattedName()),
-			buildDuelsGameModesLine(data.duels())
-		).forEach(c::br$sendFeedback))
+				translatable("playerstats.duels.title", data.formattedName()),
+				buildDuelsGameModesLine(data.duels())
+			).forEach(c::br$sendFeedback))
 	);
 
 	@Getter

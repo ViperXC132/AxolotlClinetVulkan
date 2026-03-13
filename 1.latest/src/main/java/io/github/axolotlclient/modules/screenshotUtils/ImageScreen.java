@@ -30,7 +30,6 @@ import java.time.ZoneId;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.impl.util.DrawUtil;
 import io.github.axolotlclient.api.API;
@@ -51,6 +50,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Util;
+import org.jspecify.annotations.NonNull;
 
 public class ImageScreen extends Screen {
 
@@ -137,7 +137,7 @@ public class ImageScreen extends Screen {
 						minecraft.setScreen(new ImageScreen(parent, remote.toShared(out), freeOnClose));
 					} catch (IOException e) {
 						Notifications.getInstance().addStatus("gallery.image.save.failure", "gallery.image.save.failure.description", e.getMessage());
-						AxolotlClient.LOGGER.warn("Failed to save shared image!", e);
+						AxolotlClientCommon.getInstance().getLogger().warn("Failed to save shared image!", e);
 					}
 				}).width(buttonWidth).build());
 				actions.addChild(Button.builder(Component.translatable("gallery.image.copy"), b -> {
@@ -145,7 +145,7 @@ public class ImageScreen extends Screen {
 						ScreenshotCopying.copy(DrawUtil.writeToByteArray(image.image()));
 					} catch (IOException e) {
 						Notifications.getInstance().addStatus("gallery.image.copy.failure", "gallery.image.copy.failure.description", e.getMessage());
-						AxolotlClient.LOGGER.warn("Failed to copy shared image!", e);
+						AxolotlClientCommon.getInstance().getLogger().warn("Failed to copy shared image!", e);
 					}
 				}).width(buttonWidth).build());
 			}
@@ -193,7 +193,7 @@ public class ImageScreen extends Screen {
 		}
 
 		@Override
-		protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+		protected void updateWidgetNarration(@NonNull NarrationElementOutput narrationElementOutput) {
 
 		}
 	}

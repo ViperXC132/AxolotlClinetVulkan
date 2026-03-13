@@ -39,9 +39,28 @@ public class MathUtil {
 		return value < min ? min : Math.min(value, max);
 	}
 
+	public static float lerp(float delta, float start, float end) {
+		return start + delta * (end - start);
+	}
+
+	public static int lerp(float delta, int start, int end) {
+		return start + floor(delta * (end - start));
+	}
+
+	public static int floor(float value) {
+		int i = (int) value;
+		return value < i ? i - 1 : i;
+	}
+
+	public static float distSq(float x1, float y1, float x2, float y2) {
+		float dx = x1 - x2;
+		float dy = y1 - y2;
+		return dx * dx + dy * dy;
+	}
+
 	public static int hsvToRgb(float hue, float saturation, float value) {
-		int i = (int)(hue * 6.0F) % 6;
-		float f = hue * 6.0F - (float)i;
+		int i = (int) (hue * 6.0F) % 6;
+		float f = hue * 6.0F - (float) i;
 		float g = value * (1.0F - saturation);
 		float h = value * (1.0F - f * saturation);
 		float j = value * (1.0F - (1.0F - f) * saturation);
@@ -49,43 +68,43 @@ public class MathUtil {
 		float l;
 		float m;
 		switch (i) {
-		case 0:
-			k = value;
-			l = j;
-			m = g;
-			break;
-		case 1:
-			k = h;
-			l = value;
-			m = g;
-			break;
-		case 2:
-			k = g;
-			l = value;
-			m = j;
-			break;
-		case 3:
-			k = g;
-			l = h;
-			m = value;
-			break;
-		case 4:
-			k = j;
-			l = g;
-			m = value;
-			break;
-		case 5:
-			k = value;
-			l = g;
-			m = h;
-			break;
-		default:
-			throw new RuntimeException("Something went wrong when converting from HSV to RGB. Input was " + hue + ", " + saturation + ", " + value);
+			case 0:
+				k = value;
+				l = j;
+				m = g;
+				break;
+			case 1:
+				k = h;
+				l = value;
+				m = g;
+				break;
+			case 2:
+				k = g;
+				l = value;
+				m = j;
+				break;
+			case 3:
+				k = g;
+				l = h;
+				m = value;
+				break;
+			case 4:
+				k = j;
+				l = g;
+				m = value;
+				break;
+			case 5:
+				k = value;
+				l = g;
+				m = h;
+				break;
+			default:
+				throw new RuntimeException("Something went wrong when converting from HSV to RGB. Input was " + hue + ", " + saturation + ", " + value);
 		}
 
-		int n = clamp((int)(k * 255.0F), 0, 255);
-		int o = clamp((int)(l * 255.0F), 0, 255);
-		int p = clamp((int)(m * 255.0F), 0, 255);
+		int n = clamp((int) (k * 255.0F), 0, 255);
+		int o = clamp((int) (l * 255.0F), 0, 255);
+		int p = clamp((int) (m * 255.0F), 0, 255);
 		return n << 16 | o << 8 | p;
 	}
 }

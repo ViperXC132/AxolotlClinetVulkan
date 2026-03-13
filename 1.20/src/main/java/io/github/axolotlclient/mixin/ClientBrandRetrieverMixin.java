@@ -22,18 +22,26 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import io.github.axolotlclient.AxolotlClientCommon;
 import net.minecraft.client.ClientBrandRetriever;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(ClientBrandRetriever.class)
 public abstract class ClientBrandRetrieverMixin {
 
-	@Inject(method = "getClientModName", at = @At("HEAD"), cancellable = true, remap = false)
-	private static void axolotlclient$returnClientBrand(CallbackInfoReturnable<String> cir) {
-		cir.setReturnValue("AxolotlClient");
-		cir.cancel();
+	@Shadow
+	@Final
+	public static String VANILLA;
+
+	@WrapMethod(method = "getClientModName", remap = false)
+	private static String axolotlclient$returnClientBrand(Operation<String> original) {
+		if (AxolotlClientCommon.getInstance().getConfig().modifyClientBrand.get()) {
+			return original.call().replace(VANILLA, "AxolotlClient");
+		}
+		return original.call();
 	}
 }

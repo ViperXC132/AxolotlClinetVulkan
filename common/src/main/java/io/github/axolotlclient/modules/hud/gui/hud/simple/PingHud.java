@@ -25,8 +25,10 @@ package io.github.axolotlclient.modules.hud.gui.hud.simple;
 import java.util.List;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.bridge.PlatformDispatch;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui.entry.SimpleTextHudEntry;
 import io.github.axolotlclient.util.ThreadExecuter;
@@ -44,6 +46,7 @@ public class PingHud extends SimpleTextHudEntry {
 
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "pinghud");
 	private final IntegerOption refreshDelay = new IntegerOption("refreshTime", 4, 1, 15);
+	private final BooleanOption hideInSingleplayer = new BooleanOption("pinghud.hide_in_singleplayer", true);
 	private final MutableInt currentServerPing = new MutableInt();
 	private int second;
 
@@ -91,5 +94,13 @@ public class PingHud extends SimpleTextHudEntry {
 	@Override
 	public String getLabel() {
 		return "ms";
+	}
+
+	@Override
+	public void render(AxoRenderContext ctx, float delta) {
+		if (hideInSingleplayer.get() && client.br$isLocalServer()) {
+			return;
+		}
+		super.render(ctx, delta);
 	}
 }

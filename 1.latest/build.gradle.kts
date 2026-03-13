@@ -5,12 +5,12 @@ plugins {
 	id("io.github.p03w.machete")
 }
 
-val minecraft = "1.21.11-rc2"
+val minecraft = "1.21.11"
 val minecraftFriendly = "1.21.11"
-val parchmentMinecraft = "1.21.10"
-val parchment = "2025.10.12"
+val parchmentMinecraft = "1.21.11"
+val parchment = "2025.12.20"
 val modmenu = "17.0.0-alpha.1"
-val fapi = "0.139.4"
+val fapi = "0.140.2"
 group = project.property("maven_group") as String
 version = "${project.property("version")}+$minecraftFriendly"
 base.archivesName = "AxolotlClient"
@@ -62,9 +62,7 @@ dependencies {
 	//modImplementation("com.noxcrew.noxesium:api:$noxesiumVersion")
 	//localRuntime("org.khelekore:prtree:1.5")
 
-	compileOnly("link.e4mc:e4mc_minecraft:5.3.1") {
-		isTransitive = false
-	}
+	modCompileOnly("maven.modrinth:e4mc:6.0.6-fabric")
 
 	implementation("net.hypixel:mod-api:1.0.1")
 	include(modImplementation("maven.modrinth:hypixel-mod-api:1.0.1+build.1+mc1.21")!!)
@@ -109,7 +107,7 @@ publishing {
 		maven {
 			name = "owlMaven"
 			val repository = if (project.version.toString().contains("beta") || project.version.toString().contains("alpha")) "snapshots" else "releases"
-			url = uri("https://moehreag.duckdns.org/maven/$repository")
+			url = uri("https://maven.axolotlclient.com/$repository")
 			credentials(PasswordCredentials::class)
 			authentication {
 				create<BasicAuthentication>("basic")
