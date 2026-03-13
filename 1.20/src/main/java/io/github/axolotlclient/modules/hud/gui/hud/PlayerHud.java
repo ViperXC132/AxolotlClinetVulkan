@@ -104,7 +104,7 @@ public class PlayerHud extends PlayerHudCommon {
 		Quaternionf quaternion = new Quaternionf().rotateZ((float) Math.PI);
 
 		// Rotate to whatever is wanted. Also make sure to offset the yaw
-		float deltaYaw = client.player.headYaw;
+		float deltaYaw = client.player.getYaw(delta);
 		if (dynamicRotation.get()) {
 			deltaYaw -= (lastYawOffset + ((yawOffset - lastYawOffset) * delta));
 		}
