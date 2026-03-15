@@ -86,7 +86,9 @@ public class CropImageScreen extends Screen {
 						.toAbsolutePath().toString(),
 					pointers, "PNG Images");
 				if (result != null) {
-					crop.writeFile(Path.of(result));
+					var dest = Path.of(result);
+					crop.writeFile(dest);
+					AxolotlClientCommon.getInstance().getNotificationProvider().addStatus("gallery.image.crop.save_as.success", "gallery.image.crop.save_as.success.description", dest.getFileName());
 				}
 			} catch (IOException e) {
 				AxolotlClientCommon.getInstance().getLogger().error("Failed to save cropped image!", e);
@@ -98,6 +100,7 @@ public class CropImageScreen extends Screen {
 			var dest = p.resolve(image.filename().replace(".png", "_cropped-" + Util.getFileNameFormattedDateTime() + ".png"));
 			try (var crop = imageWidget.getCopyOfSelection()) {
 				crop.writeFile(dest);
+				AxolotlClientCommon.getInstance().getNotificationProvider().addStatus("gallery.image.crop.save.success", "gallery.image.crop.save.success.description", dest.getFileName());
 			} catch (IOException e) {
 				AxolotlClientCommon.getInstance().getLogger().error("Failed to save cropped image!", e);
 				AxolotlClientCommon.getInstance().getNotificationProvider().addStatus("gallery.image.crop.save.failure", "gallery.image.crop.save.failure.description", dest.getFileName());
@@ -106,6 +109,7 @@ public class CropImageScreen extends Screen {
 		addDrawableChild(ButtonWidget.builder(Text.translatable("gallery.image.crop.copy"), btn -> {
 			try (var crop = imageWidget.getCopyOfSelection()) {
 				ScreenshotCopying.copy(crop.getBytes());
+				AxolotlClientCommon.getInstance().getNotificationProvider().addStatus("gallery.image.crop.copy.success", "gallery.image.crop.copy.success.description");
 			} catch (IOException e) {
 				AxolotlClientCommon.getInstance().getLogger().error("Failed to copy cropped image!", e);
 				AxolotlClientCommon.getInstance().getNotificationProvider().addStatus("gallery.image.crop.copy.failure", "gallery.image.crop.save.copy.description");

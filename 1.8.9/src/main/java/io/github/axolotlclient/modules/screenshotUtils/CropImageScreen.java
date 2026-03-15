@@ -100,8 +100,10 @@ public class CropImageScreen extends io.github.axolotlclient.AxolotlClientConfig
 						.toAbsolutePath().toString(),
 					pointers, "PNG Images");
 				if (result != null) {
-					try (var out = Files.newOutputStream(Path.of(result))) {
+					var dest = Path.of(result);
+					try (var out = Files.newOutputStream(dest)) {
 						ImageIO.write(crop, "png", out);
+						AxolotlClientCommon.getInstance().getNotificationProvider().addStatus("gallery.image.crop.save_as.success", "gallery.image.crop.save_as.success.description", dest.getFileName());
 					}
 				}
 			} catch (IOException e) {
@@ -116,6 +118,7 @@ public class CropImageScreen extends io.github.axolotlclient.AxolotlClientConfig
 				var crop = imageWidget.getCopyOfSelection();
 				try (var out = Files.newOutputStream(dest)) {
 					ImageIO.write(crop, "png", out);
+					AxolotlClientCommon.getInstance().getNotificationProvider().addStatus("gallery.image.crop.save.success", "gallery.image.crop.save.success.description", dest.getFileName());
 				}
 			} catch (IOException e) {
 				AxolotlClientCommon.getInstance().getLogger().error("Failed to save cropped image!", e);
@@ -128,6 +131,7 @@ public class CropImageScreen extends io.github.axolotlclient.AxolotlClientConfig
 				var baos = new ByteArrayOutputStream();
 				ImageIO.write(crop, "png", baos);
 				ScreenshotCopying.copy(baos.toByteArray());
+				AxolotlClientCommon.getInstance().getNotificationProvider().addStatus("gallery.image.crop.copy.success", "gallery.image.crop.copy.success.description");
 			} catch (IOException e) {
 				AxolotlClientCommon.getInstance().getLogger().error("Failed to copy cropped image!", e);
 				AxolotlClientCommon.getInstance().getNotificationProvider().addStatus("gallery.image.crop.copy.failure", "gallery.image.crop.save.copy.description");
