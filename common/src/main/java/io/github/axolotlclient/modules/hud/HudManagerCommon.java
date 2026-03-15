@@ -81,6 +81,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 	private final OptionCategory hudEditScreenCategory = OptionCategory.create("hudEditScreen");
 	private final BooleanOption snapping = new BooleanOption("snapping", true);
 	private final BooleanOption enabled = new BooleanOption("enabled", true);
+	public final BooleanOption hudLinkCreationEnabled = new BooleanOption("hud_link_creation_enabled", true);
 	private final FloatOption hudLinkLineWidth = new FloatOption("hud.hud_link_line_width", 3f, 1f, 10f);
 	public final ColorOption grabCornerColor = new ColorOption("rescale_grab_corner_color", Colors.PINK);
 	private final Map<AxoIdentifier, HudEntry> entries;
@@ -97,7 +98,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 		key.br$registerOnConsumeClick(this::openScreen);
 		toggleHud.br$registerOnConsumeClick(enabled::toggle);
 		AxolotlClientCommon.getInstance().getConfig().addCategory(hudCategory);
-		hudCategory.add(enabled, grabCornerColor, hudLinkLineWidth);
+		hudCategory.add(enabled, grabCornerColor, hudLinkCreationEnabled, hudLinkLineWidth);
 		hudEditScreenCategory.add(snapping);
 		AxolotlClientCommon.getInstance().getConfig().hidden.add(hudEditScreenCategory);
 		add(new PingHud());

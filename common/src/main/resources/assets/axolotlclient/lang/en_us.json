@@ -968,5 +968,6 @@
 	"gallery.image.crop.inputs.x": "Crop Area X Position",
 	"gallery.image.crop.inputs.y": "Crop Area Y Position",
 	"gallery.image.crop.inputs.width": "Crop Area Width",
-	"gallery.image.crop.inputs.height": "Crop Area Height"
+	"gallery.image.crop.inputs.height": "Crop Area Height",
+	"hud_link_creation_enabled": "Allow Creating HUD Links"
 }

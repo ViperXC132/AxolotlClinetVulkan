@@ -103,7 +103,7 @@ public class HudEditScreen extends Screen {
 			entry = HudManager.getInstance().getEntryXY(mouseX, mouseY);
 			entry.ifPresent(abstractHudEntry -> abstractHudEntry.setHovered(true));
 		}
-		if (mouseDown && snap != null) {
+		if (mouseDown && snap != null && HudManagerCommon.getInstance().hudLinkCreationEnabled.get()) {
 			snap.renderHighlights(graphics, current);
 		}
 		HudManager.getInstance().renderPlaceholder(graphics, delta);
@@ -261,17 +261,21 @@ public class HudEditScreen extends Screen {
 					snap.setCurrent(current.getTrueBounds());
 					if (snapX.isPresent()) {
 						current.setX(snapX.get() + current.offsetTrueWidth());
-						snap.getXTouching(entries, current).forEach(c -> {
-							c.getLeft().removeBoundsDependencyX(current);
-							current.addBoundsDependency(c.getLeft(), c.getRight());
-						});
+						if (HudManagerCommon.getInstance().hudLinkCreationEnabled.get()) {
+							snap.getXTouching(entries, current).forEach(c -> {
+								c.getLeft().removeBoundsDependencyX(current);
+								current.addBoundsDependency(c.getLeft(), c.getRight());
+							});
+						}
 					}
 					if (snapY.isPresent()) {
 						current.setY(snapY.get() + current.offsetTrueHeight());
-						snap.getYTouching(entries, current).forEach(c -> {
-							c.getLeft().removeBoundsDependencyY(current);
-							current.addBoundsDependency(c.getLeft(), c.getRight());
-						});
+						if (HudManagerCommon.getInstance().hudLinkCreationEnabled.get()) {
+							snap.getYTouching(entries, current).forEach(c -> {
+								c.getLeft().removeBoundsDependencyY(current);
+								current.addBoundsDependency(c.getLeft(), c.getRight());
+							});
+						}
 					}
 					HudManagerCommon.getInstance().saveHudDependencyLinks();
 				}
