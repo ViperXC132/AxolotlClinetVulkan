@@ -1,3 +1,25 @@
+/*
+ * Copyright © 2026 moehreag <moehreag@gmail.com> & Contributors
+ *
+ * This file is part of AxolotlClient.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ * For more information, see the LICENSE file.
+ */
+
 package io.github.axolotlclient.modules.screenshotUtils;
 
 import java.io.IOException;
@@ -33,13 +55,19 @@ import org.lwjgl.util.tinyfd.TinyFileDialogs;
 public class CropImageScreen extends Screen {
 	private final Screen parent;
 	private final ImageInstance image;
+	private final boolean freeOnClose;
 	private ImageWidget imageWidget;
 	private TextFieldWidget posX, posY, posW, posH;
 
 	public CropImageScreen(Screen parent, ImageInstance image) {
+		this(parent, image, false);
+	}
+
+	public CropImageScreen(@Nullable Screen parent, ImageInstance image, boolean freeOnClose) {
 		super(Text.translatable("gallery.image.crop.title"));
 		this.parent = parent;
 		this.image = image;
+		this.freeOnClose = freeOnClose;
 	}
 
 	@Override
@@ -130,6 +158,13 @@ public class CropImageScreen extends Screen {
 	public void closeScreen() {
 		client.setScreen(parent);
 		CursorTypes.request(CursorTypes.ARROW);
+	}
+
+	@Override
+	public void removed() {
+		if (freeOnClose) {
+			client.getTextureManager().destroyTexture(image.id());
+		}
 	}
 
 	private class ImageWidget extends ClickableWidget {

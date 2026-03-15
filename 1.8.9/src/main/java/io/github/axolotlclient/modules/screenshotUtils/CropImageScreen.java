@@ -1,3 +1,25 @@
+/*
+ * Copyright © 2026 moehreag <moehreag@gmail.com> & Contributors
+ *
+ * This file is part of AxolotlClient.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 3 of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program; if not, write to the Free Software Foundation,
+ * Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ * For more information, see the LICENSE file.
+ */
+
 package io.github.axolotlclient.modules.screenshotUtils;
 
 import javax.imageio.ImageIO;
@@ -6,8 +28,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
@@ -20,6 +40,7 @@ import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.mixin.AxoConfigTextFieldWidgetAccessor;
 import io.github.axolotlclient.rendering.DrawUtil;
 import io.github.axolotlclient.util.MathUtil;
+import io.github.axolotlclient.util.Util;
 import io.github.axolotlclient.util.WindowAccess;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
@@ -31,19 +52,24 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
 public class CropImageScreen extends io.github.axolotlclient.AxolotlClientConfig.impl.ui.Screen {
-	private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss");
 	private final Screen parent;
 	private final ImageInstance image;
+	private final boolean freeOnClose;
 	private ImageWidget imageWidget;
 	private TextFieldWidget posX, posY, posW, posH;
 	private final long RESIZE_ALL_CURSOR;
 
 	public CropImageScreen(Screen parent, ImageInstance image) {
+		this(parent, image, false);
+	}
+
+	public CropImageScreen(@Nullable Screen parent, ImageInstance image, boolean freeOnClose) {
 		super(I18n.translate("gallery.image.crop.title"));
 		this.parent = parent;
 		this.image = image;
 		ImageWidget.DragHandle.create();
 		RESIZE_ALL_CURSOR = WindowAccess.getInstance().createCursor(WindowAccess.Cursor.RESIZE_ALL);
+		this.freeOnClose = freeOnClose;
 	}
 
 	private static ClickableWidget textWidget(String text, TextRenderer renderer) {
@@ -96,7 +122,7 @@ public class CropImageScreen extends io.github.axolotlclient.AxolotlClientConfig
 				pointers.flip();
 				var defaultPath = image instanceof ImageInstance.Local loc ? loc.location().getParent() : FabricLoader.getInstance().getGameDir();
 				result = TinyFileDialogs.tinyfd_saveFileDialog("Choose destination",
-					defaultPath.resolve(image.filename().replace(".png", "_cropped-" + FORMAT.format(ZonedDateTime.now()) + ".png"))
+					defaultPath.resolve(image.filename().replace(".png", "_cropped-" + Util.getFilenameFormattedDateTime() + ".png"))
 						.toAbsolutePath().toString(),
 					pointers, "PNG Images");
 				if (result != null) {
@@ -113,7 +139,7 @@ public class CropImageScreen extends io.github.axolotlclient.AxolotlClientConfig
 		}));
 		addDrawableChild(new VanillaButtonWidget(width / 2 - (100 * 3 + 4 * 2) / 2 + 100 + 4, footerLine2Y, 100, 20, I18n.translate("gallery.image.crop.save"), btn -> {
 			var p = image instanceof ImageInstance.Local loc ? loc.location().getParent() : FabricLoader.getInstance().getGameDir().resolve("screenshots");
-			var dest = p.resolve(image.filename().replace(".png", "_cropped-" + FORMAT.format(ZonedDateTime.now()) + ".png"));
+			var dest = p.resolve(image.filename().replace(".png", "_cropped-" + Util.getFilenameFormattedDateTime() + ".png"));
 			try {
 				var crop = imageWidget.getCopyOfSelection();
 				try (var out = Files.newOutputStream(dest)) {
@@ -154,6 +180,13 @@ public class CropImageScreen extends io.github.axolotlclient.AxolotlClientConfig
 		WindowAccess.getInstance().setCursor(0L);
 		ImageWidget.DragHandle.destroy();
 		WindowAccess.getInstance().destroyStandardCursor(RESIZE_ALL_CURSOR);
+	}
+
+	@Override
+	public void removed() {
+		if (freeOnClose) {
+			minecraft.getTextureManager().close(image.id());
+		}
 	}
 
 	@Override
@@ -596,8 +629,8 @@ public class CropImageScreen extends io.github.axolotlclient.AxolotlClientConfig
 			var wScale = imgWidth / (dragX1 - dragX);
 			var hScale = imgHeight / (dragY1 - dragY);
 			scale = Math.abs(wScale - 1) < Math.abs(hScale - 1) ? wScale : hScale;
-			translateX = -CropImageScreen.this.width / 2f - scale * (-CropImageScreen.this.width / 2f + dragX) + getX() + getWidth()/2f - (dragX1 - dragX)*scale/2f;
-			translateY = -CropImageScreen.this.height / 2f - scale * (-CropImageScreen.this.height / 2f + dragY) + getY() + getHeight()/2f - (dragY1-dragY)*scale/2f;
+			translateX = -CropImageScreen.this.width / 2f - scale * (-CropImageScreen.this.width / 2f + dragX) + getX() + getWidth() / 2f - (dragX1 - dragX) * scale / 2f;
+			translateY = -CropImageScreen.this.height / 2f - scale * (-CropImageScreen.this.height / 2f + dragY) + getY() + getHeight() / 2f - (dragY1 - dragY) * scale / 2f;
 			updateTextFieldWidgetContents();
 		}
 

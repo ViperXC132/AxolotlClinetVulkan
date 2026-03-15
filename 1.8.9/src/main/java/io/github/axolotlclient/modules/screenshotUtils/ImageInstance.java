@@ -31,6 +31,8 @@ import java.time.Instant;
 import java.util.Locale;
 
 import com.google.common.hash.Hashing;
+import io.github.axolotlclient.AxolotlClientCommon;
+import io.github.axolotlclient.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.texture.DynamicTexture;
 import net.minecraft.resource.Identifier;
@@ -96,4 +98,17 @@ public interface ImageInstance {
 		}
 	}
 
+	@SuppressWarnings("UnstableApiUsage")
+	record Memory(Identifier id, BufferedImage image, String filename) implements ImageInstance {
+		public Memory(BufferedImage image) {
+			this(image, Util.getFilenameFormattedDateTime() + ".png");
+		}
+
+		public Memory(BufferedImage image, String name) {
+			this(new Identifier(AxolotlClientCommon.MODID,
+				"gallery_memory_" + Hashing.sha256()
+					.hashUnencodedChars(name.toLowerCase(Locale.ROOT).replaceAll("[./]", "_"))), image, name);
+			register(id(), image());
+		}
+	}
 }

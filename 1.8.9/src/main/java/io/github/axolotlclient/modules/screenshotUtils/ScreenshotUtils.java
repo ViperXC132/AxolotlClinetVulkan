@@ -41,6 +41,8 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringArrayOption;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
+import io.github.axolotlclient.bridge.key.AxoKeybinding;
+import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.modules.AbstractModule;
 import io.github.axolotlclient.util.CommonUtil;
 import io.github.axolotlclient.util.OSUtil;
@@ -109,6 +111,12 @@ public class ScreenshotUtils extends AbstractModule {
 			client.openScreen(new GalleryScreen(client.screen))), toastBorderColor);
 
 		AxolotlClient.config().general.add(category);
+		AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "screenshot_utils.screenshot_and_crop").br$registerOnConsumeClick(() -> {
+			var img = Util.takeScreenshot();
+			var instance = new ImageInstance.Memory(img);
+			var parent = client.screen;
+			client.openScreen(new CropImageScreen(parent, instance, true));
+		});
 	}
 
 	public Text onScreenshotTaken(Text text, File shot) {

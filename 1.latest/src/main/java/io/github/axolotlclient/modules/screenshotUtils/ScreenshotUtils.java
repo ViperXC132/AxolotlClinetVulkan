@@ -44,6 +44,8 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringArrayOption;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
+import io.github.axolotlclient.bridge.key.AxoKeybinding;
+import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.modules.AbstractModule;
 import io.github.axolotlclient.util.CommonUtil;
 import io.github.axolotlclient.util.notifications.Notifications;
@@ -51,6 +53,7 @@ import io.github.axolotlclient.util.options.GenericOption;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.Screenshot;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.*;
 import net.minecraft.util.Util;
@@ -113,6 +116,12 @@ public class ScreenshotUtils extends AbstractModule {
 			client.setScreen(new GalleryScreen(client.screen))), toastBorderColor);
 
 		AxolotlClient.config().general.add(category);
+		AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "screenshot_utils.screenshot_and_crop").br$registerOnConsumeClick(() ->
+			Screenshot.takeScreenshot(client.getMainRenderTarget(), img -> {
+				var instance = new ImageInstance.Memory(img);
+				var parent = client.screen;
+				client.setScreen(new CropImageScreen(parent, instance, true));
+			}));
 	}
 
 	public MutableComponent onScreenshotTaken(MutableComponent text, File shot) {
