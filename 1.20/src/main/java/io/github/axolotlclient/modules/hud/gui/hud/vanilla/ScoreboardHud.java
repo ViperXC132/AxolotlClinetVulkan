@@ -179,16 +179,18 @@ public class ScoreboardHud extends TextHudEntry {
 		var bgBounds = getBounds();
 		var maxRounding = Math.min(Math.min(font.fontHeight + topPadding.get() * 2 + backgroundPadding.get(), titleEnd - 1 - bgBounds.y()), xEnd - textX - 3) / 2f;
 		float rounding = Math.min(maxRounding, backgroundRounding.get());
-		if (!placeholder && background.get()) {
-			if (roundBackground.get()) {
-				graphics.axolotlclient_rendering$roundedRect(0, 0, 1, 1, 0, 0); // HELP
-				graphics.axolotlclient_rendering$roundedRectVarying(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), titleEnd - 1,
-					topColor.get().toInt(), rounding, 0, 0, rounding);
-				graphics.axolotlclient_rendering$roundedRectVarying(bgBounds.x(), titleEnd - 1, bgBounds.xEnd(), bgBounds.yEnd(),
-					backgroundColor.get().toInt(), 0, rounding, rounding, 0);
-			} else {
-				graphics.fill(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), titleEnd - 1, topColor.get().toInt());
-				graphics.fill(bgBounds.x(), titleEnd - 1, bgBounds.xEnd(), bgBounds.yEnd(), backgroundColor.get().toInt());
+		if (!placeholder) {
+			if (background.get()) {
+				if (roundBackground.get()) {
+					graphics.axolotlclient_rendering$roundedRect(0, 0, 1, 1, 0, 0); // HELP
+					graphics.axolotlclient_rendering$roundedRectVarying(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), titleEnd - 1,
+						topColor.get().toInt(), rounding, 0, 0, rounding);
+					graphics.axolotlclient_rendering$roundedRectVarying(bgBounds.x(), titleEnd - 1, bgBounds.xEnd(), bgBounds.yEnd(),
+						backgroundColor.get().toInt(), 0, rounding, rounding, 0);
+				} else {
+					graphics.fill(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), titleEnd - 1, topColor.get().toInt());
+					graphics.fill(bgBounds.x(), titleEnd - 1, bgBounds.xEnd(), bgBounds.yEnd(), backgroundColor.get().toInt());
+				}
 			}
 		} else {
 			graphics.br$fillRect(bgBounds.x()+1, bgBounds.y()+1, bgBounds.width()-2, titleEnd - 1 - bgBounds.y()-1, ClientColors.DARK_GRAY.withAlpha(100));
