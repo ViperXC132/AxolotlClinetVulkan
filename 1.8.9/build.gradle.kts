@@ -1,14 +1,14 @@
 plugins {
-	id("fabric-loom")
+	id("net.fabricmc.fabric-loom-remap")
 	id("ploceus")
 	id("io.github.p03w.machete")
 }
 
 val minecraftVersion = "1.8.9"
-val featherBuild = "27"
-val lwjglVersion = "3.3.6"
-val legacyLwjgl3 = "1.2.10"
-val osl = "0.16.3"
+val featherBuild = "1"
+val lwjglVersion = "3.4.1"
+val legacyLwjgl3 = "1.2.11"
+val osl = "0.17.2"
 base.archivesName = "AxolotlClient"
 group = project.property("maven_group")!!
 version = "${project.property("version")}+$minecraftVersion"
@@ -26,9 +26,13 @@ loom {
 	}
 }
 
+ploceus {
+	setIntermediaryGeneration(2)
+}
+
 dependencies {
 	minecraft("com.mojang:minecraft:$minecraftVersion")
-	mappings("net.ornithemc:feather:$minecraftVersion+build.$featherBuild")
+	mappings(ploceus.featherMappings(featherBuild))
 
 	modImplementation("net.fabricmc:fabric-loader:${project.property("fabric_loader")}")
 
@@ -38,11 +42,11 @@ dependencies {
 
 	ploceus.dependOsl(osl)
 
-	modImplementation("com.terraformersmc:modmenu:0.3.1+mc1.8.9")
+	modImplementation("com.terraformersmc:modmenu:0.4.0+mc1.8.9")
 
 	implementation(include(project(path = ":common", configuration = "shadow"))!!)
 
-	modApi(include("io.github.moehreag:search-in-resources:1.0.6+1.8.9")!!)
+	modApi(include("io.github.moehreag:search-in-resources:1.1.0+1.8.9")!!)
 
 	include("org.apache.logging.log4j:log4j-slf4j-impl:2.0-beta9") {
 		exclude(group = "org.apache.logging.log4j", module = "log4j-api")
@@ -51,8 +55,8 @@ dependencies {
 	implementation(include("org.slf4j:slf4j-api:1.7.36")!!)
 	localRuntime("org.slf4j:slf4j-jdk14:1.7.36")
 
-	compileOnly("org.lwjgl:lwjgl-glfw:${lwjglVersion}")
-	compileOnly("org.lwjgl:lwjgl-sdl:3.4.1")
+	compileOnly("org.lwjgl:lwjgl-glfw:$lwjglVersion")
+	compileOnly("org.lwjgl:lwjgl-sdl:$lwjglVersion")
 
 	modImplementation("io.github.moehreag:legacy-lwjgl3:$legacyLwjgl3+$minecraftVersion")
 
@@ -64,7 +68,7 @@ dependencies {
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-macos-arm64"))
 
 	api("net.hypixel:mod-api:1.0.1")
-	include(modImplementation("io.github.moehreag.hypixel:mod-api-fabric:1.0.1+build.4+mc1.8.9")!!)
+	include(modImplementation("io.github.moehreag.hypixel:mod-api-fabric:1.0.1+build.6+mc1.8.9")!!)
 	include(implementation("com.mojang:brigadier:1.0.18")!!)
 
 	modCompileOnly("maven.modrinth:e4mc-retro:R6GoyDZn")
