@@ -25,7 +25,8 @@ package io.github.axolotlclient.api;
 import java.util.List;
 
 import io.github.axolotlclient.api.requests.GlobalDataRequest;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.components.AbstractScrollArea;
 import net.minecraft.client.gui.components.AbstractTextAreaWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.narration.NarratedElementType;
@@ -45,10 +46,10 @@ public class NewsScreen extends Screen {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		super.render(graphics, mouseX, mouseY, delta);
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+		super.extractRenderState(graphics, mouseX, mouseY, delta);
 
-		graphics.drawCenteredString(font, title, width / 2, 20, -1);
+		graphics.centeredText(font, title, width / 2, 20, -1);
 	}
 
 	@Override
@@ -63,7 +64,7 @@ public class NewsScreen extends Screen {
 		private final int contentHeight;
 
 		public NewsWidget(int x, int y, int width, int height, Component component) {
-			super(x, y, width, height, component);
+			super(x, y, width, height, component, AbstractScrollArea.defaultSettings(9), false, false);
 			lines = font.split(getMessage(), getWidth() - 4);
 			contentHeight = lines.size() * font.lineHeight;
 		}
@@ -74,10 +75,10 @@ public class NewsScreen extends Screen {
 		}
 
 		@Override
-		protected void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+		protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
 			int y = getY() + 2;
 			for (FormattedCharSequence chsq : lines) {
-				graphics.drawString(font, chsq, getX() + 2, y, -1);
+				graphics.text(font, chsq, getX() + 2, y, -1);
 				y += font.lineHeight;
 			}
 		}
@@ -90,10 +91,6 @@ public class NewsScreen extends Screen {
 		@Override
 		protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
 			narrationElementOutput.add(NarratedElementType.TITLE, getMessage());
-		}
-
-		@Override
-		protected void renderBackground(GuiGraphics guiGraphics) {
 		}
 	}
 }

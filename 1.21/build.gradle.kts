@@ -5,7 +5,7 @@ plugins {
 
 val minecraftVersion = "1.21.1"
 val mappingsBuild = "9"
-val fapi = "0.116.6"
+val fapi = "0.116.9"
 group = project.property("maven_group") as String
 version = "${project.property("version")}+$minecraftVersion"
 base.archivesName = "AxolotlClient"

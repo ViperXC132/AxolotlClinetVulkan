@@ -26,7 +26,7 @@ import java.util.List;
 
 import io.github.axolotlclient.AxolotlClientCommon;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.CycleButton;
@@ -129,7 +129,7 @@ public class SessionStatsHudEntryConfigScreen extends Screen {
 		}
 
 		@Override
-		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean isHovering, float partialTick) {
+		public void extractContent(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, boolean isHovering, float partialTick) {
 			var x = getContentX();
 			var y = getContentY();
 			name.setPosition(x, y + getContentHeight() / 2 - name.getHeight() / 2);
@@ -144,10 +144,10 @@ public class SessionStatsHudEntryConfigScreen extends Screen {
 			down.active = index != size - 1;
 			up.active = index != 0;
 
-			name.render(guiGraphics, mouseX, mouseY, partialTick);
-			down.render(guiGraphics, mouseX, mouseY, partialTick);
-			up.render(guiGraphics, mouseX, mouseY, partialTick);
-			showHide.render(guiGraphics, mouseX, mouseY, partialTick);
+			name.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
+			down.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
+			up.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
+			showHide.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 		}
 
 		@Override

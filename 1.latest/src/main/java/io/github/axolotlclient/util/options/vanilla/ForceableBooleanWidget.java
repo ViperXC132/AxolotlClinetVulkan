@@ -24,7 +24,7 @@ package io.github.axolotlclient.util.options.vanilla;
 
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.BooleanWidget;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.InputWithModifiers;
 
 @SuppressWarnings("unused")
@@ -37,9 +37,9 @@ public class ForceableBooleanWidget extends BooleanWidget {
 	}
 
 	@Override
-	public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+	public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
 		this.active = !option.isForceOff();
-		super.renderContents(graphics, mouseX, mouseY, delta);
+		super.extractContents(graphics, mouseX, mouseY, delta);
 	}
 
 	@Override

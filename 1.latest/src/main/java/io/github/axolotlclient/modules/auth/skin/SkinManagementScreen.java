@@ -40,8 +40,6 @@ import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.api.SimpleTextInputScreen;
 import io.github.axolotlclient.api.util.UUIDHelper;
-import io.github.axolotlclient.mixin.GameRendererAccessor;
-import io.github.axolotlclient.mixin.GuiGraphicsAccessor;
 import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.auth.MSApi;
@@ -53,7 +51,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
@@ -61,10 +59,10 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.TextureSetup;
-import net.minecraft.client.gui.render.state.GuiElementRenderState;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.state.gui.GuiElementRenderState;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
@@ -459,7 +457,7 @@ public class SkinManagementScreen extends Screen {
 
 		@Override
 		public int getRowWidth() {
-			if (!scrollbarVisible()) {
+			if (!scrollable()) {
 				return getWidth() - 4;
 			}
 			return getWidth() - 14;
@@ -501,7 +499,7 @@ public class SkinManagementScreen extends Screen {
 		}
 
 		@Override
-		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+		public void extractContent(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, boolean hovering, float partialTick) {
 			int x = getX();
 			if (widgets.isEmpty()) return;
 			int count = widgets.size();
@@ -509,7 +507,7 @@ public class SkinManagementScreen extends Screen {
 			for (var w : widgets) {
 				w.setPosition(x, getContentY());
 				w.setWidth(padding);
-				w.render(guiGraphics, mouseX, mouseY, partialTick);
+				w.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 				x += w.getWidth() + 5;
 			}
 		}
@@ -545,7 +543,7 @@ public class SkinManagementScreen extends Screen {
 		private long equippingStart;
 
 		public Entry(int height, SkinWidget widget, @Nullable Component label) {
-			super(0, 0, widget.getWidth(), height, Component.empty());
+			super(0, 0, widget.getWidth(), height, Component.empty(), AbstractScrollArea.defaultSettings(9));
 			widget.setWidth(getWidth() - 4);
 			var asset = widget.getFocusedAsset();
 			if (asset != null) {
@@ -565,8 +563,8 @@ public class SkinManagementScreen extends Screen {
 					}
 
 					@Override
-					protected void renderContents(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-						renderDefaultSprite(graphics);
+					protected void extractContents(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+						extractDefaultSprite(graphics);
 						graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, this.getX() + 2, this.getY() + 2, 7, 7);
 					}
 				}
@@ -618,7 +616,7 @@ public class SkinManagementScreen extends Screen {
 				this.label = new AbstractStringWidget(0, 0, widget.getWidth(), 16, label, font) {
 					@Override
 					public void visitLines(@NotNull ActiveTextCollector activeTextCollector) {
-						renderScrollingStringOverContents(activeTextCollector, getMessage(), 2);
+						extractScrollingStringOverContents(activeTextCollector, getMessage(), 2);
 					}
 				};
 				this.label.active = false;
@@ -697,7 +695,7 @@ public class SkinManagementScreen extends Screen {
 		}
 
 		@Override
-		protected void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+		protected void extractWidgetRenderState(@NotNull GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, float partialTick) {
 			int y = getY() + 4;
 			int x = getX() + 2;
 			skinWidget.setPosition(x, y);
@@ -715,33 +713,33 @@ public class SkinManagementScreen extends Screen {
 				} else {
 					gradientWidth = Math.min(getWidth() / 15f, getHeight() / 6f) + applyEasing(percent) * Math.min(getWidth() * 2 / 15f, getHeight() / 6f);
 				}
-				GradientHoleRectangleRenderState.create(guiGraphics, getX() + 2, getY() + 2, getRight() - 2,
+				GradientHoleRectangleRenderState.create(guiGraphicsExtractor, getX() + 2, getY() + 2, getRight() - 2,
 					skinWidget.getBottom() + 2,
 					gradientWidth,
 					equipping ? 0xFFFF0088 : ClientColors.SELECTOR_GREEN.toInt(), 0).submit();
 			}
-			skinWidget.render(guiGraphics, mouseX, mouseY, partialTick);
+			skinWidget.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 			int actionButtonY = getY() + 2;
 			for (var button : actionButtons) {
 				button.setPosition(skinWidget.getRight() - button.getWidth(), actionButtonY);
 				if (isHovered() || button.isHoveredOrFocused()) {
-					button.render(guiGraphics, mouseX, mouseY, partialTick);
+					button.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 				}
 				actionButtonY += button.getHeight() + 2;
 			}
 			if (label != null) {
 				label.setPosition(x, skinWidget.getBottom() + 6);
-				label.render(guiGraphics, mouseX, mouseY, partialTick);
+				label.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 				label.setWidth(getWidth() - 4);
 				equipButton.setPosition(x, label.getBottom() + 2);
 			} else {
 				equipButton.setPosition(x, skinWidget.getBottom() + 4);
 			}
 			equipButton.setWidth(getWidth() - 4);
-			equipButton.render(guiGraphics, mouseX, mouseY, partialTick);
+			equipButton.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 
 			if (isHovered()) {
-				DrawUtil.outlineRect(guiGraphics, getX(), getY(), getWidth(), getHeight(), -1);
+				DrawUtil.outlineRect(guiGraphicsExtractor, getX(), getY(), getWidth(), getHeight(), -1);
 			}
 		}
 
@@ -761,14 +759,14 @@ public class SkinManagementScreen extends Screen {
 														int col2, @Nullable ScreenRectangle scissorArea,
 														@Nullable ScreenRectangle bounds) implements GuiElementRenderState {
 
-			public static GradientHoleRectangleRenderState create(GuiGraphics graphics, int x0, int y0, int x1, int y1, float gradientWidth, int col1, int col2) {
+			public static GradientHoleRectangleRenderState create(GuiGraphicsExtractor graphics, int x0, int y0, int x1, int y1, float gradientWidth, int col1, int col2) {
 				var matrix = new Matrix3x2f(graphics.pose());
-				var area = ((GuiGraphicsAccessor) graphics).getScissorStack().peek();
+				var area = graphics.scissorStack.peek();
 				return new GradientHoleRectangleRenderState(RenderPipelines.GUI, TextureSetup.noTexture(), matrix, x0, y0, x1, y1, gradientWidth, col1, col2, area, getBounds(x0, y0, x1, y1, matrix, area));
 			}
 
 			public void submit() {
-				((GameRendererAccessor) Minecraft.getInstance().gameRenderer).getGuiRenderState().submitGuiElement(this);
+				Minecraft.getInstance().gameRenderer.getGameRenderState().guiRenderState.addGuiElement(this);
 			}
 
 			@Override

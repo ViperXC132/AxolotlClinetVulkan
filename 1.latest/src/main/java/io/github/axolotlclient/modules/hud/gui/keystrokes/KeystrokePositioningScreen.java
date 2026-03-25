@@ -36,7 +36,7 @@ import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.util.ClientColors;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -70,12 +70,12 @@ public class KeystrokePositioningScreen extends Screen {
 	private SnappingHelper snap;
 
 	@Override
-	public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-		guiGraphics.pose().pushMatrix();
-		super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
-		HudManager.getInstance().renderPlaceholder(guiGraphics, partialTick);
-		guiGraphics.pose().popMatrix();
-		renderTransparentBackground(guiGraphics);
+	public void extractBackground(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, float partialTick) {
+		guiGraphicsExtractor.pose().pushMatrix();
+		super.extractBackground(guiGraphicsExtractor, mouseX, mouseY, partialTick);
+		HudManager.getInstance().renderPlaceholder(guiGraphicsExtractor, partialTick);
+		guiGraphicsExtractor.pose().popMatrix();
+		extractTransparentBackground(guiGraphicsExtractor);
 	}
 
 	@Override
@@ -92,31 +92,31 @@ public class KeystrokePositioningScreen extends Screen {
 	}
 
 	@Override
-	public void render(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-		super.render(guiGraphics, mouseX, mouseY, partialTick);
+	public void extractRenderState(@NotNull GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, float partialTick) {
+		super.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 		if (editing != null) {
-			drawStroke(guiGraphics, mouseX, mouseY, editing);
+			drawStroke(guiGraphicsExtractor, mouseX, mouseY, editing);
 		} else {
-			hud.keystrokes.forEach(s -> drawStroke(guiGraphics, mouseX, mouseY, s));
+			hud.keystrokes.forEach(s -> drawStroke(guiGraphicsExtractor, mouseX, mouseY, s));
 		}
 		if (mouseDown && snap != null) {
-			snap.renderSnaps(guiGraphics);
+			snap.renderSnaps(guiGraphicsExtractor);
 		}
 	}
 
-	private void drawStroke(GuiGraphics guiGraphics, int mouseX, int mouseY, KeystrokeHud.Keystroke s) {
+	private void drawStroke(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, KeystrokeHud.Keystroke s) {
 		var rect = getScaledRenderPos(s);
 		if (rect.isMouseOver(mouseX, mouseY)) {
-			DrawUtil.fillRect(guiGraphics, rect, ClientColors.SELECTOR_BLUE.withAlpha(100));
-			guiGraphics.requestCursor(CursorTypes.RESIZE_ALL);
+			DrawUtil.fillRect(guiGraphicsExtractor, rect, ClientColors.SELECTOR_BLUE.withAlpha(100));
+			guiGraphicsExtractor.requestCursor(CursorTypes.RESIZE_ALL);
 		} else {
-			DrawUtil.fillRect(guiGraphics, rect, ClientColors.WHITE.withAlpha(50));
+			DrawUtil.fillRect(guiGraphicsExtractor, rect, ClientColors.WHITE.withAlpha(50));
 		}
-		guiGraphics.pose().pushMatrix();
-		guiGraphics.pose().scale(hud.getScale(), hud.getScale());
-		s.render(guiGraphics);
-		guiGraphics.pose().popMatrix();
-		DrawUtil.outlineRect(guiGraphics, rect, Colors.BLACK);
+		guiGraphicsExtractor.pose().pushMatrix();
+		guiGraphicsExtractor.pose().scale(hud.getScale(), hud.getScale());
+		s.render(guiGraphicsExtractor);
+		guiGraphicsExtractor.pose().popMatrix();
+		DrawUtil.outlineRect(guiGraphicsExtractor, rect, Colors.BLACK);
 	}
 
 	@Override

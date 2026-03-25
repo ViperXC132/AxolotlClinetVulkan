@@ -37,7 +37,7 @@ import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.util.GsonHelper;
 import io.github.axolotlclient.util.notifications.Notifications;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.StringWidget;
@@ -200,8 +200,8 @@ public class ImageScreen extends Screen {
 		}
 
 		@Override
-		protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-			guiGraphics.blit(RenderPipelines.GUI_TEXTURED, image.id(), getX(), getY(), 0, 0, getWidth(), getHeight(), getWidth(), getHeight());
+		protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, float partialTick) {
+			guiGraphicsExtractor.blit(RenderPipelines.GUI_TEXTURED, image.id(), getX(), getY(), 0, 0, getWidth(), getHeight(), getWidth(), getHeight());
 		}
 
 		@Override

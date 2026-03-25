@@ -55,7 +55,7 @@ import lombok.Setter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
@@ -174,7 +174,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 			setKeystrokes();
 		}
 		for (Keystroke stroke : keystrokes) {
-			stroke.render((GuiGraphics) graphics);
+			stroke.render((GuiGraphicsExtractor) graphics);
 		}
 	}
 
@@ -245,7 +245,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 
 	public interface KeystrokeRenderer {
 
-		void render(Keystroke stroke, GuiGraphics graphics);
+		void render(Keystroke stroke, GuiGraphicsExtractor graphics);
 	}
 
 	public abstract class Keystroke {
@@ -289,12 +289,12 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 			return start == -1 ? 1 : Mth.clamp((float) (Util.getMillis() - start) / getAnimTime(), 0, 1);
 		}
 
-		public void render(GuiGraphics matrices) {
+		public void render(GuiGraphicsExtractor matrices) {
 			renderStroke(matrices);
 			render.render(this, matrices);
 		}
 
-		public void renderStroke(GuiGraphics matrices) {
+		public void renderStroke(GuiGraphicsExtractor matrices) {
 			if (isKeyDown() != wasPressed) {
 				start = Util.getMillis();
 			}
@@ -625,7 +625,7 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 		private final SpecialKeystrokeRenderer renderer;
 
 		public interface SpecialKeystrokeRenderer {
-			void render(KeystrokeHud hud, KeystrokeHud.Keystroke stroke, GuiGraphics graphics);
+			void render(KeystrokeHud hud, KeystrokeHud.Keystroke stroke, GuiGraphicsExtractor graphics);
 		}
 	}
 }

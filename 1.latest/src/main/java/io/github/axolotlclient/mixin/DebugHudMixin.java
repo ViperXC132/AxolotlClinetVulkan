@@ -24,7 +24,7 @@ package io.github.axolotlclient.mixin;
 
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.CrosshairHud;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -34,9 +34,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(DebugScreenOverlay.class)
 public abstract class DebugHudMixin {
 
-	@Inject(method = "render",
+	@Inject(method = "extractRenderState",
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;pop()V"))
-	public void axolotlclient$onRender(GuiGraphics graphics, CallbackInfo ci) {
+	public void axolotlclient$onRender(GuiGraphicsExtractor graphics, CallbackInfo ci) {
 		CrosshairHud hud = (CrosshairHud) HudManager.getInstance().get(CrosshairHud.ID);
 		if (hud.isEnabled() && hud.overridesF3()) {
 			hud.render(graphics, 0);

@@ -28,7 +28,7 @@ import java.util.List;
 import io.github.axolotlclient.util.OSUtil;
 import io.github.axolotlclient.util.Util;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -82,17 +82,17 @@ public class DeviceCodeDisplayScreen extends Screen {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		super.render(graphics, mouseX, mouseY, delta);
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+		super.extractRenderState(graphics, mouseX, mouseY, delta);
 
-		graphics.drawCenteredString(font, title, width / 2, 25, -1);
+		graphics.centeredText(font, title, width / 2, 25, -1);
 
 		int y = height / 4;
 		for (FormattedCharSequence orderedText : message) {
-			graphics.drawCenteredString(font, orderedText, width / 2, y, -1);
+			graphics.centeredText(font, orderedText, width / 2, y, -1);
 			y += 10;
 		}
-		graphics.drawCenteredString(font, working ? status : Component.translatable("auth.time_left",
+		graphics.centeredText(font, working ? status : Component.translatable("auth.time_left",
 				((ticksLeft / 20) / 60) + "m" + ((ticksLeft / 20) % 60) + "s"),
 			width / 2, y + 10, -1);
 

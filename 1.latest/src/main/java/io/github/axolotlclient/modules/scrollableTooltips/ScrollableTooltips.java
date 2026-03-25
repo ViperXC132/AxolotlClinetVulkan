@@ -63,7 +63,7 @@ public class ScrollableTooltips extends AbstractModule {
 		if (client.screen instanceof AbstractContainerScreen<?> screen) {
 			if ((Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen)
 				&& ((CreativeModeInventoryScreen) Minecraft.getInstance().screen)
-				.getSelectedItemGroup() != BuiltInRegistries.CREATIVE_MODE_TAB.getValue(CreativeModeTabs.INVENTORY)) {
+				.getSelectedTab() != BuiltInRegistries.CREATIVE_MODE_TAB.getValue(CreativeModeTabs.INVENTORY)) {
 				return false;
 			}
 			Slot hovered = ((AbstractContainerScreenAccessor) screen).getHoveredSlot();

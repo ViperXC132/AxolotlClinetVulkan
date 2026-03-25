@@ -29,7 +29,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import io.github.axolotlclient.modules.scrollableTooltips.ScrollableTooltips;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
@@ -38,13 +38,13 @@ import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(GuiGraphics.class)
+@Mixin(GuiGraphicsExtractor.class)
 public abstract class GuiGraphicsMixin {
 
 	@Unique
 	private int recursionDepth;
 
-	@WrapMethod(method = "renderTooltip")
+	@WrapMethod(method = "tooltip")
 	private void axolotlclient$scrollableTooltipsX(Font font, List<ClientTooltipComponent> list, int x, int y, ClientTooltipPositioner clientTooltipPositioner, @Nullable Identifier resourceLocation, Operation<Void> original) {
 		if (ScrollableTooltips.getInstance().enabled.get()) {
 			Minecraft mc = Minecraft.getInstance();

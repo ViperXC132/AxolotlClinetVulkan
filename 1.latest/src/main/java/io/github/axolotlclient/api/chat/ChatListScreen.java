@@ -26,7 +26,7 @@ import io.github.axolotlclient.api.ContextMenuContainer;
 import io.github.axolotlclient.api.ContextMenuScreen;
 import io.github.axolotlclient.api.requests.ChannelRequest;
 import io.github.axolotlclient.api.types.Channel;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -45,12 +45,12 @@ public class ChatListScreen extends Screen implements ContextMenuScreen {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		super.render(graphics, mouseX, mouseY, delta);
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+		super.extractRenderState(graphics, mouseX, mouseY, delta);
 
-		graphics.drawCenteredString(font, title, width / 2, 20, -1);
-		graphics.drawCenteredString(font, Component.translatable("api.chat.dms"), width / 2 + 80, 40, -1);
-		graphics.drawCenteredString(font, Component.translatable("api.chat.groups"), width / 2 - 80, 40, -1);
+		graphics.centeredText(font, title, width / 2, 20, -1);
+		graphics.centeredText(font, Component.translatable("api.chat.dms"), width / 2 + 80, 40, -1);
+		graphics.centeredText(font, Component.translatable("api.chat.groups"), width / 2 - 80, 40, -1);
 	}
 
 	@Override

@@ -31,7 +31,7 @@ import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 
 public class DebugCountersHud extends TextHudEntry {
@@ -47,7 +47,7 @@ public class DebugCountersHud extends TextHudEntry {
 
 	@Override
 	public void renderComponent(AxoRenderContext context, float delta) {
-		final var graphics = (GuiGraphics) context;
+		final var graphics = (GuiGraphicsExtractor) context;
 
 		if (client.level == null) {
 			renderPlaceholderComponent(graphics, delta);
@@ -86,7 +86,7 @@ public class DebugCountersHud extends TextHudEntry {
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
-		final var graphics = (GuiGraphics) context;
+		final var graphics = (GuiGraphicsExtractor) context;
 
 		DrawPosition pos = getContentPos();
 		int lineY = pos.y() + 2;

@@ -26,7 +26,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.IconHud;
 import io.github.axolotlclient.modules.scrollableTooltips.ScrollableTooltips;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -41,19 +41,19 @@ public abstract class HandledScreenMixin {
 	@Unique
 	private ItemStack cachedStack;
 
-	@Inject(method = "renderTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;setTooltipForNextFrame(Lnet/minecraft/client/gui/Font;Ljava/util/List;Ljava/util/Optional;IILnet/minecraft/resources/Identifier;)V"))
-	public void axolotlclient$resetScrollOnChange(GuiGraphics graphics, int x, int y, CallbackInfo ci, @Local ItemStack stack) {
+	@Inject(method = "extractTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;setTooltipForNextFrame(Lnet/minecraft/client/gui/Font;Ljava/util/List;Ljava/util/Optional;IILnet/minecraft/resources/Identifier;)V"))
+	public void axolotlclient$resetScrollOnChange(GuiGraphicsExtractor graphics, int x, int y, CallbackInfo ci, @Local ItemStack stack) {
 		if (ScrollableTooltips.getInstance().enabled.get() && cachedStack != stack) {
 			cachedStack = stack;
 			ScrollableTooltips.getInstance().resetScroll();
 		}
 	}
 
-	@Inject(method = "renderBackground", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/AbstractContainerScreen;renderBg(Lnet/minecraft/client/gui/GuiGraphics;FII)V"))
-	private void renderIcon(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+	@Inject(method = "extractContents", at = @At(value = "HEAD"))
+	private void renderIcon(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
 		var hud = (IconHud) HudManager.getInstance().get(IconHud.ID);
 		if (hud != null && hud.isEnabled()) {
-			hud.renderInGui(guiGraphics, partialTick);
+			hud.renderInGui(guiGraphicsExtractor, partialTick);
 		}
 	}
 }

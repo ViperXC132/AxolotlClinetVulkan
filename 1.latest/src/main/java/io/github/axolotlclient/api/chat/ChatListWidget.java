@@ -32,7 +32,7 @@ import io.github.axolotlclient.api.requests.ChannelRequest;
 import io.github.axolotlclient.api.types.Channel;
 import io.github.axolotlclient.api.types.Relation;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -98,10 +98,10 @@ public class ChatListWidget extends ContainerObjectSelectionList<ChatListWidget.
 		}
 
 		@Override
-		public void renderContent(GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			widget.setX(getContentX());
 			widget.setY(getContentY());
-			widget.render(graphics, mouseX, mouseY, tickDelta);
+			widget.extractRenderState(graphics, mouseX, mouseY, tickDelta);
 		}
 
 		@Override

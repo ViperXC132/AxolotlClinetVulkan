@@ -38,7 +38,7 @@ import io.github.axolotlclient.util.MathUtil;
 import lombok.AllArgsConstructor;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
@@ -90,15 +90,35 @@ public class CropImageScreen extends Screen {
 		var footer = hfl.addToFooter(LinearLayout.vertical()).spacing(4);
 		var inputs = footer.addChild(LinearLayout.horizontal(), LayoutSettings::alignHorizontallyCenter).spacing(4);
 		inputs.addChild(new StringWidget(Component.translatable("gallery.image.crop.position"), font)).setHeight(20);
-		posX = inputs.addChild(new EditBox(font, 50, 20, Component.translatable("gallery.image.crop.inputs.x")));
-		posY = inputs.addChild(new EditBox(font, 50, 20, Component.translatable("gallery.image.crop.inputs.y")));
+		posX = inputs.addChild(new EditBox(font, 50, 20, Component.translatable("gallery.image.crop.inputs.x")) {
+			@Override
+			public void insertText(String input) {
+				if (!input.matches("\\d*")) return;
+				super.insertText(input);
+			}
+		});
+		posY = inputs.addChild(new EditBox(font, 50, 20, Component.translatable("gallery.image.crop.inputs.y")){
+			@Override
+			public void insertText(String input) {
+				if (!input.matches("\\d*")) return;
+				super.insertText(input);
+			}
+		});
 		inputs.addChild(new StringWidget(Component.translatable("gallery.image.crop.size"), font)).setHeight(20);
-		posW = inputs.addChild(new EditBox(font, 50, 20, Component.translatable("gallery.image.crop.inputs.width")));
-		posH = inputs.addChild(new EditBox(font, 50, 20, Component.translatable("gallery.image.crop.inputs.height")));
-		posX.setFilter(s -> s.matches("\\d*"));
-		posY.setFilter(s -> s.matches("\\d*"));
-		posW.setFilter(s -> s.matches("\\d*"));
-		posH.setFilter(s -> s.matches("\\d*"));
+		posW = inputs.addChild(new EditBox(font, 50, 20, Component.translatable("gallery.image.crop.inputs.width")){
+			@Override
+			public void insertText(String input) {
+				if (!input.matches("\\d*")) return;
+				super.insertText(input);
+			}
+		});
+		posH = inputs.addChild(new EditBox(font, 50, 20, Component.translatable("gallery.image.crop.inputs.height")){
+			@Override
+			public void insertText(String input) {
+				if (!input.matches("\\d*")) return;
+				super.insertText(input);
+			}
+		});
 		posX.setResponder(s -> imageWidget.updateFromEditBoxes());
 		posY.setResponder(s -> imageWidget.updateFromEditBoxes());
 		posW.setResponder(s -> imageWidget.updateFromEditBoxes());
@@ -154,10 +174,10 @@ public class CropImageScreen extends Screen {
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-		super.render(guiGraphics, mouseX, mouseY, partialTick);
-		guiGraphics.blit(RenderPipelines.GUI_TEXTURED, Screen.HEADER_SEPARATOR, 0, hfl.getHeaderHeight() - 2, 0.0F, 0.0F, this.width, 2, 32, 2);
-		guiGraphics.blit(RenderPipelines.GUI_TEXTURED, Screen.FOOTER_SEPARATOR, 0, this.height - this.hfl.getFooterHeight(), 0.0F, 0.0F, this.width, 2, 32, 2);
+	public void extractRenderState(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, float partialTick) {
+		super.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
+		guiGraphicsExtractor.blit(RenderPipelines.GUI_TEXTURED, Screen.HEADER_SEPARATOR, 0, hfl.getHeaderHeight() - 2, 0.0F, 0.0F, this.width, 2, 32, 2);
+		guiGraphicsExtractor.blit(RenderPipelines.GUI_TEXTURED, Screen.FOOTER_SEPARATOR, 0, this.height - this.hfl.getFooterHeight(), 0.0F, 0.0F, this.width, 2, 32, 2);
 	}
 
 	@Override
@@ -254,39 +274,39 @@ public class CropImageScreen extends Screen {
 		}
 
 		@Override
-		protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-			guiGraphics.br$pushMatrix();
-			guiGraphics.br$pushScissor(getX(), getY(), getWidth(), getHeight());
-			guiGraphics.br$translateMatrix(CropImageScreen.this.width / 2f, CropImageScreen.this.height / 2f);
-			guiGraphics.br$translateMatrix(translateX, translateY);
-			guiGraphics.br$scaleMatrix(scale, scale);
-			guiGraphics.br$translateMatrix(-CropImageScreen.this.width / 2f, -CropImageScreen.this.height / 2f);
-			guiGraphics.blit(RenderPipelines.GUI_TEXTURED, image.id(), imgX, imgY, 0, 0, imgWidth, imgHeight, imgWidth, imgHeight);
+		protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, float partialTick) {
+			guiGraphicsExtractor.br$pushMatrix();
+			guiGraphicsExtractor.br$pushScissor(getX(), getY(), getWidth(), getHeight());
+			guiGraphicsExtractor.br$translateMatrix(CropImageScreen.this.width / 2f, CropImageScreen.this.height / 2f);
+			guiGraphicsExtractor.br$translateMatrix(translateX, translateY);
+			guiGraphicsExtractor.br$scaleMatrix(scale, scale);
+			guiGraphicsExtractor.br$translateMatrix(-CropImageScreen.this.width / 2f, -CropImageScreen.this.height / 2f);
+			guiGraphicsExtractor.blit(RenderPipelines.GUI_TEXTURED, image.id(), imgX, imgY, 0, 0, imgWidth, imgHeight, imgWidth, imgHeight);
 			// Can we have a stencil buffer please?
-			guiGraphics.br$scaleMatrix(1 / scale, 1 / scale);
+			guiGraphicsExtractor.br$scaleMatrix(1 / scale, 1 / scale);
 			int scaledDragX = Math.round(dragX * scale);
 			int scaledDragX1 = Math.round(dragX * scale + ((dragX1 - dragX) * scale));
 			int scaledDragY = Math.round(dragY * scale);
 			int scaledDragY1 = Math.round(dragY * scale + ((dragY1 - dragY) * scale));
-			guiGraphics.br$pushMatrix();
-			guiGraphics.br$translateMatrix(imgX * scale, imgY * scale);
-			guiGraphics.br$fillRectWithCutout(0, 0,
+			guiGraphicsExtractor.br$pushMatrix();
+			guiGraphicsExtractor.br$translateMatrix(imgX * scale, imgY * scale);
+			guiGraphicsExtractor.br$fillRectWithCutout(0, 0,
 				Math.round(imgWidth * scale), Math.round(imgHeight * scale), Colors.DARK_GRAY.withAlpha(180).toInt(),
 				Math.round(scaledDragX - imgX * scale), Math.round(scaledDragY - imgY * scale), scaledDragX1 - scaledDragX, scaledDragY1 - scaledDragY);
-			guiGraphics.br$popMatrix();
+			guiGraphicsExtractor.br$popMatrix();
 
 			int hoveredHandleColor = StyleColors.highlight().toInt();
 			DragHandle hoveredHandle = null;
 			if (isMouseOver(mouseX, mouseY)) {
 				if (minecraft.hasControlDown()) {
-					guiGraphics.requestCursor(CursorTypes.RESIZE_ALL);
+					guiGraphicsExtractor.requestCursor(CursorTypes.RESIZE_ALL);
 				} else if (currentHandle != null) {
 					hoveredHandle = currentHandle;
-					guiGraphics.requestCursor(currentHandle.cursor);
+					guiGraphicsExtractor.requestCursor(currentHandle.cursor);
 				} else {
 					hoveredHandle = getHandle(getTransformedX(mouseX), getTransformedY(mouseY));
 					if (hoveredHandle != null) {
-						guiGraphics.requestCursor(hoveredHandle.cursor);
+						guiGraphicsExtractor.requestCursor(hoveredHandle.cursor);
 					}
 				}
 			}
@@ -298,33 +318,33 @@ public class CropImageScreen extends Screen {
 			var xHandleRadius = Math.min(handleRadius, xHandleW / 2f);
 			if (xHandleW > 0 && xHandleRadius > 1f) {
 				int handleXStart = scaledDragX + (scaledDragX1 - scaledDragX) / 2 - xHandleW / 2;
-				guiGraphics.br$outlineRectRoundVarying(handleXStart, scaledDragY,
+				guiGraphicsExtractor.br$outlineRectRoundVarying(handleXStart, scaledDragY,
 					xHandleW, handleSize, hoveredHandle == DragHandle.TOP_CENTER ? hoveredHandleColor : handleColor, 0, xHandleRadius, xHandleRadius, 0, outlineWidth);
-				guiGraphics.br$outlineRectRoundVarying(handleXStart, scaledDragY1 - handleSize,
+				guiGraphicsExtractor.br$outlineRectRoundVarying(handleXStart, scaledDragY1 - handleSize,
 					xHandleW, handleSize, hoveredHandle == DragHandle.BOTTOM_CENTER ? hoveredHandleColor : handleColor, xHandleRadius, 0, 0, xHandleRadius, outlineWidth);
 			}
 			var yHandleH = Math.max(scaledDragY1 - scaledDragY - handleSize * 2 - 10, 0);
 			var yHandleRadius = Math.min(handleRadius, yHandleH / 2f);
 			if (yHandleH > 0 && yHandleRadius > 1f) {
 				int handleYStart = scaledDragY + (scaledDragY1 - scaledDragY) / 2 - yHandleH / 2;
-				guiGraphics.br$outlineRectRoundVarying(scaledDragX, handleYStart, handleSize,
+				guiGraphicsExtractor.br$outlineRectRoundVarying(scaledDragX, handleYStart, handleSize,
 					yHandleH, hoveredHandle == DragHandle.LEFT_CENTER ? hoveredHandleColor : handleColor, 0, 0, yHandleRadius, yHandleRadius, outlineWidth);
-				guiGraphics.br$outlineRectRoundVarying(scaledDragX1 - handleSize, handleYStart,
+				guiGraphicsExtractor.br$outlineRectRoundVarying(scaledDragX1 - handleSize, handleYStart,
 					handleSize, yHandleH, hoveredHandle == DragHandle.RIGHT_CENTER ? hoveredHandleColor : handleColor, yHandleRadius, yHandleRadius, 0, 0, outlineWidth);
 			}
-			guiGraphics.br$outlineRect(scaledDragX, scaledDragY,
+			guiGraphicsExtractor.br$outlineRect(scaledDragX, scaledDragY,
 				scaledDragX1 - scaledDragX, scaledDragY1 - scaledDragY,
 				hoveredHandle == DragHandle.CENTER_CENTER ? hoveredHandleColor : Colors.WHITE.toInt());
-			guiGraphics.axolotlclient_rendering$outlineCircle(scaledDragX, scaledDragY,
+			guiGraphicsExtractor.axolotlclient_rendering$outlineCircle(scaledDragX, scaledDragY,
 				hoveredHandle == DragHandle.TOP_LEFT ? hoveredHandleColor : handleColor, handleSize, outlineWidth);
-			guiGraphics.axolotlclient_rendering$outlineCircle(scaledDragX1, scaledDragY,
+			guiGraphicsExtractor.axolotlclient_rendering$outlineCircle(scaledDragX1, scaledDragY,
 				hoveredHandle == DragHandle.TOP_RIGHT ? hoveredHandleColor : handleColor, handleSize, outlineWidth);
-			guiGraphics.axolotlclient_rendering$outlineCircle(scaledDragX1, scaledDragY1,
+			guiGraphicsExtractor.axolotlclient_rendering$outlineCircle(scaledDragX1, scaledDragY1,
 				hoveredHandle == DragHandle.BOTTOM_RIGHT ? hoveredHandleColor : handleColor, handleSize, outlineWidth);
-			guiGraphics.axolotlclient_rendering$outlineCircle(scaledDragX, scaledDragY1,
+			guiGraphicsExtractor.axolotlclient_rendering$outlineCircle(scaledDragX, scaledDragY1,
 				hoveredHandle == DragHandle.BOTTOM_LEFT ? hoveredHandleColor : handleColor, handleSize, outlineWidth);
-			guiGraphics.br$popScissor();
-			guiGraphics.br$popMatrix();
+			guiGraphicsExtractor.br$popScissor();
+			guiGraphicsExtractor.br$popMatrix();
 		}
 
 		@Override

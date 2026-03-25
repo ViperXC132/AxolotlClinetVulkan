@@ -26,8 +26,8 @@ import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.ReceiveChatMessageEvent;
-import net.minecraft.client.GuiMessageTag;
 import net.minecraft.client.gui.components.ChatComponent;
+import net.minecraft.client.multiplayer.chat.GuiMessageSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MessageSignature;
 import org.spongepowered.asm.mixin.Mixin;
@@ -35,15 +35,15 @@ import org.spongepowered.asm.mixin.Mixin;
 @Mixin(ChatComponent.class)
 public abstract class ChatHudMixin {
 
-	@WrapMethod(method = "addMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/MessageSignature;Lnet/minecraft/client/GuiMessageTag;)V")
-	private void onChatMessage(Component chatComponent, MessageSignature headerSignature, GuiMessageTag tag, Operation<Void> original) {
-		ReceiveChatMessageEvent event = new ReceiveChatMessageEvent(false, chatComponent.getString(), chatComponent);
+	@WrapMethod(method = "addMessage")
+	private void onChatMessage(Component contents, MessageSignature signature, GuiMessageSource source, net.minecraft.client.multiplayer.chat.GuiMessageTag tag, Operation<Void> original) {
+		ReceiveChatMessageEvent event = new ReceiveChatMessageEvent(false, contents.getString(), contents);
 		Events.RECEIVE_CHAT_MESSAGE.invoker().accept(event);
 		if (event.isCancelled()) {
 			return;
 		} else if (event.getNewMessage() != null) {
-			chatComponent = (Component) event.getNewMessage();
+			contents = (Component) event.getNewMessage();
 		}
-		original.call(chatComponent, headerSignature, tag);
+		original.call(contents, signature, source, tag);
 	}
 }

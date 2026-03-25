@@ -31,7 +31,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.EditBox;
@@ -138,7 +138,7 @@ public class ProfilesScreen extends Screen implements RecreatableScreen {
 			}
 
 			@Override
-			public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+			public void extractContent(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, boolean hovering, float partialTick) {
 
 			}
 
@@ -194,28 +194,28 @@ public class ProfilesScreen extends Screen implements RecreatableScreen {
 			}
 
 			@Override
-			public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+			public void extractContent(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, boolean hovering, float partialTick) {
 				int i = scrollBarX() - removeButton.getWidth() - 4;
 				int j = getContentY() - 2;
 				this.removeButton.setPosition(i, j);
-				this.removeButton.render(guiGraphics, mouseX, mouseY, partialTick);
+				this.removeButton.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 
 				i -= duplicateButton.getWidth();
 				duplicateButton.setPosition(i, j);
-				duplicateButton.render(guiGraphics, mouseX, mouseY, partialTick);
+				duplicateButton.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 
 				boolean current = Profiles.getInstance().getCurrent() == profile;
 				loadButton.setMessage(current ? CURRENT_TEXT : LOAD_BUTTON_TITLE);
 				loadButton.active = removeButton.active = !current;
 				i -= loadButton.getWidth();
 				this.loadButton.setPosition(i, j);
-				this.loadButton.render(guiGraphics, mouseX, mouseY, partialTick);
+				this.loadButton.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 				i -= exportButton.getWidth();
 				exportButton.setPosition(i, j);
-				exportButton.render(guiGraphics, mouseX, mouseY, partialTick);
+				exportButton.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 				profileName.setWidth(i - getContentX() - 4);
 				profileName.setPosition(getContentX(), j);
-				profileName.render(guiGraphics, mouseX, mouseY, partialTick);
+				profileName.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 			}
 
 			@Override
@@ -257,13 +257,13 @@ public class ProfilesScreen extends Screen implements RecreatableScreen {
 			}
 
 			@Override
-			public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+			public void extractContent(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, boolean hovering, float partialTick) {
 				int i = scrollBarX() - getContentWidth() / 2 - 10 - addButton.getWidth() + 2;
 				int j = getContentY() - 2;
 				this.addButton.setPosition(i, j);
-				this.addButton.render(guiGraphics, mouseX, mouseY, partialTick);
+				this.addButton.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 				this.importButton.setPosition(addButton.getRight() + 2, j);
-				this.importButton.render(guiGraphics, mouseX, mouseY, partialTick);
+				this.importButton.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 			}
 
 			@Override

@@ -238,7 +238,7 @@ public abstract class PlatformImplInternalMixin {
 	 */
 	@Overwrite
 	public static AxoStatusEffectInstance createStatusEffectInstance(AxoStatusEffect effect, int duration) {
-		return new MobEffectInstance(new Holder.Direct<>((MobEffect) effect), duration);
+		return new MobEffectInstance(Holder.direct((MobEffect) effect), duration);
 	}
 
 	/**

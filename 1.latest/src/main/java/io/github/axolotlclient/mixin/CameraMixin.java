@@ -22,15 +22,18 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
+import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.freelook.Freelook;
+import io.github.axolotlclient.modules.zoom.Zoom;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.level.Level;
+import org.jspecify.annotations.Nullable;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -50,16 +53,44 @@ public abstract class CameraMixin {
 	@Shadow
 	private float xRot;
 
-	@Inject(method = "setup", at = @At(value = "INVOKE", target = "net/minecraft/client/Camera.move(FFF)V",
+	@Shadow
+	@Final
+	private Minecraft minecraft;
+
+	@Shadow
+	private @Nullable Entity entity;
+
+	@Shadow
+	private boolean isPanoramicMode;
+
+	@WrapOperation(method = "calculateFov", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;lerp(FFF)F"))
+	private float disableDynamicFov(float delta, float start, float end, Operation<Float> original) {
+		if (!AxolotlClient.config().dynamicFOV.get()) {
+			return 1.0f;
+		}
+		return original.call(delta, start, end);
+	}
+
+	@WrapMethod(method = "calculateFov")
+	private float getFov(float partialTicks, Operation<Float> original) {
+		if (this.isPanoramicMode) {
+			return original.call(partialTicks);
+		}
+		Zoom.getInstance().update();
+		return Zoom.getInstance().getFov(original.call(partialTicks), partialTicks);
+	}
+
+	@Inject(method = "alignWithEntity", at = @At(value = "INVOKE", target = "net/minecraft/client/Camera.move(FFF)V",
 		ordinal = 0))
-	private void axolotlclient$perspectiveUpdatePitchYaw(Level area, Entity focusedEntity, boolean thirdPerson, boolean inverseView, float tickDelta, CallbackInfo ci) {
+	private void axolotlclient$perspectiveUpdatePitchYaw(float partialTicks, CallbackInfo ci) {
+		var inverseView = minecraft.options.getCameraType().isMirrored();
 		this.xRot = Freelook.getInstance().pitch(xRot)
 			* (inverseView && Freelook.getInstance().enabled.get() && Freelook.getInstance().isActive() ? -1 : 1);
 		this.yRot = Freelook.getInstance().yaw(yRot)
 			+ (inverseView && Freelook.getInstance().enabled.get() && Freelook.getInstance().isActive() ? 180 : 0);
 	}
 
-	@WrapOperation(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setRotation" +
+	@WrapOperation(method = "alignWithEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setRotation" +
 		"(FF)V", ordinal = 0))
 	private void axolotlclient$perspectiveFixRotation(Camera instance, float yaw, float pitch, Operation<Void> original) {
 		yaw = Freelook.getInstance().yaw(yaw);
@@ -67,19 +98,19 @@ public abstract class CameraMixin {
 		original.call(instance, yaw, pitch);
 	}
 
-	@WrapOperation(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setRotation" +
+	@WrapOperation(method = "alignWithEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;setRotation" +
 		"(FF)V", ordinal = 1))
 	private void axolotlclient$perspectiveFixRotation2(Camera instance, float yaw, float pitch,
 													   Operation<Void> original) {
 		axolotlclient$perspectiveFixRotation(instance, yaw, pitch, original);
 	}
 
-	@ModifyArg(method = "setup", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;move(FFF)V",
+	@ModifyArg(method = "alignWithEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Camera;move(FFF)V",
 		ordinal = 0), index = 0)
-	private float axolotlclient$correctDistance(float x, @Local(argsOnly = true) Entity focused) {
+	private float axolotlclient$correctDistance(float x) {
 		if (Freelook.getInstance().enabled.get() && Freelook.getInstance().isActive()
 			&& Minecraft.getInstance().options.getCameraType().isMirrored()) {
-			return -getMaxZoom(4 * (focused instanceof LivingEntity e ? e.getScale() : 1.0f));
+			return -getMaxZoom(4 * (this.entity instanceof LivingEntity e ? e.getScale() : 1.0f));
 		}
 		return x;
 	}

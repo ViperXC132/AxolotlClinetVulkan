@@ -25,7 +25,6 @@ package io.github.axolotlclient.modules.auth.skin;
 import java.util.concurrent.CompletableFuture;
 
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
-import io.github.axolotlclient.mixin.GuiGraphicsAccessor;
 import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.auth.MSApi;
@@ -33,7 +32,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.navigation.FocusNavigationEvent;
@@ -80,7 +79,7 @@ public class SkinWidget extends AbstractWidget {
 	}
 
 	@Override
-	protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+	protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, float partialTick) {
 		var minecraft = Minecraft.getInstance();
 
 		float scale = FIT_SCALE * this.getHeight() / MODEL_HEIGHT;
@@ -94,9 +93,9 @@ public class SkinWidget extends AbstractWidget {
 		// You might say that using `hashCode()` like this isn't ideal, but in reality it doesn't matter. These objects get freed
 		// correctly by the screen so we mostly only need unique identifiers per widget which `hashCode()` provides.
 		var renderer = SkinRenderer.getOrCreate(minecraft.renderBuffers().bufferSource(), minecraft, "" + hashCode());
-		((GuiGraphicsAccessor) guiGraphics).getGuiRenderState()
-			.submitPicturesInPictureState(
-				new SkinRenderState(classic, (Identifier) skinRl, (Identifier) capeRl, this.rotationX, this.rotationY, pivotY, this.getX(), this.getY(), this.getRight(), this.getBottom(), scale, guiGraphics.scissorStack.peek(), renderer));
+		guiGraphicsExtractor.guiRenderState
+			.addPicturesInPictureState(
+				new SkinRenderState(classic, (Identifier) skinRl, (Identifier) capeRl, this.rotationX, this.rotationY, pivotY, this.getX(), this.getY(), this.getRight(), this.getBottom(), scale, guiGraphicsExtractor.scissorStack.peek(), renderer));
 	}
 
 	@Override

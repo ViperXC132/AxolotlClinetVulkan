@@ -36,12 +36,13 @@ import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.LerpingBossEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.Util;
 import net.minecraft.world.BossEvent;
 
@@ -110,7 +111,7 @@ public class BossBarHud extends TextHudEntry {
 		DrawPosition scaledPos = getContentPos();
 		int by = 12;
 		for (LerpingBossEvent bossBar : bossBars.values()) {
-			renderBossBar((GuiGraphics) graphics, scaledPos.x() + 1, by + scaledPos.y(), bossBar);
+			renderBossBar((GuiGraphicsExtractor) graphics, scaledPos.x() + 1, by + scaledPos.y(), bossBar);
 			by = by + 19;
 			if (by > getContentHeight()) {
 				break;
@@ -132,7 +133,7 @@ public class BossBarHud extends TextHudEntry {
 		}
 	}
 
-	private void renderBossBar(GuiGraphics graphics, int x, int y, BossEvent bossBar) {
+	private void renderBossBar(GuiGraphicsExtractor graphics, int x, int y, BossEvent bossBar) {
 		if (bar.get()) {
 			this.drawBar(graphics, x, y, bossBar, 182, BAR_BACKGROUND_SPRITES, OVERLAY_BACKGROUND_SPRITES);
 			int i = Mth.lerpDiscrete(bossBar.getProgress(), 0, 182);
@@ -144,11 +145,11 @@ public class BossBarHud extends TextHudEntry {
 			Component text = bossBar.getName();
 			float textX = x + ((float) getContentWidth() / 2) - ((float) client.font.width(text) / 2);
 			float textY = y - 9;
-			graphics.drawString(client.font, text, (int) textX, (int) textY, textColor.get().toInt(), shadow.get());
+			graphics.text(client.font, text, (int) textX, (int) textY, textColor.get().toInt(), shadow.get());
 		}
 	}
 
-	private void drawBar(GuiGraphics graphics, int x, int y, BossEvent bar, int width, Identifier[] textures, Identifier[] alternativeTextures) {
+	private void drawBar(GuiGraphicsExtractor graphics, int x, int y, BossEvent bar, int width, Identifier[] textures, Identifier[] alternativeTextures) {
 		graphics.blitSprite(RenderPipelines.GUI_TEXTURED, textures[bar.getColor().ordinal()], 182, 5, 0, 0, x, y, width, 5);
 		if (bar.getOverlay() != BossEvent.BossBarOverlay.PROGRESS) {
 			graphics.blitSprite(RenderPipelines.GUI_TEXTURED, alternativeTextures[bar.getOverlay().ordinal() - 1], 182, 5, 0,
@@ -160,8 +161,8 @@ public class BossBarHud extends TextHudEntry {
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
 		DrawPosition pos = getContentPos();
-		renderBossBar((GuiGraphics) graphics, pos.x() + 1, pos.y() + 12, placeholder);
-		renderBossBar((GuiGraphics) graphics, pos.x() + 1, pos.y() + 31, placeholder2);
+		renderBossBar((GuiGraphicsExtractor) graphics, pos.x() + 1, pos.y() + 12, placeholder);
+		renderBossBar((GuiGraphicsExtractor) graphics, pos.x() + 1, pos.y() + 31, placeholder2);
 	}
 
 	@Override
@@ -189,9 +190,10 @@ public class BossBarHud extends TextHudEntry {
 	}
 
 	public static class CustomBossBar extends BossEvent {
+		private static final RandomSource source = RandomSource.create();
 
 		public CustomBossBar(Component name, BossBarColor color, BossBarOverlay style) {
-			super(Mth.createInsecureUUID(), name, color, style);
+			super(Mth.createInsecureUUID(source), name, color, style);
 		}
 	}
 }

@@ -22,44 +22,45 @@
 
 package io.github.axolotlclient.modules.mcci;
 
-import com.noxcrew.noxesium.network.NoxesiumPackets;
+/*import com.noxcrew.noxesium.network.NoxesiumPackets;
 import com.noxcrew.noxesium.network.clientbound.ClientboundMccGameStatePacket;
-import com.noxcrew.noxesium.network.clientbound.ClientboundMccServerPacket;
+import com.noxcrew.noxesium.network.clientbound.ClientboundMccServerPacket;*/
 import io.github.axolotlclient.api.Request;
-import io.github.axolotlclient.api.requests.StatusUpdate;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+/*import io.github.axolotlclient.api.requests.StatusUpdate;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;*/
 import net.fabricmc.loader.api.FabricLoader;
 
 public class NoxesiumIntegration {
 
 	public static final boolean NOXESIUM_INSTALLED = FabricLoader.getInstance().isModLoaded("noxesium");
 
-	private ClientboundMccServerPacket currentServer;
+	// TODO (26.1) Noxesium is not yet updated, integration is currently disabled
+	/*private ClientboundMccServerPacket currentServer;
 	private ClientboundMccGameStatePacket currentGameState;
 
-	private boolean inizialized = false;
+	private boolean inizialized = false;*/
 
 	public void init() {
-		if (NOXESIUM_INSTALLED) {
+		/*if (NOXESIUM_INSTALLED) {
 			ClientTickEvents.END_CLIENT_TICK.register(c -> {
 				if (!inizialized) {
 					inizialized = true;
-					NoxesiumPackets.CLIENT_MCC_SERVER.addListener(this, (self, packet, ctx) -> currentServer = packet);
-					NoxesiumPackets.CLIENT_MCC_GAME_STATE.addListener(this, (self, packet, ctx) -> currentGameState = packet);
+					NoxesiumPackets.CLIENT_MCC_SERVER.addListener(this, (_, packet, _) -> currentServer = packet);
+					NoxesiumPackets.CLIENT_MCC_GAME_STATE.addListener(this, (_, packet, _) -> currentGameState = packet);
 				}
 			});
 
-		}
+		}*/
 	}
 
 	public Request getCurrentStatus() {
-		if (currentServer != null) {
+		/*if (currentServer != null) {
 			String mapName = "";
 			if (currentGameState != null) {
 				mapName = currentGameState.mapName();
 			}
 			return StatusUpdate.inGame(StatusUpdate.SupportedServer.MCC_ISLAND, MccIslandGameType.getServerType(currentServer.serverType()).getName(), "", mapName);
-		}
+		}*/
 
 		return null;
 	}

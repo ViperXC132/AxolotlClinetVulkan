@@ -44,19 +44,19 @@ dependencies {
 
 	implementation(include(project(path = ":common", configuration = "shadow"))!!)
 
-	compileOnly("maven.modrinth:world-host:0.5.0+1.21.3-fabric")
+	//compileOnly("maven.modrinth:world-host:0.5.0+1.21.3-fabric")
 	//implementation("org.quiltmc.parsers:json:0.3.0")
 	//implementation("org.semver4j:semver4j:5.3.0")
 
-	val noxesiumVersion = "2.5.0"
-	compileOnly("maven.modrinth:noxesium:$noxesiumVersion")
+	//val noxesiumVersion = "2.5.0"
+	//compileOnly("maven.modrinth:noxesium:$noxesiumVersion")
 	//implementation("com.noxcrew.noxesium:api:$noxesiumVersion")
 	//localRuntime("org.khelekore:prtree:1.5")
 
 	compileOnly("maven.modrinth:e4mc:6.0.6-fabric")
 
 	implementation("net.hypixel:mod-api:1.0.1")
-	include(implementation("maven.modrinth:hypixel-mod-api:1.0.1+build.1+mc1.21")!!)
+	//include(implementation("maven.modrinth:hypixel-mod-api:1.0.1+build.1+mc1.21")!!)
 }
 
 tasks.processResources {

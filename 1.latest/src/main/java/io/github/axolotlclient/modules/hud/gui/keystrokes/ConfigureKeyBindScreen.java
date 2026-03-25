@@ -29,7 +29,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.util.ConfigStyles;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import io.github.axolotlclient.modules.hud.gui.layout.Justification;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.layouts.FrameLayout;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
@@ -75,17 +75,17 @@ public class ConfigureKeyBindScreen extends Screen {
 		labelFrame.setMinWidth(super.width);
 		labelFrame.addChild(new AbstractWidget(0, 0, 200, 40, Component.empty()) {
 			@Override
-			protected void renderWidget(@NotNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+			protected void extractWidgetRenderState(@NotNull GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, float partialTick) {
 				var rect = stroke.getRenderPosition();
-				guiGraphics.pose().pushMatrix();
-				guiGraphics.pose().translate(getX(), getY());
+				guiGraphicsExtractor.pose().pushMatrix();
+				guiGraphicsExtractor.pose().translate(getX(), getY());
 				float scale = Math.min((float) getHeight() / rect.height(), (float) getWidth() / rect.width());
-				guiGraphics.pose().translate(getWidth() / 2f - (rect.width() * scale) / 2f, 0);
-				guiGraphics.pose().scale(scale, scale);
-				guiGraphics.pose().translate(-rect.x(), -rect.y());
-				DrawUtil.fillRect(guiGraphics, rect, Colors.WHITE.withAlpha(128));
-				stroke.render(guiGraphics);
-				guiGraphics.pose().popMatrix();
+				guiGraphicsExtractor.pose().translate(getWidth() / 2f - (rect.width() * scale) / 2f, 0);
+				guiGraphicsExtractor.pose().scale(scale, scale);
+				guiGraphicsExtractor.pose().translate(-rect.x(), -rect.y());
+				DrawUtil.fillRect(guiGraphicsExtractor, rect, Colors.WHITE.withAlpha(128));
+				stroke.render(guiGraphicsExtractor);
+				guiGraphicsExtractor.pose().popMatrix();
 			}
 
 			@Override

@@ -25,14 +25,14 @@ package io.github.axolotlclient.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.AxolotlClient;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.LightmapRenderStateExtractor;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
-@Mixin(LightTexture.class)
+@Mixin(LightmapRenderStateExtractor.class)
 public abstract class LightmapManagerMixin {
 
-	@WrapOperation(method = "updateLightTexture", at = @At(value = "INVOKE", target = "Ljava/lang/Double;floatValue()F", ordinal = 1))
+	@WrapOperation(method = "extract", at = @At(value = "INVOKE", target = "Ljava/lang/Double;floatValue()F", ordinal = 0))
 	public float axolotlclient$fullBright(Double instance, Operation<Float> original) {
 		if (AxolotlClient.config().fullBright.get())
 			return 15;

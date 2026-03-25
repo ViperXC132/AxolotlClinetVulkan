@@ -29,7 +29,7 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.TntRenderer;
 import net.minecraft.client.renderer.entity.state.TntRenderState;
-import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.phys.Vec3;
@@ -46,29 +46,29 @@ public abstract class TntEntityRendererMixin extends EntityRenderer<PrimedTnt, T
 	}
 
 	@Inject(
-		method = "submit(Lnet/minecraft/client/renderer/entity/state/TntRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V",
+		method = "submit(Lnet/minecraft/client/renderer/entity/state/TntRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;)V",
 		at = @At(value = "TAIL"))
-	private void axolotlclient$render(TntRenderState tntRenderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
+	private void axolotlclient$render(TntRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera, CallbackInfo ci) {
 		if (TntTime.getInstance().enabled.get()) {
 			poseStack.pushPose();
-			if (tntRenderState.nameTag != null) {
+			if (state.nameTag != null) {
 				poseStack.translate(0, 0.25, 0);
 			}
-			Vec3 prevAttachment = tntRenderState.nameTagAttachment;
+			Vec3 prevAttachment = state.nameTagAttachment;
 			if (prevAttachment == null) {
-				tntRenderState.nameTagAttachment = new Vec3(0, 1, 0);
+				state.nameTagAttachment = new Vec3(0, 1, 0);
 			}
 			submitNodeCollector.submitNameTag(
 				poseStack,
-				tntRenderState.nameTagAttachment,
+				state.nameTagAttachment,
 				0,
-				(Component) TntTime.getInstance().getFuseTime(tntRenderState.fuseRemainingInTicks),
-				!tntRenderState.isDiscrete,
-				tntRenderState.lightCoords,
-				tntRenderState.distanceToCameraSq,
-				cameraRenderState
+				(Component) TntTime.getInstance().getFuseTime(state.fuseRemainingInTicks),
+				!state.isDiscrete,
+				state.lightCoords,
+				state.distanceToCameraSq,
+				camera
 			);
-			tntRenderState.nameTagAttachment = prevAttachment;
+			state.nameTagAttachment = prevAttachment;
 			poseStack.popPose();
 		}
 	}

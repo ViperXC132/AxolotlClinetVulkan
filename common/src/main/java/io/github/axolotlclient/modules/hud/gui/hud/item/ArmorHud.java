@@ -26,13 +26,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import com.google.common.base.Suppliers;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
+import io.github.axolotlclient.bridge.BridgeVersion;
 import io.github.axolotlclient.bridge.item.AxoEnchants;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoItems;
@@ -55,13 +58,13 @@ import io.github.axolotlclient.util.ItemUtil;
 public class ArmorHud extends TextHudEntry {
 
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "armorhud");
-	private static final AxoItemStack PLACEHOLDER_MAIN_HAND = AxoItemStack.of(AxoItems.IRON_SWORD);
-	private static final List<AxoItemStack> PLACEHOLDER_GEAR = List.of(
+	private static final Supplier<AxoItemStack> PLACEHOLDER_MAIN_HAND = Suppliers.memoize(() -> AxoItemStack.of(AxoItems.IRON_SWORD));
+	private static final Supplier<List<AxoItemStack>> PLACEHOLDER_GEAR = Suppliers.memoize(() -> List.of(
 		AxoItemStack.of(AxoItems.IRON_BOOTS),
 		AxoItemStack.of(AxoItems.IRON_LEGGINGS),
 		AxoItemStack.of(AxoItems.IRON_CHESTPLATE),
 		AxoItemStack.of(AxoItems.IRON_HELMET)
-	);
+	));
 
 	protected final BooleanOption showProtLvl = new BooleanOption("showProtectionLevel", false);
 	private final BooleanOption showDurabilityNumber = new BooleanOption("show_durability_num", false);
@@ -110,7 +113,14 @@ public class ArmorHud extends TextHudEntry {
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
-		renderInternal(graphics, PLACEHOLDER_MAIN_HAND, PLACEHOLDER_GEAR, 1);
+		if (BridgeVersion.V26_1.isCurrent()) {
+			if (client.br$getWorld() == null) {
+				var pos = getContentPos();
+				graphics.br$drawCenteredString(getName(), pos.x() + getContentWidth()/2, pos.y() + getContentHeight()/2, textColor.get());
+				return;
+			}
+		}
+		renderInternal(graphics, PLACEHOLDER_MAIN_HAND.get(), PLACEHOLDER_GEAR.get(), 1);
 	}
 
 	private void renderInternal(
@@ -337,7 +347,7 @@ public class ArmorHud extends TextHudEntry {
 			return 20;
 		} else {
 			var text = String.valueOf(showDurability ? stack.br$getMaxDamage() - stack.br$getDamage() : stack.br$getMaxDamage());
-			graphics.br$drawString(text, x - graphics.br$getFont().br$getWidth(text)/2, textY, customDurabilityNumColor.get() ? durabilityNumColor.get().toInt() :
+			graphics.br$drawString(text, x - graphics.br$getFont().br$getWidth(text) / 2, textY, customDurabilityNumColor.get() ? durabilityNumColor.get().toInt() :
 				ClientColors.ARGB.opaque(stack.br$getBarColor()), true);
 			return 10;
 		}

@@ -34,16 +34,12 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(Level.class)
 public abstract class WorldMixin implements AxoWorld, LevelAccessor {
-	@Shadow
-	public abstract long getDayTime();
-
 	@Override
 	public long br$getTimeOfDay() {
-		return getDayTime();
+		return getGameTime();
 	}
 
 	@Override

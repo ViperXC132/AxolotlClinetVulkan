@@ -32,23 +32,24 @@ import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.util.HorizontalGradientRectangleRenderState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(GuiGraphics.class)
+@Mixin(GuiGraphicsExtractor.class)
 public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	@Shadow
 	@Final
-	Minecraft minecraft;
+	private Minecraft minecraft;
 
 	@Shadow
 	@Final
@@ -64,23 +65,23 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	public abstract void fill(int x1, int y1, int x2, int y2, int color);
 
 	@Shadow
-	public abstract void renderItem(ItemStack par1, int par2, int par3);
-
-	@Shadow
-	public abstract void renderItemDecorations(Font par1, ItemStack par2, int par3, int par4, String par5);
-
-	@Shadow
-	public abstract void drawString(Font par1, String par2, int par3, int par4, int par5, boolean par6);
-
-	@Shadow
-	public abstract void drawString(Font par1, Component par2, int par3, int par4, int par5, boolean par6);
-
-	@Shadow
 	public abstract void fillGradient(int startX, int startY, int endX, int endY, int startColor, int endColor);
 
+	@Shadow
+	public abstract void text(Font font, Component str, int x, int y, int color, boolean dropShadow);
+
+	@Shadow
+	public abstract void text(Font font, @Nullable String str, int x, int y, int color, boolean dropShadow);
+
+	@Shadow
+	public abstract void item(ItemStack itemStack, int x, int y);
+
+	@Shadow
+	public abstract void itemDecorations(Font font, ItemStack itemStack, int x, int y, @Nullable String countText);
+
 	@Unique
-	private @NotNull GuiGraphics self() {
-		return (GuiGraphics) (Object) this;
+	private @NotNull GuiGraphicsExtractor self() {
+		return (GuiGraphicsExtractor) (Object) this;
 	}
 
 	@Override
@@ -126,13 +127,13 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 
 	@Override
 	public int br$drawString(String value, int x, int y, int color, boolean shadow) {
-		drawString(minecraft.font, value, x, y, color, shadow);
+		text(minecraft.font, value, x, y, color, shadow);
 		return x + minecraft.font.width(value);
 	}
 
 	@Override
 	public int br$drawString(AxoText value, int x, int y, int color, boolean shadow) {
-		drawString(minecraft.font, (Component) value, x, y, color, shadow);
+		text(minecraft.font, (Component) value, x, y, color, shadow);
 		return x + minecraft.font.width((FormattedText) value);
 	}
 
@@ -194,12 +195,12 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	// item model rendering
 
 	public void br$renderGuiItemModel(AxoItemStack stack, int x, int y) {
-		renderItem((ItemStack) stack, x, y);
+		item((ItemStack) stack, x, y);
 	}
 
 	public void br$renderGuiItemOverlay(AxoItemStack stack, int x, int y, String countLabel, int textColor,
 										boolean shadow) {
-		renderItemDecorations(minecraft.font, (ItemStack) stack, x, y, countLabel);
+		itemDecorations(minecraft.font, (ItemStack) stack, x, y, countLabel);
 	}
 
 	@ApiStatus.NonExtendable

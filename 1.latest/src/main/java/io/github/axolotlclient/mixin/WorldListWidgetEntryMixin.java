@@ -37,7 +37,7 @@ public abstract class WorldListWidgetEntryMixin {
 
 	@Shadow
 	@Final
-	LevelSummary summary;
+	private LevelSummary summary;
 
 	@Inject(method = "joinWorld", at = @At("HEAD"))
 	private void axolotlclient$onSPWorldJoin(CallbackInfo ci) {

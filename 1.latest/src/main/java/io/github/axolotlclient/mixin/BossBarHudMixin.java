@@ -24,7 +24,7 @@ package io.github.axolotlclient.mixin;
 
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.BossBarHud;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.BossHealthOverlay;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -34,8 +34,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(BossHealthOverlay.class)
 public abstract class BossBarHudMixin {
 
-	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
-	private void axolotlclient$render(GuiGraphics graphics, CallbackInfo ci) {
+	@Inject(method = "extractRenderState", at = @At("HEAD"), cancellable = true)
+	private void axolotlclient$render(GuiGraphicsExtractor graphics, CallbackInfo ci) {
 		BossBarHud hud = (BossBarHud) HudManager.getInstance().get(BossBarHud.ID);
 		if (hud != null && hud.isEnabled()) {
 			ci.cancel();

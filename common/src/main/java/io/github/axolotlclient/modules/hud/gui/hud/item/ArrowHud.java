@@ -24,8 +24,10 @@ package io.github.axolotlclient.modules.hud.gui.hud.item;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import com.google.common.base.Suppliers;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.bridge.BridgeVersion;
@@ -55,14 +57,14 @@ public class ArrowHud extends TextHudEntry {
 		AxoItems.TIPPED_ARROW,
 		AxoItems.SPECTRAL_ARROW
 	).filter(Objects::nonNull).toList();
-	private static final AxoItemStack DUMMY = AxoItemStack.of(AxoItems.ARROW, 1);
+	private static final Supplier<AxoItemStack> DUMMY = Suppliers.memoize(() -> AxoItemStack.of(AxoItems.ARROW, 1));
 
 	private final BooleanOption dynamic = new BooleanOption("dynamic", false);
 	private final BooleanOption allArrowTypes = new BooleanOption("allArrowTypes", false);
 	private final BooleanOption hideIfEmpty = DefaultOptions.getHideIfEmpty();
 
 	private int arrows = 0;
-	private AxoItemStack currentArrow = AxoItemStack.of(AxoItems.ARROW);
+	private AxoItemStack currentArrow = BridgeVersion.V26_1.isCurrent() ? null : AxoItemStack.of(AxoItems.ARROW);
 
 	public ArrowHud() {
 		super(20, 22, true);
@@ -85,6 +87,7 @@ public class ArrowHud extends TextHudEntry {
 				}
 			}
 		}
+		if (currentArrow == null) return;
 		if (hideIfEmpty.get() && !isAllArrowTypes() && currentArrow.br$isEmpty()) {
 			return;
 		}
@@ -101,9 +104,17 @@ public class ArrowHud extends TextHudEntry {
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
+		if (BridgeVersion.V26_1.isCurrent()) {
+			if (client.br$getWorld() == null) {
+				var pos = getContentPos();
+				graphics.br$drawCenteredString(getName(), pos.x() + getContentWidth()/2, pos.y() + getContentHeight()/2, textColor.get());
+				return;
+			}
+		}
 		DrawPosition pos = getContentPos();
-		graphics.br$renderGuiItemModel(DUMMY, pos.x() + 2, pos.y() + 2);
-		graphics.br$renderGuiItemOverlay(DUMMY, pos.x() + 2, pos.y() + 2, "64");
+		var dummy = DUMMY.get();
+		graphics.br$renderGuiItemModel(dummy, pos.x() + 2, pos.y() + 2);
+		graphics.br$renderGuiItemOverlay(dummy, pos.x() + 2, pos.y() + 2, "64");
 	}
 
 	@Override
@@ -129,6 +140,7 @@ public class ArrowHud extends TextHudEntry {
 		if (isAllArrowTypes()) {
 			arrows = ARROW_TYPES.stream().mapToInt(x -> ItemUtil.getTotal(client, x)).sum();
 		} else {
+			if (currentArrow == null) return;
 			arrows = ItemUtil.getTotal(client, currentArrow.br$getItem());
 		}
 	}

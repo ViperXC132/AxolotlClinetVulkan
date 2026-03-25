@@ -30,7 +30,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.modules.AbstractModule;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import lombok.Getter;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.multiplayer.PlayerInfo;
 
 public class Tablist extends AbstractModule {
@@ -64,7 +64,7 @@ public class Tablist extends AbstractModule {
 		AxolotlClient.config().rendering.add(tablist);
 	}
 
-	public boolean renderNumericPing(GuiGraphics graphics, int width, int x, int y, PlayerInfo entry) {
+	public boolean renderNumericPing(GuiGraphicsExtractor graphics, int width, int x, int y, PlayerInfo entry) {
 		if (numericalPing.get()) {
 			Color current;
 			if (entry.getLatency() < 0) {

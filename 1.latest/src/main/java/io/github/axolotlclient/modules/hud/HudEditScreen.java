@@ -38,7 +38,7 @@ import io.github.axolotlclient.modules.hud.snapping.SnappingHelper;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.util.ExtraCursorTypes;
 import io.github.axolotlclient.util.MathUtil;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -87,8 +87,8 @@ public class HudEditScreen extends Screen {
 	}
 
 	@Override
-	public void render(@NotNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		super.render(graphics, mouseX, mouseY, delta);
+	public void extractRenderState(@NotNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+		super.extractRenderState(graphics, mouseX, mouseY, delta);
 
 		Optional<HudEntry> entry;
 		if (current != null && mode != ModificationMode.NONE) {
@@ -103,7 +103,7 @@ public class HudEditScreen extends Screen {
 		}
 		HudManager.getInstance().renderPlaceholder(graphics, delta);
 		if (getFocused() instanceof HudEntryWidget w) {
-			w.render(graphics, mouseX, mouseY, delta);
+			w.extractRenderState(graphics, mouseX, mouseY, delta);
 		}
 		if (entry.isPresent()) {
 			var bounds = entry.get().getTrueBounds();

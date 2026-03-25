@@ -22,23 +22,17 @@
 
 package io.github.axolotlclient.mixin;
 
-import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
 import com.mojang.blaze3d.resource.CrossFrameResourcePool;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.blur.MotionBlur;
-import io.github.axolotlclient.modules.zoom.Zoom;
-import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.util.Mth;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.util.profiling.Profiler;
-import org.joml.Matrix4f;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -54,32 +48,13 @@ public abstract class GameRendererMixin {
 	@Final
 	private CrossFrameResourcePool resourcePool;
 
-	@Shadow
-	public abstract boolean isPanoramicMode();
-
-	@WrapOperation(method = "getFov", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;lerp(FFF)F"))
-	private float disableDynamicFov(float delta, float start, float end, Operation<Float> original) {
-		if (!AxolotlClient.config().dynamicFOV.get()) {
-			return 1.0f;
-		}
-		return original.call(delta, start, end);
-	}
-
-	@WrapMethod(method = "getFov")
-	private float getFov(Camera camera, float partialTick, boolean useFovSetting, Operation<Float> original) {
-		if (this.isPanoramicMode()) {
-			return original.call(camera, partialTick, useFovSetting);
-		}
-		Zoom.getInstance().update();
-		return Zoom.getInstance().getFov(original.call(camera, partialTick, useFovSetting), partialTick);
-	}
 
 	@Inject(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/GameRenderer;postEffectId:Lnet/minecraft/resources/Identifier;", ordinal = 0, opcode = Opcodes.GETFIELD))
 	public void axolotlclient$worldMotionBlur(DeltaTracker tracker, boolean renderLevel, CallbackInfo ci) {
 		axolotlclient$motionBlur(tracker, renderLevel, null);
 	}
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/render/GuiRenderer;incrementFrameNumber()V"))
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeStorage;endFrame()V"))
 	public void axolotlclient$motionBlur(DeltaTracker tracker, boolean renderLevel, CallbackInfo ci) {
 		if (ci != null && !MotionBlur.getInstance().inGuis.get()) {
 			return;
@@ -89,7 +64,6 @@ public abstract class GameRendererMixin {
 
 		if (MotionBlur.getInstance().enabled.get() && Minecraft.getInstance().isGameLoadFinished()) {
 			MotionBlur blur = MotionBlur.getInstance();
-			//RenderSystem.resetTextureMatrix();
 			blur.render(resourcePool);
 		}
 
@@ -97,29 +71,19 @@ public abstract class GameRendererMixin {
 	}
 
 	@Inject(method = "bobView",
-		at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(FFF)V"),
-		cancellable = true)
-	private void axolotlclient$minimalViewBob(PoseStack matrices, float tickDelta, CallbackInfo ci,
-											  @Local(ordinal = 1) float g, @Local(ordinal = 2) float h) {
+		at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(FFF)V"))
+	private void axolotlclient$minimalViewBob(CameraRenderState cameraState, PoseStack matrices, CallbackInfo ci, @Local(name = "bob") LocalFloatRef bob,
+											  @Local(name = "backwardsInterpolatedWalkDistance") LocalFloatRef backwardsInterpolatedWalkDistance) {
 		if (AxolotlClient.config().minimalViewBob.get()) {
-			g /= 2;
-			h /= 2;
-			matrices.translate(Mth.sin(g * (float) Math.PI) * h * 0.5F,
-				-Math.abs(Mth.cos(g * (float) Math.PI) * h), 0.0F
-			);
-			matrices.mulPose(
-				Axis.ZP.rotationDegrees(Mth.sin(g * (float) Math.PI) * h * 3.0F).get(new Matrix4f()));
-			matrices.mulPose(
-				Axis.XP.rotationDegrees(Math.abs(Mth.cos(g * (float) Math.PI - 0.2F) * h) * 5.0F)
-					.get(new Matrix4f()));
-			ci.cancel();
+			backwardsInterpolatedWalkDistance.set(backwardsInterpolatedWalkDistance.get() / 2f);
+			bob.set(bob.get() / 2);
 		}
 	}
 
-	@Inject(method = "bobHurt", at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/client/Minecraft;getCameraEntity()Lnet/minecraft/world/entity/Entity;"),
+	@Inject(method = "bobHurt", at = @At(value = "FIELD",
+		target = "Lnet/minecraft/client/renderer/state/level/CameraEntityRenderState;hurtDuration:I", opcode = Opcodes.GETFIELD),
 		cancellable = true)
-	private void axolotlclient$noHurtCam(PoseStack matrices, float tickDelta, CallbackInfo ci) {
+	private void axolotlclient$noHurtCam(CameraRenderState cameraState, PoseStack poseStack, CallbackInfo ci) {
 		if (AxolotlClient.config().noHurtCam.get()) {
 			ci.cancel();
 		}

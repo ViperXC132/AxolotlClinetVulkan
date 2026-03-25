@@ -29,7 +29,7 @@ import io.github.axolotlclient.api.ContextMenuScreen;
 import io.github.axolotlclient.api.handlers.ChatHandler;
 import io.github.axolotlclient.api.requests.ChannelRequest;
 import io.github.axolotlclient.api.types.Channel;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -54,10 +54,10 @@ public class ChatScreen extends Screen implements ContextMenuScreen {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		super.render(graphics, mouseX, mouseY, delta);
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+		super.extractRenderState(graphics, mouseX, mouseY, delta);
 
-		graphics.drawCenteredString(this.font, channel.getName(), this.width / 2, 15, -1);
+		graphics.centeredText(this.font, channel.getName(), this.width / 2, 15, -1);
 	}
 
 	@Override
@@ -98,12 +98,10 @@ public class ChatScreen extends Screen implements ContextMenuScreen {
 		input.setMaxLength(1024);
 
 		if (channel.getOwner().equals(API.getInstance().getSelf())) {
-			//noinspection DataFlowIssue
 			addRenderableWidget(Button.builder(Component.translatable("api.channel.configure"), b -> minecraft.setScreen(new ChannelSettingsScreen(this, channel)))
 				.bounds(width - 60, 5, 50, 20).build());
 		}
 
-		//noinspection DataFlowIssue
 		this.addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, button -> this.minecraft.setScreen(this.parent))
 			.bounds(this.width / 2 - 75, this.height - 28, 150, 20)
 			.build()

@@ -24,8 +24,8 @@ package io.github.axolotlclient.bridge.impl;
 
 import io.github.axolotlclient.bridge.render.AxoSprite;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public interface AxoSpriteImpl extends AxoSprite {
-	void draw(Minecraft client, GuiGraphics stack, int sX, int sY, int sW, int sH, int color);
+	void draw(Minecraft client, GuiGraphicsExtractor stack, int sX, int sY, int sW, int sH, int color);
 }

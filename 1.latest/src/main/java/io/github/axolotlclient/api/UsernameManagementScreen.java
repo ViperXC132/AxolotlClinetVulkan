@@ -28,7 +28,7 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 import io.github.axolotlclient.api.requests.AccountUsernameRequest;
 import io.github.axolotlclient.api.types.User;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -129,13 +129,13 @@ public class UsernameManagementScreen extends Screen {
 			}
 
 			@Override
-			public void renderContent(GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+			public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 				int deleteX = UsernameListWidget.this.scrollBarX() - delete.getWidth() - 10;
 				delete.setPosition(deleteX, getContentY() - 2);
 				visibility.setPosition(deleteX - visibility.getWidth() - 5, getContentY() - 2);
-				delete.render(graphics, mouseX, mouseY, tickDelta);
-				visibility.render(graphics, mouseX, mouseY, tickDelta);
-				graphics.drawString(font, name, getContentX(), getContentYMiddle() - 9 / 2, -1);
+				delete.extractRenderState(graphics, mouseX, mouseY, tickDelta);
+				visibility.extractRenderState(graphics, mouseX, mouseY, tickDelta);
+				graphics.text(font, name, getContentX(), getContentYMiddle() - 9 / 2, -1);
 			}
 
 			@Override

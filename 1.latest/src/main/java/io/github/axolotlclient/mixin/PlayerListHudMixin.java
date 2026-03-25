@@ -40,7 +40,7 @@ import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsPlayer;
 import io.github.axolotlclient.modules.tablist.Tablist;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.PlayerTabOverlay;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -85,9 +85,9 @@ public abstract class PlayerListHudMixin {
 		return orig;
 	}
 
-	@WrapOperation(method = "render", at = @At(value = "INVOKE",
+	@WrapOperation(method = "extractRenderState", at = @At(value = "INVOKE",
 		target = "Lnet/minecraft/client/gui/Font;width(Lnet/minecraft/network/chat/FormattedText;)I", ordinal = 0))
-	private int axolotlclient$moveName(Font instance, FormattedText text, Operation<Integer> original, @Local PlayerInfo info) {
+	private int axolotlclient$moveName(Font instance, FormattedText text, Operation<Integer> original, @Local(name = "info") PlayerInfo info) {
 		int width = original.call(instance, text);
 		if (AxolotlClient.config().showBadges.get() &&
 			UserRequest.getOnline(info.getProfile().id().toString())) width += 10;
@@ -96,9 +96,9 @@ public abstract class PlayerListHudMixin {
 		return width;
 	}
 
-	@WrapOperation(method = "render", at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;III)V"))
-	public void axolotlclient$moveName2(GuiGraphics instance, Font font, Component component, int x, int y, int color, Operation<Integer> original, @Local PlayerInfo info) {
+	@WrapOperation(method = "extractRenderState", at = @At(value = "INVOKE",
+		target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;text(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;III)V"))
+	public void axolotlclient$moveName2(GuiGraphicsExtractor instance, Font font, Component component, int x, int y, int color, Operation<Integer> original, @Local(name = "info") PlayerInfo info) {
 		if (AxolotlClient.config().showBadges.get() &&
 			UserRequest.getOnline(info.getProfile().id().toString())) {
 			instance.blit(RenderPipelines.GUI_TEXTURED, (Identifier) AxolotlClientCommon.BADGE_PATH, x, y, 0, 0, 8, 8, 8, 8);
@@ -107,8 +107,8 @@ public abstract class PlayerListHudMixin {
 		original.call(instance, font, component, x, y, color);
 	}
 
-	@Inject(method = "renderPingIcon", at = @At("HEAD"), cancellable = true)
-	private void axolotlclient$numericalPing(GuiGraphics graphics, int width, int x, int y, PlayerInfo entry, CallbackInfo ci) {
+	@Inject(method = "extractPingIcon", at = @At("HEAD"), cancellable = true)
+	private void axolotlclient$numericalPing(GuiGraphicsExtractor graphics, int width, int x, int y, PlayerInfo entry, CallbackInfo ci) {
 		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().customTabList.get()
 			&& BedwarsMod.getInstance().blockLatencyIcon() &&
 			(BedwarsMod.getInstance().isWaiting() || BedwarsMod.getInstance().inGame())) {
@@ -118,7 +118,7 @@ public abstract class PlayerListHudMixin {
 		}
 	}
 
-	@WrapOperation(method = "render",
+	@WrapOperation(method = "extractRenderState",
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;isLocalServer()Z"))
 	private boolean showPlayerHeads$1(Minecraft instance, Operation<Boolean> original) {
 		if (Tablist.getInstance().showPlayerHeads.get()) {
@@ -127,7 +127,7 @@ public abstract class PlayerListHudMixin {
 		return false;
 	}
 
-	@WrapOperation(method = "render",
+	@WrapOperation(method = "extractRenderState",
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/network/Connection;isEncrypted()Z"))
 	private boolean axolotlclient$showPlayerHeads$1(Connection instance, Operation<Boolean> original) {
 		if (Tablist.getInstance().showPlayerHeads.get()) {
@@ -136,9 +136,9 @@ public abstract class PlayerListHudMixin {
 		return false;
 	}
 
-	@Inject(method = "render", at = @At(value = "FIELD",
+	@Inject(method = "extractRenderState", at = @At(value = "FIELD",
 		target = "Lnet/minecraft/client/gui/components/PlayerTabOverlay;header:Lnet/minecraft/network/chat/Component;", opcode = Opcodes.GETFIELD))
-	private void axolotlclient$setRenderHeaderFooter(GuiGraphics graphics, int scaledWindowWidth, Scoreboard scoreboard, Objective objective, CallbackInfo ci) {
+	private void axolotlclient$setRenderHeaderFooter(GuiGraphicsExtractor graphics, int scaledWindowWidth, Scoreboard scoreboard, Objective objective, CallbackInfo ci) {
 		if (!Tablist.getInstance().showHeader.get()) {
 			header = null;
 		}
@@ -147,17 +147,17 @@ public abstract class PlayerListHudMixin {
 		}
 	}
 
-	@ModifyArg(method = "render", at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/client/gui/components/PlayerFaceRenderer;draw(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/resources/Identifier;IIIZZI)V"),
+	@ModifyArg(method = "extractRenderState", at = @At(value = "INVOKE",
+		target = "Lnet/minecraft/client/gui/components/PlayerFaceExtractor;extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/resources/Identifier;IIIZZI)V"),
 		index = 5)
 	private boolean axolotlclient$renderHatLayer(boolean drawHat) {
 		return drawHat || Tablist.getInstance().alwaysShowHeadLayer.get();
 	}
 
-	@Inject(method = "renderTablistScore", at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;III)V"),
+	@Inject(method = "extractTablistScore", at = @At(value = "INVOKE",
+		target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;text(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;III)V"),
 		cancellable = true)
-	private void axolotlclient$renderCustomScoreboardObjective(Objective objective, int y, PlayerTabOverlay.ScoreDisplayEntry entry, int startX, int endX, UUID uuid, GuiGraphics graphics, CallbackInfo ci) {
+	private void axolotlclient$renderCustomScoreboardObjective(Objective objective, int y, PlayerTabOverlay.ScoreDisplayEntry entry, int startX, int endX, UUID uuid, GuiGraphicsExtractor graphics, CallbackInfo ci) {
 		if (!BedwarsMod.getInstance().isEnabled()) {
 			return;
 		}
@@ -175,7 +175,7 @@ public abstract class PlayerListHudMixin {
 		ci.cancel();
 	}
 
-	@ModifyVariable(method = "render", at = @At(value = "STORE"), ordinal = 1)
+	@ModifyVariable(method = "extractRenderState", at = @At(value = "STORE"), name = "spacerWidth")
 	public int axolotlclient$changeWidth(int value) {
 		if (!BedwarsMod.getInstance().isEnabled()) {
 			return value;
@@ -213,7 +213,7 @@ public abstract class PlayerListHudMixin {
 	}
 
 	@SuppressWarnings("unchecked")
-	@ModifyVariable(method = "render", at = @At(value = "STORE"), ordinal = 0)
+	@ModifyVariable(method = "extractRenderState", at = @At(value = "STORE"), name = "playerInfos")
 	public List<PlayerInfo> axolotlclient$overrideSortedPlayers(List<PlayerInfo> original) {
 		if (!BedwarsMod.getInstance().inGame()) {
 			return original;
@@ -249,8 +249,8 @@ public abstract class PlayerListHudMixin {
 		ci.cancel();
 	}
 
-	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V"), slice = @Slice(to = @At(value = "INVOKE", target = "Lnet/minecraft/client/Options;getBackgroundColor(I)I")))
-	private void modifyBackground(GuiGraphics instance, int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
+	@WrapOperation(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;fill(IIIII)V"), slice = @Slice(to = @At(value = "INVOKE", target = "Lnet/minecraft/client/Options;getBackgroundColor(I)I")))
+	private void modifyBackground(GuiGraphicsExtractor instance, int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
 		var tablist = Tablist.getInstance();
 		if (!tablist.backgroundEnabled.get()) {
 			return;
@@ -262,8 +262,8 @@ public abstract class PlayerListHudMixin {
 		original.call(instance, x1, y1, x2, y2, color);
 	}
 
-	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V"), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/PlayerTabOverlay;renderPingIcon(Lnet/minecraft/client/gui/GuiGraphics;IIILnet/minecraft/client/multiplayer/PlayerInfo;)V")))
-	private void modifyBackground$2(GuiGraphics instance, int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
+	@WrapOperation(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;fill(IIIII)V"), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/PlayerTabOverlay;extractPingIcon(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIILnet/minecraft/client/multiplayer/PlayerInfo;)V")))
+	private void modifyBackground$2(GuiGraphicsExtractor instance, int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
 		modifyBackground(instance, x1, y1, x2, y2, color, original);
 	}
 }

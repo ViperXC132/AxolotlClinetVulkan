@@ -42,7 +42,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.ActiveTextCollector;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.StringWidget;
@@ -262,24 +262,24 @@ public class GalleryScreen extends Screen {
 		}
 
 		@Override
-		protected void renderContents(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+		protected void extractContents(@NonNull GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, float partialTick) {
 			if (load().isDone() && load().join() != null) {
-				guiGraphics.blit(RenderPipelines.GUI_TEXTURED, load().join().id(), getX(), getY(), 0, 0, getWidth(), getHeight() - font.lineHeight - 2, getWidth(), getHeight() - font.lineHeight - 2);
-				renderDefaultLabel(guiGraphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
+				guiGraphicsExtractor.blit(RenderPipelines.GUI_TEXTURED, load().join().id(), getX(), getY(), 0, 0, getWidth(), getHeight() - font.lineHeight - 2, getWidth(), getHeight() - font.lineHeight - 2);
+				extractDefaultLabel(guiGraphicsExtractor.textRendererForWidget(this, GuiGraphicsExtractor.HoveredTextEffects.NONE));
 			} else {
 				float delta = (float) MathUtil.easeInOutCubic((Util.getMillis() - loadStart) % 1000f / 1000f);
 
-				guiGraphics.fill(getX() + 2, getY() + 2, getRight() - 2, getBottom() - font.lineHeight - 2, bgColor);
-				drawHorizontalGradient(guiGraphics, getX() + 2, getY() + 2, getBottom() - font.lineHeight - 2, MathUtil.lerp(delta, getX() + 2, getRight() - 2));
+				guiGraphicsExtractor.fill(getX() + 2, getY() + 2, getRight() - 2, getBottom() - font.lineHeight - 2, bgColor);
+				drawHorizontalGradient(guiGraphicsExtractor, getX() + 2, getY() + 2, getBottom() - font.lineHeight - 2, MathUtil.lerp(delta, getX() + 2, getRight() - 2));
 
-				guiGraphics.fill(getX() + 2, getBottom() - font.lineHeight - 1, getRight() - 2, getBottom() - 2, bgColor);
-				drawHorizontalGradient(guiGraphics, getX() + 2, getBottom() - font.lineHeight - 1, getBottom() - 2, MathUtil.lerp(delta, getX() + 2, getRight() - 2));
+				guiGraphicsExtractor.fill(getX() + 2, getBottom() - font.lineHeight - 1, getRight() - 2, getBottom() - 2, bgColor);
+				drawHorizontalGradient(guiGraphicsExtractor, getX() + 2, getBottom() - font.lineHeight - 1, getBottom() - 2, MathUtil.lerp(delta, getX() + 2, getRight() - 2));
 			}
-			guiGraphics.br$outlineRect(getX(), getY(), getWidth(), getHeight(), isHoveredOrFocused() ? -1 : bgColor);
+			guiGraphicsExtractor.br$outlineRect(getX(), getY(), getWidth(), getHeight(), isHoveredOrFocused() ? -1 : bgColor);
 		}
 
-		private void drawHorizontalGradient(GuiGraphics guiGraphics, int x1, int y1, int y2, int x2) {
-			HorizontalGradientRectangleRenderState.create(guiGraphics, x1, y1, x2, y2, ImageEntry.bgColor, ImageEntry.accent).submit();
+		private void drawHorizontalGradient(GuiGraphicsExtractor guiGraphicsExtractor, int x1, int y1, int y2, int x2) {
+			HorizontalGradientRectangleRenderState.create(guiGraphicsExtractor, x1, y1, x2, y2, ImageEntry.bgColor, ImageEntry.accent).submit();
 		}
 
 		@Override
@@ -288,7 +288,7 @@ public class GalleryScreen extends Screen {
 		}
 
 		@Override
-		protected void renderScrollingStringOverContents(ActiveTextCollector activeTextCollector, @NonNull Component component, int i) {
+		protected void extractScrollingStringOverContents(ActiveTextCollector activeTextCollector, @NonNull Component component, int i) {
 			activeTextCollector.acceptScrollingWithDefaultCenter(component, this.getX() + i,
 				this.getX() + this.getWidth() - i, this.getY() + getHeight() - font.lineHeight - 1,
 				this.getY() + this.getHeight());
@@ -313,12 +313,12 @@ public class GalleryScreen extends Screen {
 		}
 
 		@Override
-		public void renderContent(@NonNull GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+		public void extractContent(@NonNull GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, boolean hovering, float partialTick) {
 			if (Math.max(getContentX(), list.getX()) <= Math.min(getContentX() + getContentWidth(), list.getX() + list.getWidth()) - 1 &&
 				Math.max(getContentY() - getContentHeight(), list.getY()) <= Math.min(getContentY() + getContentHeight() * 2, list.getY() + list.getHeight()) - 1) {
 				buttons.forEach(e -> {
 					e.setY(getContentY());
-					e.render(guiGraphics, mouseX, mouseY, partialTick);
+					e.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 				});
 			} else {
 				buttons.forEach(e -> e.setY(getContentY()));

@@ -32,7 +32,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.StringWidget;
@@ -87,8 +87,8 @@ public class KeyBindSelectionList extends ContainerObjectSelectionList<KeyBindSe
 		}
 
 		@Override
-		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
-			guiGraphics.drawString(KeyBindSelectionList.this.minecraft.font, this.name, KeyBindSelectionList.this.width / 2 - this.width / 2, getContentY() + getContentHeight() - 9 - 1, -1);
+		public void extractContent(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, boolean hovering, float partialTick) {
+			guiGraphicsExtractor.text(KeyBindSelectionList.this.minecraft.font, this.name, KeyBindSelectionList.this.width / 2 - this.width / 2, getContentY() + getContentHeight() - 9 - 1, -1);
 		}
 
 		@Nullable
@@ -140,16 +140,16 @@ public class KeyBindSelectionList extends ContainerObjectSelectionList<KeyBindSe
 		}
 
 		@Override
-		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+		public void extractContent(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, boolean hovering, float partialTick) {
 			int i = KeyBindSelectionList.this.scrollBarX() - 10;
 			int j = getContentY() - 2;
 			int k = i - 5 - this.changeButton.getWidth();
 			this.changeButton.setPosition(k, j);
-			this.changeButton.render(guiGraphics, mouseX, mouseY, partialTick);
+			this.changeButton.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 			this.name.setRectangle(getContentWidth() * 3 / 8, getContentHeight(), getContentX(), getContentY());
 			this.name.setMaxWidth(getContentWidth() * 3 / 8, StringWidget.TextOverflow.SCROLLING);
-			this.name.render(guiGraphics, mouseX, mouseY, partialTick);
-			guiGraphics.drawString(minecraft.font, boundKey, getContentX() + getContentWidth() / 2 - minecraft.font.width(boundKey) / 2, getContentY() + getContentHeight() / 2 - 9 / 2, Colors.GRAY.toInt());
+			this.name.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
+			guiGraphicsExtractor.text(minecraft.font, boundKey, getContentX() + getContentWidth() / 2 - minecraft.font.width(boundKey) / 2, getContentY() + getContentHeight() / 2 - 9 / 2, Colors.GRAY.toInt());
 		}
 
 		@Override

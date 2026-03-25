@@ -25,11 +25,10 @@ package io.github.axolotlclient.modules.hud.gui.hud;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.PlayerDirectionChangeEvent;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.mixin.GuiGraphicsAccessor;
 import io.github.axolotlclient.modules.hud.util.PlayerHudEntityRenderState;
 import io.github.axolotlclient.modules.hud.util.PlayerHudEntityRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -98,7 +97,7 @@ public class PlayerHud extends PlayerHudCommon {
 	@Override
 	protected void renderPlayer(AxoRenderContext ctx, boolean placeholder, double x, double y, float delta) {
 		var client = Minecraft.getInstance();
-		var graphics = (GuiGraphics) ctx;
+		var graphics = (GuiGraphicsExtractor) ctx;
 		if (client.player == null) {
 			return;
 		}
@@ -133,7 +132,7 @@ public class PlayerHud extends PlayerHudCommon {
 
 	@SuppressWarnings("unchecked")
 	private void renderEntityInInventory(
-		GuiGraphics guiGraphics,
+		GuiGraphicsExtractor guiGraphicsExtractor,
 		int i,
 		int j,
 		int k,
@@ -155,7 +154,7 @@ public class PlayerHud extends PlayerHudCommon {
 		}
 		entityRenderer.extractRenderState(livingEntity, reusedPlayerRendererState, delta);
 		reusedPlayerRendererState.nameTag = null;
-		((GuiGraphicsAccessor) guiGraphics).getGuiRenderState().submitPicturesInPictureState(new PlayerHudEntityRenderState(reusedPlayerRendererState, vector3f, quaternionf, quaternionf2, i, j, k, l, f, ((GuiGraphicsAccessor) guiGraphics).getScissorStack().peek(), renderer));
+		guiGraphicsExtractor.guiRenderState.addPicturesInPictureState(new PlayerHudEntityRenderState(reusedPlayerRendererState, vector3f, quaternionf, quaternionf2, i, j, k, l, f, guiGraphicsExtractor.scissorStack.peek(), renderer));
 	}
 
 	@Override

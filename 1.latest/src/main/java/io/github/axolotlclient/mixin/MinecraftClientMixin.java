@@ -40,10 +40,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Minecraft.class)
 public abstract class MinecraftClientMixin {
 
-	/**
-	 * @author meohreag
-	 * @reason Customize Window title for use in AxolotlClient
-	 */
 	@Inject(method = "createTitle", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$getWindowTitle(CallbackInfoReturnable<String> cir) {
 		if (AxolotlClient.config().customWindowTitle.get()) {

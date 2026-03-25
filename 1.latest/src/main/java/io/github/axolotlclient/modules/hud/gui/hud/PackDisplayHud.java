@@ -37,7 +37,7 @@ import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.Component;
@@ -63,7 +63,7 @@ public class PackDisplayHud extends TextHudEntry {
 
 	@Override
 	public void renderComponent(AxoRenderContext context, float f) {
-		final var graphics = (GuiGraphics) context;
+		final var graphics = (GuiGraphicsExtractor) context;
 
 		DrawPosition pos = getContentPos();
 
@@ -145,7 +145,7 @@ public class PackDisplayHud extends TextHudEntry {
 			} catch (Exception ignored) {
 			}
 		} else {
-			placeholder.render((GuiGraphics) graphics, getContentPos().x() + 1, getContentPos().y() + 1);
+			placeholder.render((GuiGraphicsExtractor) graphics, getContentPos().x() + 1, getContentPos().y() + 1);
 		}
 	}
 
@@ -177,7 +177,7 @@ public class PackDisplayHud extends TextHudEntry {
 			texture = id;
 		}
 
-		public void render(GuiGraphics graphics, int x, int y) {
+		public void render(GuiGraphicsExtractor graphics, int x, int y) {
 			if (!iconsOnly.get()) {
 				graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, 0, 0, 16, 16, 16, 16);
 			}

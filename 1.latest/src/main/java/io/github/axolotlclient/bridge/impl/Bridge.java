@@ -38,10 +38,10 @@ public class Bridge {
 
 	@SuppressWarnings("unchecked")
 	public static void init() {
-		ClientLifecycleEvents.CLIENT_STARTED.register(minecraft -> Events.CLIENT_START.invoker().run());
-		ClientLifecycleEvents.CLIENT_STOPPING.register(minecraft -> Events.CLIENT_STOP.invoker().run());
-		ClientTickEvents.END_CLIENT_TICK.register(minecraft -> Events.TICK.invoker().run());
-		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloader(Identifier.fromNamespaceAndPath("axolotlclient", "bridge/resource_listener"),
+		ClientLifecycleEvents.CLIENT_STARTED.register(_ -> Events.CLIENT_START.invoker().run());
+		ClientLifecycleEvents.CLIENT_STOPPING.register(_ -> Events.CLIENT_STOP.invoker().run());
+		ClientTickEvents.END_CLIENT_TICK.register(_ -> Events.TICK.invoker().run());
+		ResourceLoader.get(PackType.CLIENT_RESOURCES).registerReloadListener(Identifier.fromNamespaceAndPath("axolotlclient", "bridge/resource_listener"),
 			(ResourceManagerReloadListener) resourceManager -> Events.END_RESOURCE_RELOAD.invoker().run());
 
 		ClientPlayConnectionEvents.JOIN.register((clientPlayNetworkHandler, sender, minecraftClient) ->

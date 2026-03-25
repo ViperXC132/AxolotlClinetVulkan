@@ -28,7 +28,7 @@ import io.github.axolotlclient.api.requests.ChannelRequest;
 import io.github.axolotlclient.api.types.ChannelInvite;
 import io.github.axolotlclient.api.util.UUIDHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ObjectSelectionList;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
@@ -123,12 +123,12 @@ public class ChannelInvitesScreen extends Screen {
 			}
 
 			@Override
-			public void renderContent(GuiGraphics graphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+			public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
 				var left = getContentX();
 				var top = getContentY();
-				graphics.drawString(font, Component.translatable("api.channels.invite.name", invite.channelName()), left + 2, top + 2, -1);
+				graphics.text(font, Component.translatable("api.channels.invite.name", invite.channelName()), left + 2, top + 2, -1);
 				if (fromName.isDone()) {
-					graphics.drawString(font, Component.translatable("api.channels.invite.from", fromName.join()).withStyle(Style.EMPTY.withItalic(true)), left + 15, top + height - font.lineHeight - 1, 0xFF808080);
+					graphics.text(font, Component.translatable("api.channels.invite.from", fromName.join()).withStyle(Style.EMPTY.withItalic(true)), left + 15, top + height - font.lineHeight - 1, 0xFF808080);
 				}
 
 			}

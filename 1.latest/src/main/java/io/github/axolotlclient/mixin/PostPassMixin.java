@@ -50,15 +50,15 @@ public class PostPassMixin {
 	private Map<String, GpuBuffer> customUniforms;
 
 	@ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/GpuDevice;createBuffer(Ljava/util/function/Supplier;ILjava/nio/ByteBuffer;)Lcom/mojang/blaze3d/buffers/GpuBuffer;"), index = 1)
-	private @GpuBuffer.Usage int addWritable(@GpuBuffer.Usage int i, @Local Map.Entry<String, List<UniformValue>> entry) {
+	private @GpuBuffer.Usage int addWritable(@GpuBuffer.Usage int i, @Local(name = "uniformGroup") Map.Entry<String, List<UniformValue>> entry) {
 		if ("BlurConfig".equals(entry.getKey())) {
 			return i | GpuBuffer.USAGE_MAP_WRITE;
 		}
 		return i;
 	}
 
-	@Inject(method = "lambda$addToFrame$5", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/CommandEncoder;mapBuffer(Lcom/mojang/blaze3d/buffers/GpuBuffer;ZZ)Lcom/mojang/blaze3d/buffers/GpuBuffer$MappedView;"))
-	private void addUniforms(ResourceHandle<?> resourceHandle, GpuBufferSlice gpuBufferSlice, Map<?, ?> map, CallbackInfo ci, @Local CommandEncoder commandEncoder) {
+	@Inject(method = "lambda$addToFrame$1", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/CommandEncoder;mapBuffer(Lcom/mojang/blaze3d/buffers/GpuBuffer;ZZ)Lcom/mojang/blaze3d/buffers/GpuBuffer$MappedView;"))
+	private void addUniforms(ResourceHandle<?> resourceHandle, GpuBufferSlice gpuBufferSlice, Map<?, ?> map, CallbackInfo ci, @Local(name = "commandEncoder") CommandEncoder commandEncoder) {
 		if (customUniforms.containsKey("BlurConfig")) {
 			var buf = customUniforms.get("BlurConfig");
 			try (GpuBuffer.MappedView mappedView = commandEncoder.mapBuffer(buf, false, true)) {

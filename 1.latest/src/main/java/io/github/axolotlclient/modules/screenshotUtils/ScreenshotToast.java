@@ -28,7 +28,7 @@ import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.MathUtil;
 import io.github.axolotlclient.util.duck.ToastExtension;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastManager;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -69,12 +69,12 @@ public class ScreenshotToast implements Toast, ToastExtension {
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, @NotNull Font font, long visibilityTime) {
+	public void extractRenderState(GuiGraphicsExtractor guiGraphicsExtractor, @NotNull Font font, long visibilityTime) {
 		var color = ScreenshotUtils.getInstance().toastBorderColor.get().toInt();
-		guiGraphics.fill(0, 0, width(), height(), color);
+		guiGraphicsExtractor.fill(0, 0, width(), height(), color);
 		float prog = MathUtil.lerp(MathUtil.clamp(visibilityTime / 300f, 0f, 1f), 1f, 0f);
-		guiGraphics.blit(RenderPipelines.GUI_TEXTURED, image.id(), 1, 1, 0, 0, width, TOAST_HEIGHT, width, TOAST_HEIGHT);
-		guiGraphics.br$fillRect(1, 1, width, TOAST_HEIGHT, ClientColors.ARGB.color(prog * ClientColors.ARGB.alphaFloat(color), color));
+		guiGraphicsExtractor.blit(RenderPipelines.GUI_TEXTURED, image.id(), 1, 1, 0, 0, width, TOAST_HEIGHT, width, TOAST_HEIGHT);
+		guiGraphicsExtractor.br$fillRect(1, 1, width, TOAST_HEIGHT, ClientColors.ARGB.color(prog * ClientColors.ARGB.alphaFloat(color), color));
 	}
 
 	@Override

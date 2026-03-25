@@ -35,7 +35,7 @@ import io.github.axolotlclient.modules.hypixel.autoboop.FilterListConfigurationS
 import io.github.axolotlclient.modules.hypixel.bedwars.SessionStatsHudEntryConfigScreen;
 import io.github.axolotlclient.util.ThreadExecuter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.FaviconTexture;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerStatusPinger;
@@ -109,7 +109,7 @@ public abstract class PlatformDispatchMixin {
 
 		class Impl implements AxoSprite.Dynamic, AxoSpriteImpl {
 			@Override
-			public void draw(Minecraft client, GuiGraphics stack, int sX, int sY, int sW, int sH, int color) {
+			public void draw(Minecraft client, GuiGraphicsExtractor stack, int sX, int sY, int sW, int sH, int color) {
 				stack.blit(RenderPipelines.GUI_TEXTURED, icon.textureLocation(), sX, sY, 0, 0, sW, sH, sW, sH, color);
 			}
 

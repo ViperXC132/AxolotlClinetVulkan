@@ -43,7 +43,7 @@ public abstract class ToastInstanceMixin<T extends Toast> implements ToastInstan
 	private int y;
 
 	// Intentional @Redirect instead of @WrapOperation as we do not invoke the original method
-	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/toasts/Toast;yPos(I)F"))
+	@Redirect(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/toasts/Toast;yPos(I)F"))
 	private float useCalcYPos(Toast instance, int firstSlotIndex) {
 		return y;
 	}

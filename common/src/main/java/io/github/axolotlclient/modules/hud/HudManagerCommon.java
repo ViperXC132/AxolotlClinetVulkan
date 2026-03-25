@@ -53,7 +53,7 @@ import io.github.axolotlclient.modules.hud.gui.hud.item.ArmorHud;
 import io.github.axolotlclient.modules.hud.gui.hud.item.ArrowHud;
 import io.github.axolotlclient.modules.hud.gui.hud.item.ItemUpdateHud;
 import io.github.axolotlclient.modules.hud.gui.hud.simple.*;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.InventoryHud;
+import io.github.axolotlclient.modules.hud.gui.hud.item.InventoryHud;
 import io.github.axolotlclient.modules.hud.gui.layout.SnapAnchorType;
 import io.github.axolotlclient.modules.hud.snapping.SnappingHelper;
 import io.github.axolotlclient.modules.hud.util.Rectangle;

@@ -36,9 +36,9 @@ import io.github.axolotlclient.modules.auth.Auth;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ObjectSelectionList;
-import net.minecraft.client.gui.components.PlayerFaceRenderer;
+import net.minecraft.client.gui.components.PlayerFaceExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.Component;
@@ -102,7 +102,7 @@ public class ChatUserListWidget extends ObjectSelectionList<ChatUserListWidget.U
 			return this;
 		}
 
-		protected static void drawScrollableText(GuiGraphics graphics, Font textRenderer, Component text, int left, int top, int right, int bottom, int color) {
+		protected static void drawScrollableText(GuiGraphicsExtractor graphics, Font textRenderer, Component text, int left, int top, int right, int bottom, int color) {
 			int i = textRenderer.width(text);
 			int j = (top + bottom - 9) / 2 + 1;
 			int k = right - left;
@@ -113,10 +113,10 @@ public class ChatUserListWidget extends ObjectSelectionList<ChatUserListWidget.U
 				double f = Math.sin((Math.PI / 2) * Math.cos((Math.PI * 2) * d / e)) / 2.0 + 0.5;
 				double g = Mth.lerp(f, 0.0, l);
 				graphics.enableScissor(left, top, right, bottom);
-				graphics.drawString(textRenderer, text, left - (int) g, j, color);
+				graphics.text(textRenderer, text, left - (int) g, j, color);
 				graphics.disableScissor();
 			} else {
-				graphics.drawString(textRenderer, text, left, j, color);
+				graphics.text(textRenderer, text, left, j, color);
 			}
 		}
 
@@ -127,7 +127,7 @@ public class ChatUserListWidget extends ObjectSelectionList<ChatUserListWidget.U
 		}
 
 		@Override
-		public void renderContent(GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			var x = getContentX();
 			var y = getContentY();
 			var entryWidth = getContentWidth();
@@ -142,7 +142,7 @@ public class ChatUserListWidget extends ObjectSelectionList<ChatUserListWidget.U
 				y + 12, x + entryWidth - 6, y + 12 + client.font.lineHeight + 2, 8421504);
 
 			Identifier texture = Auth.getInstance().getSkinTexture(user.getUuid());
-			PlayerFaceRenderer.draw(graphics, texture, x, y, entryHeight, true, false, -1);
+			PlayerFaceExtractor.extractRenderState(graphics, texture, x, y, entryHeight, true, false, -1);
 		}
 
 		@Override
