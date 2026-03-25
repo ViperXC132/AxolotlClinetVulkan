@@ -124,7 +124,7 @@ public class ChatListWidget extends EntryListWidget {
 
 		@Override
 		public boolean mouseClicked(int index, int mouseX, int mouseY, int button, int m, int n) {
-			if (widget.isMouseOver(minecraft, mouseX, mouseY)) {
+			if (widget.mouseClicked(minecraft, mouseX, mouseY)) {
 				if (button == 0) {
 					minecraft.openScreen(new ChatScreen(screen.getParent(), channel));
 					return true;
@@ -137,13 +137,13 @@ public class ChatListWidget extends EntryListWidget {
 					if (channel.getOwner().equals(API.getInstance().getSelf())) {
 						builder.entry(I18n.translate("api.channel.delete"), w -> minecraft.openScreen(new ConfirmScreen((bl, i) -> {
 							if (bl) {
-								ChannelRequest.leaveOrDeleteChannel(channel).whenComplete((o, throwable) -> minecraft.submit(() -> minecraft.openScreen(screen.getSelf())));
+								ChannelRequest.leaveOrDeleteChannel(channel).whenComplete((o, throwable) -> minecraft.executeTask(() -> minecraft.openScreen(screen.getSelf())));
 							}
 						}, I18n.translate("api.channels.delete.confirm"), I18n.translate("api.channels.delete.confirm.desc", channel.getName()), 0)));
 					} else {
 						builder.entry(I18n.translate("api.channel.leave"), w -> minecraft.openScreen(new ConfirmScreen((bl, i) -> {
 							if (bl) {
-								ChannelRequest.leaveOrDeleteChannel(channel).whenComplete((o, throwable) -> minecraft.submit(() -> minecraft.openScreen(screen.getSelf())));
+								ChannelRequest.leaveOrDeleteChannel(channel).whenComplete((o, throwable) -> minecraft.executeTask(() -> minecraft.openScreen(screen.getSelf())));
 							}
 						}, I18n.translate("api.channels.leave.confirm"), channel.getOwner().getRelation() == Relation.FRIEND ?
 							I18n.translate("api.channels.leave.confirm.desc_add", channel.getName()) :

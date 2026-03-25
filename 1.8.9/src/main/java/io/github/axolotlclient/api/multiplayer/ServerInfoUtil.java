@@ -74,7 +74,7 @@ public class ServerInfoUtil {
 			} else {
 				data.setIcon(null);
 			}
-			data.description = metadata.serverInfo().levelName();
+			data.motd = metadata.serverInfo().levelName();
 			Optional.ofNullable(serverMetadata.getVersion()).ifPresentOrElse(ver -> {
 				data.version = ver.getName();
 				data.protocol = ver.getProtocol();
@@ -83,7 +83,7 @@ public class ServerInfoUtil {
 				data.protocol = 0;
 			});
 			Optional.ofNullable(serverMetadata.getPlayers()).ifPresentOrElse(player -> {
-				data.playerListString = Formatting.GRAY
+				data.onlinePlayers = Formatting.GRAY
 					+ ""
 					+ player.getOnline()
 					+ Formatting.DARK_GRAY
@@ -101,11 +101,11 @@ public class ServerInfoUtil {
 						list.add(I18n.translate("multiplayer.status.and_more", player.getOnline() - player.get().length));
 					}
 
-					data.playerListString = StringUtils.join(list, "\n");
+					data.onlinePlayers = StringUtils.join(list, "\n");
 				} else {
-					data.playerListString = "";
+					data.onlinePlayers = "";
 				}
-			}, () -> data.description = I18n.translate("multiplayer.status.unknown").formatted(Formatting.DARK_GRAY));
+			}, () -> data.motd = I18n.translate("multiplayer.status.unknown").formatted(Formatting.DARK_GRAY));
 		}
 		return data;
 	}

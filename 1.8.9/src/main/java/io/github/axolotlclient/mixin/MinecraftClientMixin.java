@@ -24,7 +24,7 @@ package io.github.axolotlclient.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mojang.blaze3d.vertex.BufferBuilder;
+import net.minecraft.client.render.vertex.BufferBuilder;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.bridge.events.types.WorldLoadEvent;
@@ -118,7 +118,7 @@ public abstract class MinecraftClientMixin {
 	}
 
 	// Don't ask me why we need both here, but otherwise it looks ugly
-	@WrapOperation(method = "renderMojangLogo", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferBuilder;color(IIII)Lcom/mojang/blaze3d/vertex/BufferBuilder;"))
+	@WrapOperation(method = "renderLoadingScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/vertex/BufferBuilder;color(IIII)Lnet/minecraft/client/render/vertex/BufferBuilder;"))
 	public BufferBuilder axolotlclient$loadingScreenColor(BufferBuilder instance, int red, int green, int blue, int alpha, Operation<BufferBuilder> original) {
 		if (!AxolotlClient.config().customLoadingScreenColor.get())
 			return original.call(instance, red, green, blue, alpha);
@@ -128,7 +128,7 @@ public abstract class MinecraftClientMixin {
 			AxolotlClient.config().loadingScreenColor.get().getAlpha());
 	}
 
-	@WrapOperation(method = "renderLoadingScreen", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferBuilder;color(IIII)Lcom/mojang/blaze3d/vertex/BufferBuilder;"))
+	@WrapOperation(method = "renderLoadingScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/vertex/BufferBuilder;color(IIII)Lnet/minecraft/client/render/vertex/BufferBuilder;"))
 	public BufferBuilder axolotlclient$loadingScreenBg(BufferBuilder instance, int red, int green, int blue, int alpha, Operation<BufferBuilder> original) {
 		if (!AxolotlClient.config().customLoadingScreenColor.get())
 			return original.call(instance, red, green, blue, alpha);
@@ -178,7 +178,7 @@ public abstract class MinecraftClientMixin {
 		}
 	}
 
-	@Inject(method = "onResolutionChanged(II)V", at = @At(value = "TAIL"))
+	@Inject(method = "resize(II)V", at = @At(value = "TAIL"))
 	public void axolotlclient$onResize(CallbackInfo ci) {
 		Util.window = null;
 		HudManager.getInstance().refreshAllBounds();

@@ -29,7 +29,7 @@ import java.util.stream.IntStream;
 import io.github.axolotlclient.bridge.impl.Bridge;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoPlayerInventory;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.living.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -37,29 +37,29 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(PlayerInventory.class)
 public abstract class PlayerInventoryMixin implements AxoPlayerInventory {
 	@Shadow
-	public abstract ItemStack getMainHandStack();
-
-	@Shadow
 	public abstract int getSize();
-
-	@Shadow
-	public abstract ItemStack getStack(int slot);
 
 	@Shadow
 	public abstract ItemStack getArmor(int par1);
 
 	@Shadow
-	public ItemStack[] inventorySlots;
+	public ItemStack[] items;
+
+	@Shadow
+	public abstract ItemStack getItem(int slot);
+
+	@Shadow
+	public abstract ItemStack getSelectedItem();
 
 	@Override
 	public AxoItemStack br$getMainHand() {
-		return Bridge.wrapStack(getMainHandStack());
+		return Bridge.wrapStack(getSelectedItem());
 	}
 
 	@Override
 	public List<AxoItemStack> br$getItems() {
 		return IntStream.range(0, getSize())
-			.mapToObj(x -> Bridge.wrapStack(getStack(x)))
+			.mapToObj(x -> Bridge.wrapStack(getItem(x)))
 			.toList();
 	}
 
@@ -72,7 +72,7 @@ public abstract class PlayerInventoryMixin implements AxoPlayerInventory {
 
 	@Override
 	public List<? extends AxoItemStack> br$getNonEquipmentItems() {
-		return Arrays.stream(inventorySlots)
+		return Arrays.stream(items)
 			.skip(9)
 			.map(Bridge::wrapStack)
 			.toList();

@@ -25,8 +25,8 @@ package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.Lighting;
+import net.minecraft.client.render.platform.GlStateManager;
+import net.minecraft.client.render.platform.Lighting;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
@@ -60,7 +60,7 @@ public class HotbarHud extends TextHudEntry {
 	@Override
 	public void renderComponent(AxoRenderContext context, float delta) {
 		PlayerEntity playerEntity = (PlayerEntity) this.client.getCamera();
-		if (playerEntity == null || playerEntity.inventory == null || playerEntity.inventory.inventorySlots == null) {
+		if (playerEntity == null || playerEntity.inventory == null || playerEntity.inventory.items == null) {
 			return;
 		}
 		DrawPosition pos = getPos();
@@ -80,10 +80,10 @@ public class HotbarHud extends TextHudEntry {
 		for (int j = 0; j < 9; ++j) {
 			int k = pos.x + j * 20 + 3;
 			int l = pos.y + 3;
-			if (playerEntity.inventory.inventorySlots[j] != null) {
-				ItemUtil.renderGuiItemModel(playerEntity.inventory.inventorySlots[j], k, l);
+			if (playerEntity.inventory.items[j] != null) {
+				ItemUtil.renderGuiItemModel(playerEntity.inventory.items[j], k, l);
 				ItemUtil.renderGuiItemOverlay(Minecraft.getInstance().textRenderer,
-					playerEntity.inventory.inventorySlots[j], k, l, null, textColor.get().toInt(), shadow.get());
+					playerEntity.inventory.items[j], k, l, null, textColor.get().toInt(), shadow.get());
 			}
 		}
 

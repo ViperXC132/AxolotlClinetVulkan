@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.util.UUIDHelper;
@@ -65,9 +65,9 @@ public class ImageScreen extends Screen {
 		}
 		return new LoadingImageScreen(parent, future.thenAccept(i -> {
 			if (i != null) {
-				Minecraft.getInstance().submit(() -> Minecraft.getInstance().openScreen(new ImageScreen(parent, i, freeOnClose)));
+				Minecraft.getInstance().executeTask(() -> Minecraft.getInstance().openScreen(new ImageScreen(parent, i, freeOnClose)));
 			} else {
-				Minecraft.getInstance().submit(() -> Minecraft.getInstance().openScreen(parent));
+				Minecraft.getInstance().executeTask(() -> Minecraft.getInstance().openScreen(parent));
 			}
 		}), freeOnClose);
 	}
@@ -159,7 +159,7 @@ public class ImageScreen extends Screen {
 					if (s.isEmpty()) {
 						Notifications.getInstance().addStatus("gallery.image.upload.failure", "gallery.image.upload.failure.description");
 					} else {
-						minecraft.submit(() -> minecraft.openScreen(new ImageScreen(parent, local.toShared(s, API.getInstance().getSelf().getUuid(), Instant.now()), freeOnClose)));
+						minecraft.executeTask(() -> minecraft.openScreen(new ImageScreen(parent, local.toShared(s, API.getInstance().getSelf().getUuid(), Instant.now()), freeOnClose)));
 						setClipboard(s);
 						Notifications.getInstance().addStatus("gallery.image.upload.success", "gallery.image.upload.success.description", s);
 					}

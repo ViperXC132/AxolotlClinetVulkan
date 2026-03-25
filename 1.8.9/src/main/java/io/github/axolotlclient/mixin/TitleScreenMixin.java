@@ -68,7 +68,7 @@ public abstract class TitleScreenMixin extends Screen {
 	public abstract void render(int par1, int par2, float par3);
 
 	@Shadow
-	private boolean f_2867010;
+	private boolean realmsEnabled;
 
 	@Inject(method = "initWidgetsNormal", at = @At("TAIL"))
 	private void axolotlclient$replaceRealmsButton(int i, int j, CallbackInfo ci) {
@@ -92,7 +92,7 @@ public abstract class TitleScreenMixin extends Screen {
 			if (API.getInstance().isSocketConnected()) {
 				addApiButtons.run();
 			} else {
-				API.addStartupListener(() -> minecraft.submit(addApiButtons), API.ListenerType.ONCE);
+				API.addStartupListener(() -> minecraft.executeTask(addApiButtons), API.ListenerType.ONCE);
 			}
 		}
 		GlobalDataRequest.get().thenAccept(data -> {
@@ -193,6 +193,6 @@ public abstract class TitleScreenMixin extends Screen {
 
 	@Inject(method = "<init>", at = @At("TAIL"))
 	private void disableRealms(CallbackInfo ci) {
-		this.f_2867010 = true;
+		this.realmsEnabled = true;
 	}
 }

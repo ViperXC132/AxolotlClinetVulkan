@@ -35,82 +35,82 @@
 	"custom": {
 		"axolotlclient:bridge_impl_version": "V1_8",
 		"loom:injected_interfaces": {
-			"net/minecraft/unmapped/C_0561170": [
+			"net/minecraft/unmapped/C_22168528": [
 				"io/github/axolotlclient/bridge/util/AxoIdentifier"
 			],
-			"net/minecraft/unmapped/C_8105098": [
+			"net/minecraft/client/Minecraft": [
 				"io/github/axolotlclient/bridge/AxoMinecraftClient"
 			],
-			"net/minecraft/unmapped/C_3831727": [
+			"net/minecraft/unmapped/C_23014920": [
 				"io/github/axolotlclient/bridge/render/AxoFont"
 			],
-			"net/minecraft/unmapped/C_7799337": [
+			"net/minecraft/unmapped/C_43718703": [
 				"io/github/axolotlclient/bridge/render/AxoWindow"
 			],
-			"net/minecraft/unmapped/C_0539808": [
+			"net/minecraft/unmapped/C_42232651": [
 				"io/github/axolotlclient/bridge/entity/AxoEntity"
 			],
-			"net/minecraft/unmapped/C_2454309": [
+			"net/minecraft/unmapped/C_88708284": [
 				"io/github/axolotlclient/bridge/item/AxoItemStack"
 			],
-			"net/minecraft/unmapped/C_7400754": [
+			"net/minecraft/unmapped/C_87542771": [
 				"io/github/axolotlclient/bridge/item/AxoPlayerInventory"
 			],
-			"net/minecraft/unmapped/C_9590849": [
+			"net/minecraft/unmapped/C_40996800": [
 				"io/github/axolotlclient/bridge/entity/AxoPlayer"
 			],
-			"net/minecraft/unmapped/C_3755722": [
+			"net/minecraft/unmapped/C_98888256": [
 				"io/github/axolotlclient/bridge/item/AxoItem"
 			],
-			"net/minecraft/unmapped/C_5553933": [
+			"net/minecraft/unmapped/C_64041439": [
 				"io/github/axolotlclient/bridge/world/AxoWorld"
 			],
-			"net/minecraft/unmapped/C_0230498": [
+			"net/minecraft/unmapped/C_24720596": [
 				"io/github/axolotlclient/bridge/item/AxoEnchant"
 			],
-			"net/minecraft/unmapped/C_7778778": [
+			"net/minecraft/unmapped/C_23708450": [
 				"io/github/axolotlclient/bridge/key/AxoKeybinding"
 			],
-			"net/minecraft/unmapped/C_1331819": [
+			"net/minecraft/unmapped/C_76792751": [
 				"io/github/axolotlclient/bridge/AxoGameOptions"
 			],
-			"net/minecraft/unmapped/C_9550253": [
+			"net/minecraft/unmapped/C_95231345": [
 				"io/github/axolotlclient/bridge/util/AxoText\u0024Mutable"
 			],
-			"net/minecraft/unmapped/C_6237110": [
+			"net/minecraft/unmapped/C_50927867": [
 				"io/github/axolotlclient/bridge/util/AxoText\u0024Style"
 			],
-			"net/minecraft/unmapped/C_3543146": [
+			"net/minecraft/unmapped/C_97147141": [
 				"io/github/axolotlclient/bridge/AxoPlayerListEntry"
 			],
-			"net/minecraft/unmapped/C_0658987": [
+			"net/minecraft/unmapped/C_30281404": [
 				"io/github/axolotlclient/bridge/entity/effect/AxoStatusEffectInstance"
 			],
-			"net/minecraft/unmapped/C_3488550": [
+			"net/minecraft/unmapped/C_26934808": [
 				"io/github/axolotlclient/bridge/entity/effect/AxoStatusEffect"
 			],
-			"net/minecraft/unmapped/C_1676943": [
+			"net/minecraft/unmapped/C_34530577": [
 				"io/github/axolotlclient/bridge/resource/AxoResource"
 			],
-			"net/minecraft/unmapped/C_6577431": [
+			"net/minecraft/unmapped/C_52500310": [
 				"io/github/axolotlclient/bridge/resource/AxoResourceManager"
 			],
-			"net/minecraft/unmapped/C_3945557": [
+			"net/minecraft/unmapped/C_30593188": [
 				"io/github/axolotlclient/bridge/scores/AxoObjective"
 			],
-			"net/minecraft/unmapped/C_0814381": [
+			"net/minecraft/unmapped/C_73166169": [
 				"io/github/axolotlclient/bridge/scores/AxoScoreboard"
 			],
-			"net/minecraft/unmapped/C_3526030": [
+			"net/minecraft/unmapped/C_25287165": [
 				"io/github/axolotlclient/bridge/scores/AxoScoreboardScore"
 			],
-			"net/minecraft/unmapped/C_4143404": [
+			"net/minecraft/unmapped/C_97595263": [
 				"io/github/axolotlclient/bridge/scores/AxoTeam"
 			],
-			"net/minecraft/unmapped/C_8525326": [
+			"net/minecraft/unmapped/C_27154081": [
 				"io/github/axolotlclient/bridge/util/AxoProfiler"
 			],
-			"net/minecraft/unmapped/C_1533205": [
+			"net/minecraft/unmapped/C_91543234": [
 				"io/github/axolotlclient/bridge/network/AxoServerData"
 			]
 		}

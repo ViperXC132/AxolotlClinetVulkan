@@ -29,10 +29,10 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tessellator;
+import net.minecraft.client.render.platform.GlStateManager;
+import net.minecraft.client.render.vertex.BufferBuilder;
+import net.minecraft.client.render.vertex.DefaultVertexFormat;
+import net.minecraft.client.render.vertex.Tesselator;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.TextRenderer;
@@ -97,14 +97,14 @@ public abstract class TextRendererMixin {
 
 	@Unique
 	private void drawTexture(float x, float y) {
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuilder();
+		Tesselator tesselator = Tesselator.getInstance();
+		BufferBuilder bufferBuilder = tesselator.getBuffer();
 		bufferBuilder.begin(7, DefaultVertexFormat.POSITION_TEX);
 		bufferBuilder.vertex(x, y + 10, 0.0).texture(0, 1).nextVertex();
 		bufferBuilder.vertex((x + 5), (y + 10), 0.0).texture(1, 1).nextVertex();
 		bufferBuilder.vertex((x + 5), y, 0.0).texture(1, 0).nextVertex();
 		bufferBuilder.vertex(x, y, 0.0).texture(0, 0).nextVertex();
-		tessellator.end();
+		tesselator.end();
 	}
 
 	@Inject(method = "getWidth(C)I", at = @At(value = "HEAD"), cancellable = true)
@@ -118,7 +118,7 @@ public abstract class TextRendererMixin {
 	private static final Pattern COLOR_PATTERN = Pattern.compile("(#(?:0x)?[a-fA-F0-9]{6})");
 
 	// This target does not exist when using OptiFine
-	@WrapOperation(method = "drawLayer(Ljava/lang/String;Z)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;color4f(FFFF)V", ordinal = 0), require = 0)
+	@WrapOperation(method = "drawLayer(Ljava/lang/String;Z)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;color4f(FFFF)V", ordinal = 0), require = 0)
 	private void customFormattingCode(float red, float green, float blue, float alpha, Operation<Void> original, String string, boolean bl, @Local(ordinal = 0) LocalIntRef index) {
 		if (index.get() + 7 < string.length() && string.charAt(index.get() + 1) == '#') {
 

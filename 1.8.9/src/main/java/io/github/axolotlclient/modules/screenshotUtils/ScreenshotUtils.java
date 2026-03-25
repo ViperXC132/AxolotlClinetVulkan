@@ -84,7 +84,7 @@ public class ScreenshotUtils extends AbstractModule {
 			file -> {
 				try {
 					ImageInstance instance = new ImageInstance.LocalImpl(file);
-					client.submit(() -> client.openScreen(ImageScreen.create(null, CompletableFuture.completedFuture(instance), true)));
+					client.executeTask(() -> client.openScreen(ImageScreen.create(null, CompletableFuture.completedFuture(instance), true)));
 				} catch (Exception ignored) {
 					Util.addMessageToChatHud(new TranslatableText("screenshot.gallery.view.error"));
 				}

@@ -214,7 +214,7 @@ public class AccountsScreen extends Screen {
 	}
 
 	private void initMSAuth() {
-		Auth.getInstance().getMsApi().startDeviceAuth().thenRun(() -> minecraft.submit(this::refresh));
+		Auth.getInstance().getMsApi().startDeviceAuth().thenRun(() -> minecraft.executeTask(this::refresh));
 	}
 
 	private void refreshAccount() {

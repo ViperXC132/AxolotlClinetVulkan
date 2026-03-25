@@ -152,7 +152,7 @@ public abstract class ItemStackMixin implements AxoItemStack {
 
 		for (int i = 0; i < enchants.size(); i++) {
 			if (enchants.getCompound(i).getShort("id") == id) {
-				enchants.remove(i);
+				enchants.removeElement(i);
 				break;
 			}
 		}

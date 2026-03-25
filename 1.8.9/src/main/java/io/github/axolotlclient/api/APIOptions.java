@@ -60,7 +60,7 @@ public class APIOptions extends Options {
 		openPrivacyNoteScreen = () -> {
 			var fut = new CompletableFuture<Boolean>();
 			var parent = client.screen;
-			client.submit(() -> client.openScreen(new PrivacyNoticeScreen(parent, fut)));
+			client.executeTask(() -> client.openScreen(new PrivacyNoticeScreen(parent, fut)));
 			return fut;
 		};
 		KeyBinding openSidebar = new KeyBinding("api.chats.sidebar.open", Keyboard.KEY_O, "category.axolotlclient");

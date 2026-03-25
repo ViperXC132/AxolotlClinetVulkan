@@ -23,10 +23,10 @@
 package io.github.axolotlclient.modules.sky;
 
 import com.google.gson.JsonObject;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tessellator;
+import net.minecraft.client.render.platform.GlStateManager;
+import net.minecraft.client.render.vertex.BufferBuilder;
+import net.minecraft.client.render.vertex.DefaultVertexFormat;
+import net.minecraft.client.render.vertex.Tesselator;
 import io.github.axolotlclient.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resource.Identifier;
@@ -86,8 +86,8 @@ public class MCPSkyboxInstance extends SkyboxInstance {
 
 	@Override
 	public void renderSkybox() {
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuilder();
+		Tesselator tesselator = Tesselator.getInstance();
+		BufferBuilder bufferBuilder = tesselator.getBuffer();
 
 		Minecraft.getInstance().getTextureManager().bind(textures[0]);
 		for (int i = 0; i < 6; ++i) {
@@ -130,7 +130,7 @@ public class MCPSkyboxInstance extends SkyboxInstance {
 			bufferBuilder.vertex(100, -100, 100).texture(u + 1 / 3F, v + 0.5).color(1F, 1F, 1F, alpha).nextVertex();
 			bufferBuilder.vertex(100, -100, -100).texture(u + 1 / 3F, v).color(1F, 1F, 1F, alpha).nextVertex();
 
-			tessellator.end();
+			tesselator.end();
 
 			GlStateManager.popMatrix();
 		}

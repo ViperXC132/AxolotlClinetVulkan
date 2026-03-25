@@ -34,10 +34,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tessellator;
+import net.minecraft.client.render.platform.GlStateManager;
+import net.minecraft.client.render.platform.Lighting;
+import net.minecraft.client.render.vertex.DefaultVertexFormat;
+import net.minecraft.client.render.vertex.Tesselator;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
@@ -262,7 +262,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 								var out = ensureNonexistent(SKINS_DIR.resolve(t.skinKey()));
 								Skin.LocalSkin.writeMetadata(out, Map.of(Skin.LocalSkin.CLASSIC_METADATA_KEY, t.classicModel(), "name", t.name(), "uuid", t.id(), "download_time", Instant.now()));
 								Files.write(out, bytes);
-								minecraft.submit(this::loadSkinsList);
+								minecraft.executeTask(this::loadSkinsList);
 								Notifications.getInstance().addStatus("skins.notification.title", "skins.notification.import.online.downloaded", t.name());
 								AxolotlClientCommon.getInstance().getLogger().info("Downloaded skin of {} ({})", t.name(), o.get());
 							} catch (IOException e) {
@@ -321,7 +321,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 			}
 			rows.add(new Row(widgets));
 		}
-		minecraft.submit(() -> capesList.replaceEntries(rows));
+		minecraft.executeTask(() -> capesList.replaceEntries(rows));
 	}
 
 	private void loadSkinsList() {
@@ -389,7 +389,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 			}
 			rows.add(new Row(widgets));
 		}
-		minecraft.submit(() -> skinList.replaceEntries(rows));
+		minecraft.executeTask(() -> skinList.replaceEntries(rows));
 	}
 
 	private Path ensureNonexistent(Path p) {
@@ -532,20 +532,20 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 			GlStateManager.disableTexture();
 			GlStateManager.enableBlend();
 			GlStateManager.disableTexture();
-			var tessellator = Tessellator.getInstance();
-			var bufferBuilder = tessellator.getBuilder();
+			var tesselator = Tesselator.getInstance();
+			var bufferBuilder = tesselator.getBuffer();
 			bufferBuilder.begin(7, DefaultVertexFormat.POSITION_TEX_COLOR);
 			bufferBuilder.vertex(left, top + 4, 0.0F).texture(0.0F, 1.0F).color(0, 0, 0, 0).nextVertex();
 			bufferBuilder.vertex(right, top + 4, 0.0F).texture(1.0F, 1.0F).color(0, 0, 0, 0).nextVertex();
 			bufferBuilder.vertex(right, top, 0.0F).texture(1.0F, 0.0F).color(0, 0, 0, 255).nextVertex();
 			bufferBuilder.vertex(left, top, 0.0F).texture(0.0F, 0.0F).color(0, 0, 0, 255).nextVertex();
-			tessellator.end();
+			tesselator.end();
 			bufferBuilder.begin(7, DefaultVertexFormat.POSITION_TEX_COLOR);
 			bufferBuilder.vertex(this.left, this.bottom, 0.0F).texture(0.0F, 1.0F).color(0, 0, 0, 255).nextVertex();
 			bufferBuilder.vertex(this.right, this.bottom, 0.0F).texture(1.0F, 1.0F).color(0, 0, 0, 255).nextVertex();
 			bufferBuilder.vertex(this.right, this.bottom - 4, 0.0F).texture(1.0F, 0.0F).color(0, 0, 0, 0).nextVertex();
 			bufferBuilder.vertex(this.left, this.bottom - 4, 0.0F).texture(0.0F, 0.0F).color(0, 0, 0, 0).nextVertex();
-			tessellator.end();
+			tesselator.end();
 			GlStateManager.enableTexture();
 		}
 	}
@@ -675,7 +675,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 						if (client.screen == SkinManagementScreen.this) {
 							refreshCurrentList();
 						} else {
-							client.submit(() -> client.openScreen(SkinManagementScreen.this));
+							client.executeTask(() -> client.openScreen(SkinManagementScreen.this));
 						}
 					}).exceptionally(t -> {
 						AxolotlClientCommon.getInstance().getLogger().warn("Failed to equip asset!", t);
@@ -829,8 +829,8 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 		private static class GradientHoleRectangleRenderState {
 
 			public static void render(int x0, int y0, int x1, int y1, float gradientWidth, int col1, int col2) {
-				var tess = Tessellator.getInstance();
-				var vertexConsumer = tess.getBuilder();
+				var tess = Tesselator.getInstance();
+				var vertexConsumer = tess.getBuffer();
 				float z = 0;
 				int a1 = ClientColors.ARGB.alpha(col1);
 				int r1 = ClientColors.ARGB.red(col1);

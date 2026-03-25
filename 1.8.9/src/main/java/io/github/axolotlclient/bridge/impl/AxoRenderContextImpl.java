@@ -22,10 +22,10 @@
 
 package io.github.axolotlclient.bridge.impl;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tessellator;
+import net.minecraft.client.render.platform.GlStateManager;
+import net.minecraft.client.render.vertex.BufferBuilder;
+import net.minecraft.client.render.vertex.DefaultVertexFormat;
+import net.minecraft.client.render.vertex.Tesselator;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
@@ -99,13 +99,13 @@ public class AxoRenderContextImpl extends io.github.axolotlclient.rendering.Draw
 		GlStateManager.disableAlphaTest();
 		GlStateManager.blendFuncSeparate(770, 771, 1, 0);
 		GlStateManager.shadeModel(7425);
-		BufferBuilder consumer = Tessellator.getInstance().getBuilder();
+		BufferBuilder consumer = Tesselator.getInstance().getBuffer();
 		consumer.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_COLOR);
 		consumer.vertex(x + width, y, 0).color(color1 >> 16 & 255, color1 >> 8 & 255, color1 & 255, color1 >> 24 & 255);
 		consumer.vertex(x, y, 0).color(color1 >> 16 & 255, color1 >> 8 & 255, color1 & 255, color1 >> 24 & 255);
 		consumer.vertex(x, y + height, 0).color(color2 >> 16 & 255, color2 >> 8 & 255, color2 & 255, color2 >> 24 & 255);
 		consumer.vertex(x + width, y + height, 0).color(color2 >> 16 & 255, color2 >> 8 & 255, color2 & 255, color2 >> 24 & 255);
-		Tessellator.getInstance().end();
+		Tesselator.getInstance().end();
 		GlStateManager.shadeModel(7424);
 		GlStateManager.disableBlend();
 		GlStateManager.enableAlphaTest();
@@ -119,13 +119,13 @@ public class AxoRenderContextImpl extends io.github.axolotlclient.rendering.Draw
 		GlStateManager.disableAlphaTest();
 		GlStateManager.blendFuncSeparate(770, 771, 1, 0);
 		GlStateManager.shadeModel(7425);
-		BufferBuilder consumer = Tessellator.getInstance().getBuilder();
+		BufferBuilder consumer = Tesselator.getInstance().getBuffer();
 		consumer.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_COLOR);
 		consumer.vertex(x, y, 0).color(color1 >> 16 & 255, color1 >> 8 & 255, color1 & 255, color1 >> 24 & 255);
 		consumer.vertex(x, y + height, 0).color(color1 >> 16 & 255, color1 >> 8 & 255, color1 & 255, color1 >> 24 & 255);
 		consumer.vertex(x + width, y + height, 0).color(color2 >> 16 & 255, color2 >> 8 & 255, color2 & 255, color2 >> 24 & 255);
 		consumer.vertex(x + width, y, 0).color(color2 >> 16 & 255, color2 >> 8 & 255, color2 & 255, color2 >> 24 & 255);
-		Tessellator.getInstance().end();
+		Tesselator.getInstance().end();
 		GlStateManager.shadeModel(7424);
 		GlStateManager.disableBlend();
 		GlStateManager.enableAlphaTest();

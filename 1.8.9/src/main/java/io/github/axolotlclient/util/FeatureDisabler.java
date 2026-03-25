@@ -26,18 +26,22 @@ import java.util.List;
 
 import io.github.axolotlclient.AxolotlClientCommon;
 import lombok.Getter;
+import net.ornithemc.osl.core.api.util.NamespacedIdentifier;
+import net.ornithemc.osl.core.api.util.NamespacedIdentifiers;
+import net.ornithemc.osl.networking.api.ChannelRegistry;
 import net.ornithemc.osl.networking.api.client.ClientPlayNetworking;
 
 public class FeatureDisabler extends FeatureDisablerCommon {
 	@Getter
 	private static final FeatureDisablerCommon instance = new FeatureDisabler();
 
-	private static final String CHANNEL_NAME = "AXO|block_mods";
+	private static final NamespacedIdentifier CHANNEL_NAME = NamespacedIdentifiers.from(AxolotlClientCommon.MODID, "block_mods");
 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void registerChannel() {
-		ClientPlayNetworking.registerListener(CHANNEL_NAME, (client, handler, buf) -> {
+		ChannelRegistry.register(CHANNEL_NAME, true, false);
+		ClientPlayNetworking.registerListener(CHANNEL_NAME, (ctx, buf) -> {
 			List<String> array = (List<String>) GsonHelper.read(buf.readString(32767));
 			for (String element : array) {
 				try {
@@ -46,7 +50,6 @@ public class FeatureDisabler extends FeatureDisablerCommon {
 					AxolotlClientCommon.getInstance().getLogger().error("Failed to disable " + element + "!");
 				}
 			}
-			return true;
 		});
 	}
 }

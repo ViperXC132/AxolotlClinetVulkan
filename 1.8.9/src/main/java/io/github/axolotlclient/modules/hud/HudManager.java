@@ -22,7 +22,7 @@
 
 package io.github.axolotlclient.modules.hud;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.hud.ChatHud;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;

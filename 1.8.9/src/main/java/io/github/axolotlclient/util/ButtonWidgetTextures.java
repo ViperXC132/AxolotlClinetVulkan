@@ -25,9 +25,9 @@ package io.github.axolotlclient.util;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import com.mojang.blaze3d.platform.TextureUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.texture.DynamicTexture;
+import net.minecraft.client.render.texture.TextureUtil;
 import net.minecraft.resource.Identifier;
 import net.ornithemc.osl.resource.loader.api.ResourceLoaderEvents;
 

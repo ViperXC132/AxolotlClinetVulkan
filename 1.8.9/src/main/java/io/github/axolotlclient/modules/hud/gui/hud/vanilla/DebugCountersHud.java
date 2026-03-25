@@ -64,7 +64,7 @@ public class DebugCountersHud extends TextHudEntry {
 			lineY += 10;
 		}
 		if (showPCount.get()) {
-			xEnd = Math.max(xEnd, DrawUtil.drawString("P: " + client.particleManager.getParticlesDebugInfo(), lineX, lineY, textColor.get().toInt(), shadow.get()));
+			xEnd = Math.max(xEnd, DrawUtil.drawString("P: " + client.particleManager.getDebugInfo(), lineX, lineY, textColor.get().toInt(), shadow.get()));
 			lineY += 10;
 		}
 

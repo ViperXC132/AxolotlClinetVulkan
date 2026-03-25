@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.api.chat.ChatWidget;
 import io.github.axolotlclient.api.handlers.ChatHandler;
 import io.github.axolotlclient.api.requests.ChannelRequest;
@@ -372,7 +372,7 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 			}
 
 			public void mouseClicked(int mouseX, int mouseY) {
-				if (isMouseOver(minecraft, mouseX, mouseY)) {
+				if (mouseClicked(minecraft, mouseX, mouseY)) {
 					playClickSound(minecraft.getSoundManager());
 					action.onPress(this);
 				}
@@ -392,7 +392,7 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 
 			@Override
 			public boolean mouseClicked(int index, int mouseX, int mouseY, int button, int x, int y) {
-				if (isMouseOver(minecraft, mouseX, mouseY)) {
+				if (super.mouseClicked(minecraft, mouseX, mouseY)) {
 					playClickSound(minecraft.getSoundManager());
 					action.onPress(this);
 					return true;

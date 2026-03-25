@@ -35,10 +35,10 @@ public interface MinecraftClientAccessor {
 	@Accessor("timer")
 	TickTimer getTicker();
 
-	@Accessor
+	@Accessor("startupServerAddress")
 	String getServerAddress();
 
-	@Accessor
+	@Accessor("startupServerPort")
 	int getServerPort();
 
 	@Accessor

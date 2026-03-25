@@ -22,8 +22,8 @@
 
 package io.github.axolotlclient.modules.auth.skin;
 
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.render.platform.GLX;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.model.entity.PlayerModel;
 import net.minecraft.resource.Identifier;

@@ -75,7 +75,7 @@ public abstract class JoinMulitplayerScreenMixin extends Screen {
 		}
 	}
 
-	@WrapOperation(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/multiplayer/MultiplayerServerListWidget;updateBounds(IIII)V"))
+	@WrapOperation(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/multiplayer/MultiplayerServerListWidget;setBounds(IIII)V"))
 	private void increaseHeaderSize(MultiplayerServerListWidget instance, int width, int height, int top, int bottom, Operation<Void> original) {
 		if (API.getInstance().isAuthenticated() && !WORLD_HOST_INSTALLED) {
 			top -= 32;

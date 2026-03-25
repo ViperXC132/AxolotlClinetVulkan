@@ -24,9 +24,9 @@ package io.github.axolotlclient.modules.screenshotUtils;
 
 import java.util.concurrent.CompletableFuture;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tessellator;
+import net.minecraft.client.render.vertex.BufferBuilder;
+import net.minecraft.client.render.vertex.DefaultVertexFormat;
+import net.minecraft.client.render.vertex.Tesselator;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.util.MathUtil;
 import net.minecraft.client.Minecraft;
@@ -86,13 +86,13 @@ public class LoadingImageScreen extends Screen {
 	}
 
 	private void drawHorizontalGradient(int x1, int y1, int y2, int x2) {
-		BufferBuilder consumer = Tessellator.getInstance().getBuilder();
+		BufferBuilder consumer = Tesselator.getInstance().getBuffer();
 		consumer.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_COLOR);
 		consumer.vertex(x1, y1, 0).color(bgColor >> 16 & 255, bgColor >> 8 & 255, bgColor & 255, bgColor >> 24 & 255);
 		consumer.vertex(x1, y2, 0).color(bgColor >> 16 & 255, bgColor >> 8 & 255, bgColor & 255, bgColor >> 24 & 255);
 		consumer.vertex(x2, y2, 0).color(accent >> 16 & 255, accent >> 8 & 255, accent & 255, accent >> 24 & 255);
 		consumer.vertex(x2, y1, 0).color(accent >> 16 & 255, accent >> 8 & 255, accent & 255, accent >> 24 & 255);
-		Tessellator.getInstance().end();
+		Tesselator.getInstance().end();
 	}
 
 	private class LoadingWidget extends ButtonWidget {

@@ -32,9 +32,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.function.Supplier;
 
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.TextureUtil;
+import net.minecraft.client.render.platform.GLX;
+import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Graphics;
@@ -44,6 +43,7 @@ import io.github.axolotlclient.mixin.MinecraftClientAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.Window;
 import net.minecraft.client.render.texture.DynamicTexture;
+import net.minecraft.client.render.texture.TextureUtil;
 import net.minecraft.resource.Identifier;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.ApiStatus;
@@ -67,7 +67,7 @@ public class Util {
 		return end - start;
 	}
 
-	public static int toGlCoordsX(int x) {
+	/*public static int toGlCoordsX(int x) {
 		if (window == null) {
 			window = new Window(Minecraft.getInstance());
 		}
@@ -80,7 +80,7 @@ public class Util {
 		}
 		int scale = window.getScale();
 		return Minecraft.getInstance().height - y * scale - scale;
-	}
+	}*/
 
 	public static int toMCCoordsX(int x) {
 		if (window == null) {
@@ -130,12 +130,12 @@ public class Util {
 	}
 
 	public static boolean currentServerAddressContains(String address) {
-		if (Minecraft.getInstance().isInSingleplayer()
+		if (Minecraft.getInstance().isSingleplayer()
 			|| Minecraft.getInstance().isIntegratedServerRunning()) {
 			return false;
 		}
 		if (Minecraft.getInstance().getCurrentServerEntry() != null) {
-			return Minecraft.getInstance().getCurrentServerEntry().address.contains(address);
+			return Minecraft.getInstance().getCurrentServerEntry().ip.contains(address);
 		}
 		return ((MinecraftClientAccessor) Minecraft.getInstance()).getServerAddress() != null
 			&& ((MinecraftClientAccessor) Minecraft.getInstance()).getServerAddress().contains(address);

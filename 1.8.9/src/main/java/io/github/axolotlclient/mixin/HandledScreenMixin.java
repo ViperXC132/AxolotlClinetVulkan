@@ -47,7 +47,7 @@ public abstract class HandledScreenMixin {
 	@Shadow
 	protected abstract boolean moveHoveredSlotToHotbar(int i);
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;popMatrix()V"))
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;popMatrix()V"))
 	public void axolotlclient$resetScrollOnSlotChange(int mouseX, int mouseY, float tickDelta, CallbackInfo ci) {
 		if (ScrollableTooltips.getInstance().enabled.get() && cachedSlot != hoveredSlot) {
 			cachedSlot = hoveredSlot;
@@ -58,7 +58,7 @@ public abstract class HandledScreenMixin {
 	@Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$mouseClickedHead(int mouseX, int mouseY, int mouseButton, CallbackInfo ci) {
 		if (mouseButton - 100 == Minecraft.getInstance().options.inventoryKey.getKeyCode()) {
-			Minecraft.getInstance().closeScreen();
+			Minecraft.getInstance().lockMouse();
 			ci.cancel();
 		}
 	}
@@ -68,7 +68,7 @@ public abstract class HandledScreenMixin {
 		moveHoveredSlotToHotbar(mouseButton - 100);
 	}
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/inventory/menu/InventoryMenuScreen;drawBackground(FII)V"))
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/inventory/menu/InventoryMenuScreen;renderMenuBackground(FII)V"))
 	private void renderIcon(int i, int j, float f, CallbackInfo ci) {
 		var hud = (IconHud) HudManager.getInstance().get(IconHud.ID);
 		if (hud != null && hud.isEnabled()) {

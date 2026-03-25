@@ -22,7 +22,7 @@
 
 package io.github.axolotlclient.mixin;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.render.model.ModelPart;
 import net.minecraft.client.render.model.entity.HumanoidModel;
 import org.lwjgl.opengl.GL11;

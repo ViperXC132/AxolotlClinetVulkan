@@ -26,11 +26,11 @@ import java.util.Locale;
 import java.util.Objects;
 
 import com.google.gson.JsonObject;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tessellator;
-import com.mojang.blaze3d.vertex.VertexBuffer;
+import net.minecraft.client.render.platform.GlStateManager;
+import net.minecraft.client.render.vertex.BufferBuilder;
+import net.minecraft.client.render.vertex.DefaultVertexFormat;
+import net.minecraft.client.render.vertex.Tesselator;
+import net.minecraft.client.render.vertex.VertexBuffer;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.mixin.TextureManagerAccessor;
 import io.github.axolotlclient.mixin.WorldRendererAccessor;
@@ -263,8 +263,8 @@ public abstract class SkyboxInstance {
 		GlStateManager.rotatef(-90.0F, 0.0F, 1.0F, 0.0F);
 		GlStateManager.rotatef(Minecraft.getInstance().world.getSunAngle(delta) * 360.0F, 1.0F, 0.0F, 0.0F);
 
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuilder();
+		Tesselator tesselator = Tesselator.getInstance();
+		BufferBuilder bufferBuilder = tesselator.getBuffer();
 
 		if (showSun) {
 			float o = 30.0F;
@@ -274,7 +274,7 @@ public abstract class SkyboxInstance {
 			bufferBuilder.vertex(o, 100.0, (-o)).texture(1.0, 0.0).nextVertex();
 			bufferBuilder.vertex(o, 100.0, o).texture(1.0, 1.0).nextVertex();
 			bufferBuilder.vertex(-o, 100.0, o).texture(0.0, 1.0).nextVertex();
-			tessellator.end();
+			tesselator.end();
 		}
 		if (showMoon) {
 			float o = 20.0F;
@@ -291,7 +291,7 @@ public abstract class SkyboxInstance {
 			bufferBuilder.vertex(o, -100.0, o).texture(s, y).nextVertex();
 			bufferBuilder.vertex(o, -100.0, (-o)).texture(s, v).nextVertex();
 			bufferBuilder.vertex((-o), -100.0, (-o)).texture(w, v).nextVertex();
-			tessellator.end();
+			tesselator.end();
 		}
 		if (showStars) {
 			GlStateManager.disableTexture();

@@ -152,7 +152,7 @@ public class UsernameManagementScreen extends Screen {
 
 			@Override
 			public boolean mouseClicked(int i, int mouseX, int mouseY, int l, int m, int n) {
-				if (delete.isMouseOver(minecraft, mouseX, mouseY)) {
+				if (delete.mouseClicked(minecraft, mouseX, mouseY)) {
 					minecraft.openScreen(new ConfirmScreen((b, un) -> {
 						if (b) {
 							AccountUsernameRequest.delete(name.getName()).thenRun(() ->
@@ -162,7 +162,7 @@ public class UsernameManagementScreen extends Screen {
 					}, I18n.translate("api.account.confirm_deletion"),
 						I18n.translate("api.account.usernames.delete.desc"), 0));
 					return true;
-				} else if (visibility.isMouseOver(minecraft, mouseX, mouseY)) {
+				} else if (visibility.mouseClicked(minecraft, mouseX, mouseY)) {
 					name.setPub(!name.isPub());
 					visibility.message = I18n.translate("api.account.usernames.public", name.isPub());
 					AccountUsernameRequest.post(name.getName(), name.isPub());

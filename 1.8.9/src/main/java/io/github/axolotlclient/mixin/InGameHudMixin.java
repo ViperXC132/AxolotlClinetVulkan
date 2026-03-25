@@ -25,7 +25,7 @@ package io.github.axolotlclient.mixin;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
@@ -56,7 +56,7 @@ public abstract class InGameHudMixin {
 	@Unique
 	private static final Entity axolotlclient$noHungerEntityTM = new RideableMinecartEntity(null);
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;color4f(FFFF)V", ordinal = 0))
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;color4f(FFFF)V", ordinal = 0))
 	private void axolotlclient$onHudRender(float tickDelta, CallbackInfo ci) {
 		HudManager.getInstance().render(AxoRenderContextImpl.getInstance(), tickDelta);
 	}
@@ -213,7 +213,7 @@ public abstract class InGameHudMixin {
 	@Unique
 	private float titleScale, subtitleScale;
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;scalef(FFF)V", ordinal = 0))
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;scalef(FFF)V", ordinal = 0))
 	private void scaleTitle(float f, CallbackInfo ci) {
 		if (!AxolotlClient.config().scaleTitles.get()) {
 			return;
@@ -221,7 +221,7 @@ public abstract class InGameHudMixin {
 		GlStateManager.scalef(titleScale, titleScale, 1);
 	}
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;scalef(FFF)V", ordinal = 1))
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;scalef(FFF)V", ordinal = 1))
 	private void scaleSubtitle(float f, CallbackInfo ci) {
 		if (!AxolotlClient.config().scaleTitles.get()) {
 			return;

@@ -24,16 +24,16 @@ package io.github.axolotlclient.mixin.translation;
 
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
-import net.minecraft.client.resource.language.TranslationStorage;
+import net.minecraft.client.resource.language.Locale;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(TranslationStorage.class)
+@Mixin(Locale.class)
 public abstract class TranslationStorageMixin {
 
-	@Inject(method = "translateKey", at = @At(value = "HEAD"))
+	@Inject(method = "getTranslationOrKey", at = @At(value = "HEAD"))
 	private void specialTranslationKeys(String string, CallbackInfoReturnable<String> cir, @Local(argsOnly = true) LocalRef<String> key) {
 		if (key.get().startsWith("custom_hud/")) {
 			key.set("custom_hud");

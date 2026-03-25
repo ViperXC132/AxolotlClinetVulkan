@@ -66,7 +66,7 @@ public interface ImageInstance {
 	}
 
 	private static void register(Identifier id, BufferedImage img) {
-		Minecraft.getInstance().submit(() -> Minecraft.getInstance().getTextureManager().register(id, new DynamicTexture(img)));
+		Minecraft.getInstance().executeTask(() -> Minecraft.getInstance().getTextureManager().register(id, new DynamicTexture(img)));
 	}
 
 	@SuppressWarnings("UnstableApiUsage")

@@ -108,9 +108,9 @@ public class SessionStatsHudEntryConfigScreen extends io.github.axolotlclient.Ax
 				btn.setMessage(entry.enabled().get() ? tr("entry.hide") : tr("entry.show"));
 			});
 			up = new VanillaButtonWidget(0, 0, 50, 20, tr("entry.move_up"), btn ->
-				minecraft.submit(() -> list.moveEntry(this, -1)));
+				minecraft.executeTask(() -> list.moveEntry(this, -1)));
 			down = new VanillaButtonWidget(0, 0, 50, 20, tr("entry.move_down"), btn ->
-				minecraft.submit(() -> list.moveEntry(this, 1)));
+				minecraft.executeTask(() -> list.moveEntry(this, 1)));
 		}
 
 		@Override
