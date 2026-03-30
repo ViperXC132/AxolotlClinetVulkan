@@ -30,13 +30,18 @@ import io.github.axolotlclient.bridge.math.Vec3;
 import io.github.axolotlclient.bridge.world.AxoWorld;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(Level.class)
 public abstract class WorldMixin implements AxoWorld, LevelAccessor {
+	@Shadow
+	public abstract ResourceKey<Level> dimension();
+
 	@Override
 	public long br$getTimeOfDay() {
 		return getGameTime();
@@ -53,27 +58,16 @@ public abstract class WorldMixin implements AxoWorld, LevelAccessor {
 		if (biome == null) {
 			return I18n.get("coordshud.unknown_biome");
 		}
-		String path = biome.identifier().getPath();
-		if (!biome.identifier().getNamespace().equals("minecraft")) {
-			String namespace = biome.identifier().getNamespace();
-			path += " (" + Character.toTitleCase(namespace.charAt(0)) + namespace.substring(1) + ")";
-		}
-		final String str = path.replace("_", " ");
-		if (str.isEmpty()) {
-			return str;
-		}
+		return biome.identifier().br$getAsFriendlyString();
+	}
 
-		final int[] codepoints = str.codePoints().toArray();
-		boolean capitalizeNext = true;
-		for (int i = 0; i < codepoints.length; i++) {
-			final int ch = codepoints[i];
-			if (Character.isWhitespace(ch)) {
-				capitalizeNext = true;
-			} else if (capitalizeNext) {
-				codepoints[i] = Character.toTitleCase(ch);
-				capitalizeNext = false;
-			}
-		}
-		return new String(codepoints, 0, codepoints.length);
+	@Override
+	public boolean br$isOverworld() {
+		return dimension() == Level.OVERWORLD;
+	}
+
+	@Override
+	public boolean br$isNether() {
+		return dimension() == Level.NETHER;
 	}
 }

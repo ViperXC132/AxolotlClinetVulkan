@@ -67,8 +67,8 @@ dependencies {
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-windows-arm64"))
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-macos-arm64"))
 
-	api("net.hypixel:mod-api:1.0.1")
-	include(modImplementation("io.github.moehreag.hypixel:mod-api-fabric:1.0.1+build.6+mc1.8.9")!!)
+	api("net.hypixel:mod-api:1.0.2")
+	include(modImplementation("io.github.moehreag.hypixel:mod-api-fabric:1.0.2+build.1+mc1.8.9")!!)
 	include(implementation("com.mojang:brigadier:1.0.18")!!)
 
 	modCompileOnly("maven.modrinth:e4mc-retro:R6GoyDZn")

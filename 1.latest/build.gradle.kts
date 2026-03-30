@@ -55,8 +55,8 @@ dependencies {
 
 	compileOnly("maven.modrinth:e4mc:6.0.6-fabric")
 
-	implementation("net.hypixel:mod-api:1.0.1")
-	//include(implementation("maven.modrinth:hypixel-mod-api:1.0.1+build.1+mc1.21")!!)
+	implementation("net.hypixel:mod-api:1.0.2")
+	include(implementation("maven.modrinth:hypixel-mod-api:1.0.2+build.1+mc26.1")!!)
 }
 
 tasks.processResources {

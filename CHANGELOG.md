@@ -5,7 +5,8 @@
 - add screenshot cropping
 - (1.8.9) update to Ornithe Gen2
 - update to 26.1, drop 1.21.11
-- (26.1) temporarily disable integrations with WorldHost & Noxesium; HypixelModAPI is not included
+- (26.1) temporarily disable integrations with WorldHost & Noxesium
+- (CoordsHud) add nether conversions
 
 ### 3.1.9
 

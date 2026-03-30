@@ -971,5 +971,8 @@
 	"gallery.image.crop.inputs.height": "Crop Area Height",
 	"hud_link_creation_enabled": "Allow Creating HUD Links",
 	"screenshot_utils.screenshot_and_crop": "Take Screenshot Crop",
-	"api.badge_options": "Badge Options"
+	"api.badge_options": "Badge Options",
+	"coordshud.show_nether_conversions": "Show Nether Conversions",
+	"coordshud.dimension.nether": "Nether",
+	"coordshud.dimension.overworld": "Overworld"
 }
