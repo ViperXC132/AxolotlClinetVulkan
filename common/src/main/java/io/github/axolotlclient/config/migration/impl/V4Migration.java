@@ -37,13 +37,7 @@ public class V4Migration implements ConfigMigration {
 	public void apply(JsonObject json) {
 		getObject(json, "storedOptions")
 			.ifPresent(hiddenOptions -> {
-				JsonObject apiOptions;
-				if (json.has("api.category")) {
-					apiOptions = json.get("api.category").getAsJsonObject();
-				} else {
-					apiOptions = new JsonObject();
-					json.add("api.category", apiOptions);
-				}
+				JsonObject apiOptions = getOrAddObject(json, "api.category");
 				getString(hiddenOptions, "privacyPolicyAccepted").ifPresent(s ->
 					apiOptions.addProperty("api.privacy_policy_accepted",
 						"privacy_policy_state." + s.toLowerCase(Locale.ROOT)));

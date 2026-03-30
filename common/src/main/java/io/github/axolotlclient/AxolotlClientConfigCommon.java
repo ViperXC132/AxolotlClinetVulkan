@@ -112,19 +112,15 @@ public abstract class AxolotlClientConfigCommon {
 
 	public AxolotlClientConfigCommon() {
 		config.add(general);
-		config.add(nametagOptions);
 		config.add(rendering);
 		config.add(hidden);
 
 		rendering.add(outlines);
+		rendering.add(nametagOptions);
 
 		nametagOptions.add(showOwnNametag);
 		nametagOptions.add(useShadows);
 		nametagOptions.add(nametagBackground);
-
-		nametagOptions.add(showBadges);
-		nametagOptions.add(customBadge);
-		nametagOptions.add(badgeText);
 
 		general.add(customWindowTitle);
 		general.add(debugLogOutput);

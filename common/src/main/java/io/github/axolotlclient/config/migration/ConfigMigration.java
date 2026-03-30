@@ -33,14 +33,15 @@ import io.github.axolotlclient.config.migration.impl.*;
 import net.fabricmc.loader.api.FabricLoader;
 
 public interface ConfigMigration {
-	int CONFIG_VERSION = 7;
+	int CONFIG_VERSION = 8;
 	List<ConfigMigration> MIGRATIONS = new ArrayList<>(List.of(
 		new V2Migration(),
 		new V3Migration(),
 		new V4Migration(),
 		new V5Migration(),
 		new V6Migration(),
-		new V7Migration()
+		new V7Migration(),
+		new V8Migration()
 	));
 
 	static void apply(int oldVersion, JsonObject config) {
@@ -100,6 +101,18 @@ public interface ConfigMigration {
 			}
 		}
 		return Optional.empty();
+	}
+
+	default JsonObject getOrAddObject(JsonObject element, String name) {
+		if (element.has(name)) {
+			var obj = element.get(name);
+			if (obj.isJsonObject()) {
+				return element.get(name).getAsJsonObject();
+			}
+		}
+		var obj = new JsonObject();
+		element.add(name, obj);
+		return obj;
 	}
 
 	default Optional<String> getString(JsonObject element, String name) {

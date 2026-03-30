@@ -970,5 +970,6 @@
 	"gallery.image.crop.inputs.width": "Crop Area Width",
 	"gallery.image.crop.inputs.height": "Crop Area Height",
 	"hud_link_creation_enabled": "Allow Creating HUD Links",
-	"screenshot_utils.screenshot_and_crop": "Take Screenshot Crop"
+	"screenshot_utils.screenshot_and_crop": "Take Screenshot Crop",
+	"api.badge_options": "Badge Options"
 }
