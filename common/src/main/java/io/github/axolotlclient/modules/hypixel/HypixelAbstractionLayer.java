@@ -88,7 +88,7 @@ public class HypixelAbstractionLayer {
 					TimeUnit.SECONDS
 				);
 			} else if (response.getStatus() != 200 || response.isError()) {
-				API.getInstance().getLogger().warn("Failed to process request {} ({}): {}", desc, response.getStatus(), response.getBody());
+				API.getInstance().getLogger().debug("Failed to process request {} ({}): {}", desc, response.getStatus(), response.getBody());
 			} else {
 				future.complete(Optional.of(response));
 			}
