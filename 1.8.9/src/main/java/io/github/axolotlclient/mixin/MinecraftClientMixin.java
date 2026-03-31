@@ -24,6 +24,8 @@ package io.github.axolotlclient.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
+import io.github.axolotlclient.modules.screenshotUtils.ScreenshotUtils;
 import net.minecraft.client.render.vertex.BufferBuilder;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.api.API;
@@ -96,10 +98,6 @@ public abstract class MinecraftClientMixin {
 		io.github.axolotlclient.bridge.events.Events.WORLD_LOAD_EVENT.invoker().accept(new WorldLoadEvent(clientWorld));
 	}
 
-	/**
-	 * @author moehreag
-	 * @reason Customize Window title for use in AxolotlClient
-	 */
 	@Inject(method = "initDisplay", at = @At("TAIL"))
 	public void axolotlclient$setWindowTitle(CallbackInfo ci) {
 		if (AxolotlClient.config().customWindowTitle.get()) {
@@ -209,5 +207,14 @@ public abstract class MinecraftClientMixin {
 	@Inject(method = "<init>", at = @At("TAIL"))
 	private void onClientInit(RunArgs runArgs, CallbackInfo ci) {
 		new AxolotlClient().onInitializeClient();
+	}
+
+	@Inject(method = "handleGuiKeyBindings", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;screenshotKey:Lnet/minecraft/client/options/KeyBinding;", opcode = Opcodes.GETFIELD), cancellable = true)
+	private void actionForScreenshotCropKey(CallbackInfo ci, @Local int keyCode) {
+		var mapping = (KeyBinding) ScreenshotUtils.getInstance().screenshotCropBinding;
+		if (keyCode == mapping.getKeyCode()) {
+			mapping.br$click();
+			ci.cancel();
+		}
 	}
 }

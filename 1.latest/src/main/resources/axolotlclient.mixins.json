@@ -28,6 +28,7 @@
 		"InGameHudMixin",
 		"InGameOverlayRendererMixin",
 		"KeyBindMixin",
+		"KeyboardHandlerMixin",
 		"KeyboardInputMixin",
 		"LightmapManagerMixin",
 		"LivingEntityMixin",

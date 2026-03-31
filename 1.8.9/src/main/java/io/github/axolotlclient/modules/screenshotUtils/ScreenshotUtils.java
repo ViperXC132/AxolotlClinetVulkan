@@ -104,6 +104,7 @@ public class ScreenshotUtils extends AbstractModule {
 		return names.toArray(new String[0]);
 	}), "off");
 	public final ColorOption toastBorderColor = new ColorOption("screenshot_utils.mode.toast.border_color", Colors.WHITE);
+	public final AxoKeybinding screenshotCropBinding = AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "screenshot_utils.screenshot_and_crop");
 
 	@Override
 	public void init() {
@@ -111,7 +112,7 @@ public class ScreenshotUtils extends AbstractModule {
 			client.openScreen(new GalleryScreen(client.screen))), toastBorderColor);
 
 		AxolotlClient.config().general.add(category);
-		AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "screenshot_utils.screenshot_and_crop").br$registerOnConsumeClick(() -> {
+		screenshotCropBinding.br$registerOnConsumeClick(() -> {
 			var img = Util.takeScreenshot();
 			var instance = new ImageInstance.Memory(img);
 			var parent = client.screen;

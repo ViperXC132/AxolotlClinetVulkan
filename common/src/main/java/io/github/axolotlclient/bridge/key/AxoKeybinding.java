@@ -64,4 +64,9 @@ public interface AxoKeybinding {
 	default boolean br$consumeClick() {
 		throw BridgeUtil.noImpl();
 	}
+
+	@RequiresImpl
+	default void br$click() {
+		throw BridgeUtil.noImpl();
+	}
 }

@@ -31,6 +31,7 @@
 		"KeyBindAccessor",
 		"KeyBindMixin",
 		"KeyboardInputMixin",
+		"KeyboardMixin",
 		"LightmapManagerMixin",
 		"LivingEntityMixin",
 		"LivingEntityRendererMixin",
