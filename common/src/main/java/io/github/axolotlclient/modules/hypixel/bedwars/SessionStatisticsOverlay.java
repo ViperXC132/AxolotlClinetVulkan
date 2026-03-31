@@ -97,7 +97,10 @@ public class SessionStatisticsOverlay extends TextHudEntry {
 		super(150, 200, true);
 		this.mod = mod;
 		AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "bedwars.session_stats.toggle_hud")
-			.br$registerOnConsumeClick(shown::toggle);
+			.br$registerOnConsumeClick(() -> {
+				shown.toggle();
+				AxolotlClientCommon.getInstance().saveConfig();
+			});
 	}
 
 	@Override

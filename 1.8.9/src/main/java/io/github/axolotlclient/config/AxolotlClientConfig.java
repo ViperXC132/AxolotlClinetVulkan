@@ -46,9 +46,6 @@ import io.github.axolotlclient.util.options.GenericOption;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.options.KeyBinding;
-import net.ornithemc.osl.keybinds.api.KeyBindingEvents;
-import net.ornithemc.osl.lifecycle.api.client.MinecraftClientEvents;
 
 public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 	public final BooleanOption customSky = new BooleanOption("customSky", false);
@@ -143,13 +140,5 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 
 		general.add(new GenericOption("profiles.title", "profiles.configure", () ->
 			Minecraft.getInstance().openScreen(new ProfilesScreen(Minecraft.getInstance().screen))), false);
-
-		var toggleFullbright = new KeyBinding("toggle_fullbright", 0, "category.axolotlclient");
-		KeyBindingEvents.REGISTER_KEYBINDS.register(reg -> reg.register(toggleFullbright));
-		MinecraftClientEvents.TICK_END.register(minecraft -> {
-			if (toggleFullbright.consumeClick()) {
-				fullBright.toggle();
-			}
-		});
 	}
 }

@@ -162,7 +162,14 @@ public abstract class AxolotlClientConfigCommon {
 
 		hidden.add(creditsBGM, someNiceBackground, modifyClientBrand, noAltIcons);
 
-		AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "toggle_hide_chat").br$registerOnConsumeClick(hideChat::toggle);
+		AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "toggle_hide_chat").br$registerOnConsumeClick(() -> {
+			hideChat.toggle();
+			AxolotlClientCommon.getInstance().saveConfig();
+		});
+		AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "toggle_fullbright").br$registerOnConsumeClick(() -> {
+			fullBright.toggle();
+			AxolotlClientCommon.getInstance().saveConfig();
+		});
 	}
 
 	public DateTimeFormatter getDateTimeFormatter() {

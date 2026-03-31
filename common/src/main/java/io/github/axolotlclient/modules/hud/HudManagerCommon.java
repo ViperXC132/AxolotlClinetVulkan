@@ -96,7 +96,10 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 
 	public void init() {
 		key.br$registerOnConsumeClick(this::openScreen);
-		toggleHud.br$registerOnConsumeClick(enabled::toggle);
+		toggleHud.br$registerOnConsumeClick(() -> {
+			enabled.toggle();
+			AxolotlClientCommon.getInstance().saveConfig();
+		});
 		AxolotlClientCommon.getInstance().getConfig().addCategory(hudCategory);
 		hudCategory.add(enabled, grabCornerColor, hudLinkCreationEnabled, hudLinkLineWidth);
 		hudEditScreenCategory.add(snapping);
@@ -455,6 +458,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 
 	public void toggleSnapping() {
 		snapping.toggle();
+		AxolotlClientCommon.getInstance().saveConfig();
 	}
 
 	protected abstract void openScreen();

@@ -163,7 +163,6 @@ public class HudEditScreen extends Screen {
 				HudManager.getInstance().toggleSnapping();
 				buttonWidget.setMessage(Text.translatable("hud.snapping").append(": ")
 					.append(Text.translatable(HudManager.getInstance().isSnappingEnabled() ? "options.on" : "options.off")));
-				AxolotlClient.getInstance().saveConfig();
 			}).positionAndSize(width / 2 - 50, height / 2 + 12, 100, 20).build());
 
 		this.addDrawableSelectableElement(new ButtonWidget.Builder(Text.translatable("hud.clientOptions"),

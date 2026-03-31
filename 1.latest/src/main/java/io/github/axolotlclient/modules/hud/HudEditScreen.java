@@ -155,21 +155,20 @@ public class HudEditScreen extends Screen {
 				HudManager.getInstance().toggleSnapping();
 				buttonWidget.setMessage(Component.translatable("hud.snapping").append(": ")
 					.append(Component.translatable(HudManager.getInstance().isSnappingEnabled() ? "options.on" : "options.off")));
-				AxolotlClient.getInstance().saveConfig();
 			}).bounds(width / 2 - 50, height / 2 + 12, 100, 20).build());
 
 		this.addRenderableWidget(Button.builder(Component.translatable("hud.clientOptions"),
-			buttonWidget -> {
+			_ -> {
 				Screen screen = ConfigStyles.createScreen(this, AxolotlClient.getInstance().getConfigManager().getRoot());
 				minecraft.setScreen(screen);
 			}).bounds(width / 2 - 75, height / 2 - 10, 150, 20).build());
 
 		if (parent != null)
-			addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, buttonWidget -> minecraft.setScreen(parent))
+			addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, _ -> minecraft.setScreen(parent))
 				.bounds(width / 2 - 75, height - 50 + 22, 150, 20).build());
 		else
 			addRenderableWidget(Button.builder(Component.translatable("close"),
-					buttonWidget -> minecraft.setScreen(null))
+					_ -> minecraft.setScreen(null))
 				.bounds(width / 2 - 75, height - 50 + 22, 150, 20).build());
 	}
 

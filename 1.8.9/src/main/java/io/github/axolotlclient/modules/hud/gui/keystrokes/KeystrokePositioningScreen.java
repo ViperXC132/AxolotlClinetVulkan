@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import net.minecraft.client.render.platform.GlStateManager;
-import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.modules.hud.HudManager;
@@ -40,6 +38,7 @@ import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.WindowAccess;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.resource.language.I18n;
 import org.lwjgl.input.Keyboard;
 
@@ -80,7 +79,6 @@ public class KeystrokePositioningScreen extends Screen {
 			HudManager.getInstance().toggleSnapping();
 			buttonWidget.message = I18n.translate("hud.snapping") + ": " +
 				I18n.translate(HudManager.getInstance().isSnappingEnabled() ? "options.on" : "options.off");
-			AxolotlClient.getInstance().saveConfig();
 		}
 	}
 

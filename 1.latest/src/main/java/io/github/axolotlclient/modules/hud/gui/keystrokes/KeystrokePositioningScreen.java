@@ -27,7 +27,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.mojang.blaze3d.platform.cursor.CursorTypes;
-import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
@@ -80,14 +79,13 @@ public class KeystrokePositioningScreen extends Screen {
 
 	@Override
 	protected void init() {
-		addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, b -> onClose()).pos(width / 2 - 75, height - 50 + 22).width(150).build());
+		addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, _ -> onClose()).pos(width / 2 - 75, height - 50 + 22).width(150).build());
 		this.addRenderableWidget(Button.builder(Component.translatable("hud.snapping").append(": ")
 				.append(Component.translatable(HudManager.getInstance().isSnappingEnabled() ? "options.on" : "options.off")),
 			buttonWidget -> {
 				HudManager.getInstance().toggleSnapping();
 				buttonWidget.setMessage(Component.translatable("hud.snapping").append(": ")
 					.append(Component.translatable(HudManager.getInstance().isSnappingEnabled() ? "options.on" : "options.off")));
-				AxolotlClient.getInstance().saveConfig();
 			}).bounds(width / 2 - 50, height - 50, 100, 20).build());
 	}
 

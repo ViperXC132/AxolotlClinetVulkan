@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
@@ -80,7 +79,6 @@ public class KeystrokePositioningScreen extends Screen {
 				HudManager.getInstance().toggleSnapping();
 				buttonWidget.setMessage(Text.translatable("hud.snapping").append(": ")
 					.append(Text.translatable(HudManager.getInstance().isSnappingEnabled() ? "options.on" : "options.off")));
-				AxolotlClient.getInstance().saveConfig();
 			}).positionAndSize(width / 2 - 50, height - 50, 100, 20).build());
 	}
 
@@ -233,6 +231,7 @@ public class KeystrokePositioningScreen extends Screen {
 			snap = null;
 		}
 	}
+
 	@Override
 	public void removed() {
 		setCursor(DEFAULT_CURSOR);

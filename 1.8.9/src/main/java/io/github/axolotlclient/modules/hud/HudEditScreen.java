@@ -309,7 +309,6 @@ public class HudEditScreen extends Screen {
 				HudManager.getInstance().toggleSnapping();
 				button.message = I18n.translate("hud.snapping") + ": "
 					+ I18n.translate(HudManager.getInstance().isSnappingEnabled() ? "options.on" : "options.off");
-				AxolotlClient.getInstance().saveConfig();
 				break;
 			case 1:
 				Screen screen = ConfigStyles.createScreen(this, AxolotlClient.getInstance().getConfigManager().getRoot());
