@@ -127,6 +127,7 @@ public class API {
 			return scheduleRestart();
 		}
 
+		nextRestartSecs = 2;
 		logDetailed("Authenticating with Mojang...");
 
 		MojangAuth.Result result = MojangAuth.authenticate(account);
@@ -369,11 +370,10 @@ public class API {
 	private CompletableFuture<?> scheduleRestart() {
 		if (restartingFuture != null) {
 			restartingFuture.cancel(true);
-			nextRestartSecs = Math.min(nextRestartSecs * 2, 60);
-		} else {
-			nextRestartSecs = 2;
 		}
-		logger.info("Trying restart in " + nextRestartSecs + "seconds.");
+		nextRestartSecs = Math.max(2, Math.min(nextRestartSecs * 2, 60*3));
+
+		logger.info("Trying restart in " + nextRestartSecs + " seconds.");
 		restartingFuture = CompletableFuture.supplyAsync(() -> {
 			logDetailed("Restarting API session...");
 			return startup(account).join();
@@ -441,7 +441,7 @@ public class API {
 				return CompletableFuture.failedFuture(new UnsupportedOperationException("API is disabled for testing!"));
 			}
 			logger.info("Starting API...");
-			return this.authenticate();
+			return CompletableFuture.supplyAsync(() -> this.authenticate().join(), ThreadExecuter.service());
 		} else {
 			logger.warn("API is already running!");
 		}
