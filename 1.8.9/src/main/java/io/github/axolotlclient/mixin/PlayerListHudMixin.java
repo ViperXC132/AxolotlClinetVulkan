@@ -34,6 +34,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.authlib.GameProfile;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.requests.UserRequest;
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.modules.hypixel.NickHider;
@@ -82,8 +83,10 @@ public abstract class PlayerListHudMixin extends GuiElement {
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/TextRenderer;getWidth(Ljava/lang/String;)I", ordinal = 0))
 	private int axolotlclient$moveName(TextRenderer instance, String string, Operation<Integer> original, @Local PlayerInfo entry) {
 		var width = original.call(instance, string);
-		if (AxolotlClient.config().showBadges.get() && UserRequest.getOnline(entry.getProfile().getId().toString())) {
-			width += 10;
+		if (AxolotlClient.config().showBadges.get()) {
+			if (AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_NAME_ALIGNED || UserRequest.getOnline(entry.getProfile().getId().toString())) {
+				width += 9;
+			}
 		}
 		if (Tablist.getInstance().numericalPing.get())
 			width += (instance.getWidth(String.valueOf(entry.getPing())) - 10);
@@ -92,10 +95,16 @@ public abstract class PlayerListHudMixin extends GuiElement {
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/TextRenderer;drawWithShadow(Ljava/lang/String;FFI)I", ordinal = 1))
 	public int axolotlclient$moveName2(TextRenderer instance, String string, float x, float y, int color, Operation<Integer> original, @Local GameProfile entry) {
-		if (AxolotlClient.config().showBadges.get() && UserRequest.getOnline(entry.getId().toString())) {
-			axolotlclient$client.getTextureManager().bind((Identifier) AxolotlClientCommon.BADGE_PATH);
-			GuiElement.drawTexture((int) x, (int) y, 0, 0, 8, 8, 8, 8);
-			x += 10;
+		if (AxolotlClient.config().showBadges.get() &&
+			(AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_NAME ||
+				AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_NAME_ALIGNED)) {
+			if (UserRequest.getOnline(entry.getId().toString())) {
+				axolotlclient$client.getTextureManager().bind((Identifier) AxolotlClientCommon.BADGE_PATH);
+				GuiElement.drawTexture((int) x, (int) y, 0, 0, 8, 8, 8, 8);
+				x += 9;
+			} else if (AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_NAME_ALIGNED) {
+				x += 9;
+			}
 		}
 		return original.call(instance, string, x, y, color);
 	}
@@ -107,6 +116,11 @@ public abstract class PlayerListHudMixin extends GuiElement {
 
 	@Inject(method = "renderPing", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$numericalPing(int width, int x, int y, PlayerInfo entry, CallbackInfo ci) {
+		if (AxolotlClient.config().showBadges.get() && AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_PING
+			&& UserRequest.getOnline(entry.getProfile().getId().toString())) {
+			axolotlclient$client.getTextureManager().bind((Identifier) AxolotlClientCommon.BADGE_PATH);
+			GuiElement.drawTexture(x + width - 11 - 9, y, 0, 0, 8, 8, 8, 8);
+		}
 		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().customTabList.get() &&
 			BedwarsMod.getInstance().blockLatencyIcon() && (BedwarsMod.getInstance().isWaiting() || BedwarsMod.getInstance().inGame())) {
 			ci.cancel();

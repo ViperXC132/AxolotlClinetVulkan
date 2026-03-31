@@ -32,6 +32,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.requests.UserRequest;
 import io.github.axolotlclient.modules.hypixel.NickHider;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsGame;
@@ -89,8 +90,11 @@ public abstract class PlayerListHudMixin {
 		target = "Lnet/minecraft/client/gui/Font;width(Lnet/minecraft/network/chat/FormattedText;)I", ordinal = 0))
 	private int axolotlclient$moveName(Font instance, FormattedText text, Operation<Integer> original, @Local(name = "info") PlayerInfo info) {
 		int width = original.call(instance, text);
-		if (AxolotlClient.config().showBadges.get() &&
-			UserRequest.getOnline(info.getProfile().id().toString())) width += 10;
+		if (AxolotlClient.config().showBadges.get()) {
+			if (AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_NAME_ALIGNED || UserRequest.getOnline(info.getProfile().id().toString())) {
+				width += 9;
+			}
+		}
 		if (Tablist.getInstance().numericalPing.get())
 			width += (instance.width(String.valueOf(info.getLatency())) - 10);
 		return width;
@@ -100,11 +104,25 @@ public abstract class PlayerListHudMixin {
 		target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;text(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;III)V"))
 	public void axolotlclient$moveName2(GuiGraphicsExtractor instance, Font font, Component component, int x, int y, int color, Operation<Integer> original, @Local(name = "info") PlayerInfo info) {
 		if (AxolotlClient.config().showBadges.get() &&
-			UserRequest.getOnline(info.getProfile().id().toString())) {
-			instance.blit(RenderPipelines.GUI_TEXTURED, (Identifier) AxolotlClientCommon.BADGE_PATH, x, y, 0, 0, 8, 8, 8, 8);
-			x += 9;
+			(AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_NAME ||
+				AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_NAME_ALIGNED)) {
+			if (UserRequest.getOnline(info.getProfile().id().toString())) {
+				instance.blit(RenderPipelines.GUI_TEXTURED, (Identifier) AxolotlClientCommon.BADGE_PATH, x, y, 0, 0, 8, 8, 8, 8);
+				x += 9;
+			} else if (AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_NAME_ALIGNED) {
+				x += 9;
+			}
 		}
 		original.call(instance, font, component, x, y, color);
+	}
+
+	@WrapOperation(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/PlayerTabOverlay;extractPingIcon(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIILnet/minecraft/client/multiplayer/PlayerInfo;)V"))
+	private void badgeBeforePing(PlayerTabOverlay instance, GuiGraphicsExtractor graphics, int slotWidth, int xo, int yo, PlayerInfo info, Operation<Void> original) {
+		if (AxolotlClient.config().showBadges.get() && AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_PING
+			&& UserRequest.getOnline(info.getProfile().id().toString())) {
+			graphics.blit(RenderPipelines.GUI_TEXTURED, (Identifier) AxolotlClientCommon.BADGE_PATH, xo + slotWidth - 11 - 9, yo, 0, 0, 8, 8, 8, 8);
+		}
+		original.call(instance, graphics, slotWidth, xo, yo, info);
 	}
 
 	@Inject(method = "extractPingIcon", at = @At("HEAD"), cancellable = true)

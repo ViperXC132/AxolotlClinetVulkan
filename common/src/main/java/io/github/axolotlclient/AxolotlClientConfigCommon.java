@@ -60,6 +60,17 @@ public abstract class AxolotlClientConfigCommon {
 		}
 	}
 
+	public enum TabBadgeMode {
+		BEFORE_NAME,
+		BEFORE_NAME_ALIGNED,
+		BEFORE_PING;
+
+		@Override
+		public String toString() {
+			return "tab_badge_mode."+super.toString().toLowerCase(Locale.ROOT);
+		}
+	}
+
 	// options
 
 	public final BooleanOption showOwnNametag = new BooleanOption("showOwnNametag", false);
@@ -69,6 +80,7 @@ public abstract class AxolotlClientConfigCommon {
 	public final BooleanOption showBadges = new BooleanOption("showBadges", true);
 	public final BooleanOption customBadge = new BooleanOption("customBadge", false);
 	public final StringOption badgeText = new StringOption("badgeText", "");
+	public final EnumOption<TabBadgeMode> tabBadgeMode = new EnumOption<>("tab_badge_mode", TabBadgeMode.class, TabBadgeMode.BEFORE_NAME);
 
 	public final ForceableBooleanOption timeChangerEnabled = new ForceableBooleanOption("enabled", false);
 	public final IntegerOption customTime = new IntegerOption("time", 0, 0, 24000);

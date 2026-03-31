@@ -89,7 +89,7 @@ public class ChatScreen extends Screen implements ContextMenuScreen {
 
 		input.setSuggestion(Component.translatable(channel.isDM() ? "api.chat.messageUser" : "api.chat.messageGroup", channel.getName()).getString());
 		input.setResponder(s -> {
-			if (s.isEmpty()) {
+			if (s.isEmpty() && !input.isFocused()) {
 				input.setSuggestion(Component.translatable(channel.isDM() ? "api.chat.messageUser" : "api.chat.messageGroup", channel.getName()).getString());
 			} else {
 				input.setSuggestion("");

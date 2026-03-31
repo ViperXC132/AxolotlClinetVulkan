@@ -974,5 +974,9 @@
 	"api.badge_options": "Badge Options",
 	"coordshud.show_nether_conversions": "Show Nether Conversions",
 	"coordshud.dimension.nether": "Nether",
-	"coordshud.dimension.overworld": "Overworld"
+	"coordshud.dimension.overworld": "Overworld",
+	"tab_badge_mode": "Tab Display Mode",
+	"tab_badge_mode.before_name": "Before Name",
+	"tab_badge_mode.before_name_aligned": "Before Name (Aligned)",
+	"tab_badge_mode.before_ping": "Before Ping"
 }

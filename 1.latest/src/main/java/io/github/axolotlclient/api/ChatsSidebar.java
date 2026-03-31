@@ -230,7 +230,7 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 		});
 		input.setSuggestion(input.getMessage().getString());
 		input.setResponder(s -> {
-			if (s.isEmpty()) {
+			if (s.isEmpty() && !input.isFocused()) {
 				input.setSuggestion(input.getMessage().getString());
 			} else {
 				input.setSuggestion("");

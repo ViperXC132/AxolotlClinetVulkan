@@ -117,7 +117,7 @@ public abstract class Options implements Module {
 		pluralkit.add(autoproxy, autoproxyMode, autoproxyMember);
 		account.add(showRegistered, retainUsernames, showLastOnline, showActivity, allowFriendsImageAccess);
 		var globalConfig = AxolotlClientCommon.getInstance().getConfig();
-		badgeOptions.add(globalConfig.showBadges, globalConfig.customBadge, globalConfig.badgeText);
+		badgeOptions.add(globalConfig.showBadges, globalConfig.customBadge, globalConfig.badgeText, globalConfig.tabBadgeMode);
 		category.add(pluralkit, badgeOptions);
 		category.add(account, false);
 		category.add(enabled, privacyAccepted, friendRequestsEnabled, sendStatusUpdates, statusUpdateNotifs, channelInvitesEnabled, detailedLogging, updateNotifications, displayNotes, addShortcutButtons, allowFriendsServerJoin);

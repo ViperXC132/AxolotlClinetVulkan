@@ -33,6 +33,7 @@ import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.requests.UserRequest;
 import io.github.axolotlclient.modules.hypixel.NickHider;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsGame;
@@ -87,8 +88,10 @@ public abstract class PlayerListHudMixin {
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;getWidth(Lnet/minecraft/text/StringVisitable;)I", ordinal = 0))
 	private int axolotlclient$moveName(TextRenderer instance, StringVisitable text, Operation<Integer> original, @Local PlayerListEntry entry) {
 		var width = original.call(instance, text);
-		if (AxolotlClient.config().showBadges.get() && UserRequest.getOnline(entry.getProfile().getId().toString())) {
-			width += 10;
+		if (AxolotlClient.config().showBadges.get()) {
+			if (AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_NAME_ALIGNED || UserRequest.getOnline(entry.getProfile().getId().toString())) {
+				width += 9;
+			}
 		}
 		if (Tablist.getInstance().numericalPing.get())
 			width += (instance.getWidth(String.valueOf(entry.getLatency())) - 10);
@@ -97,16 +100,27 @@ public abstract class PlayerListHudMixin {
 
 	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawShadowedText(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)I"))
 	public int axolotlclient$moveName2(GuiGraphics instance, TextRenderer renderer, Text text, int x, int y, int color, @Local PlayerListEntry entry) {
-		if (AxolotlClient.config().showBadges.get() && UserRequest.getOnline(entry.getProfile().getId().toString())) {
-			RenderSystem.setShaderColor(1, 1, 1, 1);
-			instance.drawTexture((Identifier) AxolotlClientCommon.BADGE_PATH, x, y, 8, 8, 0, 0, 8, 8, 8, 8);
-			x += 9;
+		if (AxolotlClient.config().showBadges.get() &&
+			(AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_NAME ||
+				AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_NAME_ALIGNED)) {
+			if (UserRequest.getOnline(entry.getProfile().getId().toString())) {
+				RenderSystem.setShaderColor(1, 1, 1, 1);
+				instance.drawTexture((Identifier) AxolotlClientCommon.BADGE_PATH, x, y, 8, 8, 0, 0, 8, 8, 8, 8);
+				x += 9;
+			} else if (AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_NAME_ALIGNED) {
+				x += 9;
+			}
 		}
 		return instance.drawShadowedText(renderer, text, x, y, color);
 	}
 
 	@Inject(method = "renderLatencyIcon", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$numericalPing(GuiGraphics graphics, int width, int x, int y, PlayerListEntry entry, CallbackInfo ci) {
+		if (AxolotlClient.config().showBadges.get() && AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_PING
+			&& UserRequest.getOnline(entry.getProfile().getId().toString())) {
+			RenderSystem.setShaderColor(1, 1, 1, 1);
+			graphics.drawTexture((Identifier) AxolotlClientCommon.BADGE_PATH, x + width - 11 - 9, y, 8, 8, 0, 0, 8, 8, 8, 8);
+		}
 		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().customTabList.get()
 			&& BedwarsMod.getInstance().blockLatencyIcon() && (BedwarsMod.getInstance().isWaiting() || BedwarsMod.getInstance().inGame())) {
 			ci.cancel();
