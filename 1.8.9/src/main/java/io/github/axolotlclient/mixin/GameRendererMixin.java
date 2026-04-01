@@ -27,8 +27,6 @@ import java.nio.FloatBuffer;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import net.minecraft.client.render.platform.GLX;
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.modules.blur.MenuBlur;
@@ -48,6 +46,8 @@ import net.minecraft.client.entity.living.player.LocalClientPlayerEntity;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.platform.GLX;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.living.LivingEntity;
@@ -60,7 +60,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -180,11 +179,11 @@ public abstract class GameRendererMixin {
 		cir.setReturnValue(returnValue);
 	}
 
-	@Redirect(method = "updateLightMap", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;gamma:F", opcode = Opcodes.GETFIELD))
-	public float axolotlclient$setGamma(GameOptions instance) {
+	@WrapOperation(method = "updateLightMap", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;gamma:F", opcode = Opcodes.GETFIELD))
+	public float axolotlclient$setGamma(GameOptions instance, Operation<Float> original) {
 		if (AxolotlClient.config().fullBright.get())
 			return 15F;
-		return instance.gamma;
+		return original.call(instance);
 	}
 
 	@Inject(method = "renderAxisIndicators", at = @At("HEAD"), cancellable = true)
@@ -234,24 +233,24 @@ public abstract class GameRendererMixin {
 		original.call(instance, yaw, pitch);
 	}
 
-	@Redirect(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;yaw:F", opcode = Opcodes.GETFIELD))
-	public float axolotlclient$freelook$yaw(Entity entity) {
-		return Freelook.getInstance().yaw(entity.yaw);
+	@WrapOperation(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;yaw:F", opcode = Opcodes.GETFIELD))
+	public float axolotlclient$freelook$yaw(Entity instance, Operation<Float> original) {
+		return Freelook.getInstance().yaw(original.call(instance));
 	}
 
-	@Redirect(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;lastYaw:F", opcode = Opcodes.GETFIELD))
-	public float axolotlclient$freelook$prevYaw(Entity entity) {
-		return Freelook.getInstance().yaw(entity.lastYaw);
+	@WrapOperation(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;lastYaw:F", opcode = Opcodes.GETFIELD))
+	public float axolotlclient$freelook$prevYaw(Entity instance, Operation<Float> original) {
+		return Freelook.getInstance().yaw(original.call(instance));
 	}
 
-	@Redirect(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;pitch:F", opcode = Opcodes.GETFIELD))
-	public float axolotlclient$freelook$pitch(Entity entity) {
-		return Freelook.getInstance().pitch(entity.pitch);
+	@WrapOperation(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;pitch:F", opcode = Opcodes.GETFIELD))
+	public float axolotlclient$freelook$pitch(Entity instance, Operation<Float> original) {
+		return Freelook.getInstance().pitch(original.call(instance));
 	}
 
-	@Redirect(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;lastPitch:F", opcode = Opcodes.GETFIELD))
-	public float axolotlclient$freelook$prevPitch(Entity entity) {
-		return Freelook.getInstance().pitch(entity.lastPitch);
+	@WrapOperation(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;lastPitch:F", opcode = Opcodes.GETFIELD))
+	public float axolotlclient$freelook$prevPitch(Entity instance, Operation<Float> original) {
+		return Freelook.getInstance().pitch(original.call(instance));
 	}
 
 	@Inject(method = "render(FJ)V", at = @At("HEAD"), cancellable = true)
