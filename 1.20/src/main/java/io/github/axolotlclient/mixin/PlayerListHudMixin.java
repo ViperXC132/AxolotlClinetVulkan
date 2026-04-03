@@ -35,11 +35,12 @@ import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.requests.UserRequest;
+import io.github.axolotlclient.modules.hud.HudManagerCommon;
 import io.github.axolotlclient.modules.hypixel.NickHider;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsGame;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsPlayer;
-import io.github.axolotlclient.modules.tablist.Tablist;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.PlayerTabOverlayHud;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.GuiGraphics;
@@ -93,7 +94,7 @@ public abstract class PlayerListHudMixin {
 				width += 9;
 			}
 		}
-		if (Tablist.getInstance().numericalPing.get())
+		if (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).numericalPing.get())
 			width += (instance.getWidth(String.valueOf(entry.getLatency())) - 10);
 		return width;
 	}
@@ -124,14 +125,14 @@ public abstract class PlayerListHudMixin {
 		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().customTabList.get()
 			&& BedwarsMod.getInstance().blockLatencyIcon() && (BedwarsMod.getInstance().isWaiting() || BedwarsMod.getInstance().inGame())) {
 			ci.cancel();
-		} else if (Tablist.getInstance().renderNumericPing(graphics, width, x, y, entry)) {
+		} else if (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).renderNumericPing(graphics, width, x, y, entry)) {
 			ci.cancel();
 		}
 	}
 
 	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;isInSingleplayer()Z"))
 	private boolean showPlayerHeads$1(MinecraftClient instance) {
-		if (Tablist.getInstance().showPlayerHeads.get()) {
+		if (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showPlayerHeads.get()) {
 			return instance.isInSingleplayer();
 		}
 		return false;
@@ -139,7 +140,7 @@ public abstract class PlayerListHudMixin {
 
 	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;isEncrypted()Z"))
 	private boolean axolotlclient$showPlayerHeads$1(ClientConnection instance) {
-		if (Tablist.getInstance().showPlayerHeads.get()) {
+		if (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showPlayerHeads.get()) {
 			return instance.isEncrypted();
 		}
 		return false;
@@ -147,17 +148,17 @@ public abstract class PlayerListHudMixin {
 
 	@Inject(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/hud/PlayerListHud;header:Lnet/minecraft/text/Text;", opcode = Opcodes.GETFIELD))
 	private void axolotlclient$setRenderHeaderFooter(GuiGraphics graphics, int scaledWindowWidth, Scoreboard scoreboard, ScoreboardObjective objective, CallbackInfo ci) {
-		if (!Tablist.getInstance().showHeader.get()) {
+		if (!((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showHeader.get()) {
 			header = null;
 		}
-		if (!Tablist.getInstance().showFooter.get()) {
+		if (!((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showFooter.get()) {
 			footer = null;
 		}
 	}
 
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/PlayerFaceRenderer;draw(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/Identifier;IIIZZ)V"), index = 5)
 	private boolean axolotlclient$renderHatLayer(boolean drawHat) {
-		return drawHat || Tablist.getInstance().alwaysShowHeadLayer.get();
+		return drawHat || ((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).alwaysShowHeadLayer.get();
 	}
 
 	@Inject(
@@ -272,12 +273,12 @@ public abstract class PlayerListHudMixin {
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V"), slice = @Slice(to = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/GameOptions;getTextBackgroundColor(I)I")))
 	private void modifyBackground(GuiGraphics instance, int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
-		var tablist = Tablist.getInstance();
-		if (!tablist.backgroundEnabled.get()) {
+		var tablist = (PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID);
+		if (tablist.backgroundDisabled()) {
 			return;
 		}
 		if (tablist.customBackgroundColor.get()) {
-			original.call(instance, x1, y1, x2, y2, tablist.backgroundColor.get().toInt());
+			original.call(instance, x1, y1, x2, y2, tablist.getBackgroundColor().toInt());
 			return;
 		}
 		original.call(instance, x1, y1, x2, y2, color);

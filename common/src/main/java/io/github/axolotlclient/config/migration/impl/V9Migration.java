@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2026 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -20,26 +20,23 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.bridge;
+package io.github.axolotlclient.config.migration.impl;
 
-import java.util.UUID;
+import com.google.gson.JsonObject;
+import io.github.axolotlclient.config.migration.ConfigMigration;
 
-import io.github.axolotlclient.bridge.internal.BridgeUtil;
-import io.github.axolotlclient.bridge.internal.RequiresImpl;
-
-public interface AxoPlayerListEntry {
-	@RequiresImpl
-	default String br$getName() {
-		throw BridgeUtil.noImpl();
+public class V9Migration implements ConfigMigration {
+	@Override
+	public int version() {
+		return 9;
 	}
 
-	@RequiresImpl
-	default UUID br$getId() {
-		throw BridgeUtil.noImpl();
-	}
-
-	@RequiresImpl
-	default int br$getPing() {
-		throw BridgeUtil.noImpl();
+	@Override
+	public void apply(JsonObject config) {
+		getObject(config, "rendering").flatMap(rendering -> getObject(rendering, "tablist")).ifPresent(tablist -> {
+			var hud = getOrAddObject(config, "hud");
+			hud.add("tab_overlay_hud", tablist);
+			tablist.add("background", tablist.get("enable_background"));
+		});
 	}
 }

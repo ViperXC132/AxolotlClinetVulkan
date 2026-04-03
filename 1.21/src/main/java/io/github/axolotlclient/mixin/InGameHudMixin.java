@@ -35,19 +35,18 @@ import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.PotionsHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ActionBarHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.CrosshairHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.HotbarHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ScoreboardHud;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.hud.PlayerListHud;
 import net.minecraft.client.gui.hud.chat.ChatHud;
 import net.minecraft.client.gui.hud.in_game.InGameHud;
 import net.minecraft.client.render.DeltaTracker;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
@@ -136,25 +135,29 @@ public abstract class InGameHudMixin {
 	@WrapMethod(method = "renderHotbar")
 	public void axolotlclient$customHotbar(GuiGraphics graphics, DeltaTracker tracker, Operation<Void> original) {
 		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
-		graphics.getMatrices().push();
-		if (hud.isEnabled() && !hud.isHidden()) {
-			graphics.getMatrices().translate(-graphics.getScaledWindowWidth() / 2f + 182 / 2f, -graphics.getScaledWindowHeight() + 22, 0);
-			graphics.getMatrices().translate(hud.getRawTrueX(), hud.getRawTrueY(), 0);
+		if (!hud.isHidden()) {
+			graphics.br$pushMatrix();
+			if (hud.isEnabled()) {
+				graphics.br$translateMatrix(-graphics.getScaledWindowWidth() / 2f + 182 / 2f, -graphics.getScaledWindowHeight() + 22);
+				graphics.br$translateMatrix(hud.getRawTrueX(), hud.getRawTrueY());
+			}
+			original.call(graphics, tracker);
+			graphics.br$popMatrix();
 		}
-		original.call(graphics, tracker);
-		graphics.getMatrices().pop();
 	}
 
 	@WrapMethod(method = "renderExperienceLevel")
 	public void axolotlclient$customHotbar$xpLevel(GuiGraphics graphics, DeltaTracker tracker, Operation<Void> original) {
 		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
-		graphics.getMatrices().push();
-		if (hud.isEnabled() && !hud.isHidden()) {
-			graphics.getMatrices().translate(-graphics.getScaledWindowWidth() / 2f, -graphics.getScaledWindowHeight() + 22, 0);
-			graphics.getMatrices().translate(hud.getRawTrueX() + hud.getWidth() / 2f, hud.getRawTrueY(), 0);
+		if (!hud.isHidden()) {
+			graphics.br$pushMatrix();
+			if (hud.isEnabled()) {
+				graphics.getMatrices().translate(-graphics.getScaledWindowWidth() / 2f, -graphics.getScaledWindowHeight() + 22, 0);
+				graphics.getMatrices().translate(hud.getRawTrueX() + hud.getWidth() / 2f, hud.getRawTrueY(), 0);
+			}
+			original.call(graphics, tracker);
+			graphics.getMatrices().pop();
 		}
-		original.call(graphics, tracker);
-		graphics.getMatrices().pop();
 	}
 
 	@Inject(
@@ -202,5 +205,19 @@ public abstract class InGameHudMixin {
 	@WrapWithCondition(method = "renderChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/chat/ChatHud;render(Lnet/minecraft/client/gui/GuiGraphics;IIIZ)V"))
 	private boolean hideChat(ChatHud instance, GuiGraphics graphics, int tickDelta, int mouseX, int mouseY, boolean chatScreenOpen) {
 		return !AxolotlClient.config().hideChat.get();
+	}
+
+	@WrapOperation(method = "renderPlayerList", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/PlayerListHud;render(Lnet/minecraft/client/gui/GuiGraphics;ILnet/minecraft/scoreboard/Scoreboard;Lnet/minecraft/scoreboard/ScoreboardObjective;)V"))
+	private void translateTabOverlay(PlayerListHud instance, GuiGraphics graphics, int scaledWindowWidth, Scoreboard scoreboard, ScoreboardObjective objective, Operation<Void> original) {
+		var hud = (PlayerTabOverlayHud) HudManager.getInstance().get(PlayerTabOverlayHud.ID);
+		if (!hud.isHidden()) {
+			graphics.br$pushMatrix();
+			if (hud.isEnabled()) {
+				graphics.br$translateMatrix(-graphics.br$guiWidth() / 2f, -9);
+				graphics.br$translateMatrix(hud.getRawTrueX() + hud.getTrueWidth()/2f, hud.getRawTrueY());
+			}
+			original.call(instance, graphics, scaledWindowWidth, scoreboard, objective);
+			graphics.br$popMatrix();
+		}
 	}
 }

@@ -978,5 +978,6 @@
 	"tab_badge_mode": "Tab Display Mode",
 	"tab_badge_mode.before_name": "Before Name",
 	"tab_badge_mode.before_name_aligned": "Before Name (Aligned)",
-	"tab_badge_mode.before_ping": "Before Ping"
+	"tab_badge_mode.before_ping": "Before Ping",
+	"tab_overlay_hud": "Tab Overlay Hud"
 }

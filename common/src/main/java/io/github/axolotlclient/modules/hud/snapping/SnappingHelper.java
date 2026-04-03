@@ -264,9 +264,9 @@ public class SnappingHelper {
 				};
 				int y1 = xBounds.y() > cBounds.y() ? cBounds.yEnd() : cBounds.y(), y2 = xBounds.y() > cBounds.y() ? xBounds.y() : xBounds.yEnd();
 				graphics.br$pushMatrix();
-				graphics.br$translateMatrix(x1, y1);
 				var overlap = Math.min(cBounds.yEnd(), xBounds.yEnd()) - Math.max(cBounds.y(), xBounds.y());
 				if (overlap < 0 || x1 != x2) {
+					graphics.br$translateMatrix(x1, y1);
 					var x = x2 - x1;
 					var y = y2 - y1;
 					var c1 = ClientColors.SELECTOR_GREEN.toInt();
@@ -278,7 +278,8 @@ public class SnappingHelper {
 					graphics.br$translateMatrix(0, touchLen / 2f);
 					graphics.br$rotateMatrix(ang);
 				} else {
-					graphics.br$translateMatrix(0.0f, (y2 - y1) / 2f);
+					graphics.br$translateMatrix(Math.max(cBounds.y(), xBounds.y()), y1);
+					graphics.br$translateMatrix(overlap/2f, 0f);
 				}
 				graphics.br$translateMatrix(-4.5f, -4.5f);
 				var ang = -90;
@@ -307,8 +308,8 @@ public class SnappingHelper {
 				int x1 = yBounds.x() > cBounds.x() ? cBounds.xEnd() : cBounds.x(), x2 = yBounds.x() > cBounds.x() ? yBounds.x() : yBounds.xEnd();
 				graphics.br$pushMatrix();
 				var overlap = Math.min(cBounds.xEnd(), yBounds.xEnd()) - Math.max(cBounds.x(), yBounds.x());
-				graphics.br$translateMatrix(x1, y1);
 				if (overlap < 0 || y1 != y2) {
+					graphics.br$translateMatrix(x1, y1);
 					var x = x2 - x1;
 					var y = y2 - y1;
 					var c1 = ClientColors.SELECTOR_GREEN.toInt();
@@ -320,7 +321,8 @@ public class SnappingHelper {
 					graphics.br$translateMatrix(0, touchLen / 2f);
 					graphics.br$rotateMatrix(ang);
 				} else {
-					graphics.br$translateMatrix((x2 - x1) / 2f, 0.0f);
+					graphics.br$translateMatrix(Math.max(cBounds.x(), yBounds.x()), y1);
+					graphics.br$translateMatrix(overlap/2f, 0f);
 				}
 				graphics.br$translateMatrix(-4.5f, -4.5f);
 				if (y1 == cBounds.yEnd()) {

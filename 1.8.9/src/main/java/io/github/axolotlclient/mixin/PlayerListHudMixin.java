@@ -37,11 +37,12 @@ import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.requests.UserRequest;
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
+import io.github.axolotlclient.modules.hud.HudManagerCommon;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.PlayerTabOverlayHud;
 import io.github.axolotlclient.modules.hypixel.NickHider;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsGame;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsPlayer;
-import io.github.axolotlclient.modules.tablist.Tablist;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.gui.overlay.PlayerTabOverlay;
@@ -88,7 +89,7 @@ public abstract class PlayerListHudMixin extends GuiElement {
 				width += 9;
 			}
 		}
-		if (Tablist.getInstance().numericalPing.get())
+		if (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).numericalPing.get())
 			width += (instance.getWidth(String.valueOf(entry.getPing())) - 10);
 		return width;
 	}
@@ -124,14 +125,14 @@ public abstract class PlayerListHudMixin extends GuiElement {
 		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().customTabList.get() &&
 			BedwarsMod.getInstance().blockLatencyIcon() && (BedwarsMod.getInstance().isWaiting() || BedwarsMod.getInstance().inGame())) {
 			ci.cancel();
-		} else if (Tablist.getInstance().renderNumericPing(width, x, y, entry)) {
+		} else if (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).renderNumericPing(AxoRenderContextImpl.getInstance(), width, x, y, entry)) {
 			ci.cancel();
 		}
 	}
 
 	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;isIntegratedServerRunning()Z"))
 	private boolean axolotlclient$showPlayerHeads$1(Minecraft instance) {
-		if (Tablist.getInstance().showPlayerHeads.get()) {
+		if (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showPlayerHeads.get()) {
 			return instance.isIntegratedServerRunning();
 		}
 		return false;
@@ -139,7 +140,7 @@ public abstract class PlayerListHudMixin extends GuiElement {
 
 	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/Connection;isEncrypted()Z"))
 	private boolean axolotlclient$showPlayerHeads$2(Connection instance) {
-		if (Tablist.getInstance().showPlayerHeads.get()) {
+		if (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showPlayerHeads.get()) {
 			return instance.isEncrypted();
 		}
 		return false;
@@ -147,17 +148,17 @@ public abstract class PlayerListHudMixin extends GuiElement {
 
 	@Inject(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;header:Lnet/minecraft/text/Text;", opcode = Opcodes.GETFIELD))
 	private void axolotlclient$setRenderHeaderFooter(int width, Scoreboard scoreboard, ScoreboardObjective playerListScoreboardObjective, CallbackInfo ci) {
-		if (!Tablist.getInstance().showHeader.get()) {
+		if (!((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showHeader.get()) {
 			header = null;
 		}
-		if (!Tablist.getInstance().showFooter.get()) {
+		if (!((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showFooter.get()) {
 			footer = null;
 		}
 	}
 
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getPlayer(Ljava/util/UUID;)Lnet/minecraft/entity/living/player/PlayerEntity;"))
 	private UUID axolotlclient$makeStuff(UUID par1) {
-		return Tablist.getInstance().alwaysShowHeadLayer.get() ? Minecraft.getInstance().player.getUuid() : par1;
+		return ((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).alwaysShowHeadLayer.get() ? Minecraft.getInstance().player.getUuid() : par1;
 	}
 
 	@Inject(
@@ -276,12 +277,12 @@ public abstract class PlayerListHudMixin extends GuiElement {
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;fill(IIIII)V"), slice = @Slice(to = @At(value = "CONSTANT", args = "intValue=553648127")))
 	private void modifyBackground(int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
-		var tablist = Tablist.getInstance();
-		if (!tablist.backgroundEnabled.get()) {
+		var tablist = (PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID);
+		if (tablist.backgroundDisabled()) {
 			return;
 		}
 		if (tablist.customBackgroundColor.get()) {
-			original.call(x1, y1, x2, y2, tablist.backgroundColor.get().toInt());
+			original.call(x1, y1, x2, y2, tablist.getBackgroundColor().toInt());
 			return;
 		}
 		original.call(x1, y1, x2, y2, color);

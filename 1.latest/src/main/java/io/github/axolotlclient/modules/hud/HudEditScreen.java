@@ -127,6 +127,8 @@ public class HudEditScreen extends Screen {
 				}
 				graphics.requestCursor(cursor);
 				currentCursorRequest = cursor;
+			} else if (currentCursorRequest != null) {
+				graphics.requestCursor(currentCursorRequest);
 			}
 		} else if (current == null) {
 			currentCursorRequest = null;

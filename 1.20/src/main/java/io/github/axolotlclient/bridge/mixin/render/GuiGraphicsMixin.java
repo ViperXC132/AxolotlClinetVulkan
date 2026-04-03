@@ -79,6 +79,12 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	@Final
 	private MinecraftClient client;
 
+	@Shadow
+	public abstract int getScaledWindowHeight();
+
+	@Shadow
+	public abstract int getScaledWindowWidth();
+
 	@Unique
 	private @NotNull GuiGraphics self() {
 		return (GuiGraphics) (Object) this;
@@ -215,5 +221,15 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	// misc methods
 	public AxoFont br$getFont() {
 		return MinecraftClient.getInstance().textRenderer;
+	}
+
+	@Override
+	public int br$guiHeight() {
+		return getScaledWindowHeight();
+	}
+
+	@Override
+	public int br$guiWidth() {
+		return getScaledWindowWidth();
 	}
 }

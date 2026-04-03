@@ -79,6 +79,12 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	@Shadow
 	public abstract void itemDecorations(Font font, ItemStack itemStack, int x, int y, @Nullable String countText);
 
+	@Shadow
+	public abstract int guiHeight();
+
+	@Shadow
+	public abstract int guiWidth();
+
 	@Unique
 	private @NotNull GuiGraphicsExtractor self() {
 		return (GuiGraphicsExtractor) (Object) this;
@@ -184,7 +190,7 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 
 	@Override
 	public void br$outlineRectRoundVarying(int x, int y, int width, int height, int color, float roundingTL, float roundingBL, float roundingBR, float roundingTR, float outlineWidth) {
-		self().axolotlclient_rendering$outlineRoundedRectVarying(x, y, x+width, y+height, color, roundingTL, roundingBL, roundingBR, roundingTR, outlineWidth);
+		self().axolotlclient_rendering$outlineRoundedRectVarying(x, y, x + width, y + height, color, roundingTL, roundingBL, roundingBR, roundingTR, outlineWidth);
 	}
 
 	@Override
@@ -211,5 +217,15 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	// misc methods
 	public AxoFont br$getFont() {
 		return minecraft.font;
+	}
+
+	@Override
+	public int br$guiHeight() {
+		return guiHeight();
+	}
+
+	@Override
+	public int br$guiWidth() {
+		return guiWidth();
 	}
 }

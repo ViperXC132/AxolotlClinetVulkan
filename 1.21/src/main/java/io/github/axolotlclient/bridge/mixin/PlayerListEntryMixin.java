@@ -37,6 +37,9 @@ public abstract class PlayerListEntryMixin implements AxoPlayerListEntry {
 	@Final
 	private GameProfile profile;
 
+	@Shadow
+	public abstract int getLatency();
+
 	@Override
 	public String br$getName() {
 		return profile.getName();
@@ -45,5 +48,10 @@ public abstract class PlayerListEntryMixin implements AxoPlayerListEntry {
 	@Override
 	public UUID br$getId() {
 		return profile.getId();
+	}
+
+	@Override
+	public int br$getPing() {
+		return getLatency();
 	}
 }

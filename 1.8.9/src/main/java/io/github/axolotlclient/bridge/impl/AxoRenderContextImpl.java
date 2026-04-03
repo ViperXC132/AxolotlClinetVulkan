@@ -209,4 +209,14 @@ public class AxoRenderContextImpl extends io.github.axolotlclient.rendering.Draw
 			shadow
 		);
 	}
+
+	@Override
+	public int br$guiWidth() {
+		return guiWidth();
+	}
+
+	@Override
+	public int br$guiHeight() {
+		return guiHeight();
+	}
 }

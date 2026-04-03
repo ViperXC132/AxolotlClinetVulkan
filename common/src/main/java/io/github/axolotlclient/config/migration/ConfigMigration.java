@@ -41,7 +41,8 @@ public interface ConfigMigration {
 		new V5Migration(),
 		new V6Migration(),
 		new V7Migration(),
-		new V8Migration()
+		new V8Migration(),
+		new V9Migration()
 	));
 
 	static void apply(int oldVersion, JsonObject config) {

@@ -120,16 +120,18 @@ public class BossBarHud extends TextHudEntry {
 	}
 
 	public void setBossBars() {
-		int prevLength = bossBars.size();
 		bossBars = ((BossBarHudAccessor) client.gui.getBossOverlay()).axolotlclient$getBossBars();
-		if (bossBars != null && bossBars.size() != prevLength) {
+		if (bossBars != null) {
 			if (bossBars.isEmpty()) {
 				// Just leave it alone, it's not rendering anyway
 				return;
 			}
-			// Update height
-			setContentHeight(Math.min(12 + prevLength * 19, (int) AxoWindow.getWindow().br$getScaledHeight() / 3));
-			onBoundsUpdate();
+			var h = Math.min(bossBars.size() * 19, (int) (AxoWindow.getWindow().br$getScaledHeight() / 3d));
+			if (h != getContentHeight()) {
+				// Update height
+				setContentHeight(Math.min(bossBars.size() * 19, (int) (AxoWindow.getWindow().br$getScaledHeight() / 3d)));
+				onBoundsUpdate();
+			}
 		}
 	}
 
@@ -160,6 +162,11 @@ public class BossBarHud extends TextHudEntry {
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
+		var height = 2 * 19;
+		if (height != getContentHeight()) {
+			setContentHeight(height);
+			onBoundsUpdate();
+		}
 		DrawPosition pos = getContentPos();
 		renderBossBar((GuiGraphicsExtractor) graphics, pos.x() + 1, pos.y() + 12, placeholder);
 		renderBossBar((GuiGraphicsExtractor) graphics, pos.x() + 1, pos.y() + 31, placeholder2);

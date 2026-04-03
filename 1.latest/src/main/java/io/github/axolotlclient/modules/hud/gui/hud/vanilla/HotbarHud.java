@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2026 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -30,10 +30,10 @@ import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
-import net.minecraft.util.Identifier;
+import net.minecraft.resources.Identifier;
 
 public class HotbarHud extends TextHudEntry {
-	public static final Identifier ID = Identifier.of("axolotlclient", "hotbarhud");
+	public static final Identifier ID = Identifier.fromNamespaceAndPath("axolotlclient", "hotbarhud");
 
 	public HotbarHud() {
 		super(182, 22, false);

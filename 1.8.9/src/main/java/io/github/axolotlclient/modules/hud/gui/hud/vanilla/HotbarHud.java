@@ -125,4 +125,14 @@ public class HotbarHud extends TextHudEntry {
 	protected AnchorPoint getDefaultAnchor() {
 		return AnchorPoint.BOTTOM_MIDDLE;
 	}
+
+	@Override
+	public double getDefaultX() {
+		return 0.5;
+	}
+
+	@Override
+	public double getDefaultY() {
+		return 0.96;
+	}
 }

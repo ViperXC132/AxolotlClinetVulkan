@@ -20,24 +20,25 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.tablist;
+package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 
-import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
+import java.util.Collections;
+import java.util.List;
+
+import io.github.axolotlclient.AxolotlClientCommon;
+import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
-import io.github.axolotlclient.modules.AbstractModule;
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
-import lombok.Getter;
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.network.PlayerListEntry;
-import net.minecraft.client.util.math.MatrixStack;
+import io.github.axolotlclient.bridge.AxoPlayerListEntry;
+import io.github.axolotlclient.bridge.render.AxoRenderContext;
+import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
+import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 
-public class Tablist extends AbstractModule {
+public class PlayerTabOverlayHud extends TextHudEntry {
 
-	@Getter
-	private static final Tablist Instance = new Tablist();
+	public static final AxoIdentifier ID = AxoIdentifier.of(AxolotlClientCommon.MODID, "tab_overlay_hud");
 	public final BooleanOption showPlayerHeads = new BooleanOption("showPlayerHeads", true);
 	public final BooleanOption showHeader = new BooleanOption("showHeader", true);
 	public final BooleanOption showFooter = new BooleanOption("showFooter", true);
@@ -51,50 +52,40 @@ public class Tablist extends AbstractModule {
 	private final ColorOption pingColor4 = new ColorOption("pingColor4", Color.parse("#FFFF8800"));
 	private final ColorOption pingColor5 = new ColorOption("pingColor5", Color.parse("#FFFF0000"));
 	private final BooleanOption shadow = new BooleanOption("shadow", true);
-	public final BooleanOption backgroundEnabled = new BooleanOption("enable_background", true);
 	public final BooleanOption customBackgroundColor = new BooleanOption("custom_background_color", false);
-	public final ColorOption backgroundColor = new ColorOption("bgcolor", new Color(Integer.MIN_VALUE));
-	public final OptionCategory tablist = OptionCategory.create("tablist");
 
-	@Override
-	public void init() {
-		tablist.add(numericalPing, smallPingText, showPlayerHeads, shadow, showHeader, showFooter, alwaysShowHeadLayer);
-		tablist.add(pingColor0, pingColor1, pingColor2, pingColor3, pingColor4, pingColor5);
-		tablist.add(backgroundEnabled, customBackgroundColor, backgroundColor);
-
-		AxolotlClient.config().rendering.add(tablist);
+	public PlayerTabOverlayHud() {
+		super(150, 40, true);
 	}
 
-	public boolean renderNumericPing(GuiGraphics graphics, int width, int x, int y, PlayerListEntry entry) {
+	public boolean renderNumericPing(AxoRenderContext graphics, int width, int x, int y, AxoPlayerListEntry entry) {
 		if (numericalPing.get()) {
 			Color current;
-			if (entry.getLatency() < 0) {
+			if (entry.br$getPing() < 0) {
 				current = pingColor0.get();
-			} else if (entry.getLatency() < 150) {
+			} else if (entry.br$getPing() < 150) {
 				current = pingColor1.get();
-			} else if (entry.getLatency() < 300) {
+			} else if (entry.br$getPing() < 300) {
 				current = pingColor2.get();
-			} else if (entry.getLatency() < 600) {
+			} else if (entry.br$getPing() < 600) {
 				current = pingColor3.get();
-			} else if (entry.getLatency() < 1000) {
+			} else if (entry.br$getPing() < 1000) {
 				current = pingColor4.get();
 			} else {
 				current = pingColor5.get();
 			}
 
-			String text = applySmallText(String.valueOf(entry.getLatency()));
-
-			MatrixStack matrices = graphics.getMatrices();
-			matrices.push();
-			matrices.translate(x + width - 1, y, 0);
-			matrices.translate(-client.textRenderer.getWidth(text), 0, 0);
+			String text = applySmallText(String.valueOf(entry.br$getPing()));
+			graphics.br$pushMatrix();
+			graphics.br$translateMatrix(x + width - 1, y);
+			graphics.br$translateMatrix(-graphics.br$getFont().br$getWidth(text), 0);
 
 			if (smallPingText.get()) {
-				matrices.translate(0, -2, 0);
+				graphics.br$translateMatrix(0, -2);
 			}
 
-			DrawUtil.drawString(graphics, text, 0, 0, current, shadow.get());
-			matrices.pop();
+			graphics.br$drawString(text, 0, 0, current, shadow.get());
+			graphics.br$popMatrix();
 			return true;
 		}
 		return false;
@@ -107,5 +98,58 @@ public class Tablist extends AbstractModule {
 			return builder.toString();
 		}
 		return text;
+	}
+
+	@Override
+	public void render(AxoRenderContext ctx, float delta) {
+		// done in mixins with transformations
+	}
+
+	@Override
+	public void renderComponent(AxoRenderContext ctx, float delta) {
+
+	}
+
+	@Override
+	public void renderPlaceholderComponent(AxoRenderContext ctx, float delta) {
+		var pos = getContentPos();
+		ctx.br$drawCenteredString(getName(), pos.x() + getContentWidth() / 2, pos.y() + getContentHeight() / 2, -1);
+	}
+
+	@Override
+	public List<Option<?>> getConfigurationOptions() {
+		var options = super.getConfigurationOptions();
+		Collections.addAll(options, customBackgroundColor);
+		Collections.addAll(options, numericalPing, smallPingText, showPlayerHeads, shadow, showHeader, showFooter, alwaysShowHeadLayer);
+		Collections.addAll(options, pingColor0, pingColor1, pingColor2, pingColor3, pingColor4, pingColor5);
+		return options;
+	}
+
+	@Override
+	public AxoIdentifier getId() {
+		return ID;
+	}
+
+	@Override
+	protected AnchorPoint getDefaultAnchor() {
+		return AnchorPoint.TOP_MIDDLE;
+	}
+
+	@Override
+	public double getDefaultX() {
+		return 0.5;
+	}
+
+	@Override
+	public double getDefaultY() {
+		return 0.01;
+	}
+
+	public Color getBackgroundColor() {
+		return backgroundColor.get();
+	}
+
+	public boolean backgroundDisabled() {
+		return !background.get();
 	}
 }

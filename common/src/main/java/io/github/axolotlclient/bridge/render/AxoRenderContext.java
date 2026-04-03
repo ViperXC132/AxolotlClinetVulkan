@@ -330,4 +330,14 @@ public interface AxoRenderContext {
 	default AxoFont br$getFont() {
 		throw BridgeUtil.noImpl();
 	}
+
+	@RequiresImpl
+	default int br$guiHeight() {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default int br$guiWidth() {
+		throw BridgeUtil.noImpl();
+	}
 }
