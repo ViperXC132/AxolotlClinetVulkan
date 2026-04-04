@@ -39,9 +39,10 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.Vanil
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.mixin.AxoConfigTextFieldWidgetAccessor;
 import io.github.axolotlclient.rendering.DrawUtil;
+import io.github.axolotlclient.util.CursorType;
+import io.github.axolotlclient.util.CursorTypes;
 import io.github.axolotlclient.util.MathUtil;
 import io.github.axolotlclient.util.Util;
-import io.github.axolotlclient.util.WindowAccess;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.TextRenderer;
@@ -57,7 +58,6 @@ public class CropImageScreen extends io.github.axolotlclient.AxolotlClientConfig
 	private final boolean freeOnClose;
 	private ImageWidget imageWidget;
 	private TextFieldWidget posX, posY, posW, posH;
-	private final long RESIZE_ALL_CURSOR;
 
 	public CropImageScreen(Screen parent, ImageInstance image) {
 		this(parent, image, false);
@@ -67,8 +67,6 @@ public class CropImageScreen extends io.github.axolotlclient.AxolotlClientConfig
 		super(I18n.translate("gallery.image.crop.title"));
 		this.parent = parent;
 		this.image = image;
-		ImageWidget.DragHandle.create();
-		RESIZE_ALL_CURSOR = WindowAccess.getInstance().createCursor(WindowAccess.Cursor.RESIZE_ALL);
 		this.freeOnClose = freeOnClose;
 	}
 
@@ -177,9 +175,7 @@ public class CropImageScreen extends io.github.axolotlclient.AxolotlClientConfig
 	@Override
 	public void closeScreen() {
 		minecraft.openScreen(parent);
-		WindowAccess.getInstance().setCursor(0L);
-		ImageWidget.DragHandle.destroy();
-		WindowAccess.getInstance().destroyStandardCursor(RESIZE_ALL_CURSOR);
+		CursorType.DEFAULT.select();
 	}
 
 	@Override
@@ -289,20 +285,20 @@ public class CropImageScreen extends io.github.axolotlclient.AxolotlClientConfig
 			DragHandle hoveredHandle = null;
 			if (isMouseOver(mouseX, mouseY)) {
 				if (isControlDown()) {
-					WindowAccess.getInstance().setCursor(RESIZE_ALL_CURSOR);
+					CursorTypes.RESIZE_ALL.select();
 				} else if (currentHandle != null) {
 					hoveredHandle = currentHandle;
-					WindowAccess.getInstance().setCursor(currentHandle.cursorId);
+					currentHandle.cursor.select();
 				} else {
 					hoveredHandle = getHandle(getTransformedX(mouseX), getTransformedY(mouseY));
 					if (hoveredHandle != null) {
-						WindowAccess.getInstance().setCursor(hoveredHandle.cursorId);
+						currentHandle.cursor.select();
 					} else {
-						WindowAccess.getInstance().setCursor(0L);
+						CursorType.DEFAULT.select();
 					}
 				}
 			} else {
-				WindowAccess.getInstance().setCursor(0L);
+				CursorType.DEFAULT.select();
 			}
 			var graphics = DrawUtil.get();
 			var handleSize = Math.min(Math.min(scaledDragX1 - scaledDragX, scaledDragY1 - scaledDragY) / 3, DRAG_HANDLE_RADIUS);
@@ -454,7 +450,7 @@ public class CropImageScreen extends io.github.axolotlclient.AxolotlClientConfig
 			}
 			currentHandle = null;
 			super.onRelease(mouseX, mouseY);
-			WindowAccess.getInstance().setCursor(0L);
+			CursorType.DEFAULT.select();
 		}
 
 		private void clampCrop() {
@@ -635,32 +631,19 @@ public class CropImageScreen extends io.github.axolotlclient.AxolotlClientConfig
 		}
 
 		private enum DragHandle {
-			TOP_LEFT(WindowAccess.Cursor.RESIZE_NWSE),
-			TOP_CENTER(WindowAccess.Cursor.RESIZE_NS),
-			TOP_RIGHT(WindowAccess.Cursor.RESIZE_NESW),
-			LEFT_CENTER(WindowAccess.Cursor.RESIZE_EW),
-			RIGHT_CENTER(WindowAccess.Cursor.RESIZE_EW),
-			BOTTOM_LEFT(WindowAccess.Cursor.RESIZE_NESW),
-			BOTTOM_CENTER(WindowAccess.Cursor.RESIZE_NS),
-			BOTTOM_RIGHT(WindowAccess.Cursor.RESIZE_NWSE),
-			CENTER_CENTER(WindowAccess.Cursor.RESIZE_ALL);
-			private final WindowAccess.Cursor cursor;
-			private long cursorId;
+			TOP_LEFT(CursorTypes.RESIZE_NWSE),
+			TOP_CENTER(CursorTypes.RESIZE_NS),
+			TOP_RIGHT(CursorTypes.RESIZE_NESW),
+			LEFT_CENTER(CursorTypes.RESIZE_EW),
+			RIGHT_CENTER(CursorTypes.RESIZE_EW),
+			BOTTOM_LEFT(CursorTypes.RESIZE_NESW),
+			BOTTOM_CENTER(CursorTypes.RESIZE_NS),
+			BOTTOM_RIGHT(CursorTypes.RESIZE_NWSE),
+			CENTER_CENTER(CursorTypes.RESIZE_ALL);
+			private final CursorType cursor;
 
-			DragHandle(WindowAccess.Cursor cursor) {
+			DragHandle(CursorType cursor) {
 				this.cursor = cursor;
-			}
-
-			public static void create() {
-				for (var h : DragHandle.values()) {
-					h.cursorId = WindowAccess.getInstance().createCursor(h.cursor);
-				}
-			}
-
-			public static void destroy() {
-				for (var h : DragHandle.values()) {
-					WindowAccess.getInstance().destroyStandardCursor(h.cursorId);
-				}
 			}
 
 			public DragHandle mirrorX() {

@@ -38,6 +38,7 @@ import io.github.axolotlclient.modules.hud.snapping.SnappingHelper;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.util.ExtraCursorTypes;
 import io.github.axolotlclient.util.MathUtil;
+import lombok.RequiredArgsConstructor;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
@@ -59,7 +60,7 @@ public class HudEditScreen extends Screen {
 	private DrawPosition offset = null;
 	private boolean mouseDown;
 	private SnappingHelper snap;
-	private CursorType currentCursorRequest;
+	private ModificationMode pendingMode = ModificationMode.NONE;
 	private ModificationMode mode = ModificationMode.NONE;
 
 	public HudEditScreen() {
@@ -93,6 +94,7 @@ public class HudEditScreen extends Screen {
 		Optional<HudEntry> entry;
 		if (current != null && mode != ModificationMode.NONE) {
 			current.setHovered(true);
+			graphics.requestCursor(mode.type);
 			entry = Optional.of(current);
 		} else {
 			entry = HudManager.getInstance().getEntryXY(mouseX, mouseY);
@@ -109,29 +111,29 @@ public class HudEditScreen extends Screen {
 			var bounds = entry.get().getTrueBounds();
 			if (mode == ModificationMode.NONE && bounds.isMouseOver(mouseX, mouseY)) {
 				var supportsScaling = entry.get().supportsScaling();
-				var tolerance = Math.min(HudManagerCommon.HUD_RESCALE_GRAB_TOLERANCE, Math.min(bounds.width(), bounds.height())/2);
-				var toleranceSquared = tolerance*tolerance;
-				var cursor = CursorTypes.RESIZE_ALL;
+				var tolerance = Math.min(HudManagerCommon.HUD_RESCALE_GRAB_TOLERANCE, Math.min(bounds.width(), bounds.height()) / 2);
+				var toleranceSquared = tolerance * tolerance;
+				var pending = ModificationMode.MOVE;
 				if (supportsScaling) {
-					if (MathUtil.distSq(mouseX, mouseY, bounds.x(), bounds.y()) < toleranceSquared ||
-						MathUtil.distSq(mouseX, mouseY, bounds.xEnd(), bounds.yEnd()) < toleranceSquared) {
+					if (MathUtil.distSq(mouseX, mouseY, bounds.x(), bounds.y()) < toleranceSquared) {
 						// top-left
+						pending = ModificationMode.TOP_LEFT;
+					} else if (MathUtil.distSq(mouseX, mouseY, bounds.xEnd(), bounds.yEnd()) < toleranceSquared) {
 						// bottom-right
-						cursor = ExtraCursorTypes.RESIZE_NWSE;
-					} else if (MathUtil.distSq(mouseX, mouseY, bounds.x(), bounds.yEnd()) < toleranceSquared ||
-						MathUtil.distSq(mouseX, mouseY, bounds.xEnd(), bounds.y()) < toleranceSquared) {
+						pending = ModificationMode.BOTTOM_RIGHT;
+					} else if (MathUtil.distSq(mouseX, mouseY, bounds.x(), bounds.yEnd()) < toleranceSquared) {
 						// bottom-left
+						pending = ModificationMode.BOTTOM_LEFT;
+					} else if (MathUtil.distSq(mouseX, mouseY, bounds.xEnd(), bounds.y()) < toleranceSquared) {
 						// top-right
-						cursor = ExtraCursorTypes.RESIZE_NESW;
+						pending = ModificationMode.TOP_RIGHT;
 					}
 				}
-				graphics.requestCursor(cursor);
-				currentCursorRequest = cursor;
-			} else if (currentCursorRequest != null) {
-				graphics.requestCursor(currentCursorRequest);
+				graphics.requestCursor(pending.type);
+				this.pendingMode = pending;
 			}
 		} else if (current == null) {
-			currentCursorRequest = null;
+			pendingMode = ModificationMode.NONE;
 			mode = ModificationMode.NONE;
 		}
 		if (mouseDown && snap != null) {
@@ -187,29 +189,10 @@ public class HudEditScreen extends Screen {
 				current = entry.get();
 				offset = new DrawPosition((int) Math.round(mouseX - current.getTruePos().x()),
 					(int) Math.round(mouseY - current.getTruePos().y()));
-				var bounds = entry.get().getTrueBounds();
-				var xBound = Math.max(0, mouseX - bounds.x());
-				var yBound = Math.max(0, mouseY - bounds.y());
-				if (currentCursorRequest == ExtraCursorTypes.RESIZE_NWSE) {
-					if (xBound < bounds.width() / 2f && yBound < bounds.height() / 2f) {
-						// top-left corner
-						mode = ModificationMode.TOP_LEFT;
-					} else if (xBound - bounds.width() / 2f > 0 && yBound - bounds.height() / 2f > 0) {
-						// bottom-right corner
-						mode = ModificationMode.BOTTOM_RIGHT;
-					}
-				} else if (currentCursorRequest == ExtraCursorTypes.RESIZE_NESW) {
-					if (xBound < bounds.width() / 2f && yBound - bounds.height() / 2f > 0) {
-						// bottom-left corner
-						mode = ModificationMode.BOTTOM_LEFT;
-					} else if (xBound - bounds.width() / 2f > 0 && yBound < bounds.height() / 2f) {
-						// top-right corner
-						mode = ModificationMode.TOP_RIGHT;
-					}
-				} else if (currentCursorRequest == CursorTypes.RESIZE_ALL) {
+				if (pendingMode == ModificationMode.MOVE) {
 					updateSnapState();
-					mode = ModificationMode.MOVE;
 				}
+				mode = pendingMode;
 				return true;
 			} else {
 				mode = ModificationMode.NONE;
@@ -319,12 +302,14 @@ public class HudEditScreen extends Screen {
 		return false;
 	}
 
+	@RequiredArgsConstructor
 	private enum ModificationMode {
-		NONE,
-		MOVE,
-		TOP_LEFT,
-		TOP_RIGHT,
-		BOTTOM_LEFT,
-		BOTTOM_RIGHT
+		NONE(CursorType.DEFAULT),
+		MOVE(CursorTypes.RESIZE_ALL),
+		TOP_LEFT(ExtraCursorTypes.RESIZE_NWSE),
+		TOP_RIGHT(ExtraCursorTypes.RESIZE_NESW),
+		BOTTOM_LEFT(ExtraCursorTypes.RESIZE_NESW),
+		BOTTOM_RIGHT(ExtraCursorTypes.RESIZE_NWSE);
+		private final CursorType type;
 	}
 }

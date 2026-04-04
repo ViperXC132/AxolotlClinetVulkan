@@ -35,7 +35,7 @@ import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.util.ClientColors;
-import io.github.axolotlclient.util.WindowAccess;
+import io.github.axolotlclient.util.CursorTypes;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.platform.GlStateManager;
@@ -48,9 +48,6 @@ public class KeystrokePositioningScreen extends Screen {
 	private final KeystrokeHud hud;
 	private KeystrokeHud.Keystroke focused;
 	private final KeystrokeHud.Keystroke editing;
-	private final long MOVE_CURSOR = WindowAccess.getInstance().createCursor(WindowAccess.Cursor.RESIZE_ALL);
-	private final long DEFAULT_CURSOR = WindowAccess.getInstance().createCursor(WindowAccess.Cursor.ARROW);
-	private long currentCursor;
 
 	public KeystrokePositioningScreen(Screen parent, KeystrokeHud hud, KeystrokeHud.Keystroke focused) {
 		super();
@@ -121,16 +118,9 @@ public class KeystrokePositioningScreen extends Screen {
 				drawStroke(mouseX, mouseY, k);
 			}
 		}
-		setCursor(hovered.isPresent() ? MOVE_CURSOR : DEFAULT_CURSOR);
+		(hovered.isPresent() ? CursorTypes.RESIZE_ALL : CursorTypes.ARROW).select();
 		if (mouseDown && snap != null) {
 			snap.renderSnaps(AxoRenderContextImpl.getInstance());
-		}
-	}
-
-	private void setCursor(long cursor) {
-		if (cursor > 0 && cursor != currentCursor) {
-			currentCursor = cursor;
-			WindowAccess.getInstance().setCursor(cursor);
 		}
 	}
 
@@ -252,7 +242,6 @@ public class KeystrokePositioningScreen extends Screen {
 
 	@Override
 	public void removed() {
-		setCursor(DEFAULT_CURSOR);
-		WindowAccess.getInstance().destroyStandardCursor(MOVE_CURSOR, DEFAULT_CURSOR);
+		CursorTypes.ARROW.select();
 	}
 }

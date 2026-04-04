@@ -30,6 +30,7 @@ import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.rounded.util.StyleColors;
 import io.github.axolotlclient.mixin.TextFieldWidgetAccessor;
+import io.github.axolotlclient.util.CursorType;
 import io.github.axolotlclient.util.CursorTypes;
 import io.github.axolotlclient.util.MathUtil;
 import lombok.AllArgsConstructor;
@@ -157,7 +158,7 @@ public class CropImageScreen extends Screen {
 	@Override
 	public void closeScreen() {
 		client.setScreen(parent);
-		CursorTypes.request(CursorTypes.ARROW);
+		CursorTypes.ARROW.select();
 	}
 
 	@Override
@@ -258,20 +259,20 @@ public class CropImageScreen extends Screen {
 			DragHandle hoveredHandle = null;
 			if (isMouseOver(mouseX, mouseY)) {
 				if (hasControlDown()) {
-					CursorTypes.request(CursorTypes.RESIZE_ALL);
+					CursorTypes.RESIZE_ALL.select();
 				} else if (currentHandle != null) {
 					hoveredHandle = currentHandle;
-					CursorTypes.request(currentHandle.cursor);
+					currentHandle.cursor.select();
 				} else {
 					hoveredHandle = getHandle(getTransformedX(mouseX), getTransformedY(mouseY));
 					if (hoveredHandle != null) {
-						CursorTypes.request(hoveredHandle.cursor);
+						hoveredHandle.cursor.select();
 					} else {
-						CursorTypes.request(CursorTypes.ARROW);
+						CursorTypes.ARROW.select();
 					}
 				}
 			} else {
-				CursorTypes.request(CursorTypes.ARROW);
+				CursorTypes.ARROW.select();
 			}
 			var handleSize = Math.min(Math.min(scaledDragX1 - scaledDragX, scaledDragY1 - scaledDragY) / 3, DRAG_HANDLE_RADIUS);
 			int handleColor = StyleColors.highlight2().toInt();
@@ -430,7 +431,7 @@ public class CropImageScreen extends Screen {
 			}
 			currentHandle = null;
 			super.onRelease(mouseX, mouseY);
-			CursorTypes.request(0L);
+			CursorType.DEFAULT.select();
 		}
 
 		private void clampCrop() {
@@ -627,7 +628,7 @@ public class CropImageScreen extends Screen {
 			BOTTOM_CENTER(CursorTypes.RESIZE_NS),
 			BOTTOM_RIGHT(CursorTypes.RESIZE_NWSE),
 			CENTER_CENTER(CursorTypes.RESIZE_ALL);
-			private final long cursor;
+			private final CursorType cursor;
 
 			public DragHandle mirrorX() {
 				return switch (this) {
