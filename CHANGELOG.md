@@ -7,6 +7,9 @@
 - update to 26.1, drop 1.21.11
 - (26.1) temporarily disable integrations with WorldHost & Noxesium
 - (CoordsHud) add nether conversions
+- Add PlayerTabOverlayHud
+- (26.1) add HotbarHud
+- fix more bugs
 
 ### 3.1.9
 

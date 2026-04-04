@@ -26,6 +26,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import com.llamalad7.mixinextras.expression.Definition;
+import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -36,23 +38,21 @@ import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.requests.UserRequest;
 import io.github.axolotlclient.modules.hud.HudManagerCommon;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.PlayerTabOverlayHud;
 import io.github.axolotlclient.modules.hypixel.NickHider;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsGame;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsPlayer;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.PlayerTabOverlayHud;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.hud.PlayerListHud;
 import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.network.ClientConnection;
-import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -147,14 +147,18 @@ public abstract class PlayerListHudMixin {
 		return false;
 	}
 
-	@Inject(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/hud/PlayerListHud;header:Lnet/minecraft/text/Text;", opcode = Opcodes.GETFIELD))
-	private void axolotlclient$setRenderHeaderFooter(GuiGraphics graphics, int scaledWindowWidth, Scoreboard scoreboard, ScoreboardObjective objective, CallbackInfo ci) {
-		if (!((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showHeader.get()) {
-			header = null;
-		}
-		if (!((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showFooter.get()) {
-			footer = null;
-		}
+	@Definition(id = "header", field = "Lnet/minecraft/client/gui/hud/PlayerListHud;header:Lnet/minecraft/text/Text;")
+	@Expression("this.header != null")
+	@WrapOperation(method = "render", at = @At("MIXINEXTRAS:EXPRESSION"))
+	private boolean checkHeaderOption(Object left, Object right, Operation<Boolean> original) {
+		return original.call(left, right) && ((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showHeader.get();
+	}
+
+	@Definition(id = "footer", field = "Lnet/minecraft/client/gui/hud/PlayerListHud;footer:Lnet/minecraft/text/Text;")
+	@Expression("this.footer != null")
+	@WrapOperation(method = "render", at = @At("MIXINEXTRAS:EXPRESSION"))
+	private boolean checkFooterOption(Object left, Object right, Operation<Boolean> original) {
+		return original.call(left, right) && ((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showFooter.get();
 	}
 
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/PlayerFaceRenderer;draw(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/Identifier;IIIZZ)V"), index = 5)
@@ -278,11 +282,30 @@ public abstract class PlayerListHudMixin {
 		if (tablist.backgroundDisabled()) {
 			return;
 		}
-		if (tablist.customBackgroundColor.get()) {
-			original.call(instance, x1, y1, x2, y2, tablist.getBackgroundColor().toInt());
+		if (!tablist.isEnabled()) {
+			original.call(instance, x1, y1, x2, y2, color);
 			return;
 		}
-		original.call(instance, x1, y1, x2, y2, color);
+		int width = x2 - x1;
+		int height = y2 - y1;
+		int padding = tablist.getBackgroundPadding();
+		x1 -= padding;
+		x2 += padding;
+		y1 -= padding;
+		y2 += padding;
+		if (tablist.hasRoundBackground()) {
+			instance.br$fillRectRound(x1, y1, width, height, tablist.customBackgroundColor.get() ? tablist.getBackgroundColor().toInt() : color,
+				Math.min(Math.min(height, width) / 2f, tablist.getBackgroundRounding()));
+		} else {
+			original.call(instance, x1, y1, x2, y2, tablist.customBackgroundColor.get() ? tablist.getBackgroundColor().toInt() : color);
+		}
+		if (tablist.hasOutline()) {
+			if (tablist.hasRoundBackground()) {
+				instance.br$outlineRectRound(x1, y1, width, height, tablist.getOutlineColor(), Math.min(Math.min(height, width) / 2f, tablist.getBackgroundRounding()));
+			} else {
+				instance.br$outlineRect(x1, y1, width, height, tablist.getOutlineColor());
+			}
+		}
 	}
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V"), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/PlayerListHud;renderLatencyIcon(Lnet/minecraft/client/gui/GuiGraphics;IIILnet/minecraft/client/network/PlayerListEntry;)V")))

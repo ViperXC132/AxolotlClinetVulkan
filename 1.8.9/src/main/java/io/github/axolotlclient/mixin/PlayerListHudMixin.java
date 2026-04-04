@@ -50,10 +50,8 @@ import net.minecraft.client.network.PlayerInfo;
 import net.minecraft.client.render.TextRenderer;
 import net.minecraft.network.Connection;
 import net.minecraft.resource.Identifier;
-import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.text.Text;
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -146,14 +144,18 @@ public abstract class PlayerListHudMixin extends GuiElement {
 		return false;
 	}
 
-	@Inject(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;header:Lnet/minecraft/text/Text;", opcode = Opcodes.GETFIELD))
-	private void axolotlclient$setRenderHeaderFooter(int width, Scoreboard scoreboard, ScoreboardObjective playerListScoreboardObjective, CallbackInfo ci) {
-		if (!((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showHeader.get()) {
-			header = null;
-		}
-		if (!((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showFooter.get()) {
-			footer = null;
-		}
+	@Definition(id = "header", field = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;header:Lnet/minecraft/text/Text;")
+	@Expression("this.header != null")
+	@WrapOperation(method = "render", at = @At("MIXINEXTRAS:EXPRESSION"))
+	private boolean checkHeaderOption(Object left, Object right, Operation<Boolean> original) {
+		return original.call(left, right) && ((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showHeader.get();
+	}
+
+	@Definition(id = "footer", field = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;footer:Lnet/minecraft/text/Text;")
+	@Expression("this.footer != null")
+	@WrapOperation(method = "render", at = @At("MIXINEXTRAS:EXPRESSION"))
+	private boolean checkFooterOption(Object left, Object right, Operation<Boolean> original) {
+		return original.call(left, right) && ((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showFooter.get();
 	}
 
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getPlayer(Ljava/util/UUID;)Lnet/minecraft/entity/living/player/PlayerEntity;"))
@@ -281,11 +283,31 @@ public abstract class PlayerListHudMixin extends GuiElement {
 		if (tablist.backgroundDisabled()) {
 			return;
 		}
-		if (tablist.customBackgroundColor.get()) {
-			original.call(x1, y1, x2, y2, tablist.getBackgroundColor().toInt());
+		if (!tablist.isEnabled()) {
+			original.call(x1, y1, x2, y2, color);
 			return;
 		}
-		original.call(x1, y1, x2, y2, color);
+		int width = x2 - x1;
+		int height = y2 - y1;
+		int padding = tablist.getBackgroundPadding();
+		x1 -= padding;
+		x2 += padding;
+		y1 -= padding;
+		y2 += padding;
+		var instance = AxoRenderContextImpl.getInstance();
+		if (tablist.hasRoundBackground()) {
+			instance.br$fillRectRound(x1, y1, width, height, tablist.customBackgroundColor.get() ? tablist.getBackgroundColor().toInt() : color,
+				Math.min(Math.min(height, width) / 2f, tablist.getBackgroundRounding()));
+		} else {
+			original.call(x1, y1, x2, y2, tablist.customBackgroundColor.get() ? tablist.getBackgroundColor().toInt() : color);
+		}
+		if (tablist.hasOutline()) {
+			if (tablist.hasRoundBackground()) {
+				instance.br$outlineRectRound(x1, y1, width, height, tablist.getOutlineColor(), Math.min(Math.min(height, width) / 2f, tablist.getBackgroundRounding()));
+			} else {
+				instance.br$outlineRect(x1, y1, width, height, tablist.getOutlineColor());
+			}
+		}
 	}
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;fill(IIIII)V"), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;renderPing(IIILnet/minecraft/client/network/PlayerInfo;)V")))

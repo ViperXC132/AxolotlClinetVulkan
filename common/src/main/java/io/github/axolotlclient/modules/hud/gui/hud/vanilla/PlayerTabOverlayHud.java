@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,6 +57,7 @@ public class PlayerTabOverlayHud extends TextHudEntry {
 
 	public PlayerTabOverlayHud() {
 		super(150, 40, true);
+		supportsScaling = false;
 	}
 
 	public boolean renderNumericPing(AxoRenderContext graphics, int width, int x, int y, AxoPlayerListEntry entry) {
@@ -118,8 +120,10 @@ public class PlayerTabOverlayHud extends TextHudEntry {
 
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
-		var options = super.getConfigurationOptions();
-		Collections.addAll(options, customBackgroundColor);
+		var options = new ArrayList<Option<?>>();
+		options.add(enabled);
+		Collections.addAll(options, background, customBackgroundColor, backgroundColor, roundBackground, backgroundRounding, backgroundPadding, outline, outlineColor);
+		options.add(anchor);
 		Collections.addAll(options, numericalPing, smallPingText, showPlayerHeads, shadow, showHeader, showFooter, alwaysShowHeadLayer);
 		Collections.addAll(options, pingColor0, pingColor1, pingColor2, pingColor3, pingColor4, pingColor5);
 		return options;
@@ -151,5 +155,25 @@ public class PlayerTabOverlayHud extends TextHudEntry {
 
 	public boolean backgroundDisabled() {
 		return !background.get();
+	}
+
+	public boolean hasOutline() {
+		return outline.get();
+	}
+
+	public Color getOutlineColor() {
+		return outlineColor.get();
+	}
+
+	public boolean hasRoundBackground() {
+		return roundBackground.get();
+	}
+
+	public int getBackgroundRounding() {
+		return backgroundRounding.get();
+	}
+
+	public int getBackgroundPadding() {
+		return backgroundPadding.get();
 	}
 }
