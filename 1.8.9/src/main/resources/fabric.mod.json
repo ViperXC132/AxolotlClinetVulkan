@@ -125,5 +125,8 @@
 		"axolotlclientconfig": "*",
 		"axolotlclient-common": "*",
 		"legacy-lwjgl3": ">1.2.8"
+	},
+	"breaks": {
+		"radium": "*"
 	}
 }

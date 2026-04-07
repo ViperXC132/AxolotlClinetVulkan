@@ -115,8 +115,31 @@ public class ArmorHud extends TextHudEntry {
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
 		if (BridgeVersion.V26_1.isCurrent()) {
 			if (client.br$getWorld() == null) {
+				var w = order.get().isXAxis() ? 20 : 100;
+				var h = order.get().isXAxis() ? 100 : 20;
+				var updated = false;
+				if (mainHandItemPosition.get() == MainHandItemPosition.DISABLED) {
+					if (order.get().isXAxis()) h -= 20;
+					else w -= 20;
+				}
+				if (w != getContentWidth()) {
+					setContentWidth(w);
+					updated = true;
+				}
+				if (h != getContentHeight()) {
+					setContentHeight(h);
+					updated = true;
+				}
+				if (updated) {
+					onBoundsUpdate();
+				}
 				var pos = getContentPos();
-				graphics.br$drawCenteredString(getName(), pos.x() + getContentWidth()/2, pos.y() + getContentHeight()/2, textColor.get());
+				graphics.br$pushMatrix();
+				if (order.get().isXAxis()) {
+					graphics.br$rotateMatrixAround((float) Math.PI / 2f, pos.x() + getContentWidth() / 2f, pos.y() + getContentHeight() / 2f);
+				}
+				graphics.br$drawCenteredString(getName(), pos.x() + getContentWidth() / 2, pos.y() + getContentHeight() / 2 - graphics.br$getFont().br$getFontHeight() / 2, textColor.get());
+				graphics.br$popMatrix();
 				return;
 			}
 		}
