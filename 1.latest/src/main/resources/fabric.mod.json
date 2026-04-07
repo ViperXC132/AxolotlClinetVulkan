@@ -20,7 +20,7 @@
 	},
 	"license": "LGPL-3.0-or-later",
 	"icon": "assets/axolotlclient/icon.png",
-	"accessWidener": "axolotlclient.accesswidener",
+	"accessWidener": "axolotlclient.classtweaker",
 	"environment": "client",
 	"entrypoints": {
 		"client": [
@@ -39,99 +39,10 @@
 		"axolotlclient.e4mc.mixins.json"
 	],
 	"custom": {
-		"axolotlclient:bridge_impl_version": "V26_1",
-		"loom:injected_interfaces": {
-			"net/minecraft/resources/Identifier": [
-				"io/github/axolotlclient/bridge/util/AxoIdentifier"
-			],
-			"net/minecraft/client/Minecraft": [
-				"io/github/axolotlclient/bridge/AxoMinecraftClient"
-			],
-			"net/minecraft/client/gui/Font": [
-				"io/github/axolotlclient/bridge/render/AxoFont"
-			],
-			"com/mojang/blaze3d/platform/Window": [
-				"io/github/axolotlclient/bridge/render/AxoWindow"
-			],
-			"net/minecraft/world/entity/Entity": [
-				"io/github/axolotlclient/bridge/entity/AxoEntity"
-			],
-			"net/minecraft/world/item/ItemStack": [
-				"io/github/axolotlclient/bridge/item/AxoItemStack"
-			],
-			"net/minecraft/world/entity/player/Inventory": [
-				"io/github/axolotlclient/bridge/item/AxoPlayerInventory"
-			],
-			"net/minecraft/world/entity/player/Player": [
-				"io/github/axolotlclient/bridge/entity/AxoPlayer"
-			],
-			"net/minecraft/world/item/Item": [
-				"io/github/axolotlclient/bridge/item/AxoItem"
-			],
-			"net/minecraft/world/level/Level": [
-				"io/github/axolotlclient/bridge/world/AxoWorld"
-			],
-			"net/minecraft/world/item/enchantment/Enchantment": [
-				"io/github/axolotlclient/bridge/item/AxoEnchant"
-			],
-			"net/minecraft/client/KeyMapping": [
-				"io/github/axolotlclient/bridge/key/AxoKeybinding"
-			],
-			"net/minecraft/client/Options": [
-				"io/github/axolotlclient/bridge/AxoGameOptions"
-			],
-			"com/mojang/blaze3d/platform/InputConstants\u0024Key": [
-				"io/github/axolotlclient/bridge/key/AxoKey"
-			],
-			"net/minecraft/network/chat/Component": [
-				"io/github/axolotlclient/bridge/util/AxoText"
-			],
-			"net/minecraft/network/chat/MutableComponent": [
-				"io/github/axolotlclient/bridge/util/AxoText\u0024Mutable"
-			],
-			"net/minecraft/client/gui/GuiGraphicsExtractor": [
-				"io/github/axolotlclient/bridge/render/AxoRenderContext"
-			],
-			"net/minecraft/client/multiplayer/PlayerInfo": [
-				"io/github/axolotlclient/bridge/AxoPlayerListEntry"
-			],
-			"net/minecraft/world/effect/MobEffectInstance": [
-				"io/github/axolotlclient/bridge/entity/effect/AxoStatusEffectInstance"
-			],
-			"net/minecraft/world/effect/MobEffect": [
-				"io/github/axolotlclient/bridge/entity/effect/AxoStatusEffect"
-			],
-			"net/minecraft/network/chat/Style": [
-				"io/github/axolotlclient/bridge/util/AxoText\u0024Style"
-			],
-			"net/minecraft/server/packs/resources/Resource": [
-				"io/github/axolotlclient/bridge/resource/AxoResource"
-			],
-			"net/minecraft/server/packs/resources/ResourceManager": [
-				"io/github/axolotlclient/bridge/resource/AxoResourceManager"
-			],
-			"net/minecraft/world/scores/Objective": [
-				"io/github/axolotlclient/bridge/scores/AxoObjective"
-			],
-			"net/minecraft/world/scores/Scoreboard": [
-				"io/github/axolotlclient/bridge/scores/AxoScoreboard"
-			],
-			"net/minecraft/world/scores/PlayerScoreEntry": [
-				"io/github/axolotlclient/bridge/scores/AxoScoreboardScore"
-			],
-			"net/minecraft/world/scores/Team": [
-				"io/github/axolotlclient/bridge/scores/AxoTeam"
-			],
-			"net/minecraft/util/profiling/ProfilerFiller": [
-				"io/github/axolotlclient/bridge/util/AxoProfiler"
-			],
-			"net/minecraft/client/multiplayer/ServerData": [
-				"io/github/axolotlclient/bridge/network/AxoServerData"
-			]
-		}
+		"axolotlclient:bridge_impl_version": "V26_1"
 	},
 	"depends": {
-		"fabricloader": ">=0.17.0",
+		"fabricloader": ">=0.18.0",
 		"minecraft": "~26.1",
 		"fabric-api": "*",
 		"axolotlclientconfig": "*",

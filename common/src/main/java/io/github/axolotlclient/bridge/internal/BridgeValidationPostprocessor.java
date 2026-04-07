@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.bridge.internal;
 
+import java.io.IOException;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -30,7 +31,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import com.google.common.base.Preconditions;
 import io.github.axolotlclient.bridge.BridgeVersion;
@@ -41,7 +41,6 @@ import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.bridge.render.AxoSprites;
 import lombok.SneakyThrows;
 import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.metadata.CustomValue;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -145,20 +144,24 @@ public class BridgeValidationPostprocessor implements IMixinConfigPlugin {
 			return;
 		}
 
-		final var injectedInterfaces = FabricLoader.getInstance().getModContainer("axolotlclient")
+		final var ctPath = FabricLoader.getInstance().getModContainer("axolotlclient")
 			.orElseThrow()
-			.getMetadata()
-			.getCustomValue("loom:injected_interfaces")
-			.getAsObject();
-		final var mr = FabricLoader.getInstance().getMappingResolver();
-
-		remainingInjections = StreamSupport.stream(injectedInterfaces.spliterator(), false)
-			.collect(Collectors.toMap(
-				entry -> mr.mapClassName("intermediary", entry.getKey().replace("/", ".")),
-				entry -> StreamSupport.stream(entry.getValue().getAsArray().spliterator(), false)
-					.map(CustomValue::getAsString)
-					.collect(Collectors.toCollection(HashSet::new))
-			));
+			.findPath("axolotlclient.classtweaker");
+		if (ctPath.isPresent()) {
+			try (var reader = Files.newBufferedReader(ctPath.get())) {
+				var lines = reader.lines().filter(s -> s.startsWith("inject-interface")).map(s -> s.split(" +"))
+					.peek(l -> {
+						if (l.length != 3) {
+							throw new IllegalArgumentException("Badly formatted interface injection in " + ctPath.get() + ": " + String.join(" ", l));
+						}
+					}).toList();
+				var map = new HashMap<String, Set<String>>();
+				lines.forEach(line -> map.computeIfAbsent(line[1].replace("/", "."), a -> new HashSet<>()).add(line[2]));
+				remainingInjections = map;
+			} catch (IOException e) {
+				throw new RuntimeException("Failed to read classtweaker file!", e);
+			}
+		}
 	}
 
 	@Override

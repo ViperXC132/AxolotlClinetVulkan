@@ -14,7 +14,7 @@ group = project.property("maven_group")!!
 version = "${project.property("version")}+$minecraftVersion"
 
 loom {
-	accessWidenerPath.set(file("src/main/resources/axolotlclient.accesswidener"))
+	accessWidenerPath.set(file("src/main/resources/axolotlclient.classtweaker"))
 
 	mods {
 		create("axolotlclient") {

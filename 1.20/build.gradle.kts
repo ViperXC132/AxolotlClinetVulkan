@@ -11,7 +11,7 @@ version = "${project.property("version")}+$minecraftVersion"
 base.archivesName = "AxolotlClient"
 
 loom {
-	accessWidenerPath.set(file("src/main/resources/axolotlclient.accesswidener"))
+	accessWidenerPath.set(file("src/main/resources/axolotlclient.classtweaker"))
 	mods {
 		create("axolotlclient") {
 			sourceSet("main")

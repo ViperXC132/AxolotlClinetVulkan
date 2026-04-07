@@ -5,16 +5,16 @@ plugins {
 	id("io.github.p03w.machete")
 }
 
-val minecraft = "26.1"
+val minecraft = "26.1.1"
 val minecraftFriendly = "26.1"
 val modmenu = "18.0.0-alpha.6"
-val fapi = "0.144.0"
+val fapi = "0.145.4+26.1.1"
 group = project.property("maven_group") as String
 version = "${project.property("version")}+$minecraftFriendly"
 base.archivesName = "AxolotlClient"
 
 loom {
-	accessWidenerPath.set(file("src/main/resources/axolotlclient.accesswidener"))
+	accessWidenerPath.set(file("src/main/resources/axolotlclient.classtweaker"))
 	mods {
 		create("axolotlclient") {
 			sourceSet("main")
@@ -34,7 +34,7 @@ dependencies {
 	minecraft("com.mojang:minecraft:$minecraft")
 	implementation("net.fabricmc:fabric-loader:${project.property("fabric_loader")}")
 
-	implementation("net.fabricmc.fabric-api:fabric-api:$fapi+$minecraftFriendly")
+	implementation("net.fabricmc.fabric-api:fabric-api:$fapi")
 
 	implementation("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+$minecraftFriendly")
 	include("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+$minecraftFriendly")
