@@ -24,36 +24,8 @@ package io.github.axolotlclient.modules.hypixel;
 
 import java.util.Map;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-import lombok.experimental.Accessors;
-
-/*
- * Yes, this looked a lot cleaner as just records.
- * However, the gson versions shipped by 1.8.9 as well as 1.16_combat-6 do not support deserialization to records
- * (it was added in gson 2.10.0).
- * Therefore, the only alternative would be to ship gson with those versions.
- */
-
-@SuppressWarnings("ClassCanBeRecord")
-
-@AllArgsConstructor
-@Getter
-@Accessors(fluent = true)
-@ToString
-@EqualsAndHashCode
-public final class PlayerData {
-	private final String name;
-	private final Bedwars bedwars;
-	private final Skywars skywars;
-	private final DuelsData duels;
-	private final String rank;
-	private final String rankFormatted;
-	private final double level;
-	private final int karma;
-
+public record PlayerData(String name, Bedwars bedwars, Skywars skywars, DuelsData duels, String rank,
+						 String rankFormatted, double level, int karma) {
 	public String formattedName() {
 		StringBuilder builder = new StringBuilder();
 		builder.append(rankFormatted());
@@ -63,64 +35,18 @@ public final class PlayerData {
 		return builder.append(name()).append("§r").toString();
 	}
 
-	@AllArgsConstructor
-	@Getter
-	@Accessors(fluent = true)
-	@ToString
-	@EqualsAndHashCode
-	public static final class Bedwars {
-		private final int level;
-		private final GameData all;
-		private final CombinedGameData core;
-		private final GameData solo;
-		private final GameData doubles;
-		private final GameData trios;
-		private final GameData fours;
-		private final GameData fourVFour;
-		private final CombinedGameData dreams;
-		private final GameData castle;
-		private final GameData doublesLucky;
-		private final GameData foursLucky;
-		private final GameData doublesUltimate;
-		private final GameData foursUltimate;
-		private final GameData doublesArmed;
-		private final GameData foursArmed;
-		private final GameData doublesRush;
-		private final GameData foursRush;
-		private final GameData doublesSwap;
-		private final GameData foursSwap;
+	public record Bedwars(int level, GameData all, CombinedGameData core, GameData solo, GameData doubles,
+						  GameData trios, GameData fours, GameData fourVFour, CombinedGameData dreams, GameData castle,
+						  GameData doublesLucky, GameData foursLucky, GameData doublesUltimate, GameData foursUltimate,
+						  GameData doublesArmed, GameData foursArmed, GameData doublesRush, GameData foursRush,
+						  GameData doublesSwap, GameData foursSwap) {
 
-		@AllArgsConstructor
-		@Getter
-		@Accessors(fluent = true)
-		@ToString
-		@EqualsAndHashCode
-		public static final class GameData implements BedwarsGameData {
-			private final int kills;
-			private final int deaths;
-			private final int wins;
-			private final int losses;
-			private final int winstreak;
-			private final int finalKills;
-			private final int finalDeaths;
-			private final int bedsBroken;
-			private final int bedsLost;
+		public record GameData(int kills, int deaths, int wins, int losses, int winstreak, int finalKills,
+							   int finalDeaths, int bedsBroken, int bedsLost) implements BedwarsGameData {
 		}
 
-		@AllArgsConstructor
-		@Getter
-		@Accessors(fluent = true)
-		@ToString
-		@EqualsAndHashCode
-		public static final class CombinedGameData implements BedwarsGameData {
-			private final int kills;
-			private final int deaths;
-			private final int wins;
-			private final int losses;
-			private final int finalKills;
-			private final int finalDeaths;
-			private final int bedsBroken;
-			private final int bedsLost;
+		public record CombinedGameData(int kills, int deaths, int wins, int losses, int finalKills, int finalDeaths,
+									   int bedsBroken, int bedsLost) implements BedwarsGameData {
 		}
 
 		public interface BedwarsGameData extends WLR, KDR {
@@ -142,74 +68,21 @@ public final class PlayerData {
 		}
 	}
 
-	@AllArgsConstructor
-	@Getter
-	@Accessors(fluent = true)
-	@ToString
-	@EqualsAndHashCode
-	public static final class Skywars {
-		private final String level;
-		private final int exp;
-		private final GameData all;
-		private final GameData core;
-		private final ModeData solo;
-		private final ModeData team;
-		private final MegaModeData mega;
-		private final GameData ranked;
-		private final int winstreak;
+	public record Skywars(String level, int exp, GameData all, GameData core, ModeData solo, ModeData team,
+						  MegaModeData mega, GameData ranked, int winstreak) {
 
-		@AllArgsConstructor
-		@Getter
-		@Accessors(fluent = true)
-		@ToString
-		@EqualsAndHashCode
-		public static final class ModeData {
-			private final GameData normal;
-			private final GameData insane;
+		public record ModeData(GameData normal, GameData insane) {
 		}
 
-		@AllArgsConstructor
-		@Getter
-		@Accessors(fluent = true)
-		@ToString
-		@EqualsAndHashCode
-		public static final class MegaModeData {
-			private final GameData normal;
-			private final GameData doubles;
+		public record MegaModeData(GameData normal, GameData doubles) {
 		}
 
-		@AllArgsConstructor
-		@Getter
-		@Accessors(fluent = true)
-		@ToString
-		@EqualsAndHashCode
-		public static final class GameData implements KDR, WLR {
-			private final int kills;
-			private final int deaths;
-			private final int wins;
-			private final int losses;
+		public record GameData(int kills, int deaths, int wins, int losses) implements KDR, WLR {
 		}
 	}
 
-	@AllArgsConstructor
-	@Getter
-	@Accessors(fluent = true)
-	@ToString
-	@EqualsAndHashCode
-	public static final class DuelsData {
-		private final Map<String, DuelsGameData> modes;
-
-		@AllArgsConstructor
-		@Getter
-		@Accessors(fluent = true)
-		@ToString
-		@EqualsAndHashCode
-		public static final class DuelsGameData implements KDR, WLR {
-			private final int kills;
-			private final int deaths;
-			private final int wins;
-			private final int losses;
-			private final int winstreak;
+	public record DuelsData(Map<String, DuelsGameData> modes) {
+		public record DuelsGameData(int kills, int deaths, int wins, int losses, int winstreak) implements KDR, WLR {
 		}
 	}
 

@@ -28,6 +28,7 @@ import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.ornithemc.osl.lifecycle.api.client.MinecraftClientEvents;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.sdl.SDLMouse;
 
@@ -122,10 +123,10 @@ public sealed abstract class WindowAccess permits WindowAccess.GLFWAccess, Windo
 	}
 
 	final static class SDLAccess extends WindowAccess {
-		private static final List<Long> createdCursors = new ArrayList<>(20);
+		private final List<Long> createdCursors = new ArrayList<>(20);
 
-		static {
-			Runtime.getRuntime().addShutdownHook(new Thread(() -> createdCursors.forEach(SDLMouse::SDL_DestroyCursor), "SDL cursor cleaner"));
+		SDLAccess() {
+			MinecraftClientEvents.STOP.register(mc -> createdCursors.forEach(SDLMouse::SDL_DestroyCursor));
 		}
 
 		@Override

@@ -39,7 +39,7 @@ import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.bridge.util.AxoI18n;
 import io.github.axolotlclient.util.GsonHelper;
 import lombok.*;
-import lombok.experimental.Accessors;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @Getter
@@ -84,18 +84,9 @@ public class Status {
 		}
 	}
 
-	@AllArgsConstructor
-	@Getter
-	@Accessors(fluent = true)
-	@ToString
-	@EqualsAndHashCode
-	public static final class Activity {
+	public record Activity(String title, String description, Metadata metadata,
+						   @EqualsAndHashCode.Exclude Instant started) {
 		private static final Activity UNKNOWN = new Activity("", "", null, Instant.EPOCH);
-		private final String title;
-		private final String description;
-		private final Metadata metadata;
-		@EqualsAndHashCode.Exclude
-		private final Instant started;
 
 		public Activity(String title, String description) {
 			this(title, description, (Metadata) null);
@@ -121,16 +112,8 @@ public class Status {
 			String typeId();
 		}
 
-		@AllArgsConstructor(access = AccessLevel.PRIVATE)
-		@Getter
-		@Accessors(fluent = true)
-		@ToString
-		@EqualsAndHashCode
 		@JsonAdapter(Metadata.MetadataTypeAdapter.class)
-		public static class Metadata {
-			public final String type;
-			public final MetadataAttributes attributes;
-
+		public record Metadata(String type, MetadataAttributes attributes) {
 			public Metadata(MetadataAttributes attributes) {
 				this(attributes.typeId(), attributes);
 			}
@@ -170,16 +153,9 @@ public class Status {
 			}
 		}
 
-		@AllArgsConstructor
-		@Getter
-		@Accessors(fluent = true)
-		@ToString
-		@EqualsAndHashCode
-		public static final class WorldHostMetadata implements MetadataAttributes {
+		public record WorldHostMetadata(String connectionId, String externalIp,
+										ServerInfo serverInfo) implements MetadataAttributes {
 			public static final String ID = "world_host";
-			private final String connectionId;
-			private final String externalIp;
-			private final ServerInfo serverInfo;
 
 			@Override
 			public String typeId() {
@@ -191,15 +167,8 @@ public class Status {
 			}
 		}
 
-		@AllArgsConstructor
-		@Getter
-		@Accessors(fluent = true)
-		@ToString
-		@EqualsAndHashCode
-		public static final class E4mcMetadata implements MetadataAttributes {
+		public record E4mcMetadata(String domain, ServerInfo serverInfo) implements MetadataAttributes {
 			public static final String ID = "e4mc";
-			private final String domain;
-			private final ServerInfo serverInfo;
 
 			@Override
 			public String typeId() {
@@ -207,15 +176,8 @@ public class Status {
 			}
 		}
 
-		@AllArgsConstructor
-		@Getter
-		@Accessors(fluent = true)
-		@ToString
-		@EqualsAndHashCode
-		public static final class ExternalServerMetadata implements MetadataAttributes {
+		public record ExternalServerMetadata(String serverName, String address) implements MetadataAttributes {
 			public static final String ID = "external_server";
-			private final String serverName;
-			private final String address;
 
 			@Override
 			public String typeId() {
@@ -223,30 +185,13 @@ public class Status {
 			}
 		}
 
-		@AllArgsConstructor
-		@Getter
-		@Accessors(fluent = true)
-		@ToString
-		@EqualsAndHashCode
-		public static class ServerInfo {
-			private final String levelName;
-			private final String description;
-			private final Favicon icon;
-			private final Players players;
-			private final Version version;
-
-			@AllArgsConstructor
-			@Getter
-			@Accessors(fluent = true)
-			@EqualsAndHashCode
+		public record ServerInfo(String levelName, String description, Favicon icon, Players players, Version version) {
 			@JsonAdapter(Favicon.FaviconTypeAdapter.class)
-			public static class Favicon {
+			public record Favicon(byte[] iconBytes) {
 				private static final String PREFIX = "data:image/png;base64,";
-				private final byte[] iconBytes;
-
 
 				@Override
-				public String toString() {
+				public @NotNull String toString() {
 					return PREFIX + new String(Base64.getEncoder().encode(iconBytes), StandardCharsets.UTF_8);
 				}
 
@@ -275,38 +220,13 @@ public class Status {
 				}
 			}
 
-			@AllArgsConstructor
-			@Getter
-			@Accessors(fluent = true)
-			@ToString
-			@EqualsAndHashCode
-			public static class Players {
-				private final int max;
-				private final int online;
-				private final List<Player> sample;
-
-				@AllArgsConstructor
-				@Getter
-				@Accessors(fluent = true)
-				@ToString
-				@EqualsAndHashCode
-				public static class Player {
-					private final String name;
-					private final String uuid;
+			public record Players(int max, int online, List<Player> sample) {
+				public record Player(String name, String uuid) {
 				}
-
 			}
 
-			@AllArgsConstructor
-			@Getter
-			@Accessors(fluent = true)
-			@ToString
-			@EqualsAndHashCode
-			public static class Version {
-				private final String name;
-				private final int protocol;
+			public record Version(String name, int protocol) {
 			}
-
 		}
 	}
 }

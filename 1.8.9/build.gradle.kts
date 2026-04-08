@@ -48,14 +48,6 @@ dependencies {
 
 	modApi(include("io.github.moehreag:search-in-resources:1.1.0+1.8.9")!!)
 
-	include("org.apache.logging.log4j:log4j-slf4j-impl:2.0-beta9") {
-		exclude(group = "org.apache.logging.log4j", module = "log4j-api")
-		exclude(group = "org.apache.logging.log4j", module = "log4j-core")
-	}
-	implementation(include("org.slf4j:slf4j-api:1.7.36")!!)
-	localRuntime("org.slf4j:slf4j-jdk14:1.7.36")
-
-	compileOnly("org.lwjgl:lwjgl-glfw:$lwjglVersion")
 	compileOnly("org.lwjgl:lwjgl-sdl:$lwjglVersion")
 
 	modImplementation("io.github.moehreag:legacy-lwjgl3:$legacyLwjgl3+$minecraftVersion")
