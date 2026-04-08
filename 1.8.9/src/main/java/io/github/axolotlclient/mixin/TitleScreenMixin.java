@@ -46,7 +46,6 @@ import io.github.axolotlclient.modules.auth.AuthWidget;
 import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.util.OSUtil;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.ConfirmChatLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -174,7 +173,7 @@ public abstract class TitleScreenMixin extends Screen {
 	public void axolotlclient$customBranding(TitleScreen instance, TextRenderer textRenderer, String s, int x, int y, int color) {
 		if (FabricLoader.getInstance().getModContainer("axolotlclient").isPresent()) {
 			instance.drawString(textRenderer,
-				"Minecraft 1.8.9/" + ClientBrandRetriever.getClientModName() + " " + AxolotlClient.VERSION,
+				"Minecraft 1.8.9/AxolotlClient " + AxolotlClient.VERSION,
 				x, y, color);
 		} else {
 			instance.drawString(textRenderer, s, x, y, color);

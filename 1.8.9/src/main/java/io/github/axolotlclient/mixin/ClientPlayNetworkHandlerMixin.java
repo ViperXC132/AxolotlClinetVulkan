@@ -28,6 +28,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.bridge.events.Events;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.PlayerInfo;
 import net.minecraft.client.network.handler.ClientPlayNetworkHandler;
 import net.minecraft.client.world.ClientWorld;
@@ -49,6 +50,9 @@ public abstract class ClientPlayNetworkHandlerMixin {
 
 	@Shadow
 	public abstract PlayerInfo getOnlinePlayer(UUID uUID);
+
+	@Shadow
+	private Minecraft minecraft;
 
 	@Inject(method = "handleWorldTime", at = @At("HEAD"))
 	private void axolotlclient$onWorldUpdate(WorldTimeS2CPacket packet, CallbackInfo ci) {
@@ -90,5 +94,10 @@ public abstract class ClientPlayNetworkHandlerMixin {
 		if (getOnlinePlayer(addPlayerS2CPacket.getUuid()) == null) {
 			ci.cancel();
 		}
+	}
+
+	@Inject(method = "handleLogin", at = @At("TAIL"))
+	private void onConnectionPlayReady(LoginS2CPacket packet, CallbackInfo ci) {
+		Events.CONNECTION_PLAY_READY.invoker().accept(minecraft.getCurrentServerEntry());
 	}
 }
