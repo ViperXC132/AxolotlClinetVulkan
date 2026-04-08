@@ -62,6 +62,7 @@
 		"SplashTextResourceSupplierMixin",
 		"SubmitNodeCollectionMixin",
 		"SubmitNodeStorageMixin",
+		"SubtitleOverlayMixin",
 		"TextureContentsMixin",
 		"TitleScreenMixin",
 		"TntEntityRendererMixin",

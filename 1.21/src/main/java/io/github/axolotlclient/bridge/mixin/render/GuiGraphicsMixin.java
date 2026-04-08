@@ -36,6 +36,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Axis;
 import org.jetbrains.annotations.ApiStatus;
@@ -84,6 +86,9 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 
 	@Shadow
 	public abstract int getScaledWindowWidth();
+
+	@Shadow
+	public abstract int drawText(TextRenderer renderer, OrderedText text, int x, int y, int color, boolean shadowed);
 
 	@Unique
 	private @NotNull GuiGraphics self() {
@@ -139,6 +144,62 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	@Override
 	public int br$drawString(AxoText value, int x, int y, int color, boolean shadow) {
 		return drawText(MinecraftClient.getInstance().textRenderer, (Text) value, x, y, color, shadow);
+	}
+
+	@Unique
+	private void drawWordWrap(TextRenderer renderer, StringVisitable text, int x, int y, int width, boolean shadow, int color) {
+		for (OrderedText orderedText : renderer.wrapLines(text, width)) {
+			drawText(renderer, orderedText, x, y, color, shadow);
+			y += renderer.fontHeight;
+		}
+	}
+
+	@Unique
+	private void drawCenteredWordWrap(TextRenderer renderer, StringVisitable text, int x, int y, int width, boolean shadow, int color) {
+		for (OrderedText orderedText : renderer.wrapLines(text, width)) {
+			drawText(renderer, orderedText, x - renderer.getWidth(orderedText)/2, y, color, shadow);
+			y += renderer.fontHeight;
+		}
+	}
+
+	@Unique
+	private void drawCenteredCenteredWordWrap(TextRenderer renderer, StringVisitable text, int x, int y, int width, boolean shadow, int color) {
+		var lines = renderer.wrapLines(text, width);
+		y -= (lines.size() * renderer.fontHeight)/2;
+		for (OrderedText orderedText : lines) {
+			drawText(renderer, orderedText, x - renderer.getWidth(orderedText)/2, y, color, shadow);
+			y += renderer.fontHeight;
+		}
+	}
+
+	@Override
+	public void br$drawWordWrap(String text, int x, int y, int width, boolean shadow, int color) {
+		drawWordWrap(client.textRenderer, StringVisitable.plain(text), x, y, width, shadow, color);
+	}
+
+	@Override
+	public void br$drawWordWrap(AxoText text, int x, int y, int width, boolean shadow, int color) {
+		drawWordWrap(client.textRenderer, (Text) text, x, y, width, shadow, color);
+	}
+
+	@Override
+	public void br$drawCenteredWordWrap(String text, int x, int y, int width, boolean shadow, int color) {
+		drawCenteredWordWrap(client.textRenderer, StringVisitable.plain(text), x, y, width, shadow, color);
+	}
+
+	@Override
+	public void br$drawCenteredWordWrap(AxoText text, int x, int y, int width, boolean shadow, int color) {
+		drawCenteredWordWrap(client.textRenderer, (Text) text, x, y, width, shadow, color);
+	}
+
+	@Override
+	public void br$drawCenteredCenteredWordWrap(String text, int centerX, int centerY, int width, boolean shadow, int color) {
+		drawCenteredCenteredWordWrap(client.textRenderer, StringVisitable.plain(text), centerX, centerY, width, shadow, color);
+	}
+
+	@Override
+	public void br$drawCenteredCenteredWordWrap(AxoText text, int centerX, int centerY, int width, boolean shadow, int color) {
+		drawCenteredCenteredWordWrap(client.textRenderer, (Text) text, centerX, centerY, width, shadow, color);
 	}
 
 	@Override

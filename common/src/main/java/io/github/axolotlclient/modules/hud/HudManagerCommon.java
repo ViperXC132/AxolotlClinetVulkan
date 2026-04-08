@@ -55,6 +55,7 @@ import io.github.axolotlclient.modules.hud.gui.hud.item.ItemUpdateHud;
 import io.github.axolotlclient.modules.hud.gui.hud.simple.*;
 import io.github.axolotlclient.modules.hud.gui.hud.item.InventoryHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.PlayerTabOverlayHud;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.SubtitlesHudHud;
 import io.github.axolotlclient.modules.hud.gui.layout.SnapAnchorType;
 import io.github.axolotlclient.modules.hud.snapping.SnappingHelper;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
@@ -129,6 +130,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 		add(new InventoryHud());
 		add(new XPHud());
 		add(new PlayerTabOverlayHud());
+		add(new SubtitlesHudHud());
 
 		addExtraHud();
 

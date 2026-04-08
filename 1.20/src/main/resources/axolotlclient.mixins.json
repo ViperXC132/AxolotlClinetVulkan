@@ -57,6 +57,7 @@
 		"ShaderEffectAccessor",
 		"SplashOverlayMixin",
 		"SplashTextResourceSupplierMixin",
+		"SubtitlesHudMixin",
 		"TextFieldWidgetAccessor",
 		"TextureDataMixin",
 		"TitleScreenMixin",

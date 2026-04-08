@@ -265,7 +265,7 @@ public class SnappingHelper {
 				int y1 = xBounds.y() > cBounds.y() ? cBounds.yEnd() : cBounds.y(), y2 = xBounds.y() > cBounds.y() ? xBounds.y() : xBounds.yEnd();
 				graphics.br$pushMatrix();
 				var overlap = Math.min(cBounds.yEnd(), xBounds.yEnd()) - Math.max(cBounds.y(), xBounds.y());
-				if (overlap == 0 || Math.abs(x2 - x1) > 2) {
+				if (overlap <= 0 /*&& Math.abs(y2 - y1) > 2*/) {
 					graphics.br$translateMatrix(x1, y1);
 					var x = x2 - x1;
 					var y = y2 - y1;
@@ -278,8 +278,8 @@ public class SnappingHelper {
 					graphics.br$translateMatrix(0, touchLen / 2f);
 					graphics.br$rotateMatrix(ang);
 				} else {
-					graphics.br$translateMatrix(Math.max(cBounds.y(), xBounds.y()), y1);
-					graphics.br$translateMatrix(overlap / 2f, 0f);
+					graphics.br$translateMatrix(x1, Math.max(cBounds.y(), xBounds.y()));
+					graphics.br$translateMatrix(0f, overlap / 2f);
 				}
 				graphics.br$translateMatrix(-4.5f, -4.5f);
 				var ang = -90;
@@ -308,7 +308,7 @@ public class SnappingHelper {
 				int x1 = yBounds.x() > cBounds.x() ? cBounds.xEnd() : cBounds.x(), x2 = yBounds.x() > cBounds.x() ? yBounds.x() : yBounds.xEnd();
 				graphics.br$pushMatrix();
 				var overlap = Math.min(cBounds.xEnd(), yBounds.xEnd()) - Math.max(cBounds.x(), yBounds.x());
-				if (overlap == 0 || Math.abs(y2 - y1) > 2) {
+				if (overlap <= 0 /*|| Math.abs(x2 - x1) > 2*/) {
 					graphics.br$translateMatrix(x1, y1);
 					var x = x2 - x1;
 					var y = y2 - y1;

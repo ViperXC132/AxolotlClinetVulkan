@@ -152,18 +152,138 @@ public interface AxoRenderContext {
 	}
 
 	@ApiStatus.NonExtendable
-	default void br$drawCenteredString(AxoText value, int x, int y, int color, boolean shadow) {
-		br$drawString(value, x - br$getFont().br$getWidth(value) / 2, y, color, shadow);
+	default void br$drawCenteredString(AxoText value, int centerX, int y, int color, boolean shadow) {
+		br$drawString(value, centerX - br$getFont().br$getWidth(value) / 2, y, color, shadow);
 	}
 
 	@ApiStatus.NonExtendable
-	default void br$drawCenteredString(AxoText value, int x, int y, Color color, boolean shadow) {
-		br$drawCenteredString(value, x, y, color.toInt(), shadow);
+	default void br$drawCenteredString(AxoText value, int centerX, int y, Color color, boolean shadow) {
+		br$drawCenteredString(value, centerX, y, color.toInt(), shadow);
 	}
 
 	@ApiStatus.NonExtendable
-	default void br$drawCenteredString(AxoText value, int x, int y, Color color) {
-		br$drawCenteredString(value, x, y, color, true);
+	default void br$drawCenteredString(AxoText value, int centerX, int y, Color color) {
+		br$drawCenteredString(value, centerX, y, color, true);
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawWordWrap(String text, int x, int y, int width) {
+		br$drawWordWrap(text, x, y, width, -1);
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawWordWrap(String text, int x, int y, int width, Color color) {
+		br$drawWordWrap(text, x, y, width, color.toInt());
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawWordWrap(String text, int x, int y, int width, int color) {
+		br$drawWordWrap(text, x, y, width, false, color);
+	}
+
+	@RequiresImpl
+	default void br$drawWordWrap(String text, int x, int y, int width, boolean shadow, int color) {
+		throw BridgeUtil.noImpl();
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawCenteredWordWrap(String text, int centerX, int y, int width) {
+		br$drawWordWrap(text, centerX, y, width, -1);
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawCenteredWordWrap(String text, int centerX, int y, int width, Color color) {
+		br$drawWordWrap(text, centerX, y, width, color.toInt());
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawCenteredWordWrap(String text, int centerX, int y, int width, int color) {
+		br$drawCenteredWordWrap(text, centerX, y, width, false, color);
+	}
+
+	@RequiresImpl
+	default void br$drawCenteredWordWrap(String text, int centerX, int y, int width, boolean shadow, int color) {
+		throw BridgeUtil.noImpl();
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawWordWrap(AxoText text, int x, int y, int width) {
+		br$drawWordWrap(text, x, y, width, -1);
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawWordWrap(AxoText text, int x, int y, int width, Color color) {
+		br$drawWordWrap(text, x, y, width, color.toInt());
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawWordWrap(AxoText text, int x, int y, int width, int color) {
+		br$drawWordWrap(text, x, y, width, false, color);
+	}
+
+	@RequiresImpl
+	default void br$drawWordWrap(AxoText text, int x, int y, int width, boolean shadow, int color) {
+		throw BridgeUtil.noImpl();
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawCenteredWordWrap(AxoText text, int centerX, int y, int width) {
+		br$drawWordWrap(text, centerX, y, width, -1);
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawCenteredWordWrap(AxoText text, int centerX, int y, int width, Color color) {
+		br$drawWordWrap(text, centerX, y, width, color.toInt());
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawCenteredWordWrap(AxoText text, int centerX, int y, int width, int color) {
+		br$drawWordWrap(text, centerX, y, width, false, color);
+	}
+
+	@RequiresImpl
+	default void br$drawCenteredWordWrap(AxoText text, int centerX, int y, int width, boolean shadow, int color) {
+		throw BridgeUtil.noImpl();
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawCenteredCenteredWordWrap(String text, int centerX, int centerY, int width) {
+		br$drawWordWrap(text, centerX, centerY, width, -1);
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawCenteredCenteredWordWrap(String text, int centerX, int centerY, int width, Color color) {
+		br$drawWordWrap(text, centerX, centerY, width, color.toInt());
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawCenteredCenteredWordWrap(String text, int centerX, int centerY, int width, int color) {
+		br$drawCenteredWordWrap(text, centerX, centerY, width, false, color);
+	}
+
+	@RequiresImpl
+	default void br$drawCenteredCenteredWordWrap(String text, int centerX, int centerY, int width, boolean shadow, int color) {
+		throw BridgeUtil.noImpl();
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawCenteredCenteredWordWrap(AxoText text, int centerX, int centerY, int width) {
+		br$drawWordWrap(text, centerX, centerY, width, -1);
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawCenteredCenteredWordWrap(AxoText text, int centerX, int centerY, int width, Color color) {
+		br$drawWordWrap(text, centerX, centerY, width, color.toInt());
+	}
+
+	@ApiStatus.NonExtendable
+	default void br$drawCenteredCenteredWordWrap(AxoText text, int centerX, int centerY, int width, int color) {
+		br$drawWordWrap(text, centerX, centerY, width, false, color);
+	}
+
+	@RequiresImpl
+	default void br$drawCenteredCenteredWordWrap(AxoText text, int centerX, int centerY, int width, boolean shadow, int color) {
+		throw BridgeUtil.noImpl();
 	}
 
 	// fillRect overloads

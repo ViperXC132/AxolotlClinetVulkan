@@ -979,5 +979,7 @@
 	"tab_badge_mode.before_name": "Before Name",
 	"tab_badge_mode.before_name_aligned": "Before Name (Aligned)",
 	"tab_badge_mode.before_ping": "Before Ping",
-	"tab_overlay_hud": "Tab Overlay Hud"
+	"tab_overlay_hud": "Tab Overlay Hud",
+	"subtitleshud": "Subtitles HUD",
+	"subtitles.entry_background": "Entry Background"
 }

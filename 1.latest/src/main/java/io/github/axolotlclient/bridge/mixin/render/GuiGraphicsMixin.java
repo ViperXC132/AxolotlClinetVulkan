@@ -35,6 +35,7 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
@@ -84,6 +85,12 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 
 	@Shadow
 	public abstract int guiWidth();
+
+	@Shadow
+	public abstract void text(Font font, FormattedCharSequence str, int x, int y, int color, boolean dropShadow);
+
+	@Shadow
+	public abstract void centeredText(Font font, String str, int x, int y, int color);
 
 	@Unique
 	private @NotNull GuiGraphicsExtractor self() {
@@ -141,6 +148,62 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	public int br$drawString(AxoText value, int x, int y, int color, boolean shadow) {
 		text(minecraft.font, (Component) value, x, y, color, shadow);
 		return x + minecraft.font.width((FormattedText) value);
+	}
+
+	@Unique
+	private void drawWordWrap(Font renderer, FormattedText text, int x, int y, int width, boolean shadow, int color) {
+		for (var orderedText : renderer.split(text, width)) {
+			text(renderer, orderedText, x, y, color, shadow);
+			y += renderer.lineHeight;
+		}
+	}
+
+	@Unique
+	private void drawCenteredWordWrap(Font renderer, FormattedText text, int x, int y, int width, boolean shadow, int color) {
+		for (var orderedText : renderer.split(text, width)) {
+			text(renderer, orderedText, x - renderer.width(orderedText) / 2, y, color, shadow);
+			y += renderer.lineHeight;
+		}
+	}
+
+	@Unique
+	private void drawCenteredCenteredWordWrap(Font renderer, FormattedText text, int x, int y, int width, boolean shadow, int color) {
+		var lines = renderer.split(text, width);
+		y -= (lines.size() * renderer.lineHeight) / 2;
+		for (var orderedText : lines) {
+			text(renderer, orderedText, x - renderer.width(orderedText) / 2, y, color, shadow);
+			y += renderer.lineHeight;
+		}
+	}
+
+	@Override
+	public void br$drawWordWrap(String text, int x, int y, int width, boolean shadow, int color) {
+		drawWordWrap(minecraft.font, FormattedText.of(text), x, y, width, shadow, color);
+	}
+
+	@Override
+	public void br$drawWordWrap(AxoText text, int x, int y, int width, boolean shadow, int color) {
+		drawWordWrap(minecraft.font, (Component) text, x, y, width, shadow, color);
+	}
+
+	@Override
+	public void br$drawCenteredWordWrap(String text, int x, int y, int width, boolean shadow, int color) {
+		drawCenteredWordWrap(minecraft.font, FormattedText.of(text), x, y, width, shadow, color);
+	}
+
+	@Override
+	public void br$drawCenteredWordWrap(AxoText text, int x, int y, int width, boolean shadow, int color) {
+		drawCenteredWordWrap(minecraft.font, (Component) text, x, y, width, shadow, color);
+	}
+
+	@Override
+	public void br$drawCenteredCenteredWordWrap(String text, int centerX, int centerY, int width, boolean shadow, int color) {
+		drawCenteredCenteredWordWrap(minecraft.font, FormattedText.of(text), centerX, centerY, width, shadow, color);
+	}
+
+	@Override
+	public void br$drawCenteredCenteredWordWrap(AxoText text, int centerX, int centerY, int width, boolean shadow, int color) {
+		drawCenteredCenteredWordWrap(minecraft.font, (Component) text, centerX, centerY, width, shadow, color);
 	}
 
 	@Override

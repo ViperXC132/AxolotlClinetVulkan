@@ -58,6 +58,7 @@
 		"SharedConstantsMixin",
 		"SimpleTextureMixin",
 		"SoundEngineMixin",
+		"SoundFixSubtitlesHudMixin",
 		"TextRendererMixin",
 		"TextRenderUtilsMixin",
 		"TextureManagerAccessor",
