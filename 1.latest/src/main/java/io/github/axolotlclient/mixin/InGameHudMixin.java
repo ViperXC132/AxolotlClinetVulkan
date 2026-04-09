@@ -28,8 +28,10 @@ import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
+import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.PotionsHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
@@ -62,7 +64,9 @@ public abstract class InGameHudMixin {
 
 	@Inject(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractEffects(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"))
 	private void onHudRender(GuiGraphicsExtractor guiGraphicsExtractor, DeltaTracker deltaTracker, CallbackInfo ci) {
-		HudManager.getInstance().render(guiGraphicsExtractor, deltaTracker.getGameTimeDeltaTicks());
+		if (!(AxoMinecraftClient.getInstance().br$getScreen() instanceof HudEditScreen)) {
+			HudManager.getInstance().render(guiGraphicsExtractor, deltaTracker.getGameTimeDeltaTicks());
+		}
 	}
 
 	@Inject(method = "extractEffects", at = @At("HEAD"), cancellable = true)

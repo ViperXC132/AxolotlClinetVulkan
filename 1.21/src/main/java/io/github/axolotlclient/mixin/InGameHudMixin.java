@@ -31,8 +31,10 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalBooleanRef;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
+import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.PotionsHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
@@ -67,15 +69,9 @@ public abstract class InGameHudMixin {
 
 	@Inject(method = "render", at = @At(value = "TAIL"))
 	private void onHudRender(GuiGraphics graphics, DeltaTracker tracker, CallbackInfo ci) {
-		if (!MinecraftClient.getInstance().options.hudHidden) {
+		//noinspection ConstantValue
+		if (!MinecraftClient.getInstance().options.hudHidden && !(AxoMinecraftClient.getInstance().br$getScreen() instanceof HudEditScreen)) {
 			HudManager.getInstance().render(graphics, tracker.getLastDuration());
-		}
-	}
-
-	@Inject(method = "renderStatusEffectOverlay", at = @At(value = "HEAD"))
-	private void axolotlclient$onHudRender(GuiGraphics graphics, DeltaTracker tickDelta, CallbackInfo ci) {
-		if (!MinecraftClient.getInstance().options.hudHidden) {
-			HudManager.getInstance().render(graphics, tickDelta.getLastDuration());
 		}
 	}
 

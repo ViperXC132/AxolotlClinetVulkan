@@ -66,7 +66,7 @@ public abstract class SoundFixSubtitlesHudMixin {
 	private List<?> audibleSubtitles;
 
 	@SuppressWarnings("LocalMayBeArgsOnly")
-	@WrapOperation(method = "render()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;translated(DDD)V", ordinal = 0))
+	@WrapOperation(method = "render()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;translated(DDD)V", ordinal = 0, remap = true), remap = false)
 	private void subtitlesHudPosition(double x, double y, double z, Operation<Void> original, @Local(name = "halfWidth") int halfWidth,
 									  @Local(name = "lineHeight") int lineHeight, @Local(name = "pos") Vec3d pos) {
 		var subtitlesHud = (SubtitlesHudHud) HudManager.getInstance().get(SubtitlesHudHud.ID);
@@ -103,11 +103,16 @@ public abstract class SoundFixSubtitlesHudMixin {
 		}
 	}
 
-	@WrapOperation(method = "render()V", at = @At(value = "INVOKE", target = "Lio/github/moehreag/soundfix/subtitles/SubtitlesHud;fill(IIIII)V"))
+	@WrapOperation(method = "render()V", at = @At(value = "INVOKE", target = "Lio/github/moehreag/soundfix/subtitles/SubtitlesHud;fill(IIIII)V"), remap = false, require = 0)
 	private void switchEntryBackground(int x0, int y0, int x1, int y1, int col, Operation<Void> original) {
 		var subtitlesHud = (SubtitlesHudHud) HudManager.getInstance().get(SubtitlesHudHud.ID);
 		if (!subtitlesHud.isEnabled() || subtitlesHud.vanillaEntryBackground.get()) {
 			original.call(x0, y0, x1, y1, col);
 		}
+	}
+
+	@WrapOperation(method = "render()V", at = @At(value = "INVOKE", target = "Lio/github/moehreag/soundfix/subtitles/SubtitlesHud;m_57734177(IIIII)V"), remap = false, require = 0)
+	private void switchEntryBackground$prod(int x0, int y0, int x1, int y1, int col, Operation<Void> original) {
+		switchEntryBackground(x0, y0, x1, y1, col, original);
 	}
 }

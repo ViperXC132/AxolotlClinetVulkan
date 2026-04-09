@@ -876,6 +876,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 	}
 
 	private class SpriteButton extends VanillaButtonWidget {
+		private static final DrawUtil.NineSlice SLICE = new DrawUtil.NineSlice(200, 20, 3);
 		private Identifier sprite;
 
 		SpriteButton(String message, PressAction action, Identifier sprite) {
@@ -894,7 +895,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 			}
 
 			Identifier tex = ButtonWidgetTextures.get(i);
-			DrawUtil.blitSprite(tex, getX(), getY(), getWidth(), getHeight(), new DrawUtil.NineSlice(200, 20, 3));
+			DrawUtil.blitSprite(tex, getX(), getY(), getWidth(), getHeight(), SLICE);
 			minecraft.getTextureManager().bind(sprite);
 			DrawUtil.drawTexture(getX() + 2, getY() + 2, 0, 0, 7, 7, 7, 7);
 		}

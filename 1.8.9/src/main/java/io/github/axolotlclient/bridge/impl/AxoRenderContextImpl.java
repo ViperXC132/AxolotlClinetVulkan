@@ -30,6 +30,7 @@ import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.ItemUtil;
 import io.github.axolotlclient.rendering.font.StringSplitter;
+import io.github.axolotlclient.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.TextRenderer;
 import net.minecraft.client.render.platform.GlStateManager;
@@ -274,11 +275,11 @@ public class AxoRenderContextImpl extends io.github.axolotlclient.rendering.Draw
 
 	@Override
 	public int br$guiWidth() {
-		return guiWidth();
+		return Util.getWindow().getWidth();
 	}
 
 	@Override
 	public int br$guiHeight() {
-		return guiHeight();
+		return Util.getWindow().getHeight();
 	}
 }

@@ -61,6 +61,7 @@ public class HudEditScreen extends Screen {
 	private SnappingHelper snap;
 	private ModificationMode pendingMode = ModificationMode.NONE;
 	private ModificationMode mode = ModificationMode.NONE;
+	private int mouseX, mouseY;
 
 	public HudEditScreen() {
 		this(null);
@@ -91,8 +92,7 @@ public class HudEditScreen extends Screen {
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		if (Minecraft.getInstance().world != null)
-			fillGradient(0, 0, width, height, 0xB0100E0E,
-				0x46212020);
+			fillGradient(0, 0, width, height, 0xB0100E0E, 0x46212020);
 		else {
 			renderBackground(0);
 		}
@@ -146,6 +146,12 @@ public class HudEditScreen extends Screen {
 		if (mouseDown && snap != null) {
 			snap.renderSnaps(graphics);
 		}
+		// bweh
+		if (mouseDown && (this.mouseX != mouseX || this.mouseY != mouseY)) {
+			handleDrag(mouseX, mouseY);
+		}
+		this.mouseX = mouseX;
+		this.mouseY = mouseY;
 	}
 
 	@Override
@@ -191,13 +197,11 @@ public class HudEditScreen extends Screen {
 		super.mouseReleased(mouseX, mouseY, button);
 	}
 
-	@Override
-	protected void mouseDragged(int mouseX, int mouseY, int button, long mouseLastClicked) {
-		if (current != null) {
+	private void handleDrag(int mouseX, int mouseY) {
+		if (current != null && mouseDown) {
 			current.clearBoundsDependencies();
 			if (mode == ModificationMode.MOVE) {
-				current.setX((mouseX - offset.x()) + current.offsetTrueWidth());
-				current.setY(mouseY - offset.y() + current.offsetTrueHeight());
+				current.setPos(mouseX - offset.x() + current.offsetTrueWidth(), mouseY - offset.y() + current.offsetTrueHeight());
 				if (snap != null) {
 					Collection<HudEntry> entries = null;
 					Optional<Integer> snapX = snap.getCurrentXSnap(), snapY = snap.getCurrentYSnap();
@@ -254,8 +258,7 @@ public class HudEditScreen extends Screen {
 				current.setScale(Math.max(0.1f, newScale));
 				if (mode == ModificationMode.TOP_LEFT) {
 					// top-left corner
-					current.setX(bounds.xEnd() - current.getTrueWidth());
-					current.setY(bounds.yEnd() - current.getTrueHeight());
+					current.setPos(bounds.xEnd() - current.getTrueWidth(), bounds.yEnd() - current.getTrueHeight());
 				} else if (mode == ModificationMode.BOTTOM_LEFT) {
 					// bottom-left corner
 					current.setX(bounds.xEnd() - current.getTrueWidth());

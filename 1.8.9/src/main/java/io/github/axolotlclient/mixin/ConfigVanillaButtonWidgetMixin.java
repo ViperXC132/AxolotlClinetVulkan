@@ -29,11 +29,16 @@ import io.github.axolotlclient.util.ButtonWidgetTextures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resource.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(VanillaButtonWidget.class)
 public abstract class ConfigVanillaButtonWidgetMixin extends ButtonWidget {
+
+	@Unique
+	private static final DrawUtil.NineSlice SLICE = new DrawUtil.NineSlice(200, 20, 3);
+
 	private ConfigVanillaButtonWidgetMixin(int x, int y, int width, int height, String message, PressAction action) {
 		super(x, y, width, height, message, action);
 	}
@@ -46,7 +51,7 @@ public abstract class ConfigVanillaButtonWidgetMixin extends ButtonWidget {
 	@Redirect(method = "drawWidget", at = @At(value = "INVOKE", target = "Lio/github/axolotlclient/AxolotlClientConfig/impl/ui/vanilla/widgets/VanillaButtonWidget;drawTexture(IIIIII)V", ordinal = 1))
 	private void drawTexture$2$replaceWithNineSlice(VanillaButtonWidget instance, int x, int y, int u, int v, int width, int height) {
 		Identifier tex = ButtonWidgetTextures.get(active ? (this.hovered ? 2 : 1) : 0);
-		DrawUtil.blitSprite(tex, getX(), getY(), getWidth(), getHeight(), new DrawUtil.NineSlice(200, 20, 3));
+		DrawUtil.blitSprite(tex, getX(), getY(), getWidth(), getHeight(), SLICE);
 		Minecraft.getInstance().getTextureManager().bind(WIDGETS_LOCATION);
 	}
 }

@@ -34,6 +34,11 @@ import io.github.axolotlclient.modules.hud.util.Rectangle;
 
 public interface Positionable {
 
+	default void setPos(int x, int y) {
+		setX(x);
+		setY(y);
+	}
+
 	/**
 	 * Gets the x value of this object in pixels (so it's scaled)
 	 *

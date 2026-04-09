@@ -26,9 +26,11 @@ import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
+import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
@@ -60,7 +62,9 @@ public abstract class InGameHudMixin {
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;color4f(FFFF)V", ordinal = 0))
 	private void axolotlclient$onHudRender(float tickDelta, CallbackInfo ci) {
-		HudManager.getInstance().render(AxoRenderContextImpl.getInstance(), tickDelta);
+		if (!(AxoMinecraftClient.getInstance().br$getScreen() instanceof HudEditScreen)) {
+			HudManager.getInstance().render(AxoRenderContextImpl.getInstance(), tickDelta);
+		}
 	}
 
 	@Inject(method = "renderScoreboardObjective", at = @At("HEAD"), cancellable = true)

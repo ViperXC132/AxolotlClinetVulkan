@@ -28,8 +28,10 @@ import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
+import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.PotionsHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
@@ -66,7 +68,8 @@ public abstract class InGameHudMixin {
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderStatusEffectOverlay(Lnet/minecraft/client/gui/GuiGraphics;)V"))
 	private void axolotlclient$onHudRender(GuiGraphics graphics, float tickDelta, CallbackInfo ci) {
-		if (!MinecraftClient.getInstance().options.hudHidden) {
+		//noinspection ConstantValue
+		if (!MinecraftClient.getInstance().options.hudHidden && !(AxoMinecraftClient.getInstance().br$getScreen() instanceof HudEditScreen)) {
 			HudManager.getInstance().render(graphics, tickDelta);
 		}
 	}

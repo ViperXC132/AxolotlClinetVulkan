@@ -226,8 +226,7 @@ public class HudEditScreen extends Screen {
 		if (current != null) {
 			current.clearBoundsDependencies();
 			if (mode == ModificationMode.MOVE) {
-				current.setX((int) mouseX - offset.x() + current.offsetTrueWidth());
-				current.setY((int) mouseY - offset.y() + current.offsetTrueHeight());
+				current.setPos((int) (mouseX - offset.x() + current.offsetTrueWidth()), (int) (mouseY - offset.y() + current.offsetTrueHeight()));
 				if (snap != null) {
 					Collection<HudEntry> entries = null;
 					Optional<Integer> snapX = snap.getCurrentXSnap(), snapY = snap.getCurrentYSnap();
@@ -284,8 +283,7 @@ public class HudEditScreen extends Screen {
 				current.setScale(Math.max(0.1f, newScale));
 				if (mode == ModificationMode.TOP_LEFT) {
 					// top-left corner
-					current.setX(bounds.xEnd() - current.getTrueWidth() + current.offsetTrueWidth());
-					current.setY(bounds.yEnd() - current.getTrueHeight() + current.offsetTrueHeight());
+					current.setPos(bounds.xEnd() - current.getTrueWidth() + current.offsetTrueWidth(), bounds.yEnd() - current.getTrueHeight() + current.offsetTrueHeight());
 				} else if (mode == ModificationMode.BOTTOM_LEFT) {
 					// bottom-left corner
 					current.setX(bounds.xEnd() - current.getTrueWidth() + current.offsetTrueWidth());

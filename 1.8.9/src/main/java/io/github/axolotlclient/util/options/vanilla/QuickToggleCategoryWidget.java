@@ -35,6 +35,7 @@ import net.minecraft.client.render.TextRenderer;
 import net.minecraft.resource.Identifier;
 
 public class QuickToggleCategoryWidget extends CategoryWidget {
+	private static final DrawUtil.NineSlice SLICE = new DrawUtil.NineSlice(200, 20, 3);
 	private BooleanWidget enabledButton;
 
 	public QuickToggleCategoryWidget(int x, int y, int width, int height, OptionCategoryImpl category) {
@@ -48,7 +49,7 @@ public class QuickToggleCategoryWidget extends CategoryWidget {
 					@Override
 					protected void drawWidget(int mouseX, int mouseY, float delta) {
 						Identifier tex = ButtonWidgetTextures.get(!this.active ? 0 : (this.isHovered() ? 2 : 1));
-						DrawUtil.blitSprite(tex, this.getX(), this.getY(), this.getWidth(), this.getHeight(), new DrawUtil.NineSlice(200, 20, 3));
+						DrawUtil.blitSprite(tex, this.getX(), this.getY(), this.getWidth(), this.getHeight(), SLICE);
 
 						DrawUtil.drawScrollableText(client.textRenderer, getMessage(), getX() + 2, getY(), getX() + getWidth() - 2, getY() + getHeight(), !this.active ? 10526880 : (this.hovered ? 16777120 : 14737632));
 					}

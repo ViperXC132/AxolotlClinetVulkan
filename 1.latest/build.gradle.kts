@@ -5,7 +5,7 @@ plugins {
 	id("io.github.p03w.machete")
 }
 
-val minecraft = "26.1.1"
+val minecraft = "26.1.2"
 val minecraftFriendly = "26.1"
 val modmenu = "18.0.0-alpha.6"
 val fapi = "0.145.4+26.1.1"

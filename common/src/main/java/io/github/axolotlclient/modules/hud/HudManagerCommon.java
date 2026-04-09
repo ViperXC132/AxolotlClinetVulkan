@@ -447,8 +447,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 		visitedEntries.push(origin);
 		var entries = HudManagerCommon.getInstance().getMoveableEntries();
 		entries.remove(origin);
-		entries.removeIf(e -> visitedEntries.stream().anyMatch(v -> v.dependsOnX(e).isPresent()));
-		entries.removeIf(e -> visitedEntries.stream().anyMatch(v -> v.dependsOnY(e).isPresent()));
+		entries.removeIf(e -> visitedEntries.stream().anyMatch(v -> v.dependsOnY(e).or(() -> v.dependsOnX(e)).isPresent()));
 		for (HudEntry entry : entries) {
 			entry.dependsOnX(origin).ifPresent(type -> type.updatePosX(origin, entry));
 			entry.dependsOnY(origin).ifPresent(type -> type.updatePosY(origin, entry));

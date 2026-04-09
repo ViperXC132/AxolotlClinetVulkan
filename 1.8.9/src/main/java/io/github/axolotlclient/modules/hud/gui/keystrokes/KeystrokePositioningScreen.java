@@ -67,6 +67,7 @@ public class KeystrokePositioningScreen extends Screen {
 	private DrawPosition offset = null;
 	private boolean mouseDown;
 	private SnappingHelper snap;
+	private int mouseX, mouseY;
 
 	@Override
 	protected void buttonClicked(ButtonWidget buttonWidget) {
@@ -122,6 +123,12 @@ public class KeystrokePositioningScreen extends Screen {
 		if (mouseDown && snap != null) {
 			snap.renderSnaps(AxoRenderContextImpl.getInstance());
 		}
+		// bweh
+		if (mouseDown && (this.mouseX != mouseX || this.mouseY != mouseY)) {
+			handleDrag(mouseX, mouseY);
+		}
+		this.mouseX = mouseX;
+		this.mouseY = mouseY;
 	}
 
 	private void drawStroke(int mouseX, int mouseY, KeystrokeHud.Keystroke s) {
@@ -205,8 +212,7 @@ public class KeystrokePositioningScreen extends Screen {
 		super.mouseReleased(mouseX, mouseY, button);
 	}
 
-	@Override
-	public void mouseDragged(int mouseX, int mouseY, int button, long mouseLastClicked) {
+	private void handleDrag(int mouseX, int mouseY) {
 		if (focused != null && mouseDown) {
 			focused.setX(Math.round((mouseX - offset.x()) / hud.getScale()));
 			focused.setY(Math.round((mouseY - offset.y()) / hud.getScale()));

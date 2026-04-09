@@ -9,6 +9,7 @@
 - (CoordsHud) add nether conversions
 - Add PlayerTabOverlayHud
 - (26.1) add HotbarHud
+- Add SubtitlesHud(Hud)
 - fix more bugs
 
 ### 3.1.9
