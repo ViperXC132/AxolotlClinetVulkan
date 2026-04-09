@@ -54,8 +54,8 @@ public abstract class SubtitleOverlayMixin {
 		var subtitlesHud = (SubtitlesHudHud) HudManager.getInstance().get(SubtitlesHudHud.ID);
 		if (subtitlesHud.isEnabled() && !audibleSubtitles.isEmpty()) {
 			var lineHeight = 9;
-			var h = (int) audibleSubtitles.stream().filter(s -> s.getClosest(position) != null).count() * (lineHeight + 1) - lineHeight;
-			var w = width + 2;
+			var h = (int) audibleSubtitles.stream().filter(s -> s.getClosest(position) != null).count() * (lineHeight + 1) + 2;
+			var w = width + 4;
 			if (!(Minecraft.getInstance().screen instanceof HudEditScreen)) {
 				var updated = false;
 				if (h != subtitlesHud.getContentHeight()) {
@@ -71,9 +71,9 @@ public abstract class SubtitleOverlayMixin {
 				}
 			}
 			subtitlesHud.renderHud(graphics, 0);
-			graphics.br$translateMatrix(subtitlesHud.getRawTrueContentX(), subtitlesHud.getRawTrueContentY());
 			subtitlesHud.scale(graphics);
-			graphics.br$translateMatrix((float) -graphics.guiWidth() + w + 1.0F, (float) -(graphics.guiHeight() - 35) + h);
+			graphics.br$translateMatrix(subtitlesHud.getContentX(), subtitlesHud.getContentY());
+			graphics.br$translateMatrix((float) -graphics.guiWidth() + w, (float) -(graphics.guiHeight() - 35) + h - (lineHeight+1)/2f - 1);
 		}
 	}
 

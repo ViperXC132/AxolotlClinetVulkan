@@ -54,8 +54,8 @@ public abstract class SubtitlesHudMixin {
 		var subtitlesHud = (SubtitlesHudHud) HudManager.getInstance().get(SubtitlesHudHud.ID);
 		if (subtitlesHud.isEnabled() && !renderedEntries.isEmpty()) {
 			var lineHeight = 9;
-			var h = (int) renderedEntries.stream().filter(s -> s.getNearestSound(position) != null).count() * (lineHeight + 1);
-			var w = width + 2;
+			var h = (int) renderedEntries.stream().filter(s -> s.getNearestSound(position) != null).count() * (lineHeight + 1) + 2;
+			var w = width + 4;
 			if (!(MinecraftClient.getInstance().currentScreen instanceof HudEditScreen)) {
 				var updated = false;
 				if (h != subtitlesHud.getContentHeight()) {
@@ -71,9 +71,9 @@ public abstract class SubtitlesHudMixin {
 				}
 			}
 			subtitlesHud.renderHud(graphics, 0);
-			graphics.br$translateMatrix(subtitlesHud.getRawTrueContentX(), subtitlesHud.getRawTrueContentY());
 			subtitlesHud.scale(graphics);
-			graphics.br$translateMatrix((float) -graphics.getScaledWindowWidth() + w + 1.0F, (float) -(graphics.getScaledWindowHeight() - 35) + h - (lineHeight+1)/2f);
+			graphics.br$translateMatrix(subtitlesHud.getContentX(), subtitlesHud.getContentY());
+			graphics.br$translateMatrix((float) -graphics.getScaledWindowWidth() + w, (float) -(graphics.getScaledWindowHeight() - 35) + h - (lineHeight+1)/2f - 1);
 		}
 	}
 

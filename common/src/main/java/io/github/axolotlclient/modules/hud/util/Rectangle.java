@@ -74,13 +74,6 @@ public class Rectangle {
 		return pX >= x && pX <= x + width && pY >= y && pY <= y + height;
 	}
 
-	public void setData(int x, int y, int width, int height) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
-	}
-
 	public Rectangle copy() {
 		return new Rectangle(x, y, width, height);
 	}

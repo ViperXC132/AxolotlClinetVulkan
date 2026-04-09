@@ -184,11 +184,11 @@ public abstract class AbstractHudEntry implements HudEntry {
 		if (scaledY < 0) {
 			scaledY = 0;
 		}
-		int trueWidth = (int) (getWidth() * getScale());
+		int trueWidth = Math.round(getWidth() * getScale());
 		if (trueWidth < window.br$getScaledWidth() && scaledX + trueWidth > window.br$getScaledWidth()) {
 			scaledX = (int) (window.br$getScaledWidth() - trueWidth);
 		}
-		int trueHeight = (int) (getHeight() * getScale());
+		int trueHeight = Math.round(getHeight() * getScale());
 		if (trueHeight < window.br$getScaledHeight()
 			&& scaledY + trueHeight > window.br$getScaledHeight()) {
 			scaledY = (int) (window.br$getScaledHeight() - trueHeight);
@@ -197,7 +197,7 @@ public abstract class AbstractHudEntry implements HudEntry {
 		truePosition.y = scaledY;
 		renderPosition = truePosition.divide(getScale());
 		renderBounds = new Rectangle(renderPosition.x(), renderPosition.y(), getWidth(), getHeight());
-		trueBounds = new Rectangle(scaledX, scaledY, (int) (getWidth() * getScale()), (int) (getHeight() * getScale()));
+		trueBounds = new Rectangle(scaledX, scaledY, trueWidth, trueHeight);
 	}
 
 	@Override

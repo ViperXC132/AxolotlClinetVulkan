@@ -39,13 +39,23 @@ import net.fabricmc.loader.api.FabricLoader;
 
 public class SubtitlesHudHud extends BoxHudEntry implements DynamicallyPositionable {
 	public static final AxoIdentifier ID = AxoIdentifier.of(AxolotlClientCommon.MODID, "subtitleshud");
-	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(AnchorPoint.BOTTOM_MIDDLE, this);
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(AnchorPoint.BOTTOM_RIGHT, this);
 	// only relevant to 1.8.9
 	private static final boolean SOUNDFIX_INSTALLED = FabricLoader.getInstance().isModLoaded("soundfix");
 	public final BooleanOption vanillaEntryBackground = new BooleanOption("subtitles.entry_background", true);
 
 	public SubtitlesHudHud() {
 		super(80, 13, true);
+	}
+
+	@Override
+	public double getDefaultX() {
+		return 1.0;
+	}
+
+	@Override
+	public double getDefaultY() {
+		return 0.9;
 	}
 
 	@Override

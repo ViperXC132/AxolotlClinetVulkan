@@ -76,10 +76,10 @@ public enum SnapAnchorType {
 	}
 
 	public void updatePosX(HudEntry dependency, HudEntry dependent) {
-		dependent.setTrueX((int) (getNewXPos(dependency, dependent) * dependent.getScale()) + dependent.offsetWidth());
+		dependent.setTrueX((int) ((getNewXPos(dependency, dependent) + dependent.offsetTrueWidth()) * dependent.getScale()));
 	}
 
 	public void updatePosY(HudEntry dependency, HudEntry dependent) {
-		dependent.setTrueY((int) (getNewYPos(dependency, dependent) * dependent.getScale()) + dependent.offsetHeight());
+		dependent.setTrueY((int) ((getNewYPos(dependency, dependent) + dependent.offsetTrueHeight()) * dependent.getScale()));
 	}
 }

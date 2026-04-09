@@ -34,7 +34,6 @@ import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.Justification;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
-import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.util.ClientColors;
 
 /**
@@ -86,7 +85,6 @@ public class MemoryHud extends TextHudEntry {
 	protected final EnumOption<Justification> justification = new EnumOption<>("justification", Justification.class,
 		Justification.CENTER);
 
-	private final Rectangle graph = new Rectangle(0, 0, 0, 0);
 	private final ColorOption graphUsedColor = new ColorOption("graphUsedColor",
 		ClientColors.SELECTOR_RED.withAlpha(255));
 	private final ColorOption graphFreeColor = new ColorOption("graphFreeColor",
@@ -104,12 +102,11 @@ public class MemoryHud extends TextHudEntry {
 		DrawPosition pos = getContentPos();
 
 		if (showGraph.get()) {
-			graph.setData(pos.x() + 5, pos.y() + 5, getContentWidth() - 10, getContentHeight() - 10);
-			final int usagePx = (int) (graph.width * info.usage());
-			context.br$fillRect(graph.x, graph.y, usagePx, graph.height, graphUsedColor.get().toInt());
-			context.br$fillRect(graph.x + usagePx, graph.y, graph.width - usagePx, graph.height,
+			final int usagePx = (int) ((getContentWidth() - 10) * info.usage());
+			context.br$fillRect(pos.x() + 5, pos.y() + 5, usagePx, getContentHeight() - 10, graphUsedColor.get().toInt());
+			context.br$fillRect(pos.x() + 5 + usagePx, pos.y() + 5, getContentWidth() - 10 - usagePx, getContentHeight() - 10,
 				graphFreeColor.get().toInt());
-			context.br$outlineRect(graph, ClientColors.BLACK);
+			context.br$outlineRect(pos.x() + 5, pos.y() + 5, getContentWidth() - 10, getContentHeight() - 10, ClientColors.BLACK);
 		}
 
 		if (showText.get()) {

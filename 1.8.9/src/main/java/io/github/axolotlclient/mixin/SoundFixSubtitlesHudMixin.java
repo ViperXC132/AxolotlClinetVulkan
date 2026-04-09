@@ -77,8 +77,8 @@ public abstract class SoundFixSubtitlesHudMixin {
 				} catch (Throwable e) {
 					return false;
 				}
-			}).count() * (lineHeight + 1);
-			var w = halfWidth * 2 + 2;
+			}).count() * (lineHeight + 1) + 2;
+			var w = halfWidth * 2 + 4;
 			if (!(Minecraft.getInstance().screen instanceof HudEditScreen)) {
 				var updated = false;
 				if (h != subtitlesHud.getContentHeight()) {
@@ -95,9 +95,9 @@ public abstract class SoundFixSubtitlesHudMixin {
 			}
 			subtitlesHud.renderHud(AxoRenderContextImpl.getInstance(), 0);
 			var gr = AxoRenderContextImpl.getInstance();
-			gr.br$translateMatrix(subtitlesHud.getRawTrueContentX(), subtitlesHud.getRawTrueContentY());
 			subtitlesHud.scale(gr);
-			original.call((double) (halfWidth + 1), (double) (h - lineHeight / 2 - 1), z);
+			gr.br$translateMatrix(subtitlesHud.getContentX(), subtitlesHud.getContentY());
+			original.call((double) (halfWidth + 2), (double) (h - lineHeight / 2 - 2), z);
 		} else {
 			original.call(x, y, z);
 		}
