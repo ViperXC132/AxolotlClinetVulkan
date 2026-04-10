@@ -42,7 +42,7 @@ dependencies {
 
 	compileOnly("com.terraformersmc:modmenu:$modmenu")
 
-	implementation(include(project(path = ":common", configuration = "shadow"))!!)
+	api(include(project(path = ":common", configuration = "shadow"))!!)
 
 	//compileOnly("maven.modrinth:world-host:0.5.0+1.21.3-fabric")
 	//implementation("org.quiltmc.parsers:json:0.3.0")

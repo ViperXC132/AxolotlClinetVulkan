@@ -38,7 +38,7 @@ dependencies {
 		exclude(group = "net.fabricmc")
 	}
 
-	implementation(include(project(path = ":common", configuration = "shadow"))!!)
+	api(include(project(path = ":common", configuration = "shadow"))!!)
 
 	modCompileOnly("maven.modrinth:world-host:0.5.0+1.21.1-fabric")
 	//implementation("org.quiltmc.parsers:json:0.3.0")

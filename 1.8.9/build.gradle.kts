@@ -44,7 +44,7 @@ dependencies {
 
 	modImplementation("com.terraformersmc:modmenu:0.4.0+mc1.8.9")
 
-	implementation(include(project(path = ":common", configuration = "shadow"))!!)
+	api(include(project(path = ":common", configuration = "shadow"))!!)
 
 	modApi(include("io.github.moehreag:search-in-resources:1.1.0+1.8.9")!!)
 

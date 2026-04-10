@@ -43,7 +43,7 @@ dependencies {
 		exclude(group = "net.fabricmc")
 	}
 
-	implementation(include(project(path = ":common", configuration = "shadow"))!!)
+	api(include(project(path = ":common", configuration = "shadow"))!!)
 
 	val noxesiumVersion = "1.0.3"
 	modCompileOnly("maven.modrinth:noxesium:$noxesiumVersion")
