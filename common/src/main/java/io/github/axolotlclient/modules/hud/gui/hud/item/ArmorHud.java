@@ -29,7 +29,6 @@ import java.util.Locale;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import com.google.common.base.Suppliers;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
@@ -47,6 +46,7 @@ import io.github.axolotlclient.modules.hud.gui.layout.CardinalOrder;
 import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.util.ClientColors;
+import io.github.axolotlclient.util.CommonUtil;
 import io.github.axolotlclient.util.ItemUtil;
 
 /**
@@ -58,8 +58,8 @@ import io.github.axolotlclient.util.ItemUtil;
 public class ArmorHud extends TextHudEntry {
 
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "armorhud");
-	private static final Supplier<AxoItemStack> PLACEHOLDER_MAIN_HAND = Suppliers.memoize(() -> AxoItemStack.of(AxoItems.IRON_SWORD));
-	private static final Supplier<List<AxoItemStack>> PLACEHOLDER_GEAR = Suppliers.memoize(() -> List.of(
+	private static final Supplier<AxoItemStack> PLACEHOLDER_MAIN_HAND = CommonUtil.memoize(() -> AxoItemStack.of(AxoItems.IRON_SWORD));
+	private static final Supplier<List<AxoItemStack>> PLACEHOLDER_GEAR = CommonUtil.memoize(() -> List.of(
 		AxoItemStack.of(AxoItems.IRON_BOOTS),
 		AxoItemStack.of(AxoItems.IRON_LEGGINGS),
 		AxoItemStack.of(AxoItems.IRON_CHESTPLATE),
@@ -170,13 +170,13 @@ public class ArmorHud extends TextHudEntry {
 		if (order.isXAxis()) {
 			int labelWidth = (showDurability || showMaxDurability) ?
 				(mhPos == MainHandItemPosition.DISABLED ? armor.stream() : Stream.concat(Stream.of(mainHand), armor.stream()))
-					.mapToInt(stack -> {
-						String text = showDurability && showMaxDurability
-							? (stack.br$getMaxDamage() - stack.br$getDamage()) + "/" + stack.br$getMaxDamage()
-							: String.valueOf(showDurability ? stack.br$getMaxDamage() - stack.br$getDamage()
-							: stack.br$getMaxDamage());
-						return context.br$getFont().br$getWidth(text) + 2;
-					}).max().orElse(0) : 0;
+				.mapToInt(stack -> {
+					String text = showDurability && showMaxDurability
+						? (stack.br$getMaxDamage() - stack.br$getDamage()) + "/" + stack.br$getMaxDamage()
+						: String.valueOf(showDurability ? stack.br$getMaxDamage() - stack.br$getDamage()
+										 : stack.br$getMaxDamage());
+					return context.br$getFont().br$getWidth(text) + 2;
+				}).max().orElse(0) : 0;
 			width += labelWidth;
 			if (width != getContentWidth()) {
 				setContentWidth(width);
@@ -244,18 +244,18 @@ public class ArmorHud extends TextHudEntry {
 		} else {
 			int labelWidth = showDurability || showMaxDurability ?
 				(mhPos == MainHandItemPosition.DISABLED ? armor.stream() : Stream.concat(Stream.of(mainHand), armor.stream()))
-					.mapToInt(stack -> {
-						if (showDurability && showMaxDurability) {
-							var text1 = String.valueOf(stack.br$getMaxDamage() - stack.br$getDamage());
-							var text2 = "/" + stack.br$getMaxDamage();
-							int t1W = context.br$getFont().br$getWidth(text1);
-							int t2W = context.br$getFont().br$getWidth(text2);
-							return Math.max(t1W, t2W);
-						} else if (showDurability) {
-							return context.br$getFont().br$getWidth(String.valueOf(stack.br$getMaxDamage() - stack.br$getDamage()));
-						}
-						return context.br$getFont().br$getWidth(String.valueOf(stack.br$getMaxDamage()));
-					}).map(i -> i + 2).max().orElse(0) : 0;
+				.mapToInt(stack -> {
+					if (showDurability && showMaxDurability) {
+						var text1 = String.valueOf(stack.br$getMaxDamage() - stack.br$getDamage());
+						var text2 = "/" + stack.br$getMaxDamage();
+						int t1W = context.br$getFont().br$getWidth(text1);
+						int t2W = context.br$getFont().br$getWidth(text2);
+						return Math.max(t1W, t2W);
+					} else if (showDurability) {
+						return context.br$getFont().br$getWidth(String.valueOf(stack.br$getMaxDamage() - stack.br$getDamage()));
+					}
+					return context.br$getFont().br$getWidth(String.valueOf(stack.br$getMaxDamage()));
+				}).map(i -> i + 2).max().orElse(0) : 0;
 			{
 				int n = width;
 				width = height - 6;

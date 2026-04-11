@@ -27,7 +27,6 @@ import java.util.Objects;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import com.google.common.base.Suppliers;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.bridge.BridgeVersion;
@@ -40,6 +39,7 @@ import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
+import io.github.axolotlclient.util.CommonUtil;
 import io.github.axolotlclient.util.ItemUtil;
 
 /**
@@ -57,7 +57,7 @@ public class ArrowHud extends TextHudEntry {
 		AxoItems.TIPPED_ARROW,
 		AxoItems.SPECTRAL_ARROW
 	).filter(Objects::nonNull).toList();
-	private static final Supplier<AxoItemStack> DUMMY = Suppliers.memoize(() -> AxoItemStack.of(AxoItems.ARROW, 1));
+	private static final Supplier<AxoItemStack> DUMMY = CommonUtil.memoize(() -> AxoItemStack.of(AxoItems.ARROW, 1));
 
 	private final BooleanOption dynamic = new BooleanOption("dynamic", false);
 	private final BooleanOption allArrowTypes = new BooleanOption("allArrowTypes", false);
@@ -107,7 +107,7 @@ public class ArrowHud extends TextHudEntry {
 		if (BridgeVersion.V26_1.isCurrent()) {
 			if (client.br$getWorld() == null) {
 				var pos = getContentPos();
-				graphics.br$drawCenteredString(getName(), pos.x() + getContentWidth()/2, pos.y() + getContentHeight()/2, textColor.get());
+				graphics.br$drawCenteredString(getName(), pos.x() + getContentWidth() / 2, pos.y() + getContentHeight() / 2, textColor.get());
 				return;
 			}
 		}

@@ -28,7 +28,6 @@ import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import com.google.common.base.Suppliers;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
@@ -44,10 +43,11 @@ import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable
 import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DefaultOptions;
+import io.github.axolotlclient.util.CommonUtil;
 
 public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable {
 	public static final AxoIdentifier ID = AxoIdentifier.of(AxolotlClientCommon.MODID, "inventoryhud");
-	private static final Supplier<List<AxoItemStack>> PLACEHOLDER = Suppliers.memoize(() -> Stream.of(
+	private static final Supplier<List<AxoItemStack>> PLACEHOLDER = CommonUtil.memoize(() -> Stream.of(
 		IntStream.range(0, 9).mapToObj(x -> AxoItemStack.of(AxoItems.STONE)),
 		IntStream.range(0, 9).mapToObj(x -> (AxoItemStack) null),
 		Stream.of(
@@ -112,7 +112,7 @@ public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable
 		if (BridgeVersion.V26_1.isCurrent()) {
 			if (client.br$getWorld() == null) {
 				var pos = getContentPos();
-				graphics.br$drawCenteredString(getName(), pos.x() + getContentWidth()/2, pos.y() + getContentHeight()/2, -1);
+				graphics.br$drawCenteredString(getName(), pos.x() + getContentWidth() / 2, pos.y() + getContentHeight() / 2, -1);
 				return;
 			}
 		}
