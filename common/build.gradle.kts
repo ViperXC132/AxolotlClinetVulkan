@@ -30,14 +30,14 @@ dependencies {
 	compileOnly("org.lwjgl:lwjgl-tinyfd:3.3.2")
 	compileOnly("org.lwjgl:lwjgl-sdl:3.4.1")
 
-	shadow(compileOnly("io.github.cdagaming:DiscordIPC:0.11.3") {
+	shadow(implementation("io.github.cdagaming:DiscordIPC:0.11.3") {
 		isTransitive = false
 	})
-	shadow(compileOnly("com.kohlschutter.junixsocket:junixsocket-common:2.10.1")!!)
-	shadow(compileOnly("com.kohlschutter.junixsocket:junixsocket-native-common:2.10.1")!!)
+	shadow(runtimeOnly(compileOnly("com.kohlschutter.junixsocket:junixsocket-common:2.10.1")!!)!!)
+	shadow(runtimeOnly(compileOnly("com.kohlschutter.junixsocket:junixsocket-native-common:2.10.1")!!)!!)
 
-	shadow(compileOnly("com.github.mizosoft.methanol:methanol:1.9.0")!!)
-	shadow(compileOnly("io.nayuki:qrcodegen:1.8.0")!!)
+	shadow(runtimeOnly(compileOnly("com.github.mizosoft.methanol:methanol:1.9.0")!!)!!)
+	shadow(runtimeOnly(compileOnly("io.nayuki:qrcodegen:1.8.0")!!)!!)
 
 	compileOnly("net.hypixel:mod-api:1.0.1")
 	compileOnly("com.mojang:brigadier:1.0.18")

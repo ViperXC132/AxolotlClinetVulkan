@@ -47,7 +47,9 @@ import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.entity.vehicle.RideableMinecartEntity;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -57,6 +59,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GameGui.class)
 public abstract class InGameHudMixin {
 
+	@Shadow
+	private String subtitle;
+	@Shadow
+	private String title;
 	@Unique
 	private static final Entity axolotlclient$noHungerEntityTM = new RideableMinecartEntity(null);
 
@@ -217,12 +223,15 @@ public abstract class InGameHudMixin {
 	}
 
 	@Unique
-	private float titleScale, subtitleScale;
+	private float titleScale = -1, subtitleScale = -1;
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;scalef(FFF)V", ordinal = 0))
 	private void scaleTitle(float f, CallbackInfo ci) {
 		if (!AxolotlClient.config().scaleTitles.get()) {
 			return;
+		}
+		if (titleScale == -1) {
+			calculateTitleScale(Minecraft.getInstance(), title, Util.getWindow().getWidth() - AxolotlClient.config().titlePadding.get() * 8);
 		}
 		GlStateManager.scalef(titleScale, titleScale, 1);
 	}
@@ -231,6 +240,9 @@ public abstract class InGameHudMixin {
 	private void scaleSubtitle(float f, CallbackInfo ci) {
 		if (!AxolotlClient.config().scaleTitles.get()) {
 			return;
+		}
+		if (subtitleScale == -1) {
+			calculateSubtitleScale(Minecraft.getInstance(), subtitle, Util.getWindow().getWidth() - AxolotlClient.config().titlePadding.get() * 8);
 		}
 		GlStateManager.scalef(subtitleScale, subtitleScale, 1);
 	}
@@ -243,19 +255,31 @@ public abstract class InGameHudMixin {
 		var client = Minecraft.getInstance();
 		int padding = AxolotlClient.config().titlePadding.get();
 		int windowWidth = Util.getWindow().getWidth() - padding * 8;
-		{
-			int width = client.textRenderer.getWidth(string) * 4; // default scale for titles
-			if (width > windowWidth) {
-				float scale = (float) width / windowWidth;
-				titleScale = 1 / scale;
-			}
+		calculateTitleScale(client, string, windowWidth);
+		calculateSubtitleScale(client, string2, windowWidth);
+	}
+
+	@Inject(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/GameGui;title:Ljava/lang/String;", opcode = Opcodes.PUTFIELD))
+	private void resetTitleScales(CallbackInfo ci) {
+		titleScale = -1;
+		subtitleScale = -1;
+	}
+
+	@Unique
+	private void calculateTitleScale(Minecraft client, String string, int windowWidth) {
+		int width = client.textRenderer.getWidth(string) * 4; // default scale for titles
+		if (width > windowWidth) {
+			float scale = (float) width / windowWidth;
+			titleScale = 1 / scale;
 		}
-		{
-			int width = client.textRenderer.getWidth(string2) * 2; // default scale for subtitles
-			if (width > windowWidth) {
-				float scale = (float) width / windowWidth;
-				subtitleScale = 1 / scale;
-			}
+	}
+
+	@Unique
+	private void calculateSubtitleScale(Minecraft client, String string2, int windowWidth) {
+		int width = client.textRenderer.getWidth(string2) * 2; // default scale for subtitles
+		if (width > windowWidth) {
+			float scale = (float) width / windowWidth;
+			subtitleScale = 1 / scale;
 		}
 	}
 

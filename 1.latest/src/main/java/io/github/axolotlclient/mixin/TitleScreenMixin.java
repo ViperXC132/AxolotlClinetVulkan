@@ -39,6 +39,7 @@ import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.auth.AuthWidget;
 import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.modules.zoom.Zoom;
+import io.github.axolotlclient.util.ThreadExecuter;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.components.Button;
@@ -96,7 +97,7 @@ public abstract class TitleScreenMixin extends Screen {
 			}
 		}
 
-		GlobalDataRequest.get().thenAccept(data -> {
+		ThreadExecuter.scheduleTask(() -> GlobalDataRequest.get().thenAccept(data -> {
 			int buttonY = 10;
 			if (APIOptions.getInstance().updateNotifications.get() &&
 				data.success() &&
@@ -112,7 +113,7 @@ public abstract class TitleScreenMixin extends Screen {
 						minecraft.setScreen(new NewsScreen(this)))
 					.bounds(width - 90, buttonY, 80, 20).build());
 			}
-		});
+		}));
 	}
 
 	@Inject(method = "realmsNotificationsEnabled", at = @At("HEAD"), cancellable = true)

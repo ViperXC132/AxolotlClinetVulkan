@@ -424,7 +424,7 @@ public class API {
 			switch (apiOptions.privacyAccepted.get()) {
 				case UNSET -> {
 					return apiOptions.openPrivacyNoteScreen.get().thenCompose(v ->
-						v ? startupAPI() : CompletableFuture.failedStage(new UnsupportedOperationException("Terms not accepter")));
+						v ? startupAPI() : CompletableFuture.failedStage(new UnsupportedOperationException("Terms not accepted")));
 				}
 				case ACCEPTED -> {
 					return startupAPI();

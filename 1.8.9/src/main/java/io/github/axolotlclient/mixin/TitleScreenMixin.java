@@ -45,6 +45,7 @@ import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.auth.AuthWidget;
 import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.util.OSUtil;
+import io.github.axolotlclient.util.ThreadExecuter;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.ConfirmChatLinkScreen;
@@ -94,7 +95,7 @@ public abstract class TitleScreenMixin extends Screen {
 				API.addStartupListener(() -> minecraft.executeTask(addApiButtons), API.ListenerType.ONCE);
 			}
 		}
-		GlobalDataRequest.get().thenAccept(data -> {
+		ThreadExecuter.scheduleTask(() -> GlobalDataRequest.get().thenAccept(data -> {
 			int buttonY = 10;
 			if (APIOptions.getInstance().updateNotifications.get() &&
 				data.success() &&
@@ -111,7 +112,7 @@ public abstract class TitleScreenMixin extends Screen {
 				this.buttons.add(notes);
 				buttons.add(notes);
 			}
-		});
+		}));
 
 		if (FabricLoader.getInstance().isModLoaded("modmenu")) {
 			try {
