@@ -233,7 +233,9 @@ public abstract class InGameHudMixin {
 		if (titleScale == -1) {
 			calculateTitleScale(Minecraft.getInstance(), title, Util.getWindow().getWidth() - AxolotlClient.config().titlePadding.get() * 8);
 		}
-		GlStateManager.scalef(titleScale, titleScale, 1);
+		if (titleScale != -1) {
+			GlStateManager.scalef(titleScale, titleScale, 1);
+		}
 	}
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;scalef(FFF)V", ordinal = 1))
@@ -244,7 +246,9 @@ public abstract class InGameHudMixin {
 		if (subtitleScale == -1) {
 			calculateSubtitleScale(Minecraft.getInstance(), subtitle, Util.getWindow().getWidth() - AxolotlClient.config().titlePadding.get() * 8);
 		}
-		GlStateManager.scalef(subtitleScale, subtitleScale, 1);
+		if (subtitleScale != -1) {
+			GlStateManager.scalef(subtitleScale, subtitleScale, 1);
+		}
 	}
 
 	@Inject(method = "setTitles", at = @At("HEAD"))

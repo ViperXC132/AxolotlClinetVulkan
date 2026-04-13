@@ -6,10 +6,9 @@ plugins {
 	id("com.modrinth.minotaur") version "2.+" apply false
 	id("com.gradleup.shadow") version "9.3.1" apply false
 	id("dev.yumi.gradle.licenser") version "2.0.+"
-	id("io.github.p03w.machete") version "2.+" apply false
-	id("net.fabricmc.fabric-loom-remap") version "1.15.+" apply false
-	id("net.fabricmc.fabric-loom") version "1.15.+" apply false
-	id("ploceus") version "1.15.+" apply false
+	id("net.fabricmc.fabric-loom-remap") version "1.16.+" apply false
+	id("net.fabricmc.fabric-loom") version "1.16.+" apply false
+	id("ploceus") version "1.16.+" apply false
 }
 
 version = "${project.version}"
@@ -113,6 +112,17 @@ subprojects {
 				if (file.name.contains(project.version.toString())) {
 					file.toPath().copyTo(outDir.resolve(file.name.toString()), overwrite = true)
 				}
+			}
+		}
+	}
+
+	tasks.register("publishUnstable") {
+		if (project.version.toString().contains("beta") || project.version.toString()
+				.contains("alpha")) {
+			dependsOn("publishToMavenLocal")
+		} else {
+			actions.add {
+				println("Project doesn't use an -alpha or -beta version, not publishing unstable.")
 			}
 		}
 	}

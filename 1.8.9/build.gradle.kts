@@ -1,7 +1,6 @@
 plugins {
 	id("net.fabricmc.fabric-loom-remap")
 	id("ploceus")
-	id("io.github.p03w.machete")
 }
 
 val minecraftVersion = "1.8.9"
@@ -24,6 +23,7 @@ loom {
 			sourceSet("test")
 		}
 	}
+	uncompressNestedJars = true
 }
 
 ploceus {
@@ -132,7 +132,7 @@ publishing {
 }
 
 tasks.modrinth {
-	dependsOn(tasks.getByName("optimizeOutputsOfRemapJar"))
+	dependsOn(tasks.getByName("remapJar"))
 }
 
 modrinth {

@@ -1,13 +1,10 @@
-name: Release
+name: Publish Unstable Version
 on:
-  push:
-    tags:
-      - "*"
   workflow_dispatch:
 
 jobs:
   release:
-    name: "Tagged Release"
+    name: "Publish Unstable Version"
     runs-on: docker
     container:
       image: ghcr.io/catthehacker/ubuntu:act-24.04
@@ -31,20 +28,5 @@ jobs:
       - name: Build
         run: ./gradlew build collectBuilds --stacktrace
 
-      - name: Generate Version Changelog
-        run: ./gradlew generateVersionChangelog
-
-      - name: Create Release
-        uses: https://code.forgejo.org/crueter/forgejo-release@05d41bd91513e4e02b6f6b7167706c31373ffbd6
-        with:
-            direction: upload
-            release-dir: builds/
-            release-notes-file: build/changelog
-
-      - name: Publish to Modrinth
-        run: ./gradlew modrinth
-        env:
-            MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
-
       - name: Publish to Maven
-        run: ./gradlew publish -PowlMavenPassword=${{ secrets.MAVEN_PASSWORD }} -PowlMavenUsername=${{ secrets.MAVEN_USERNAME }}
+        run: ./gradlew publishUnstable -PowlMavenPassword=${{ secrets.MAVEN_PASSWORD }} -PowlMavenUsername=${{ secrets.MAVEN_USERNAME }}

@@ -1,6 +1,5 @@
 plugins {
 	id("net.fabricmc.fabric-loom-remap")
-	id("io.github.p03w.machete")
 }
 
 val minecraftVersion = "1.21.1"
@@ -20,6 +19,7 @@ loom {
 			sourceSet("test")
 		}
 	}
+	uncompressNestedJars = true
 }
 
 dependencies {
@@ -107,7 +107,7 @@ publishing {
 }
 
 tasks.modrinth {
-	dependsOn(tasks.getByName("optimizeOutputsOfRemapJar"))
+	dependsOn(tasks.getByName("remapJar"))
 }
 
 modrinth {

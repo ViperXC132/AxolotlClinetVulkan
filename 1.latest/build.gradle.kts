@@ -2,7 +2,6 @@
 
 plugins {
 	id("net.fabricmc.fabric-loom")
-	id("io.github.p03w.machete")
 }
 
 val minecraft = "26.1.2"
@@ -108,7 +107,7 @@ publishing {
 }
 
 tasks.modrinth {
-	dependsOn(tasks.getByName("optimizeOutputsOfJar"))
+	dependsOn(tasks.getByName("jar"))
 }
 
 modrinth {
