@@ -27,15 +27,15 @@ import java.util.List;
 import io.github.axolotlclient.AxolotlClientCommon;
 import lombok.Getter;
 import net.ornithemc.osl.core.api.util.NamespacedIdentifier;
-import net.ornithemc.osl.core.api.util.NamespacedIdentifiers;
 import net.ornithemc.osl.networking.api.ChannelRegistry;
+import net.ornithemc.osl.networking.api.StringChannelIdentifierParser;
 import net.ornithemc.osl.networking.api.client.ClientPlayNetworking;
 
 public class FeatureDisabler extends FeatureDisablerCommon {
 	@Getter
 	private static final FeatureDisablerCommon instance = new FeatureDisabler();
 
-	private static final NamespacedIdentifier CHANNEL_NAME = NamespacedIdentifiers.from(AxolotlClientCommon.MODID, "block_mods");
+	private static final NamespacedIdentifier CHANNEL_NAME = StringChannelIdentifierParser.fromString("AXO|block_mods");
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -45,6 +45,7 @@ public class FeatureDisabler extends FeatureDisablerCommon {
 			List<String> array = (List<String>) GsonHelper.read(buf.readString(32767));
 			for (String element : array) {
 				try {
+
 					FEATURES.get(element).setForceOff(true, "ban_reason");
 				} catch (Exception e) {
 					AxolotlClientCommon.getInstance().getLogger().error("Failed to disable " + element + "!");
