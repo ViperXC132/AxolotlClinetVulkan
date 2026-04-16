@@ -46,6 +46,7 @@ import io.github.axolotlclient.util.options.GenericOption;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
+import org.lwjgl.opengl.Display;
 
 public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 	public final BooleanOption customSky = new BooleanOption("customSky", false);
@@ -140,5 +141,14 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 
 		general.add(new GenericOption("profiles.title", "profiles.configure", () ->
 			Minecraft.getInstance().openScreen(new ProfilesScreen(Minecraft.getInstance().screen))), false);
+	}
+
+	@Override
+	protected void updateWindowTitle(boolean useCustom) {
+		if (useCustom) {
+			Display.setTitle("AxolotlClient "+Minecraft.getInstance().getGameVersion());
+		} else {
+			Display.setTitle("Minecraft "+Minecraft.getInstance().getGameVersion());
+		}
 	}
 }

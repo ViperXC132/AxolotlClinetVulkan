@@ -25,8 +25,6 @@ package io.github.axolotlclient.mixin;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.scrollableTooltips.ScrollableTooltips;
 import io.github.axolotlclient.modules.zoom.Zoom;
-import io.github.axolotlclient.util.events.Events;
-import io.github.axolotlclient.util.events.impl.MouseInputEvent;
 import net.minecraft.client.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -36,13 +34,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Mouse.class)
 public abstract class MouseMixin {
-
-	@Inject(method = "onMouseButton", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/KeyBind;setKeyPressed(Lcom/mojang/blaze3d/platform/InputUtil$Key;Z)V"))
-	private void axolotlclient$onMouseButton(long window, int button, int action, int mods, CallbackInfo ci) {
-		if (action == 1) {
-			Events.MOUSE_INPUT.invoker().invoke(new MouseInputEvent(window, button, action, mods));
-		}
-	}
 
 	@Inject(method = "onMouseScroll", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;mouseScrolled(DDDD)Z"))
 	private void axolotlclient$scrollTooltips(long window, double scrollDeltaX, double scrollDeltaY, CallbackInfo ci) {

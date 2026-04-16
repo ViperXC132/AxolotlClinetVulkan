@@ -168,6 +168,7 @@ public abstract class AxolotlClientCommon {
 			});
 
 		AxolotlClientConfig.getInstance().register(configManager);
+		configManager.load();
 
 		configManager.suppressName("x");
 		configManager.suppressName("y");

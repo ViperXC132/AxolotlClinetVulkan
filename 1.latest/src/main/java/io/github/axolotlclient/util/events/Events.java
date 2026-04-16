@@ -27,12 +27,10 @@ import java.util.Arrays;
 import io.github.axolotlclient.util.events.impl.KeyBindChangeEvent;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.client.Minecraft;
 
 public class Events {
 
 	public static final Event<EventCallback<KeyBindChangeEvent>> KEYBIND_CHANGE = createEvent();
-	public static final Event<EventCallback<Minecraft>> GAME_LOAD_EVENT = createEvent();
 
 	private static <T> Event<EventCallback<T>> createEvent() {
 		return EventFactory.createArrayBacked(EventCallback.class, listeners -> (event) ->

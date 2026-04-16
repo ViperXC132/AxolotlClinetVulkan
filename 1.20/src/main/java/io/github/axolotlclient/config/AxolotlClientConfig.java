@@ -132,4 +132,9 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 		general.add(new GenericOption("profiles.title", "profiles.configure", () ->
 			MinecraftClient.getInstance().setScreen(new ProfilesScreen(MinecraftClient.getInstance().currentScreen))), false);
 	}
+
+	@Override
+	protected void updateWindowTitle(boolean useCustom) {
+		MinecraftClient.getInstance().updateWindowTitle();
+	}
 }

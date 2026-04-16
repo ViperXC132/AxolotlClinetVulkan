@@ -67,7 +67,7 @@ public abstract class AxolotlClientConfigCommon {
 
 		@Override
 		public String toString() {
-			return "tab_badge_mode."+super.toString().toLowerCase(Locale.ROOT);
+			return "tab_badge_mode." + super.toString().toLowerCase(Locale.ROOT);
 		}
 	}
 
@@ -97,7 +97,7 @@ public abstract class AxolotlClientConfigCommon {
 	public final BooleanOption enableCustomOutlines = new BooleanOption("enabled", false);
 	public final ColorOption outlineColor = new ColorOption("color", Color.parse("#DD000000"));
 
-	public final BooleanOption customWindowTitle = new BooleanOption("customWindowTitle", true);
+	public final BooleanOption customWindowTitle = new BooleanOption("customWindowTitle", true, this::updateWindowTitle);
 
 	public final OptionCategory general = OptionCategory.create("general");
 	public final OptionCategory nametagOptions = OptionCategory.create("nametagOptions");
@@ -195,4 +195,6 @@ public abstract class AxolotlClientConfigCommon {
 	public final OptionCategory getConfig() {
 		return config;
 	}
+
+	protected abstract void updateWindowTitle(boolean useCustom);
 }
