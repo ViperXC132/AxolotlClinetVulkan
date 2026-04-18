@@ -32,6 +32,8 @@ import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
@@ -52,10 +54,13 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.Scoreboard;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -271,40 +276,69 @@ public abstract class PlayerListHudMixin {
 		ci.cancel();
 	}
 
-	@WrapOperation(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;fill(IIIII)V"), slice = @Slice(to = @At(value = "INVOKE", target = "Lnet/minecraft/client/Options;getBackgroundColor(I)I")))
-	private void modifyBackground(GuiGraphicsExtractor instance, int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
+	@WrapOperation(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;split(Lnet/minecraft/network/chat/FormattedText;I)Ljava/util/List;", ordinal = 1))
+	private List<FormattedCharSequence> captureFooterLines(Font instance, FormattedText input, int maxWidth, Operation<List<FormattedCharSequence>> original, @Share("footerLines") LocalRef<List<FormattedCharSequence>> footerLines) {
+		var lines = original.call(instance, input, maxWidth);
+		footerLines.set(lines);
+		return lines;
+	}
+
+	@Definition(id = "headerLines", local = @Local(type = List.class, name = "headerLines"))
+	@Expression("headerLines != null")
+	@Inject(method = "extractRenderState", at = @At(value = "MIXINEXTRAS:EXPRESSION", ordinal = 0))
+	private void renderBackgroundWithOptions(GuiGraphicsExtractor g, int screenWidth, Scoreboard scoreboard, Objective displayObjective, CallbackInfo ci, @Local(name = "maxLineWidth") int maxLineWidth, @Local(name = "yyo") int q, @Local(name = "headerLines") List<FormattedCharSequence> headerLines, @Share("footerLines") LocalRef<List<FormattedCharSequence>> footerLines, @Local(name = "rows") int rows) {
 		var tablist = (PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID);
-		if (tablist.backgroundDisabled()) {
+		if (!tablist.isEnabled() || tablist.backgroundDisabled()) {
 			return;
 		}
-		if (!tablist.isEnabled()) {
-			original.call(instance, x1, y1, x2, y2, color);
-			return;
-		}
+		var x = screenWidth / 2 - maxLineWidth / 2 - 1;
+		var y = q - 1;
+		var x2 = screenWidth / 2 + maxLineWidth / 2 + 1;
+		var headerLineCount = headerLines != null ? headerLines.size() : 0;
+		var footerLineCount = footerLines.get() != null ? footerLines.get().size() : 0;
+		var y2 = q + (headerLineCount + rows + footerLineCount) * g.br$getFont().br$getFontHeight() + (footerLineCount > 0 ? 1 : 0) + (headerLineCount > 0 ? 1 : 0);
 		int padding = tablist.getBackgroundPadding();
-		x1 -= padding;
+		x -= padding;
 		x2 += padding;
-		y1 -= padding;
+		y -= padding;
 		y2 += padding;
-		int width = x2 - x1;
-		int height = y2 - y1;
-		if (tablist.hasRoundBackground()) {
-			instance.br$fillRectRound(x1, y1, width, height, tablist.customBackgroundColor.get() ? tablist.getBackgroundColor().toInt() : color,
-				Math.min(Math.min(height, width) / 2f, tablist.getBackgroundRounding()));
-		} else {
-			original.call(instance, x1, y1, x2, y2, tablist.customBackgroundColor.get() ? tablist.getBackgroundColor().toInt() : color);
+		if (y < 0) {
+			y2 -= y;
+			y = 0;
 		}
-		if (tablist.hasOutline()) {
-			if (tablist.hasRoundBackground()) {
-				instance.br$outlineRectRound(x1, y1, width, height, tablist.getOutlineColor(), Math.min(Math.min(height, width) / 2f, tablist.getBackgroundRounding()));
-			} else {
-				instance.br$outlineRect(x1, y1, width, height, tablist.getOutlineColor());
+		if (tablist.hasRoundBackground()) {
+			var rounding = Math.min(tablist.getBackgroundRounding(), Math.min(x2 - x, y2 - y) / 2f);
+			g.br$fillRectRound(x, y, x2 - x, y2 - y,
+				tablist.customBackgroundColor.get() ? tablist.getBackgroundColor().toInt() : Integer.MIN_VALUE,
+				rounding);
+
+			if (tablist.hasOutline()) {
+				g.br$outlineRectRound(x, y, x2 - x, y2 - y, tablist.getOutlineColor(), rounding);
+			}
+		} else {
+			g.br$fillRect(x, y, x2 - x, y2 - y,
+				tablist.customBackgroundColor.get() ? tablist.getBackgroundColor().toInt() : Integer.MIN_VALUE);
+			if (tablist.hasOutline()) {
+				g.br$outlineRect(x, y, x2 - x, y2 - y, tablist.getOutlineColor());
 			}
 		}
 	}
 
-	@WrapOperation(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;fill(IIIII)V"), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/PlayerTabOverlay;extractPingIcon(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIILnet/minecraft/client/multiplayer/PlayerInfo;)V")))
-	private void modifyBackground$2(GuiGraphicsExtractor instance, int x0, int y0, int x1, int y1, int col, Operation<Void> original) {
-		modifyBackground(instance, x0, y0, x1, y1, col, original);
+	@Unique
+	private void applyBackgroundOptions(GuiGraphicsExtractor instance, int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
+		var tablist = (PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID);
+		if (!tablist.isEnabled()) {
+			original.call(instance, x1, y1, x2, y2, color);
+		}
+	}
+
+	@WrapOperation(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;fill(IIIII)V"), slice = @Slice(to = @At(value = "CONSTANT", args = "intValue=553648127")))
+	private void modifyBackground$headerAndMain(GuiGraphicsExtractor instance, int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
+		applyBackgroundOptions(instance, x1, y1, x2, y2, color, original);
+	}
+
+ 	@WrapOperation(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;fill(IIIII)V"), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/PlayerTabOverlay;extractPingIcon(Lnet/minecraft/client/gui/GuiGraphicsExtractor;IIILnet/minecraft/client/multiplayer/PlayerInfo;)V")))
+	private void modifyBackground$footer(GuiGraphicsExtractor instance, int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
+		applyBackgroundOptions(instance, x1, y1, x2, y2, color, original);
 	}
 }

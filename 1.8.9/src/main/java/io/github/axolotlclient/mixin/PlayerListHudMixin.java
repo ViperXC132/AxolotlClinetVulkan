@@ -31,6 +31,8 @@ import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.mojang.authlib.GameProfile;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
@@ -50,6 +52,7 @@ import net.minecraft.client.network.PlayerInfo;
 import net.minecraft.client.render.TextRenderer;
 import net.minecraft.network.Connection;
 import net.minecraft.resource.Identifier;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
@@ -277,41 +280,70 @@ public abstract class PlayerListHudMixin extends GuiElement {
 		ci.cancel();
 	}
 
-	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;fill(IIIII)V"), slice = @Slice(to = @At(value = "CONSTANT", args = "intValue=553648127")))
-	private void modifyBackground(int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/TextRenderer;split(Ljava/lang/String;I)Ljava/util/List;", ordinal = 1))
+	private List<String> captureFooterLines(TextRenderer instance, String text, int width, Operation<List<String>> original, @Share("footerLines") LocalRef<List<String>> footerLines) {
+		var lines = original.call(instance, text, width);
+		footerLines.set(lines);
+		return lines;
+	}
+
+	@Definition(id = "list2", local = @Local(type = List.class, ordinal = 1))
+	@Expression("list2 != null")
+	@Inject(method = "render", at = @At(value = "MIXINEXTRAS:EXPRESSION", ordinal = 0))
+	private void renderBackgroundWithOptions(int width, Scoreboard scoreboard, ScoreboardObjective displayObjective, CallbackInfo ci, @Local(ordinal = 10) int r, @Local(ordinal = 9) int q, @Local(ordinal = 1) List<String> headerLines, @Share("footerLines") LocalRef<List<String>> footerLines, @Local(ordinal = 4) int m) {
 		var tablist = (PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID);
-		if (tablist.backgroundDisabled()) {
+		if (!tablist.isEnabled() || tablist.backgroundDisabled()) {
 			return;
 		}
-		if (!tablist.isEnabled()) {
-			original.call(x1, y1, x2, y2, color);
-			return;
-		}
-		int width = x2 - x1;
-		int height = y2 - y1;
+		var g = AxoRenderContextImpl.getInstance();
+		var x = width / 2 - r / 2 - 1;
+		var y = q - 1;
+		var x2 = width / 2 + r / 2 + 1;
+		var headerLineCount = headerLines != null ? headerLines.size() : 0;
+		var footerLineCount = footerLines.get() != null ? footerLines.get().size() : 0;
+		var y2 = q + (headerLineCount + m + footerLineCount) * g.br$getFont().br$getFontHeight() + (footerLineCount > 0 ? 1 : 0) + (headerLineCount > 0 ? 1 : 0);
 		int padding = tablist.getBackgroundPadding();
-		x1 -= padding;
+		x -= padding;
 		x2 += padding;
-		y1 -= padding;
+		y -= padding;
 		y2 += padding;
-		var instance = AxoRenderContextImpl.getInstance();
-		if (tablist.hasRoundBackground()) {
-			instance.br$fillRectRound(x1, y1, width, height, tablist.customBackgroundColor.get() ? tablist.getBackgroundColor().toInt() : color,
-				Math.min(Math.min(height, width) / 2f, tablist.getBackgroundRounding()));
-		} else {
-			original.call(x1, y1, x2, y2, tablist.customBackgroundColor.get() ? tablist.getBackgroundColor().toInt() : color);
+		if (y < 0) {
+			y2 -= y;
+			y = 0;
 		}
-		if (tablist.hasOutline()) {
-			if (tablist.hasRoundBackground()) {
-				instance.br$outlineRectRound(x1, y1, width, height, tablist.getOutlineColor(), Math.min(Math.min(height, width) / 2f, tablist.getBackgroundRounding()));
-			} else {
-				instance.br$outlineRect(x1, y1, width, height, tablist.getOutlineColor());
+		if (tablist.hasRoundBackground()) {
+			var rounding = Math.min(tablist.getBackgroundRounding(), Math.min(x2 - x, y2 - y) / 2f);
+			g.br$fillRectRound(x, y, x2 - x, y2 - y,
+				tablist.customBackgroundColor.get() ? tablist.getBackgroundColor().toInt() : Integer.MIN_VALUE,
+				rounding);
+
+			if (tablist.hasOutline()) {
+				g.br$outlineRectRound(x, y, x2 - x, y2 - y, tablist.getOutlineColor(), rounding);
+			}
+		} else {
+			g.br$fillRect(x, y, x2 - x, y2 - y,
+				tablist.customBackgroundColor.get() ? tablist.getBackgroundColor().toInt() : Integer.MIN_VALUE);
+			if (tablist.hasOutline()) {
+				g.br$outlineRect(x, y, x2 - x, y2 - y, tablist.getOutlineColor());
 			}
 		}
 	}
 
+	@Unique
+	private void applyBackgroundOptions(int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
+		var tablist = (PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID);
+		if (!tablist.isEnabled()) {
+			original.call(x1, y1, x2, y2, color);
+		}
+	}
+
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;fill(IIIII)V"), slice = @Slice(to = @At(value = "CONSTANT", args = "intValue=553648127")))
+	private void modifyBackground$headerAndMain(int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
+		applyBackgroundOptions(x1, y1, x2, y2, color, original);
+	}
+
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;fill(IIIII)V"), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;renderPing(IIILnet/minecraft/client/network/PlayerInfo;)V")))
-	private void modifyBackground$2(int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
-		modifyBackground(x1, y1, x2, y2, color, original);
+	private void modifyBackground$footer(int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
+		applyBackgroundOptions(x1, y1, x2, y2, color, original);
 	}
 }
