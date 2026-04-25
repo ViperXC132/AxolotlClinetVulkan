@@ -29,7 +29,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.modules.auth.Auth;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.LoadingOverlay;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -39,7 +39,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(value = LoadingOverlay.class)
 public abstract class SplashOverlayMixin {
 
-	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Ljava/util/function/IntSupplier;getAsInt()I"))
+	@WrapOperation(method = "extractRenderState", at = @At(value = "INVOKE", target = "Ljava/util/function/IntSupplier;getAsInt()I"))
 	private static int axolotlclient$customBackgroundColor(IntSupplier instance, Operation<Integer> original) {
 		if (AxolotlClient.config().customLoadingScreenColor.get()) {
 			return AxolotlClient.config().loadingScreenColor.get().toInt();
@@ -47,9 +47,9 @@ public abstract class SplashOverlayMixin {
 		return original.call(instance);
 	}
 
-	@Inject(method = "render", at = @At(value = "INVOKE",
+	@Inject(method = "extractRenderState", at = @At(value = "INVOKE",
 		target = "Lnet/minecraft/client/Minecraft;setOverlay(Lnet/minecraft/client/gui/screens/Overlay;)V"))
-	private void onReloadFinish(GuiGraphics graphics, int mouseX, int mouseY, float delta, CallbackInfo ci) {
+	private void onReloadFinish(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta, CallbackInfo ci) {
 		if (!API.getInstance().isSocketConnected() && !Auth.getInstance().getCurrent().isOffline()) {
 			API.getInstance().startup(Auth.getInstance().getCurrent());
 		}

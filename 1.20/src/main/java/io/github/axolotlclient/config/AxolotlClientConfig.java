@@ -41,12 +41,10 @@ import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.config.screen.CreditsScreen;
 import io.github.axolotlclient.config.screen.ProfilesScreen;
 import io.github.axolotlclient.mixin.OverlayTextureAccessor;
-import io.github.axolotlclient.util.keybinds.KeyBinds;
 import io.github.axolotlclient.util.options.GenericOption;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.option.KeyBind;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 
 public class AxolotlClientConfig extends AxolotlClientConfigCommon {
@@ -133,8 +131,10 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 
 		general.add(new GenericOption("profiles.title", "profiles.configure", () ->
 			MinecraftClient.getInstance().setScreen(new ProfilesScreen(MinecraftClient.getInstance().currentScreen))), false);
+	}
 
-		var toggleFullbright = new KeyBind("toggle_fullbright", -1, "category.axolotlclient");
-		KeyBinds.getInstance().registerWithSimpleAction(toggleFullbright, fullBright::toggle);
+	@Override
+	protected void updateWindowTitle(boolean useCustom) {
+		MinecraftClient.getInstance().updateWindowTitle();
 	}
 }

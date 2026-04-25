@@ -31,10 +31,10 @@ import org.spongepowered.asm.mixin.Shadow;
 public abstract class ServerDataMixin implements AxoServerData {
 
 	@Shadow
-	public String address;
+	public String ip;
 
 	@Override
 	public String br$getIp() {
-		return address;
+		return ip;
 	}
 }

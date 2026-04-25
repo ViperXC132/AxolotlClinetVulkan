@@ -66,11 +66,12 @@ public class Rectangle {
 		return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
 	}
 
-	public void setData(int x, int y, int width, int height) {
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+	public boolean contains(int pX, int pY) {
+		return contains(x, y, width, height, pX, pY);
+	}
+
+	public static boolean contains(int x, int y, int width, int height, int pX, int pY) {
+		return pX >= x && pX <= x + width && pY >= y && pY <= y + height;
 	}
 
 	public Rectangle copy() {

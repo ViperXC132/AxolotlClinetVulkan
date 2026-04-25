@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.modules.hud.HudManager;
@@ -37,9 +35,10 @@ import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.util.ClientColors;
-import io.github.axolotlclient.util.WindowAccess;
+import io.github.axolotlclient.util.CursorTypes;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.resource.language.I18n;
 import org.lwjgl.input.Keyboard;
 
@@ -49,9 +48,6 @@ public class KeystrokePositioningScreen extends Screen {
 	private final KeystrokeHud hud;
 	private KeystrokeHud.Keystroke focused;
 	private final KeystrokeHud.Keystroke editing;
-	private final long MOVE_CURSOR = WindowAccess.getInstance().createCursor(WindowAccess.Cursor.RESIZE_ALL);
-	private final long DEFAULT_CURSOR = WindowAccess.getInstance().createCursor(WindowAccess.Cursor.ARROW);
-	private long currentCursor;
 
 	public KeystrokePositioningScreen(Screen parent, KeystrokeHud hud, KeystrokeHud.Keystroke focused) {
 		super();
@@ -71,6 +67,7 @@ public class KeystrokePositioningScreen extends Screen {
 	private DrawPosition offset = null;
 	private boolean mouseDown;
 	private SnappingHelper snap;
+	private int mouseX, mouseY;
 
 	@Override
 	protected void buttonClicked(ButtonWidget buttonWidget) {
@@ -80,7 +77,6 @@ public class KeystrokePositioningScreen extends Screen {
 			HudManager.getInstance().toggleSnapping();
 			buttonWidget.message = I18n.translate("hud.snapping") + ": " +
 				I18n.translate(HudManager.getInstance().isSnappingEnabled() ? "options.on" : "options.off");
-			AxolotlClient.getInstance().saveConfig();
 		}
 	}
 
@@ -123,17 +119,16 @@ public class KeystrokePositioningScreen extends Screen {
 				drawStroke(mouseX, mouseY, k);
 			}
 		}
-		setCursor(hovered.isPresent() ? MOVE_CURSOR : DEFAULT_CURSOR);
+		(hovered.isPresent() ? CursorTypes.RESIZE_ALL : CursorTypes.ARROW).select();
 		if (mouseDown && snap != null) {
 			snap.renderSnaps(AxoRenderContextImpl.getInstance());
 		}
-	}
-
-	private void setCursor(long cursor) {
-		if (cursor > 0 && cursor != currentCursor) {
-			currentCursor = cursor;
-			WindowAccess.getInstance().setCursor(cursor);
+		// bweh
+		if (mouseDown && (this.mouseX != mouseX || this.mouseY != mouseY)) {
+			handleDrag(mouseX, mouseY);
 		}
+		this.mouseX = mouseX;
+		this.mouseY = mouseY;
 	}
 
 	private void drawStroke(int mouseX, int mouseY, KeystrokeHud.Keystroke s) {
@@ -217,8 +212,7 @@ public class KeystrokePositioningScreen extends Screen {
 		super.mouseReleased(mouseX, mouseY, button);
 	}
 
-	@Override
-	public void mouseDragged(int mouseX, int mouseY, int button, long mouseLastClicked) {
+	private void handleDrag(int mouseX, int mouseY) {
 		if (focused != null && mouseDown) {
 			focused.setX(Math.round((mouseX - offset.x()) / hud.getScale()));
 			focused.setY(Math.round((mouseY - offset.y()) / hud.getScale()));
@@ -254,7 +248,6 @@ public class KeystrokePositioningScreen extends Screen {
 
 	@Override
 	public void removed() {
-		setCursor(DEFAULT_CURSOR);
-		WindowAccess.getInstance().destroyStandardCursor(MOVE_CURSOR, DEFAULT_CURSOR);
+		CursorTypes.ARROW.select();
 	}
 }

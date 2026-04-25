@@ -26,19 +26,25 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import com.llamalad7.mixinextras.expression.Definition;
+import com.llamalad7.mixinextras.expression.Expression;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
+import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.requests.UserRequest;
+import io.github.axolotlclient.modules.hud.HudManagerCommon;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.PlayerTabOverlayHud;
 import io.github.axolotlclient.modules.hypixel.NickHider;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsGame;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsPlayer;
-import io.github.axolotlclient.modules.tablist.Tablist;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.GuiGraphics;
@@ -47,13 +53,14 @@ import net.minecraft.client.network.PlayerListEntry;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.text.OrderedText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -87,10 +94,12 @@ public abstract class PlayerListHudMixin {
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;getWidth(Lnet/minecraft/text/StringVisitable;)I", ordinal = 0))
 	private int axolotlclient$moveName(TextRenderer instance, StringVisitable text, Operation<Integer> original, @Local PlayerListEntry entry) {
 		var width = original.call(instance, text);
-		if (AxolotlClient.config().showBadges.get() && UserRequest.getOnline(entry.getProfile().getId().toString())) {
-			width += 10;
+		if (AxolotlClient.config().showBadges.get()) {
+			if (AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_NAME_ALIGNED || UserRequest.getOnline(entry.getProfile().getId().toString())) {
+				width += 9;
+			}
 		}
-		if (Tablist.getInstance().numericalPing.get()) {
+		if (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).numericalPing.get()) {
 			width += (instance.getWidth(String.valueOf(entry.getLatency())) - 10);
 		}
 		return width;
@@ -98,27 +107,38 @@ public abstract class PlayerListHudMixin {
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawShadowedText(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)I", ordinal = 0))
 	public int axolotlclient$moveName2(GuiGraphics instance, TextRenderer renderer, Text text, int x, int y, int color, Operation<Integer> original, @Local PlayerListEntry entry) {
-		if (AxolotlClient.config().showBadges.get() && UserRequest.getOnline(entry.getProfile().getId().toString())) {
-			RenderSystem.setShaderColor(1, 1, 1, 1);
-			instance.drawTexture((Identifier) AxolotlClientCommon.BADGE_PATH, x, y, 8, 8, 0, 0, 8, 8, 8, 8);
-			x += 9;
+		if (AxolotlClient.config().showBadges.get() &&
+			(AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_NAME ||
+				AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_NAME_ALIGNED)) {
+			if (UserRequest.getOnline(entry.getProfile().getId().toString())) {
+				RenderSystem.setShaderColor(1, 1, 1, 1);
+				instance.drawTexture((Identifier) AxolotlClientCommon.BADGE_PATH, x, y, 8, 8, 0, 0, 8, 8, 8, 8);
+				x += 9;
+			} else if (AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_NAME_ALIGNED) {
+				x += 9;
+			}
 		}
 		return original.call(instance, renderer, text, x, y, color);
 	}
 
 	@Inject(method = "renderLatencyIcon", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$numericalPing(GuiGraphics graphics, int width, int x, int y, PlayerListEntry entry, CallbackInfo ci) {
+		if (AxolotlClient.config().showBadges.get() && AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_PING
+			&& UserRequest.getOnline(entry.getProfile().getId().toString())) {
+			RenderSystem.setShaderColor(1, 1, 1, 1);
+			graphics.drawTexture((Identifier) AxolotlClientCommon.BADGE_PATH, x + width - 11 - 9, y, 8, 8, 0, 0, 8, 8, 8, 8);
+		}
 		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().customTabList.get()
 			&& BedwarsMod.getInstance().blockLatencyIcon() && (BedwarsMod.getInstance().isWaiting() || BedwarsMod.getInstance().inGame())) {
 			ci.cancel();
-		} else if (Tablist.getInstance().renderNumericPing(graphics, width, x, y, entry)) {
+		} else if (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).renderNumericPing(graphics, width, x, y, entry)) {
 			ci.cancel();
 		}
 	}
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;isInSingleplayer()Z"))
 	private boolean showPlayerHeads$1(MinecraftClient instance, Operation<Boolean> original) {
-		if (Tablist.getInstance().showPlayerHeads.get()) {
+		if (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showPlayerHeads.get()) {
 			return original.call(instance);
 		}
 		return false;
@@ -126,25 +146,29 @@ public abstract class PlayerListHudMixin {
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;isEncrypted()Z"))
 	private boolean axolotlclient$showPlayerHeads$1(ClientConnection instance, Operation<Boolean> original) {
-		if (Tablist.getInstance().showPlayerHeads.get()) {
+		if (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showPlayerHeads.get()) {
 			return original.call(instance);
 		}
 		return false;
 	}
 
-	@Inject(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/hud/PlayerListHud;header:Lnet/minecraft/text/Text;", opcode = Opcodes.GETFIELD))
-	private void axolotlclient$setRenderHeaderFooter(GuiGraphics graphics, int scaledWindowWidth, Scoreboard scoreboard, ScoreboardObjective objective, CallbackInfo ci) {
-		if (!Tablist.getInstance().showHeader.get()) {
-			header = null;
-		}
-		if (!Tablist.getInstance().showFooter.get()) {
-			footer = null;
-		}
+	@Definition(id = "header", field = "Lnet/minecraft/client/gui/hud/PlayerListHud;header:Lnet/minecraft/text/Text;")
+	@Expression("this.header != null")
+	@WrapOperation(method = "render", at = @At("MIXINEXTRAS:EXPRESSION"))
+	private boolean checkHeaderOption(Object left, Object right, Operation<Boolean> original) {
+		return original.call(left, right) && ((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showHeader.get();
+	}
+
+	@Definition(id = "footer", field = "Lnet/minecraft/client/gui/hud/PlayerListHud;footer:Lnet/minecraft/text/Text;")
+	@Expression("this.footer != null")
+	@WrapOperation(method = "render", at = @At("MIXINEXTRAS:EXPRESSION"))
+	private boolean checkFooterOption(Object left, Object right, Operation<Boolean> original) {
+		return original.call(left, right) && ((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showFooter.get();
 	}
 
 	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/PlayerFaceRenderer;draw(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/util/Identifier;IIIZZ)V"), index = 5)
 	private boolean axolotlclient$renderHatLayer(boolean drawHat) {
-		return drawHat || Tablist.getInstance().alwaysShowHeadLayer.get();
+		return drawHat || ((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).alwaysShowHeadLayer.get();
 	}
 
 	@Inject(
@@ -257,21 +281,79 @@ public abstract class PlayerListHudMixin {
 		ci.cancel();
 	}
 
-	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V"), slice = @Slice(to = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/GameOptions;getTextBackgroundColor(I)I")))
-	private void modifyBackground(GuiGraphics instance, int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
-		var tablist = Tablist.getInstance();
-		if (!tablist.backgroundEnabled.get()) {
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;wrapLines(Lnet/minecraft/text/StringVisitable;I)Ljava/util/List;", ordinal = 1))
+	private List<OrderedText> captureFooterLines(TextRenderer instance, StringVisitable text, int width, Operation<List<OrderedText>> original, @Share("footerLines") LocalRef<List<OrderedText>> footerLines) {
+		var lines = original.call(instance, text, width);
+		footerLines.set(lines);
+		return lines;
+	}
+
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V", ordinal = 0))
+	private void renderBackgroundWithOptions$header(GuiGraphics graphics, int scaledWindowWidth, Scoreboard scoreboard, ScoreboardObjective objective, CallbackInfo ci, @Local(index = 18) int t, @Local(index = 17) int s, @Local(ordinal = 2) List<OrderedText> headerLines, @Share("footerLines") LocalRef<List<OrderedText>> footerLines, @Local(index = 11) int o) {
+		renderBackgroundWithOptions(graphics, scaledWindowWidth, t, s, headerLines, footerLines.get(), o);
+	}
+
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V", ordinal = 1))
+	private void renderBackgroundWithOptions$noHeader(GuiGraphics graphics, int scaledWindowWidth, Scoreboard scoreboard, ScoreboardObjective objective, CallbackInfo ci, @Local(index = 18) int t, @Local(index = 17) int s, @Local(ordinal = 2) List<OrderedText> headerLines, @Share("footerLines") LocalRef<List<OrderedText>> footerLines, @Local(index = 11) int o) {
+		if (headerLines == null) {
+			renderBackgroundWithOptions(graphics, scaledWindowWidth, t, s, null, footerLines.get(), o);
+		}
+	}
+
+	@Unique
+	private void renderBackgroundWithOptions(GuiGraphics g, int width, int maxLineWidth, int yyo, List<OrderedText> headerLines, List<OrderedText> footerLines, int rows) {
+		var tablist = (PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID);
+		if (!tablist.isEnabled() || tablist.backgroundDisabled()) {
 			return;
 		}
-		if (tablist.customBackgroundColor.get()) {
-			original.call(instance, x1, y1, x2, y2, tablist.backgroundColor.get().toInt());
-			return;
+		var x = width / 2 - maxLineWidth / 2 - 1;
+		var y = yyo - 1;
+		var x2 = width / 2 + maxLineWidth / 2 + 1;
+		var headerLineCount = headerLines != null ? headerLines.size() : 0;
+		var footerLineCount = footerLines != null ? footerLines.size() : 0;
+		var y2 = yyo + (headerLineCount + rows + footerLineCount) * g.br$getFont().br$getFontHeight() + (footerLineCount > 0 ? 1 : 0) + (headerLineCount > 0 ? 1 : 0);
+		int padding = tablist.getBackgroundPadding();
+		x -= padding;
+		x2 += padding;
+		y -= padding;
+		y2 += padding;
+		if (y < 0) {
+			y2 -= y;
+			y = 0;
 		}
-		original.call(instance, x1, y1, x2, y2, color);
+		if (tablist.hasRoundBackground()) {
+			var rounding = Math.min(tablist.getBackgroundRounding(), Math.min(x2 - x, y2 - y) / 2f);
+			g.br$fillRectRound(x, y, x2 - x, y2 - y,
+				tablist.customBackgroundColor.get() ? tablist.getBackgroundColor().toInt() : Integer.MIN_VALUE,
+				rounding);
+
+			if (tablist.hasOutline()) {
+				g.br$outlineRectRound(x, y, x2 - x, y2 - y, tablist.getOutlineColor(), rounding);
+			}
+		} else {
+			g.br$fillRect(x, y, x2 - x, y2 - y,
+				tablist.customBackgroundColor.get() ? tablist.getBackgroundColor().toInt() : Integer.MIN_VALUE);
+			if (tablist.hasOutline()) {
+				g.br$outlineRect(x, y, x2 - x, y2 - y, tablist.getOutlineColor());
+			}
+		}
+	}
+
+	@Unique
+	private void applyBackgroundOptions(GuiGraphics instance, int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
+		var tablist = (PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID);
+		if (!tablist.isEnabled()) {
+			original.call(instance, x1, y1, x2, y2, color);
+		}
+	}
+
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V"), slice = @Slice(to = @At(value = "CONSTANT", args = "intValue=553648127")))
+	private void modifyBackground$headerAndMain(GuiGraphics instance, int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
+		applyBackgroundOptions(instance, x1, y1, x2, y2, color, original);
 	}
 
 	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIII)V"), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/PlayerListHud;renderLatencyIcon(Lnet/minecraft/client/gui/GuiGraphics;IIILnet/minecraft/client/network/PlayerListEntry;)V")))
-	private void modifyBackground$2(GuiGraphics instance, int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
-		modifyBackground(instance, x1, y1, x2, y2, color, original);
+	private void modifyBackground$footer(GuiGraphics instance, int x1, int y1, int x2, int y2, int color, Operation<Void> original) {
+		applyBackgroundOptions(instance, x1, y1, x2, y2, color, original);
 	}
 }

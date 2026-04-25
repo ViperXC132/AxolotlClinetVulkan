@@ -51,6 +51,8 @@ public abstract class KeyBindingMixin implements AxoKeybinding {
 	@Shadow
 	public abstract boolean consumeClick();
 
+	@Shadow
+	private int clickCount;
 	@Unique
 	private List<Runnable> axolotlclient$onClicked = null;
 
@@ -114,5 +116,10 @@ public abstract class KeyBindingMixin implements AxoKeybinding {
 	@Override
 	public boolean br$consumeClick() {
 		return consumeClick();
+	}
+
+	@Override
+	public void br$click() {
+		clickCount++;
 	}
 }

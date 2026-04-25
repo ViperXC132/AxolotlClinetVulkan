@@ -48,7 +48,7 @@ public class FeatureDisabler extends FeatureDisablerCommon {
 
 	@Override
 	protected void registerChannel() {
-		PayloadTypeRegistry.playS2C().register(CHANNEL_ID, FeaturePayload.CODEC);
+		PayloadTypeRegistry.clientboundPlay().register(CHANNEL_ID, FeaturePayload.CODEC);
 		ClientPlayConnectionEvents.INIT.register((handler0, client0) ->
 			ClientPlayNetworking.registerGlobalReceiver(CHANNEL_ID, (payload, ctx) -> {
 				for (String feature : payload.features) {

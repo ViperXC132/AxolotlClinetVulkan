@@ -29,7 +29,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.EditBox;
@@ -96,7 +96,7 @@ public class FiltersList extends ContainerObjectSelectionList<FiltersList.Entry>
 		}
 
 		@Override
-		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+		public void extractContent(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, boolean hovering, float partialTick) {
 
 		}
 
@@ -131,15 +131,15 @@ public class FiltersList extends ContainerObjectSelectionList<FiltersList.Entry>
 		}
 
 		@Override
-		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+		public void extractContent(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, boolean hovering, float partialTick) {
 			int i = scrollBarX() - removeButton.getWidth() - 10;
 			int j = getContentY() - 2;
 			this.removeButton.setPosition(i, j);
-			this.removeButton.render(guiGraphics, mouseX, mouseY, partialTick);
+			this.removeButton.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 
 			this.editBox.setPosition(getContentX(), j);
 			this.editBox.setWidth(i - getContentX() - 4);
-			this.editBox.render(guiGraphics, mouseX, mouseY, partialTick);
+			this.editBox.extractWidgetRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 		}
 
 		@Override
@@ -176,11 +176,11 @@ public class FiltersList extends ContainerObjectSelectionList<FiltersList.Entry>
 		}
 
 		@Override
-		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+		public void extractContent(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, boolean hovering, float partialTick) {
 			int i = scrollBarX() - getContentWidth() / 2 - 10 - addButton.getWidth() / 2;
 			int j = getContentY() - 2;
 			this.addButton.setPosition(i, j);
-			this.addButton.render(guiGraphics, mouseX, mouseY, partialTick);
+			this.addButton.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 		}
 
 		@Override

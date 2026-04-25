@@ -50,17 +50,17 @@ public class StatusUpdateProviderImpl implements StatusUpdateProvider {
 		if (entry != null) {
 
 			if (!entry.isLocal()) {
-				Optional<StatusUpdate.SupportedServer> optional = Arrays.stream(StatusUpdate.SupportedServer.values()).filter(s -> s.getAddress().matcher(entry.address).matches()).findFirst();
+				Optional<StatusUpdate.SupportedServer> optional = Arrays.stream(StatusUpdate.SupportedServer.values()).filter(s -> s.getAddress().matcher(entry.ip).matches()).findFirst();
 				if (optional.isPresent()) {
 					StatusUpdate.SupportedServer server = optional.get();
 					if (server.equals(StatusUpdate.SupportedServer.HYPIXEL)) {
 						return HypixelMods.getInstance().getStatus();
 					}
 				}
-				return StatusUpdate.inGameServer(entry.name, entry.address);
+				return StatusUpdate.inGameServer(entry.name, entry.ip);
 			}
 			return StatusUpdate.inGameUnknown(entry.name);
-		} else if (Minecraft.getInstance().isInSingleplayer()) {
+		} else if (Minecraft.getInstance().isSingleplayer()) {
 			var e4mcStatus = E4mcStatusProvider.getStatusDescription();
 			if (e4mcStatus != null) {
 				return StatusUpdate.e4mcStatusUpdate(e4mcStatus);

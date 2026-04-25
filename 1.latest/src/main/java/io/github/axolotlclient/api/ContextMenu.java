@@ -28,7 +28,7 @@ import java.util.Optional;
 
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Renderable;
@@ -109,7 +109,7 @@ public class ContextMenu implements ContainerEventHandler, Renderable, Narratabl
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
 		if (!rendering) {
 			y = mouseY;
 			x = mouseX;
@@ -129,7 +129,7 @@ public class ContextMenu implements ContainerEventHandler, Renderable, Narratabl
 		DrawUtil.outlineRect(graphics, xStart, yStart, width + 1, y - yStart + 1, -1);
 		for (AbstractButton c : children) {
 			c.setWidth(width);
-			c.render(graphics, mouseX, mouseY, delta);
+			c.extractRenderState(graphics, mouseX, mouseY, delta);
 		}
 		graphics.pose().popMatrix();
 	}
@@ -221,8 +221,8 @@ public class ContextMenu implements ContainerEventHandler, Renderable, Narratabl
 		}
 
 		@Override
-		public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-			renderDefaultLabel(graphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
+		public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+			extractDefaultLabel(graphics.textRendererForWidget(this, GuiGraphicsExtractor.HoveredTextEffects.NONE));
 		}
 
 		@Override
@@ -244,13 +244,13 @@ public class ContextMenu implements ContainerEventHandler, Renderable, Narratabl
 		}
 
 		@Override
-		public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+		public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
 
 			if (isHoveredOrFocused()) {
 				graphics.fill(getX(), getY(), getX() + getWidth(), getY() + getHeight(), 0x55ffffff);
 			}
 
-			renderDefaultLabel(graphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
+			extractDefaultLabel(graphics.textRendererForWidget(this, GuiGraphicsExtractor.HoveredTextEffects.NONE));
 		}
 
 		@Override

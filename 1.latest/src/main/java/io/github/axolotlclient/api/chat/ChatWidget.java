@@ -42,9 +42,9 @@ import io.github.axolotlclient.util.ClientColors;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ObjectSelectionList;
-import net.minecraft.client.gui.components.PlayerFaceRenderer;
+import net.minecraft.client.gui.components.PlayerFaceExtractor;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.input.MouseButtonEvent;
@@ -151,7 +151,7 @@ public class ChatWidget extends ObjectSelectionList<ChatWidget.ChatLine> {
 	}
 
 	@Override
-	protected void renderSelection(GuiGraphics guiGraphics, ChatLine entry, int i) {
+	protected void extractSelection(GuiGraphicsExtractor guiGraphicsExtractor, ChatLine entry, int i) {
 	}
 
 	@Override
@@ -202,11 +202,11 @@ public class ChatWidget extends ObjectSelectionList<ChatWidget.ChatLine> {
 			return false;
 		}
 
-		protected void renderExtras(GuiGraphics graphics, int x, int y, int mouseX, int mouseY) {
+		protected void renderExtras(GuiGraphicsExtractor graphics, int x, int y, int mouseX, int mouseY) {
 		}
 
 		@Override
-		public void renderContent(GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			for (ChatLine l : children()) {
 				if (l.getOrigin().equals(origin)) {
 					if (Objects.equals(getHovered(), l)) {
@@ -233,7 +233,7 @@ public class ChatWidget extends ObjectSelectionList<ChatWidget.ChatLine> {
 				}
 			}
 			renderExtras(graphics, getContentX(), getContentY(), mouseX, mouseY);
-			graphics.drawString(client.font, content, getContentX(), getContentY(), -1, false);
+			graphics.text(client.font, content, getContentX(), getContentY(), -1, false);
 		}
 
 		@Override
@@ -255,12 +255,12 @@ public class ChatWidget extends ObjectSelectionList<ChatWidget.ChatLine> {
 		}
 
 		@Override
-		protected void renderExtras(GuiGraphics graphics, int x, int y, int mouseX, int mouseY) {
+		protected void renderExtras(GuiGraphicsExtractor graphics, int x, int y, int mouseX, int mouseY) {
 			graphics.pose().pushMatrix();
 			Identifier texture =
 				Auth.getInstance().getSkinTexture(getOrigin().sender().getUuid());
-			PlayerFaceRenderer.draw(graphics, texture, x - 22, y, 18, true, false, -1);
-			graphics.drawString(client.font, formattedTime, client.font.width(getContent()) + x + 5, y,
+			PlayerFaceExtractor.extractRenderState(graphics, texture, x - 22, y, 18, true, false, -1);
+			graphics.text(client.font, formattedTime, client.font.width(getContent()) + x + 5, y,
 				ClientColors.GRAY.toInt(), false
 			);
 			graphics.pose().popMatrix();

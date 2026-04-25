@@ -44,4 +44,14 @@ public interface AxoWorld {
 	default String br$getBiomeName(Vec3 pos) {
 		throw BridgeUtil.noImpl();
 	}
+
+	@RequiresImpl
+	default boolean br$isOverworld() {
+		throw BridgeUtil.noImpl();
+	}
+
+	@RequiresImpl
+	default boolean br$isNether() {
+		throw BridgeUtil.noImpl();
+	}
 }

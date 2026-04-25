@@ -60,6 +60,17 @@ public abstract class AxolotlClientConfigCommon {
 		}
 	}
 
+	public enum TabBadgeMode {
+		BEFORE_NAME,
+		BEFORE_NAME_ALIGNED,
+		BEFORE_PING;
+
+		@Override
+		public String toString() {
+			return "tab_badge_mode." + super.toString().toLowerCase(Locale.ROOT);
+		}
+	}
+
 	// options
 
 	public final BooleanOption showOwnNametag = new BooleanOption("showOwnNametag", false);
@@ -69,6 +80,7 @@ public abstract class AxolotlClientConfigCommon {
 	public final BooleanOption showBadges = new BooleanOption("showBadges", true);
 	public final BooleanOption customBadge = new BooleanOption("customBadge", false);
 	public final StringOption badgeText = new StringOption("badgeText", "");
+	public final EnumOption<TabBadgeMode> tabBadgeMode = new EnumOption<>("tab_badge_mode", TabBadgeMode.class, TabBadgeMode.BEFORE_NAME);
 
 	public final ForceableBooleanOption timeChangerEnabled = new ForceableBooleanOption("enabled", false);
 	public final IntegerOption customTime = new IntegerOption("time", 0, 0, 24000);
@@ -85,7 +97,7 @@ public abstract class AxolotlClientConfigCommon {
 	public final BooleanOption enableCustomOutlines = new BooleanOption("enabled", false);
 	public final ColorOption outlineColor = new ColorOption("color", Color.parse("#DD000000"));
 
-	public final BooleanOption customWindowTitle = new BooleanOption("customWindowTitle", true);
+	public final BooleanOption customWindowTitle = new BooleanOption("customWindowTitle", true, this::updateWindowTitle);
 
 	public final OptionCategory general = OptionCategory.create("general");
 	public final OptionCategory nametagOptions = OptionCategory.create("nametagOptions");
@@ -112,19 +124,15 @@ public abstract class AxolotlClientConfigCommon {
 
 	public AxolotlClientConfigCommon() {
 		config.add(general);
-		config.add(nametagOptions);
 		config.add(rendering);
 		config.add(hidden);
 
 		rendering.add(outlines);
+		rendering.add(nametagOptions);
 
 		nametagOptions.add(showOwnNametag);
 		nametagOptions.add(useShadows);
 		nametagOptions.add(nametagBackground);
-
-		nametagOptions.add(showBadges);
-		nametagOptions.add(customBadge);
-		nametagOptions.add(badgeText);
 
 		general.add(customWindowTitle);
 		general.add(debugLogOutput);
@@ -154,7 +162,14 @@ public abstract class AxolotlClientConfigCommon {
 
 		hidden.add(creditsBGM, someNiceBackground, modifyClientBrand, noAltIcons);
 
-		AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "toggle_hide_chat").br$registerOnConsumeClick(hideChat::toggle);
+		AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "toggle_hide_chat").br$registerOnConsumeClick(() -> {
+			hideChat.toggle();
+			AxolotlClientCommon.getInstance().saveConfig();
+		});
+		AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "toggle_fullbright").br$registerOnConsumeClick(() -> {
+			fullBright.toggle();
+			AxolotlClientCommon.getInstance().saveConfig();
+		});
 	}
 
 	public DateTimeFormatter getDateTimeFormatter() {
@@ -180,4 +195,6 @@ public abstract class AxolotlClientConfigCommon {
 	public final OptionCategory getConfig() {
 		return config;
 	}
+
+	protected abstract void updateWindowTitle(boolean useCustom);
 }

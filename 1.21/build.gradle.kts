@@ -1,17 +1,16 @@
 plugins {
-	id("fabric-loom")
-	id("io.github.p03w.machete")
+	id("net.fabricmc.fabric-loom-remap")
 }
 
 val minecraftVersion = "1.21.1"
 val mappingsBuild = "9"
-val fapi = "0.116.6"
+val fapi = "0.116.9"
 group = project.property("maven_group") as String
 version = "${project.property("version")}+$minecraftVersion"
 base.archivesName = "AxolotlClient"
 
 loom {
-	accessWidenerPath.set(file("src/main/resources/axolotlclient.accesswidener"))
+	accessWidenerPath.set(file("src/main/resources/axolotlclient.classtweaker"))
 	mods {
 		create("axolotlclient") {
 			sourceSet("main")
@@ -20,6 +19,7 @@ loom {
 			sourceSet("test")
 		}
 	}
+	uncompressNestedJars = true
 }
 
 dependencies {
@@ -38,7 +38,7 @@ dependencies {
 		exclude(group = "net.fabricmc")
 	}
 
-	implementation(include(project(path = ":common", configuration = "shadow"))!!)
+	api(include(project(path = ":common", configuration = "shadow"))!!)
 
 	modCompileOnly("maven.modrinth:world-host:0.5.0+1.21.1-fabric")
 	//implementation("org.quiltmc.parsers:json:0.3.0")
@@ -107,7 +107,7 @@ publishing {
 }
 
 tasks.modrinth {
-	dependsOn(tasks.getByName("optimizeOutputsOfRemapJar"))
+	dependsOn(tasks.getByName("remapJar"))
 }
 
 modrinth {

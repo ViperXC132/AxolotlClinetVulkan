@@ -23,7 +23,7 @@
 package io.github.axolotlclient.modules.auth;
 
 import io.github.axolotlclient.modules.auth.skin.SkinManagementScreen;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -45,9 +45,9 @@ public class AccountsScreen extends Screen {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		super.render(graphics, mouseX, mouseY, delta);
-		graphics.drawCenteredString(this.font, this.title, this.width / 2, 33 / 2, -1);
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+		super.extractRenderState(graphics, mouseX, mouseY, delta);
+		graphics.centeredText(this.font, this.title, this.width / 2, 33 / 2, -1);
 	}
 
 	@Override

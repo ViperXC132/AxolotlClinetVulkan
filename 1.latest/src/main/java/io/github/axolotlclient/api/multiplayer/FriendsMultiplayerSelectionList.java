@@ -45,9 +45,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.DefaultUncaughtExceptionHandler;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ObjectSelectionList;
-import net.minecraft.client.gui.components.PlayerFaceRenderer;
+import net.minecraft.client.gui.components.PlayerFaceExtractor;
 import net.minecraft.client.gui.screens.FaviconTexture;
 import net.minecraft.client.gui.screens.LoadingDotsText;
 import net.minecraft.client.input.KeyEvent;
@@ -190,27 +190,27 @@ public class FriendsMultiplayerSelectionList extends ObjectSelectionList<Friends
 		}
 
 		@Override
-		public void renderContent(GuiGraphics graphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+		public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
 			if (user.isSystem()) {
 				MutableComponent fronters = Component.literal(
 					user.getSystem().getFronters().stream().map(PkSystem.Member::getDisplayName)
 						.collect(Collectors.joining("/")));
 				Component tag = Component.literal("(" + user.getSystem().getName() + "/" + user.getName() + ")")
 					.setStyle(Style.EMPTY.withItalic(true).withColor(ChatFormatting.GRAY));
-				graphics.drawString(minecraft.font, fronters.append(tag), getContentX() + 3, getContentY() + 1, -1);
+				graphics.text(minecraft.font, fronters.append(tag), getContentX() + 3, getContentY() + 1, -1);
 			} else {
-				graphics.drawString(minecraft.font, user.getName(), getContentX() + 3 + 32, getContentY() + 1, -1);
+				graphics.text(minecraft.font, user.getName(), getContentX() + 3 + 32, getContentY() + 1, -1);
 			}
 
 			if (user.getStatus().isOnline() && user.getStatus().getActivity() != null) {
-				graphics.drawString(minecraft.font, user.getStatus().getTitle(), getContentX() + 3 + 32, getContentY() + 12, 0xFF808080);
-				graphics.drawString(minecraft.font, user.getStatus().getDescription(), getContentX() + 3 + 40, getContentY() + 23, 0xFF808080);
+				graphics.text(minecraft.font, user.getStatus().getTitle(), getContentX() + 3 + 32, getContentY() + 12, 0xFF808080);
+				graphics.text(minecraft.font, user.getStatus().getDescription(), getContentX() + 3 + 40, getContentY() + 23, 0xFF808080);
 			} else if (user.getStatus().getLastOnline() != null) {
-				graphics.drawString(minecraft.font, user.getStatus().getLastOnline(), getContentX() + 3 + 32, getContentY() + 12, 0xFF808080);
+				graphics.text(minecraft.font, user.getStatus().getLastOnline(), getContentX() + 3 + 32, getContentY() + 12, 0xFF808080);
 			}
 
 			Identifier texture = Auth.getInstance().getSkinTexture(user);
-			PlayerFaceRenderer.draw(graphics, texture, getContentX(), getContentY(), 32, true, false, -1);
+			PlayerFaceExtractor.extractRenderState(graphics, texture, getContentX(), getContentY(), 32, true, false, -1);
 		}
 	}
 
@@ -286,7 +286,7 @@ public class FriendsMultiplayerSelectionList extends ObjectSelectionList<Friends
 		}
 
 		@Override
-		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+		public void extractContent(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, boolean hovering, float partialTick) {
 			if (this.serverData.state() == ServerData.State.INITIAL) {
 				this.serverData.setState(ServerData.State.PINGING);
 				this.serverData.motd = CommonComponents.EMPTY;
@@ -323,16 +323,16 @@ public class FriendsMultiplayerSelectionList extends ObjectSelectionList<Friends
 					);
 			}
 
-			guiGraphics.drawString(this.minecraft.font, this.serverData.name, getContentX() + ICON_WIDTH + 3, getContentY() + 1, -1);
+			guiGraphicsExtractor.text(this.minecraft.font, this.serverData.name, getContentX() + ICON_WIDTH + 3, getContentY() + 1, -1);
 			List<FormattedCharSequence> list = this.minecraft.font.split(this.serverData.motd, width - ICON_WIDTH - 2);
 
 			for (int i = 0; i < Math.min(list.size(), 2); i++) {
-				guiGraphics.drawString(this.minecraft.font, list.get(i), getContentX() + ICON_WIDTH + 3, getContentY() + 12 + 9 * i, -8355712);
+				guiGraphicsExtractor.text(this.minecraft.font, list.get(i), getContentX() + ICON_WIDTH + 3, getContentY() + 12 + 9 * i, -8355712);
 			}
 
-			guiGraphics.blit(RenderPipelines.GUI_TEXTURED, this.icon.textureLocation(), getContentX(), getContentY(), 0.0F, 0.0F, ICON_WIDTH, ICON_HEIGHT, ICON_WIDTH, ICON_HEIGHT);
+			guiGraphicsExtractor.blit(RenderPipelines.GUI_TEXTURED, this.icon.textureLocation(), getContentX(), getContentY(), 0.0F, 0.0F, ICON_WIDTH, ICON_HEIGHT, ICON_WIDTH, ICON_HEIGHT);
 			Identifier texture = Auth.getInstance().getSkinTexture(user);
-			PlayerFaceRenderer.draw(guiGraphics, texture, getContentX() + ICON_WIDTH - 10, getContentY() + ICON_HEIGHT - 10, 10, true, false, -1);
+			PlayerFaceExtractor.extractRenderState(guiGraphicsExtractor, texture, getContentX() + ICON_WIDTH - 10, getContentY() + ICON_HEIGHT - 10, 10, true, false, -1);
 			if (this.serverData.state() == ServerData.State.PINGING) {
 				int i = (int) (Util.getMillis() / 100L + FriendsMultiplayerSelectionList.this.children().indexOf(this) * 2 & 7L);
 				if (i > 4) {
@@ -349,7 +349,7 @@ public class FriendsMultiplayerSelectionList extends ObjectSelectionList<Friends
 
 			int i = getContentX() + width - STATUS_ICON_WIDTH - SPACING;
 			if (this.statusIcon != null) {
-				guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, this.statusIcon, i, getContentY(), STATUS_ICON_WIDTH, STATUS_ICON_HEIGHT);
+				guiGraphicsExtractor.blitSprite(RenderPipelines.GUI_TEXTURED, this.statusIcon, i, getContentY(), STATUS_ICON_WIDTH, STATUS_ICON_HEIGHT);
 			}
 
 			byte[] bs = this.serverData.getIconBytes();
@@ -373,21 +373,21 @@ public class FriendsMultiplayerSelectionList extends ObjectSelectionList<Friends
 			}
 			int j = this.minecraft.font.width(component);
 			int k = i - j - SPACING;
-			guiGraphics.drawString(this.minecraft.font, component, k, getContentY() + 1, -8355712);
+			guiGraphicsExtractor.text(this.minecraft.font, component, k, getContentY() + 1, -8355712);
 			if (this.statusIconTooltip != null && mouseX >= i && mouseX <= i + STATUS_ICON_WIDTH && mouseY >= getContentY() && mouseY <= getContentY() + STATUS_ICON_HEIGHT) {
-				guiGraphics.setTooltipForNextFrame(this.statusIconTooltip, mouseX, mouseY);
+				guiGraphicsExtractor.setTooltipForNextFrame(this.statusIconTooltip, mouseX, mouseY);
 			} else if (this.onlinePlayersTooltip != null && mouseX >= k && mouseX <= k + j && mouseY >= getContentY() && mouseY <= getContentY() - 1 + 9) {
-				guiGraphics.setTooltipForNextFrame(Lists.transform(this.onlinePlayersTooltip, Component::getVisualOrderText), mouseX, mouseY);
+				guiGraphicsExtractor.setTooltipForNextFrame(Lists.transform(this.onlinePlayersTooltip, Component::getVisualOrderText), mouseX, mouseY);
 			}
 
 			if (this.minecraft.options.touchscreen().get() || hovering) {
 				int l = mouseX - getContentX();
 				if (this.canJoin()) {
-					guiGraphics.fill(getContentX(), getContentY(), getContentX() + ICON_WIDTH, getContentY() + ICON_HEIGHT, -1601138544);
+					guiGraphicsExtractor.fill(getContentX(), getContentY(), getContentX() + ICON_WIDTH, getContentY() + ICON_HEIGHT, -1601138544);
 					if (l < ICON_WIDTH && l > ICON_WIDTH / 2) {
-						guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, FriendsMultiplayerSelectionList.JOIN_HIGHLIGHTED_SPRITE, getContentX(), getContentY(), ICON_WIDTH, ICON_HEIGHT);
+						guiGraphicsExtractor.blitSprite(RenderPipelines.GUI_TEXTURED, FriendsMultiplayerSelectionList.JOIN_HIGHLIGHTED_SPRITE, getContentX(), getContentY(), ICON_WIDTH, ICON_HEIGHT);
 					} else {
-						guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, FriendsMultiplayerSelectionList.JOIN_SPRITE, getContentX(), getContentY(), ICON_WIDTH, ICON_HEIGHT);
+						guiGraphicsExtractor.blitSprite(RenderPipelines.GUI_TEXTURED, FriendsMultiplayerSelectionList.JOIN_SPRITE, getContentX(), getContentY(), ICON_WIDTH, ICON_HEIGHT);
 					}
 				}
 			}
@@ -539,10 +539,10 @@ public class FriendsMultiplayerSelectionList extends ObjectSelectionList<Friends
 		private final Minecraft minecraft = Minecraft.getInstance();
 
 		@Override
-		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+		public void extractContent(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, boolean hovering, float partialTick) {
 			int i = getContentYMiddle() - 9 / 2;
 			String string = LoadingDotsText.get(Util.getMillis());
-			guiGraphics.drawString(this.minecraft.font, string, this.minecraft.screen.width / 2 - this.minecraft.font.width(string) / 2, i, -8355712);
+			guiGraphicsExtractor.text(this.minecraft.font, string, this.minecraft.screen.width / 2 - this.minecraft.font.width(string) / 2, i, -8355712);
 		}
 
 		@Override

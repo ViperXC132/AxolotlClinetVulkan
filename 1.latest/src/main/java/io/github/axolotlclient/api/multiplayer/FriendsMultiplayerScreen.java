@@ -26,7 +26,7 @@ import io.github.axolotlclient.api.FriendsScreen;
 import io.github.axolotlclient.api.handlers.StatusUpdateHandler;
 import io.github.axolotlclient.api.requests.FriendRequest;
 import lombok.Getter;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
@@ -43,6 +43,7 @@ import net.minecraft.client.multiplayer.resolver.ServerAddress;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import org.jspecify.annotations.NonNull;
 
 public class FriendsMultiplayerScreen extends Screen {
 	@Getter
@@ -82,46 +83,26 @@ public class FriendsMultiplayerScreen extends Screen {
 		});
 		StatusUpdateHandler.addUpdateListener("friends_multiplayer_screen", serverSelectionList::updateEntry);
 
-		/*addRenderableWidget(Button.builder(Component.translatable("api.servers"), button ->
-			minecraft.setScreen(new JoinMultiplayerScreen(lastScreen))).pos(this.width / 2 - 102, 32).width(100).build());
-		addRenderableWidget(friendsCountButton).setRectangle(100, 20, width / 2 + 2, 32);
-		friendsCountButton.active = false;*/
-
 		LinearLayout linearLayout = this.layout.addToFooter(LinearLayout.vertical().spacing(4));
 		linearLayout.defaultCellSetting().alignHorizontallyCenter();
 		LinearLayout linearLayout2 = linearLayout.addChild(LinearLayout.horizontal().spacing(4));
 		LinearLayout linearLayout3 = linearLayout.addChild(LinearLayout.horizontal().spacing(4));
 
 		this.selectButton = linearLayout2.addChild(Button.builder(Component.translatable("selectServer.select"), buttonx -> this.joinSelectedServer()).width(100).build());
-		Button directConnect = linearLayout2.addChild(Button.builder(Component.translatable("selectServer.direct"), buttonx -> {
+		linearLayout2.addChild(Button.builder(Component.translatable("selectServer.direct"), buttonx -> {
 			this.editingServer = new ServerData(I18n.get("selectServer.defaultName"), "", ServerData.Type.OTHER);
 			this.minecraft.setScreen(new DirectJoinServerScreen(this, this::directJoinCallback, this.editingServer));
 		}).width(100).build());
-		Button friends = linearLayout2.addChild(Button.builder(Component.translatable("api.friends"), buttonx ->
+		linearLayout2.addChild(Button.builder(Component.translatable("api.friends"), buttonx ->
 			this.minecraft.setScreen(new FriendsScreen(this))).width(100).build());
-		Button editButton = linearLayout3.addChild(Button.builder(Component.translatable("selectServer.edit"), buttonx -> {
-		}).width(74).build());
-		editButton.active = false;
-		Button deleteButton = linearLayout3.addChild(Button.builder(Component.translatable("selectServer.delete"), buttonx -> {
-		}).width(74).build());
-		deleteButton.active = false;
-		Button refreshList = linearLayout3.addChild(
+		linearLayout3.addChild(Button.builder(Component.translatable("selectServer.edit"), buttonx -> {
+		}).width(74).build()).active = false;
+		linearLayout3.addChild(Button.builder(Component.translatable("selectServer.delete"), buttonx -> {
+		}).width(74).build()).active = false;
+		linearLayout3.addChild(
 			Button.builder(Component.translatable("selectServer.refresh"), buttonx -> this.refreshServerList()).width(74).build()
 		);
-		Button back = linearLayout3.addChild(Button.builder(CommonComponents.GUI_BACK, buttonx -> this.onClose()).width(74).build());
-		/*LinearLayout linearLayout = LinearLayout.vertical();
-		EqualSpacingLayout equalSpacingLayout = linearLayout.addChild(new EqualSpacingLayout(308, 20, EqualSpacingLayout.Orientation.HORIZONTAL));
-		equalSpacingLayout.addChild(this.selectButton);
-		equalSpacingLayout.addChild(directConnect);
-		equalSpacingLayout.addChild(friends);
-		linearLayout.addChild(SpacerElement.height(4));
-		EqualSpacingLayout equalSpacingLayout2 = linearLayout.addChild(new EqualSpacingLayout(308, 20, EqualSpacingLayout.Orientation.HORIZONTAL));
-		equalSpacingLayout2.addChild(editButton);
-		equalSpacingLayout2.addChild(deleteButton);
-		equalSpacingLayout2.addChild(refreshList);
-		equalSpacingLayout2.addChild(back);
-		linearLayout.arrangeElements();
-		FrameLayout.centerInRectangle(linearLayout, 0, this.height - 64, this.width, 64);*/
+		linearLayout3.addChild(Button.builder(CommonComponents.GUI_BACK, buttonx -> this.onClose()).width(74).build());
 		layout.visitWidgets(this::addRenderableWidget);
 		this.repositionElements();
 		this.onSelectedChange();
@@ -152,11 +133,11 @@ public class FriendsMultiplayerScreen extends Screen {
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-		super.render(guiGraphics, mouseX, mouseY, partialTick);
+	public void extractRenderState(@NonNull GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, float partialTick) {
+		super.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 
 		if (serverSelectionList.children().isEmpty()) {
-			guiGraphics.drawCenteredString(font, NO_ONLINE_FRIENDS, width / 2, height / 2 - font.lineHeight / 2, -1);
+			guiGraphicsExtractor.centeredText(font, NO_ONLINE_FRIENDS, width / 2, height / 2 - font.lineHeight / 2, -1);
 		}
 	}
 

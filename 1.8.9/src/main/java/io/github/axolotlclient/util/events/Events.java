@@ -23,15 +23,11 @@
 package io.github.axolotlclient.util.events;
 
 import io.github.axolotlclient.util.events.impl.KeyBindChangeEvent;
-import io.github.axolotlclient.util.events.impl.MouseInputEvent;
-import net.minecraft.client.Minecraft;
 import net.ornithemc.osl.core.api.events.Event;
 
 public class Events {
 
-	public static final Event<EventCallback<MouseInputEvent>> MOUSE_INPUT = createEvent();
 	public static final Event<EventCallback<KeyBindChangeEvent>> KEYBIND_CHANGE = createEvent();
-	public static final Event<EventCallback<Minecraft>> GAME_LOAD_EVENT = createEvent();
 
 	private static <T> Event<EventCallback<T>> createEvent() {
 		return Event.of(eventCallbacks -> event -> eventCallbacks.forEach(l -> l.invoke(event)));

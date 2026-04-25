@@ -51,6 +51,28 @@ public class CommonUtil {
 		return object;
 	}
 
+	public static <T> Supplier<T> memoize(Supplier<T> delegate) {
+		return new Supplier<>() {
+			volatile boolean initialized;
+			T value;
+
+			@Override
+			public T get() {
+				if (!initialized) {
+					synchronized (this) {
+						if (!initialized) {
+							T t = delegate.get();
+							value = t;
+							initialized = true;
+							return t;
+						}
+					}
+				}
+				return value;
+			}
+		};
+	}
+
 	public static String getCurrentServerAddress() {
 		final var minecraft = AxoMinecraftClient.getInstance();
 

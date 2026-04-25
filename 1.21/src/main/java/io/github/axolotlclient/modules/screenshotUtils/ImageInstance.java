@@ -30,9 +30,11 @@ import java.util.Locale;
 
 import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.texture.NativeImage;
+import io.github.axolotlclient.AxolotlClientCommon;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Util;
 
 public interface ImageInstance {
 
@@ -93,4 +95,16 @@ public interface ImageInstance {
 		}
 	}
 
+	record Memory(Identifier id, NativeImage image, String filename) implements ImageInstance {
+		public Memory(NativeImage image) {
+			this(image, Util.getFileNameFormattedDateTime() + ".png");
+		}
+
+		public Memory(NativeImage image, String name) {
+			this(Identifier.of(AxolotlClientCommon.MODID,
+				"gallery_memory_" + Hashing.sha256()
+					.hashUnencodedChars(name.toLowerCase(Locale.ROOT).replaceAll("[./]", "_"))), image, name);
+			register(id(), image());
+		}
+	}
 }

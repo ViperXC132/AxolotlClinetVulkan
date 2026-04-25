@@ -1,6 +1,5 @@
 plugins {
-	id("fabric-loom")
-	id("io.github.p03w.machete")
+	id("net.fabricmc.fabric-loom-remap")
 }
 
 val minecraftVersion = "1.20.1"
@@ -11,7 +10,7 @@ version = "${project.property("version")}+$minecraftVersion"
 base.archivesName = "AxolotlClient"
 
 loom {
-	accessWidenerPath.set(file("src/main/resources/axolotlclient.accesswidener"))
+	accessWidenerPath.set(file("src/main/resources/axolotlclient.classtweaker"))
 	mods {
 		create("axolotlclient") {
 			sourceSet("main")
@@ -20,6 +19,7 @@ loom {
 			sourceSet("test")
 		}
 	}
+	uncompressNestedJars = true
 }
 
 repositories {
@@ -43,7 +43,7 @@ dependencies {
 		exclude(group = "net.fabricmc")
 	}
 
-	implementation(include(project(path = ":common", configuration = "shadow"))!!)
+	api(include(project(path = ":common", configuration = "shadow"))!!)
 
 	val noxesiumVersion = "1.0.3"
 	modCompileOnly("maven.modrinth:noxesium:$noxesiumVersion")
@@ -105,7 +105,7 @@ publishing {
 }
 
 tasks.modrinth {
-	dependsOn(tasks.getByName("optimizeOutputsOfRemapJar"))
+	dependsOn(tasks.getByName("remapJar"))
 }
 
 modrinth {

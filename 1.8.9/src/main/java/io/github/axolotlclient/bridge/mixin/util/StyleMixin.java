@@ -51,15 +51,6 @@ public abstract class StyleMixin implements AxoText.Style {
 	public abstract Style copy();
 
 	@Shadow
-	public abstract Style setHoverEvent(HoverEvent par1);
-
-	@Shadow
-	public abstract Style setColor(Formatting par1);
-
-	@Shadow
-	private Style parent;
-
-	@Shadow
 	protected abstract Style getParent();
 
 	@Shadow

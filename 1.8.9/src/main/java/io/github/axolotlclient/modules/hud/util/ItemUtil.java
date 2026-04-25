@@ -22,11 +22,11 @@
 
 package io.github.axolotlclient.modules.hud.util;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tessellator;
+import net.minecraft.client.render.platform.GlStateManager;
+import net.minecraft.client.render.platform.Lighting;
+import net.minecraft.client.render.vertex.BufferBuilder;
+import net.minecraft.client.render.vertex.DefaultVertexFormat;
+import net.minecraft.client.render.vertex.Tesselator;
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.TextRenderer;
@@ -83,8 +83,8 @@ public class ItemUtil {
 				GlStateManager.disableTexture();
 				GlStateManager.disableAlphaTest();
 				GlStateManager.disableBlend();
-				Tessellator tessellator = Tessellator.getInstance();
-				BufferBuilder bufferBuilder = tessellator.getBuilder();
+				Tesselator tesselator = Tesselator.getInstance();
+				BufferBuilder bufferBuilder = tesselator.getBuffer();
 				renderGuiQuad(bufferBuilder, x + 2, y + 13, 13, 2, 0, 0, 0, 255);
 				renderGuiQuad(bufferBuilder, x + 2, y + 13, 12, 1, (255 - j) / 4, 64, 0, 255);
 				renderGuiQuad(bufferBuilder, x + 2, y + 13, i, 1, 255 - j, j, 0, 255);
@@ -108,6 +108,6 @@ public class ItemUtil {
 		buffer.vertex(x, y + height, 0.0).color(red, green, blue, alpha).nextVertex();
 		buffer.vertex(x + width, y + height, 0.0).color(red, green, blue, alpha).nextVertex();
 		buffer.vertex(x + width, y, 0.0).color(red, green, blue, alpha).nextVertex();
-		Tessellator.getInstance().end();
+		Tesselator.getInstance().end();
 	}
 }

@@ -28,7 +28,7 @@ import com.google.common.collect.ImmutableList;
 import io.github.axolotlclient.AxolotlClientCommon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastManager;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -96,17 +96,17 @@ public class AxolotlClientToast implements Toast {
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, @NotNull Font font, long visibilityTime) {
-		guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, BACKGROUND_SPRITE, 0, 0, this.width(), this.height());
-		guiGraphics.blit(RenderPipelines.GUI_TEXTURED, (Identifier) AxolotlClientCommon.BADGE_PATH, 4, 4, 0, 0, 15, 15, 15, 15);
+	public void extractRenderState(GuiGraphicsExtractor guiGraphicsExtractor, @NotNull Font font, long visibilityTime) {
+		guiGraphicsExtractor.blitSprite(RenderPipelines.GUI_TEXTURED, BACKGROUND_SPRITE, 0, 0, this.width(), this.height());
+		guiGraphicsExtractor.blit(RenderPipelines.GUI_TEXTURED, (Identifier) AxolotlClientCommon.BADGE_PATH, 4, 4, 0, 0, 15, 15, 15, 15);
 		int textOffset = 22;
 		if (this.messageLines.isEmpty()) {
-			guiGraphics.drawString(font, this.title, textOffset, LINE_SPACING, -256, false);
+			guiGraphicsExtractor.text(font, this.title, textOffset, LINE_SPACING, -256, false);
 		} else {
-			guiGraphics.drawString(font, this.title, textOffset, 7, -256, false);
+			guiGraphicsExtractor.text(font, this.title, textOffset, 7, -256, false);
 
 			for (int i = 0; i < this.messageLines.size(); i++) {
-				guiGraphics.drawString(font, this.messageLines.get(i), textOffset, 18 + i * LINE_SPACING, -1, false);
+				guiGraphicsExtractor.text(font, this.messageLines.get(i), textOffset, 18 + i * LINE_SPACING, -1, false);
 			}
 		}
 	}

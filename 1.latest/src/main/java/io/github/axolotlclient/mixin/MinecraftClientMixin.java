@@ -25,7 +25,6 @@ package io.github.axolotlclient.mixin;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.bridge.events.types.WorldLoadEvent;
 import io.github.axolotlclient.modules.rpc.DiscordRPC;
-import io.github.axolotlclient.util.events.Events;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
@@ -40,10 +39,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Minecraft.class)
 public abstract class MinecraftClientMixin {
 
-	/**
-	 * @author meohreag
-	 * @reason Customize Window title for use in AxolotlClient
-	 */
 	@Inject(method = "createTitle", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$getWindowTitle(CallbackInfoReturnable<String> cir) {
 		if (AxolotlClient.config().customWindowTitle.get()) {
@@ -68,11 +63,6 @@ public abstract class MinecraftClientMixin {
 	@Inject(method = "setLevel", at = @At("HEAD"))
 	private void axolotlclient$onWorldLoad(ClientLevel world, CallbackInfo ci) {
 		io.github.axolotlclient.bridge.events.Events.WORLD_LOAD_EVENT.invoker().accept(new WorldLoadEvent(world));
-	}
-
-	@Inject(method = "onGameLoadFinished", at = @At(value = "INVOKE", target = "Ljava/lang/Runnable;run()V", remap = false))
-	private void onGameLoad(Minecraft.GameLoadCookie gameLoadCookie, CallbackInfo ci) {
-		Events.GAME_LOAD_EVENT.invoker().invoke((Minecraft) (Object) this);
 	}
 
 	@Inject(method = "<init>", at = @At("TAIL"))

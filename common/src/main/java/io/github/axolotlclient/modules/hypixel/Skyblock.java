@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.modules.hypixel;
 
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
@@ -38,7 +39,10 @@ public class Skyblock implements AbstractHypixelMod {
 	public void init() {
 		category.add(rotationLocked);
 		AxoKeybinding.create(null, "lockRotation")
-			.br$registerOnConsumeClick(rotationLocked::toggle);
+			.br$registerOnConsumeClick(() -> {
+				rotationLocked.toggle();
+				AxolotlClientCommon.getInstance().saveConfig();
+			});
 	}
 
 	@Override

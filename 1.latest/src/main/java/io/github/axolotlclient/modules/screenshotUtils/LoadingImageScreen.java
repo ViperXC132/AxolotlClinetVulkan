@@ -26,7 +26,8 @@ import java.util.concurrent.CompletableFuture;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.util.HorizontalGradientRectangleRenderState;
-import net.minecraft.client.gui.GuiGraphics;
+import io.github.axolotlclient.util.MathUtil;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.StringWidget;
@@ -36,8 +37,8 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
 import net.minecraft.util.Util;
+import org.jspecify.annotations.NonNull;
 
 public class LoadingImageScreen extends Screen {
 
@@ -88,16 +89,8 @@ public class LoadingImageScreen extends Screen {
 		minecraft.setScreen(parent);
 	}
 
-	private void drawHorizontalGradient(GuiGraphics guiGraphics, int x1, int y1, int y2, int x2) {
-		HorizontalGradientRectangleRenderState.create(guiGraphics, x1, y1, x2, y2, LoadingImageScreen.bgColor, LoadingImageScreen.accent).submit();
-	}
-
-	private double easeInOutCubic(double x) {
-		return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
-	}
-
-	private int lerp(float delta, int start, int end) {
-		return (int) Mth.clamp(Mth.lerp(delta, start, end), start, end);
+	private void drawHorizontalGradient(GuiGraphicsExtractor guiGraphicsExtractor, int x1, int y1, int y2, int x2) {
+		HorizontalGradientRectangleRenderState.create(guiGraphicsExtractor, x1, y1, x2, y2, LoadingImageScreen.bgColor, LoadingImageScreen.accent).submit();
 	}
 
 	private class LoadingWidget extends AbstractWidget {
@@ -108,13 +101,13 @@ public class LoadingImageScreen extends Screen {
 		}
 
 		@Override
-		protected void renderWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
-			guiGraphics.fill(getX(), getY(), getRight(), getBottom(), bgColor);
-			drawHorizontalGradient(guiGraphics, getX(), getY(), getBottom(), lerp((float) easeInOutCubic((Util.getMillis() - loadStart) % 1000f / 1000f), getX(), getRight()));
+		protected void extractWidgetRenderState(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, float partialTick) {
+			guiGraphicsExtractor.fill(getX(), getY(), getRight(), getBottom(), bgColor);
+			drawHorizontalGradient(guiGraphicsExtractor, getX(), getY(), getBottom(), MathUtil.lerp((float) MathUtil.easeInOutCubic((Util.getMillis() - loadStart) % 1000f / 1000f), getX(), getRight()));
 		}
 
 		@Override
-		protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
+		protected void updateWidgetNarration(@NonNull NarrationElementOutput narrationElementOutput) {
 
 		}
 	}

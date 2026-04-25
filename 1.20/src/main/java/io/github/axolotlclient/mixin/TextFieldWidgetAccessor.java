@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2026 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -20,8 +20,16 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.util.events.impl;
+package io.github.axolotlclient.mixin;
 
-public record MouseInputEvent(long window, int button, int action, int mods) {
+import java.util.function.Consumer;
 
+import net.minecraft.client.gui.widget.TextFieldWidget;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
+
+@Mixin(TextFieldWidget.class)
+public interface TextFieldWidgetAccessor {
+	@Accessor("changedListener")
+	Consumer<String> getResponder();
 }

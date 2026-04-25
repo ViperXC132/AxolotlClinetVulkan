@@ -27,8 +27,6 @@ import java.nio.FloatBuffer;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.modules.blur.MenuBlur;
@@ -48,6 +46,8 @@ import net.minecraft.client.entity.living.player.LocalClientPlayerEntity;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.Camera;
 import net.minecraft.client.render.GameRenderer;
+import net.minecraft.client.render.platform.GLX;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.living.LivingEntity;
@@ -60,7 +60,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -69,8 +68,6 @@ public abstract class GameRendererMixin {
 
 	@Shadow
 	private Minecraft minecraft;
-	@Shadow
-	private float viewDistance;
 	@Shadow
 	private float fogRed;
 	@Shadow
@@ -83,17 +80,19 @@ public abstract class GameRendererMixin {
 	private boolean debugCamera;
 
 	@Shadow
-	protected abstract FloatBuffer setFogColor(float par1, float par2, float par3, float par4);
+	protected abstract FloatBuffer updateColorBuffer(float par1, float par2, float par3, float par4);
 
+	@Shadow
+	private float renderDistance;
 
-	@Inject(method = "renderFog", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "setupFog", at = @At("HEAD"), cancellable = true)
 	public void axolotlclient$noFog(int i, float tickDelta, CallbackInfo ci) {
-		if (Minecraft.getInstance().world.dimension.isOverworld() && AxolotlClient.config().customSky.get()
+		if (Minecraft.getInstance().world.dimension.isNatural() && AxolotlClient.config().customSky.get()
 			&& SkyboxManager.getInstance().hasSkyBoxes()) {
-			this.viewDistance = (float) (this.viewDistance * 2 + Minecraft.getInstance().player.getSourcePos().y);
+			this.renderDistance = (float) (this.renderDistance * 2 + Minecraft.getInstance().player.getCommandSourcePos().y);
 			Entity entity = this.minecraft.getCamera();
 
-			GL11.glFogfv(2918, this.setFogColor(this.fogRed, this.fogGreen, this.fogBlue, 1.0F));
+			GL11.glFogfv(2918, this.updateColorBuffer(this.fogRed, this.fogGreen, this.fogBlue, 1.0F));
 			GL11.glNormal3f(0.0F, -1.0F, 0.0F);
 			GlStateManager.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 			Block block = Camera.getBlockInside(this.minecraft.world, entity, tickDelta);
@@ -101,7 +100,7 @@ public abstract class GameRendererMixin {
 				float f = 5.0F;
 				int j = ((LivingEntity) entity).getEffectInstance(StatusEffect.BLINDNESS).getDuration();
 				if (j < 20) {
-					f = 5.0F + (this.viewDistance - 5.0F) * (1.0F - (float) j / 20.0F);
+					f = 5.0F + (this.renderDistance - 5.0F) * (1.0F - (float) j / 20.0F);
 				}
 
 				GlStateManager.fogMode(9729);
@@ -131,7 +130,7 @@ public abstract class GameRendererMixin {
 				GlStateManager.fogMode(2048);
 				GlStateManager.fogDensity(2.0F);
 			} else {
-				float f = this.viewDistance;
+				float f = this.renderDistance;
 				GlStateManager.fogMode(9729);
 				GlStateManager.fogStart(f - 0.01F);
 				GlStateManager.fogEnd(f);
@@ -164,7 +163,7 @@ public abstract class GameRendererMixin {
 			Entity entity = this.minecraft.getCamera();
 			float f = changingFov ? minecraft.options.fov : 70F;
 			if (entity instanceof LivingEntity && ((LivingEntity) entity).getHealth() <= 0.0F) {
-				float g = (float) ((LivingEntity) entity).deathTime + tickDelta;
+				float g = (float) ((LivingEntity) entity).deathTicks + tickDelta;
 				f /= (1.0F - 500.0F / (g + 500.0F)) * 2.0F + 1.0F;
 			}
 
@@ -180,11 +179,11 @@ public abstract class GameRendererMixin {
 		cir.setReturnValue(returnValue);
 	}
 
-	@Redirect(method = "updateLightMap", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;gamma:F", opcode = Opcodes.GETFIELD))
-	public float axolotlclient$setGamma(GameOptions instance) {
+	@WrapOperation(method = "updateLightMap", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;gamma:F", opcode = Opcodes.GETFIELD))
+	public float axolotlclient$setGamma(GameOptions instance, Operation<Float> original) {
 		if (AxolotlClient.config().fullBright.get())
 			return 15F;
-		return instance.gamma;
+		return original.call(instance);
 	}
 
 	@Inject(method = "renderAxisIndicators", at = @At("HEAD"), cancellable = true)
@@ -196,7 +195,7 @@ public abstract class GameRendererMixin {
 		}
 	}
 
-	@Inject(method = "render(FJ)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/pipeline/RenderTarget;bindWrite(Z)V"))
+	@Inject(method = "render(FJ)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/pipeline/RenderTarget;bindWrite(Z)V"))
 	public void axolotlclient$worldMotionBlur(float tickDelta, long nanoTime, CallbackInfo ci) {
 		MenuBlur.getInstance().updateBlur();
 		axolotlclient$postRender(tickDelta, nanoTime, null);
@@ -234,24 +233,24 @@ public abstract class GameRendererMixin {
 		original.call(instance, yaw, pitch);
 	}
 
-	@Redirect(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;yaw:F", opcode = Opcodes.GETFIELD))
-	public float axolotlclient$freelook$yaw(Entity entity) {
-		return Freelook.getInstance().yaw(entity.yaw);
+	@WrapOperation(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;yaw:F", opcode = Opcodes.GETFIELD))
+	public float axolotlclient$freelook$yaw(Entity instance, Operation<Float> original) {
+		return Freelook.getInstance().yaw(original.call(instance));
 	}
 
-	@Redirect(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;prevYaw:F", opcode = Opcodes.GETFIELD))
-	public float axolotlclient$freelook$prevYaw(Entity entity) {
-		return Freelook.getInstance().yaw(entity.prevYaw);
+	@WrapOperation(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;lastYaw:F", opcode = Opcodes.GETFIELD))
+	public float axolotlclient$freelook$prevYaw(Entity instance, Operation<Float> original) {
+		return Freelook.getInstance().yaw(original.call(instance));
 	}
 
-	@Redirect(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;pitch:F", opcode = Opcodes.GETFIELD))
-	public float axolotlclient$freelook$pitch(Entity entity) {
-		return Freelook.getInstance().pitch(entity.pitch);
+	@WrapOperation(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;pitch:F", opcode = Opcodes.GETFIELD))
+	public float axolotlclient$freelook$pitch(Entity instance, Operation<Float> original) {
+		return Freelook.getInstance().pitch(original.call(instance));
 	}
 
-	@Redirect(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;prevPitch:F", opcode = Opcodes.GETFIELD))
-	public float axolotlclient$freelook$prevPitch(Entity entity) {
-		return Freelook.getInstance().pitch(entity.prevPitch);
+	@WrapOperation(method = "transformCamera", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;lastPitch:F", opcode = Opcodes.GETFIELD))
+	public float axolotlclient$freelook$prevPitch(Entity instance, Operation<Float> original) {
+		return Freelook.getInstance().pitch(original.call(instance));
 	}
 
 	@Inject(method = "render(FJ)V", at = @At("HEAD"), cancellable = true)
@@ -268,7 +267,7 @@ public abstract class GameRendererMixin {
 		}
 	}
 
-	@Inject(method = "applyViewBobbing", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;translatef(FFF)V"), cancellable = true)
+	@Inject(method = "applyViewBobbing", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;translatef(FFF)V"), cancellable = true)
 	private void axolotlclient$minimalViewBob(float f, CallbackInfo ci, @Local(ordinal = 2) float h, @Local(ordinal = 3) float i, @Local(ordinal = 4) float j) {
 		if (AxolotlClient.config().minimalViewBob.get()) {
 			h /= 2;

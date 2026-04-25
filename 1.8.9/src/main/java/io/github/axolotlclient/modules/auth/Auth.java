@@ -145,7 +145,7 @@ public class Auth extends Accounts implements Module {
 	CompletableFuture<Account> showAccountsExpiredScreen(Account account) {
 		Screen current = client.screen;
 		var fut = new CompletableFuture<Account>();
-		client.submit(() -> client.openScreen(new ConfirmScreen((bl, i) -> {
+		client.executeTask(() -> client.openScreen(new ConfirmScreen((bl, i) -> {
 			if (bl) {
 				msApi.startDeviceAuth().thenRun(() -> fut.complete(account));
 			} else {
@@ -158,7 +158,7 @@ public class Auth extends Accounts implements Module {
 
 	@Override
 	void displayDeviceCode(DeviceFlowData data) {
-		client.submit(() -> client.openScreen(new DeviceCodeDisplayScreen(client.screen, data)));
+		client.executeTask(() -> client.openScreen(new DeviceCodeDisplayScreen(client.screen, data)));
 	}
 
 	public Identifier getSkinTexture(Account account) {

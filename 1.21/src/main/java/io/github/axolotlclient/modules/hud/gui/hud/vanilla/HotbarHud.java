@@ -30,11 +30,7 @@ import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Identifier;
-
-import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawCenteredString;
 
 public class HotbarHud extends TextHudEntry {
 	public static final Identifier ID = Identifier.of("axolotlclient", "hotbarhud");
@@ -51,12 +47,10 @@ public class HotbarHud extends TextHudEntry {
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
-		final var graphics = (GuiGraphics) context;
+		DrawPosition pos = getContentPos();
 
-		DrawPosition pos = getPos();
-
-		drawCenteredString(graphics, MinecraftClient.getInstance().textRenderer, getName(), pos.x() + width / 2,
-			pos.y() + height / 2 - 4, -1, true);
+		context.br$drawCenteredString(getName(), pos.x() + width / 2,
+			pos.y() + height / 2 - 4, -1);
 	}
 
 	@Override
@@ -81,5 +75,15 @@ public class HotbarHud extends TextHudEntry {
 	@Override
 	protected AnchorPoint getDefaultAnchor() {
 		return AnchorPoint.BOTTOM_MIDDLE;
+	}
+
+	@Override
+	public double getDefaultX() {
+		return 0.5;
+	}
+
+	@Override
+	public double getDefaultY() {
+		return 0.96;
 	}
 }

@@ -31,7 +31,7 @@ import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -81,21 +81,21 @@ public class SpecialKeystrokeSelectionList extends ContainerObjectSelectionList<
 		}
 
 		@Override
-		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+		public void extractContent(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, boolean hovering, float partialTick) {
 			int i = SpecialKeystrokeSelectionList.this.scrollBarX() - 10;
 			int j = getContentY() - 2;
 			int k = i - 5 - this.addButton.getWidth();
 			this.addButton.setPosition(k, j);
-			this.addButton.render(guiGraphics, mouseX, mouseY, partialTick);
-			guiGraphics.pose().pushMatrix();
+			this.addButton.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
+			guiGraphicsExtractor.pose().pushMatrix();
 			var rect = keystroke.getRenderPosition();
 			float scale = Math.min((float) getContentHeight() / rect.height(), (float) 100 / rect.width());
-			guiGraphics.pose().translate(getContentX(), getContentY());
-			guiGraphics.pose().scale(scale, scale);
-			guiGraphics.pose().translate(-rect.x(), -rect.y());
-			keystroke.render(guiGraphics);
-			guiGraphics.pose().popMatrix();
-			guiGraphics.drawString(minecraft.font, boundKey, getContentX() + 110 + (k - getContentX() - 110) / 3, getContentY() + getContentHeight() / 2 - 9 / 2, Colors.GRAY.toInt());
+			guiGraphicsExtractor.pose().translate(getContentX(), getContentY());
+			guiGraphicsExtractor.pose().scale(scale, scale);
+			guiGraphicsExtractor.pose().translate(-rect.x(), -rect.y());
+			keystroke.render(guiGraphicsExtractor);
+			guiGraphicsExtractor.pose().popMatrix();
+			guiGraphicsExtractor.text(minecraft.font, boundKey, getContentX() + 110 + (k - getContentX() - 110) / 3, getContentY() + getContentHeight() / 2 - 9 / 2, Colors.GRAY.toInt());
 		}
 
 		@Override

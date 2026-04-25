@@ -25,7 +25,7 @@ package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 import java.util.Comparator;
 import java.util.List;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
@@ -180,16 +180,18 @@ public class ScoreboardHud extends TextHudEntry {
 		var maxRounding = Math.min(Math.min(font.fontHeight + topPadding.get() * 2 + backgroundPadding.get(), titleEnd - 1 - bgBounds.y()), xEnd - textX - 3) / 2f;
 		float rounding = Math.min(maxRounding, backgroundRounding.get());
 		var drawUtil = io.github.axolotlclient.rendering.DrawUtil.get();
-		if (!placeholder && background.get()) {
-			if (roundBackground.get()) {
-				drawUtil.axolotlclient_rendering$roundedRect(0, 0, 1, 1, 0, 0); // HELP
-				drawUtil.axolotlclient_rendering$roundedRectVarying(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), titleEnd - 1,
-					topColor.get().toInt(), rounding, 0, 0, rounding);
-				drawUtil.axolotlclient_rendering$roundedRectVarying(bgBounds.x(), titleEnd - 1, bgBounds.xEnd(), bgBounds.yEnd(),
-					backgroundColor.get().toInt(), 0, rounding, rounding, 0);
-			} else {
-				graphics.br$fillRect(bgBounds.x(), bgBounds.y(), bgBounds.width(), titleEnd - 1 - bgBounds.y(), topColor.get().toInt());
-				graphics.br$fillRect(bgBounds.x(), titleEnd - 1, bgBounds.width(), bgBounds.yEnd() - titleEnd + 1, backgroundColor.get().toInt());
+		if (!placeholder) {
+			if (background.get()) {
+				if (roundBackground.get()) {
+					drawUtil.axolotlclient_rendering$roundedRect(0, 0, 1, 1, 0, 0); // HELP
+					drawUtil.axolotlclient_rendering$roundedRectVarying(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), titleEnd - 1,
+						topColor.get().toInt(), rounding, 0, 0, rounding);
+					drawUtil.axolotlclient_rendering$roundedRectVarying(bgBounds.x(), titleEnd - 1, bgBounds.xEnd(), bgBounds.yEnd(),
+						backgroundColor.get().toInt(), 0, rounding, rounding, 0);
+				} else {
+					graphics.br$fillRect(bgBounds.x(), bgBounds.y(), bgBounds.width(), titleEnd - 1 - bgBounds.y(), topColor.get().toInt());
+					graphics.br$fillRect(bgBounds.x(), titleEnd - 1, bgBounds.width(), bgBounds.yEnd() - titleEnd + 1, backgroundColor.get().toInt());
+				}
 			}
 		} else {
 			graphics.br$fillRect(bgBounds.x()+1, bgBounds.y()+1, bgBounds.width()-2, titleEnd - 1 - bgBounds.y()-1, ClientColors.DARK_GRAY.withAlpha(100));

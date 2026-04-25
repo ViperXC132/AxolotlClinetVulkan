@@ -41,6 +41,8 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringArrayOption;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.bridge.AxoMinecraftClient;
+import io.github.axolotlclient.bridge.key.AxoKeybinding;
+import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.modules.AbstractModule;
 import io.github.axolotlclient.util.CommonUtil;
 import io.github.axolotlclient.util.OSUtil;
@@ -82,7 +84,7 @@ public class ScreenshotUtils extends AbstractModule {
 			file -> {
 				try {
 					ImageInstance instance = new ImageInstance.LocalImpl(file);
-					client.submit(() -> client.openScreen(ImageScreen.create(null, CompletableFuture.completedFuture(instance), true)));
+					client.executeTask(() -> client.openScreen(ImageScreen.create(null, CompletableFuture.completedFuture(instance), true)));
 				} catch (Exception ignored) {
 					Util.addMessageToChatHud(new TranslatableText("screenshot.gallery.view.error"));
 				}
@@ -102,6 +104,7 @@ public class ScreenshotUtils extends AbstractModule {
 		return names.toArray(new String[0]);
 	}), "off");
 	public final ColorOption toastBorderColor = new ColorOption("screenshot_utils.mode.toast.border_color", Colors.WHITE);
+	public final AxoKeybinding screenshotCropBinding = AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "screenshot_utils.screenshot_and_crop");
 
 	@Override
 	public void init() {
@@ -109,6 +112,12 @@ public class ScreenshotUtils extends AbstractModule {
 			client.openScreen(new GalleryScreen(client.screen))), toastBorderColor);
 
 		AxolotlClient.config().general.add(category);
+		screenshotCropBinding.br$registerOnConsumeClick(() -> {
+			var img = Util.takeScreenshot();
+			var instance = new ImageInstance.Memory(img);
+			var parent = client.screen;
+			client.openScreen(new CropImageScreen(parent, instance, true));
+		});
 	}
 
 	public Text onScreenshotTaken(Text text, File shot) {

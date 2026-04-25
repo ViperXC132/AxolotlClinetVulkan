@@ -23,11 +23,17 @@
 package io.github.axolotlclient.util;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.IntBuffer;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.function.Supplier;
 
+import net.minecraft.client.render.platform.GLX;
+import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Graphics;
@@ -37,11 +43,14 @@ import io.github.axolotlclient.mixin.MinecraftClientAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.Window;
 import net.minecraft.client.render.texture.DynamicTexture;
+import net.minecraft.client.render.texture.TextureUtil;
 import net.minecraft.resource.Identifier;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.ApiStatus;
+import org.lwjgl.opengl.GL11;
 
 public class Util {
+	private static final DateTimeFormatter FILENAME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH.mm.ss");
 	@ApiStatus.Internal
 	public static Window window;
 
@@ -58,7 +67,7 @@ public class Util {
 		return end - start;
 	}
 
-	public static int toGlCoordsX(int x) {
+	/*public static int toGlCoordsX(int x) {
 		if (window == null) {
 			window = new Window(Minecraft.getInstance());
 		}
@@ -71,7 +80,7 @@ public class Util {
 		}
 		int scale = window.getScale();
 		return Minecraft.getInstance().height - y * scale - scale;
-	}
+	}*/
 
 	public static int toMCCoordsX(int x) {
 		if (window == null) {
@@ -121,19 +130,15 @@ public class Util {
 	}
 
 	public static boolean currentServerAddressContains(String address) {
-		if (Minecraft.getInstance().isInSingleplayer()
+		if (Minecraft.getInstance().isSingleplayer()
 			|| Minecraft.getInstance().isIntegratedServerRunning()) {
 			return false;
 		}
 		if (Minecraft.getInstance().getCurrentServerEntry() != null) {
-			return Minecraft.getInstance().getCurrentServerEntry().address.contains(address);
+			return Minecraft.getInstance().getCurrentServerEntry().ip.contains(address);
 		}
 		return ((MinecraftClientAccessor) Minecraft.getInstance()).getServerAddress() != null
 			&& ((MinecraftClientAccessor) Minecraft.getInstance()).getServerAddress().contains(address);
-	}
-
-	public static float lerp(float start, float end, float percent) {
-		return start + ((end - start) * percent);
 	}
 
 	public static Identifier getTexture(GraphicsOption option) {
@@ -173,5 +178,48 @@ public class Util {
 
 	public static String getFormatCode(Color color) {
 		return String.format("§#%06X", color.getRed() << 16 | color.getGreen() << 8 | color.getBlue());
+	}
+
+	public static BufferedImage takeScreenshot() {
+		int w = Minecraft.getInstance().width;
+		int h = Minecraft.getInstance().height;
+		var renderTarget = Minecraft.getInstance().getRenderTarget();
+		if (GLX.useFbo()) {
+			w = renderTarget.width;
+			h = renderTarget.height;
+		}
+
+		int bufferSize = w * h;
+		var buffer = new int[bufferSize];
+
+		GL11.glPixelStorei(3333, 1);
+		GL11.glPixelStorei(3317, 1);
+		if (GLX.useFbo()) {
+			GlStateManager.bindTexture(renderTarget.colorTextureId);
+			GL11.glGetTexImage(3553, 0, 32993, 33639, IntBuffer.wrap(buffer));
+		} else {
+			GL11.glReadPixels(0, 0, w, h, 32993, 33639, IntBuffer.wrap(buffer));
+		}
+
+		TextureUtil.copyTextureValues(buffer, w, h);
+		BufferedImage img;
+		if (GLX.useFbo()) {
+			img = new BufferedImage(renderTarget.viewWidth, renderTarget.viewHeight, 1);
+			int l = renderTarget.height - renderTarget.viewHeight;
+
+			for (int m = l; m < renderTarget.height; m++) {
+				for (int n = 0; n < renderTarget.viewWidth; n++) {
+					img.setRGB(n, m - l, buffer[m * renderTarget.width + n]);
+				}
+			}
+		} else {
+			img = new BufferedImage(w, h, 1);
+			img.setRGB(0, 0, w, h, buffer, 0, w);
+		}
+		return img;
+	}
+
+	public static String getFilenameFormattedDateTime() {
+		return FILENAME_FORMAT.format(ZonedDateTime.now());
 	}
 }

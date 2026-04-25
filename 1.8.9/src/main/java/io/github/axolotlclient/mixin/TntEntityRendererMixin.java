@@ -25,7 +25,7 @@ package io.github.axolotlclient.mixin;
 import io.github.axolotlclient.modules.tnttime.TntTime;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
-import net.minecraft.client.render.entity.TntRenderer;
+import net.minecraft.client.render.entity.PrimedTntRenderer;
 import net.minecraft.entity.PrimedTntEntity;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
@@ -33,7 +33,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(TntRenderer.class)
+@Mixin(PrimedTntRenderer.class)
 public abstract class TntEntityRendererMixin extends EntityRenderer<PrimedTntEntity> {
 
 	protected TntEntityRendererMixin(EntityRenderDispatcher dispatcher) {

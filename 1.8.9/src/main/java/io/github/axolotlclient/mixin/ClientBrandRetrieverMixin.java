@@ -33,6 +33,9 @@ public abstract class ClientBrandRetrieverMixin {
 	@WrapMethod(method = "getClientModName")
 	private static String axolotlclient$returnClientBrand(Operation<String> original) {
 		if (AxolotlClientCommon.getInstance().getConfig().modifyClientBrand.get()) {
+			if ("vanilla".equals(original.call()) || "fabric".equals(original.call())) {
+				return "AxolotlClient";
+			}
 			return original.call().replace("vanilla", "AxolotlClient");
 		}
 		return original.call();

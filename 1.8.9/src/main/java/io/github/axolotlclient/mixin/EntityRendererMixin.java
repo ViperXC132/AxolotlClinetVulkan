@@ -22,12 +22,9 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tessellator;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.bridge.AxoPerspective;
 import io.github.axolotlclient.modules.hypixel.LevelHead;
@@ -39,11 +36,13 @@ import net.minecraft.client.entity.living.player.ClientPlayerEntity;
 import net.minecraft.client.render.TextRenderer;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.platform.GlStateManager;
+import net.minecraft.client.render.vertex.BufferBuilder;
+import net.minecraft.client.render.vertex.DefaultVertexFormat;
+import net.minecraft.client.render.vertex.Tesselator;
+import net.minecraft.client.render.vertex.VertexFormat;
 import net.minecraft.entity.Entity;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -55,7 +54,7 @@ public abstract class EntityRendererMixin<T extends Entity> {
 	@Final
 	protected EntityRenderDispatcher dispatcher;
 
-	@Inject(method = "renderNameTag(Lnet/minecraft/entity/Entity;Ljava/lang/String;DDDI)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;rotatef(FFFF)V", ordinal = 1))
+	@Inject(method = "renderNameTag(Lnet/minecraft/entity/Entity;Ljava/lang/String;DDDI)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;rotatef(FFFF)V", ordinal = 1))
 	private void axolotlclient$correctNameplateRotation(Entity entity, String string, double d, double e, double f, int i, CallbackInfo ci) {
 		if (Minecraft.getInstance().options.perspective == AxoPerspective.THIRD_PERSON_FRONT.ordinal()) {
 			GlStateManager.rotatef(-this.dispatcher.cameraPitch * 2, 1.0F, 0.0F, 0.0F);
@@ -78,12 +77,12 @@ public abstract class EntityRendererMixin<T extends Entity> {
 
 	@Inject(method = "renderNameTag(Lnet/minecraft/entity/Entity;Ljava/lang/String;DDDI)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/TextRenderer;draw(Ljava/lang/String;III)I", ordinal = 1))
 	public void axolotlclient$addLevel(T entity, String string, double d, double e, double f, int i, CallbackInfo ci) {
-		if (entity instanceof ClientPlayerEntity && string.equals(entity.getDisplayName().getFormattedString())) {
+		if (entity instanceof ClientPlayerEntity player && string.equals(entity.getDisplayName().getFormattedString())) {
 			if (Util.currentServerAddressContains("hypixel.net")) {
 				if (BedwarsMod.getInstance().isEnabled() &&
 					BedwarsMod.getInstance().inGame() &&
 					BedwarsMod.getInstance().bedwarsLevelHead.get()) {
-					String levelhead = BedwarsMod.getInstance().getGame().get().getLevelHead((ClientPlayerEntity) entity);
+					String levelhead = BedwarsMod.getInstance().getGame().get().getLevelHead(player);
 					if (levelhead != null) {
 						axolotlclient$drawLevelHead(levelhead);
 					}
@@ -108,15 +107,15 @@ public abstract class EntityRendererMixin<T extends Entity> {
 		}
 
 		if (LevelHead.getInstance().background.get()) {
-			Tessellator tessellator = Tessellator.getInstance();
-			BufferBuilder bufferBuilder = tessellator.getBuilder();
+			Tesselator tesselator = Tesselator.getInstance();
+			BufferBuilder bufferBuilder = tesselator.getBuffer();
 			GlStateManager.disableTexture();
 			bufferBuilder.begin(7, DefaultVertexFormat.POSITION_COLOR);
 			bufferBuilder.vertex(-x - 1, -1 + y, 0.0).color(0.0F, 0.0F, 0.0F, 0.25F).nextVertex();
 			bufferBuilder.vertex(-x - 1, 8 + y, 0.0).color(0.0F, 0.0F, 0.0F, 0.25F).nextVertex();
 			bufferBuilder.vertex(x + 1, 8 + y, 0.0).color(0.0F, 0.0F, 0.0F, 0.25F).nextVertex();
 			bufferBuilder.vertex(x + 1, -1 + y, 0.0).color(0.0F, 0.0F, 0.0F, 0.25F).nextVertex();
-			tessellator.end();
+			tesselator.end();
 			GlStateManager.enableTexture();
 		}
 
@@ -124,10 +123,33 @@ public abstract class EntityRendererMixin<T extends Entity> {
 			AxolotlClient.config().useShadows.get());
 	}
 
-	@WrapOperation(method = "renderNameTag(Lnet/minecraft/entity/Entity;Ljava/lang/String;DDDI)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferBuilder;vertex(DDD)Lcom/mojang/blaze3d/vertex/BufferBuilder;"))
-	public BufferBuilder axolotlclient$noBg(BufferBuilder instance, double d, double e, double f, Operation<BufferBuilder> original) {
+	@WrapWithCondition(method = "renderNameTag(Lnet/minecraft/entity/Entity;Ljava/lang/String;DDDI)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/vertex/BufferBuilder;begin(ILnet/minecraft/client/render/vertex/VertexFormat;)V"))
+	private boolean disableNameTagBackground(BufferBuilder instance, int drawMode, VertexFormat format) {
+		return AxolotlClient.config().nametagBackground.get();
+	}
+
+	@WrapWithCondition(method = "renderNameTag(Lnet/minecraft/entity/Entity;Ljava/lang/String;DDDI)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/vertex/BufferBuilder;nextVertex()V"))
+	private boolean disableNameTagBackground$2(BufferBuilder instance) {
+		return AxolotlClient.config().nametagBackground.get();
+	}
+
+	@WrapWithCondition(method = "renderNameTag(Lnet/minecraft/entity/Entity;Ljava/lang/String;DDDI)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/vertex/Tesselator;end()V"))
+	private boolean disableNameTagBackground$3(Tesselator instance) {
+		return AxolotlClient.config().nametagBackground.get();
+	}
+
+	@WrapOperation(method = "renderNameTag(Lnet/minecraft/entity/Entity;Ljava/lang/String;DDDI)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/vertex/BufferBuilder;vertex(DDD)Lnet/minecraft/client/render/vertex/BufferBuilder;"))
+	private BufferBuilder disableNameTagBackground(BufferBuilder instance, double x, double y, double z, Operation<BufferBuilder> original) {
 		if (AxolotlClient.config().nametagBackground.get()) {
-			original.call(instance, d, e, f);
+			return original.call(instance, x, y, z);
+		}
+		return instance;
+	}
+
+	@WrapOperation(method = "renderNameTag(Lnet/minecraft/entity/Entity;Ljava/lang/String;DDDI)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/vertex/BufferBuilder;color(FFFF)Lnet/minecraft/client/render/vertex/BufferBuilder;"))
+	private BufferBuilder disableNameTagBackground$2(BufferBuilder instance, float r, float g, float b, float a, Operation<BufferBuilder> original) {
+		if (AxolotlClient.config().nametagBackground.get()) {
+			return original.call(instance, r, g, b, a);
 		}
 		return instance;
 	}

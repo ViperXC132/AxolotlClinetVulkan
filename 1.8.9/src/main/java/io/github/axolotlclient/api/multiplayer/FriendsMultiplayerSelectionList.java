@@ -33,8 +33,7 @@ import java.util.stream.Collectors;
 
 import com.google.common.hash.Hashing;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.TextureUtil;
+import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.EntryListWidget;
 import io.github.axolotlclient.api.types.PkSystem;
@@ -53,6 +52,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.options.ServerListEntry;
 import net.minecraft.client.render.texture.DynamicTexture;
+import net.minecraft.client.render.texture.TextureUtil;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.resource.Identifier;
 import net.minecraft.text.Formatting;
@@ -239,7 +239,7 @@ public class FriendsMultiplayerSelectionList extends EntryListWidget<FriendsMult
 			this.screen = screen;
 			this.minecraft = Minecraft.getInstance();
 			this.serverData = new ServerInfoEx(serverData);
-			this.iconId = new Identifier("servers/" + Hashing.sha1().hashUnencodedChars(serverData.address != null ? serverData.address : user.getUuid() + "_" + serverData.name) + "/icon");
+			this.iconId = new Identifier("servers/" + Hashing.sha1().hashUnencodedChars(serverData.ip != null ? serverData.ip : user.getUuid() + "_" + serverData.name) + "/icon");
 			this.user = user;
 		}
 
@@ -261,7 +261,7 @@ public class FriendsMultiplayerSelectionList extends EntryListWidget<FriendsMult
 					break;
 				case INCOMPATIBLE:
 					this.statusIcon = Sprite.INCOMPATIBLE_SPRITE;
-					var tooltipString = this.serverData.serverInfo.playerListString;
+					var tooltipString = this.serverData.serverInfo.onlinePlayers;
 					if (tooltipString != null) {
 						this.onlinePlayersTooltip = List.of(tooltipString.split("\n"));
 					} else {
@@ -290,7 +290,7 @@ public class FriendsMultiplayerSelectionList extends EntryListWidget<FriendsMult
 					}
 
 					this.statusIconTooltip = I18n.translate("multiplayer.status.ping", this.serverData.serverInfo.ping);
-					var tooltipStr = this.serverData.serverInfo.playerListString;
+					var tooltipStr = this.serverData.serverInfo.onlinePlayers;
 					if (tooltipStr != null) {
 						this.onlinePlayersTooltip = List.of(tooltipStr.split("\n"));
 					} else {
@@ -303,7 +303,7 @@ public class FriendsMultiplayerSelectionList extends EntryListWidget<FriendsMult
 		public void render(int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
 			if (this.serverData.pingResult() == PingResult.INITIAL) {
 				this.serverData.setPingResult(PingResult.PINGING);
-				this.serverData.serverInfo.description = "";
+				this.serverData.serverInfo.motd = "";
 				this.serverData.serverInfo.onlinePlayers = "";
 				FriendsMultiplayerSelectionList.THREAD_POOL
 					.submit(
@@ -316,12 +316,12 @@ public class FriendsMultiplayerSelectionList extends EntryListWidget<FriendsMult
 									);
 							} catch (UnknownHostException var2) {
 								this.serverData.setPingResult(PingResult.UNREACHABLE);
-								this.serverData.serverInfo.description = FriendsMultiplayerSelectionList.CANT_RESOLVE_TEXT;
-								this.minecraft.submit(this::refreshStatus);
+								this.serverData.serverInfo.motd = FriendsMultiplayerSelectionList.CANT_RESOLVE_TEXT;
+								this.minecraft.executeTask(this::refreshStatus);
 							} catch (Exception var3) {
 								this.serverData.setPingResult(PingResult.UNREACHABLE);
-								this.serverData.serverInfo.description = FriendsMultiplayerSelectionList.CANT_CONNECT_TEXT;
-								this.minecraft.submit(this::refreshStatus);
+								this.serverData.serverInfo.motd = FriendsMultiplayerSelectionList.CANT_CONNECT_TEXT;
+								this.minecraft.executeTask(this::refreshStatus);
 							}
 						}
 					);
@@ -335,7 +335,7 @@ public class FriendsMultiplayerSelectionList extends EntryListWidget<FriendsMult
 			refreshStatus();
 
 			minecraft.textRenderer.drawWithShadow(this.serverData.serverInfo.name, left + ICON_WIDTH + 3, top + 1, -1);
-			List<String> list = this.minecraft.textRenderer.split(this.serverData.serverInfo.description, width - ICON_WIDTH - 2);
+			List<String> list = this.minecraft.textRenderer.split(this.serverData.serverInfo.motd, width - ICON_WIDTH - 2);
 
 			for (int i = 0; i < Math.min(list.size(), 2); i++) {
 				minecraft.textRenderer.drawWithShadow(list.get(i), left + ICON_WIDTH + 3, top + 12 + 9 * i, -8355712);
@@ -441,7 +441,7 @@ public class FriendsMultiplayerSelectionList extends EntryListWidget<FriendsMult
 					this.icon.upload();
 
 				} catch (Throwable var3) {
-					FriendsMultiplayerSelectionList.LOGGER.error("Invalid icon for server {} ({})", this.serverData.serverInfo.name, this.serverData.serverInfo.address, var3);
+					FriendsMultiplayerSelectionList.LOGGER.error("Invalid icon for server {} ({})", this.serverData.serverInfo.name, this.serverData.serverInfo.ip, var3);
 					return false;
 				} finally {
 					buf.release();
@@ -529,7 +529,7 @@ public class FriendsMultiplayerSelectionList extends EntryListWidget<FriendsMult
 		@Override
 		protected void refreshStatus() {
 			super.refreshStatus();
-			serverData.serverInfo.description = statusDescription.serverInfo().levelName();
+			serverData.serverInfo.motd = statusDescription.serverInfo().levelName();
 		}
 	}
 

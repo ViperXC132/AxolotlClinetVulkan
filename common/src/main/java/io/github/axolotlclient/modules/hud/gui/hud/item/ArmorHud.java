@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
@@ -33,6 +34,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
+import io.github.axolotlclient.bridge.BridgeVersion;
 import io.github.axolotlclient.bridge.item.AxoEnchants;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoItems;
@@ -44,6 +46,7 @@ import io.github.axolotlclient.modules.hud.gui.layout.CardinalOrder;
 import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.util.ClientColors;
+import io.github.axolotlclient.util.CommonUtil;
 import io.github.axolotlclient.util.ItemUtil;
 
 /**
@@ -55,13 +58,13 @@ import io.github.axolotlclient.util.ItemUtil;
 public class ArmorHud extends TextHudEntry {
 
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "armorhud");
-	private static final AxoItemStack PLACEHOLDER_MAIN_HAND = AxoItemStack.of(AxoItems.IRON_SWORD);
-	private static final List<AxoItemStack> PLACEHOLDER_GEAR = List.of(
+	private static final Supplier<AxoItemStack> PLACEHOLDER_MAIN_HAND = CommonUtil.memoize(() -> AxoItemStack.of(AxoItems.IRON_SWORD));
+	private static final Supplier<List<AxoItemStack>> PLACEHOLDER_GEAR = CommonUtil.memoize(() -> List.of(
 		AxoItemStack.of(AxoItems.IRON_BOOTS),
 		AxoItemStack.of(AxoItems.IRON_LEGGINGS),
 		AxoItemStack.of(AxoItems.IRON_CHESTPLATE),
 		AxoItemStack.of(AxoItems.IRON_HELMET)
-	);
+	));
 
 	protected final BooleanOption showProtLvl = new BooleanOption("showProtectionLevel", false);
 	private final BooleanOption showDurabilityNumber = new BooleanOption("show_durability_num", false);
@@ -110,7 +113,37 @@ public class ArmorHud extends TextHudEntry {
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
-		renderInternal(graphics, PLACEHOLDER_MAIN_HAND, PLACEHOLDER_GEAR, 1);
+		if (BridgeVersion.V26_1.isCurrent()) {
+			if (client.br$getWorld() == null) {
+				var w = order.get().isXAxis() ? 20 : 100;
+				var h = order.get().isXAxis() ? 100 : 20;
+				var updated = false;
+				if (mainHandItemPosition.get() == MainHandItemPosition.DISABLED) {
+					if (order.get().isXAxis()) h -= 20;
+					else w -= 20;
+				}
+				if (w != getContentWidth()) {
+					setContentWidth(w);
+					updated = true;
+				}
+				if (h != getContentHeight()) {
+					setContentHeight(h);
+					updated = true;
+				}
+				if (updated) {
+					onBoundsUpdate();
+				}
+				var pos = getContentPos();
+				graphics.br$pushMatrix();
+				if (order.get().isXAxis()) {
+					graphics.br$rotateMatrixAround((float) Math.PI / 2f, pos.x() + getContentWidth() / 2f, pos.y() + getContentHeight() / 2f);
+				}
+				graphics.br$drawCenteredString(getName(), pos.x() + getContentWidth() / 2, pos.y() + getContentHeight() / 2 - graphics.br$getFont().br$getFontHeight() / 2, textColor.get());
+				graphics.br$popMatrix();
+				return;
+			}
+		}
+		renderInternal(graphics, PLACEHOLDER_MAIN_HAND.get(), PLACEHOLDER_GEAR.get(), 1);
 	}
 
 	private void renderInternal(
@@ -137,13 +170,13 @@ public class ArmorHud extends TextHudEntry {
 		if (order.isXAxis()) {
 			int labelWidth = (showDurability || showMaxDurability) ?
 				(mhPos == MainHandItemPosition.DISABLED ? armor.stream() : Stream.concat(Stream.of(mainHand), armor.stream()))
-					.mapToInt(stack -> {
-						String text = showDurability && showMaxDurability
-							? (stack.br$getMaxDamage() - stack.br$getDamage()) + "/" + stack.br$getMaxDamage()
-							: String.valueOf(showDurability ? stack.br$getMaxDamage() - stack.br$getDamage()
-							: stack.br$getMaxDamage());
-						return context.br$getFont().br$getWidth(text) + 2;
-					}).max().orElse(0) : 0;
+				.mapToInt(stack -> {
+					String text = showDurability && showMaxDurability
+						? (stack.br$getMaxDamage() - stack.br$getDamage()) + "/" + stack.br$getMaxDamage()
+						: String.valueOf(showDurability ? stack.br$getMaxDamage() - stack.br$getDamage()
+										 : stack.br$getMaxDamage());
+					return context.br$getFont().br$getWidth(text) + 2;
+				}).max().orElse(0) : 0;
 			width += labelWidth;
 			if (width != getContentWidth()) {
 				setContentWidth(width);
@@ -211,18 +244,18 @@ public class ArmorHud extends TextHudEntry {
 		} else {
 			int labelWidth = showDurability || showMaxDurability ?
 				(mhPos == MainHandItemPosition.DISABLED ? armor.stream() : Stream.concat(Stream.of(mainHand), armor.stream()))
-					.mapToInt(stack -> {
-						if (showDurability && showMaxDurability) {
-							var text1 = String.valueOf(stack.br$getMaxDamage() - stack.br$getDamage());
-							var text2 = "/" + stack.br$getMaxDamage();
-							int t1W = context.br$getFont().br$getWidth(text1);
-							int t2W = context.br$getFont().br$getWidth(text2);
-							return Math.max(t1W, t2W);
-						} else if (showDurability) {
-							return context.br$getFont().br$getWidth(String.valueOf(stack.br$getMaxDamage() - stack.br$getDamage()));
-						}
-						return context.br$getFont().br$getWidth(String.valueOf(stack.br$getMaxDamage()));
-					}).map(i -> i + 2).max().orElse(0) : 0;
+				.mapToInt(stack -> {
+					if (showDurability && showMaxDurability) {
+						var text1 = String.valueOf(stack.br$getMaxDamage() - stack.br$getDamage());
+						var text2 = "/" + stack.br$getMaxDamage();
+						int t1W = context.br$getFont().br$getWidth(text1);
+						int t2W = context.br$getFont().br$getWidth(text2);
+						return Math.max(t1W, t2W);
+					} else if (showDurability) {
+						return context.br$getFont().br$getWidth(String.valueOf(stack.br$getMaxDamage() - stack.br$getDamage()));
+					}
+					return context.br$getFont().br$getWidth(String.valueOf(stack.br$getMaxDamage()));
+				}).map(i -> i + 2).max().orElse(0) : 0;
 			{
 				int n = width;
 				width = height - 6;
@@ -337,7 +370,7 @@ public class ArmorHud extends TextHudEntry {
 			return 20;
 		} else {
 			var text = String.valueOf(showDurability ? stack.br$getMaxDamage() - stack.br$getDamage() : stack.br$getMaxDamage());
-			graphics.br$drawString(text, x - graphics.br$getFont().br$getWidth(text)/2, textY, customDurabilityNumColor.get() ? durabilityNumColor.get().toInt() :
+			graphics.br$drawString(text, x - graphics.br$getFont().br$getWidth(text) / 2, textY, customDurabilityNumColor.get() ? durabilityNumColor.get().toInt() :
 				ClientColors.ARGB.opaque(stack.br$getBarColor()), true);
 			return 10;
 		}

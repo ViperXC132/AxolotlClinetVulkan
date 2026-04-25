@@ -24,7 +24,7 @@ package io.github.axolotlclient.modules.auth;
 
 import java.util.UUID;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -42,12 +42,12 @@ public class AddOfflineScreen extends Screen {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int i, int j, float f) {
-		super.render(graphics, i, j, f);
-		graphics.drawString(font, Component.translatable("auth.add.offline.name"), (int) (width / 2F - 100),
+	public void extractRenderState(GuiGraphicsExtractor graphics, int i, int j, float f) {
+		super.extractRenderState(graphics, i, j, f);
+		graphics.text(font, Component.translatable("auth.add.offline.name"), (int) (width / 2F - 100),
 			(int) (height / 2f - 20), -1
 		);
-		graphics.drawCenteredString(this.font, this.title, this.width / 2, 20, -1);
+		graphics.centeredText(this.font, this.title, this.width / 2, 20, -1);
 	}
 
 	@Override

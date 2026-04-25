@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2026 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -22,16 +22,14 @@
 
 package io.github.axolotlclient.mixin;
 
-import java.util.Map;
+import java.util.function.Consumer;
 
-import net.minecraft.client.sound.instance.SoundInstance;
-import net.minecraft.client.sound.system.SoundEngine;
+import io.github.axolotlclient.AxolotlClientConfig.impl.ui.TextFieldWidget;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(SoundEngine.class)
-public interface SoundSystemAccessor {
-
-	@Accessor
-	Map<SoundInstance, String> getChannelsByEvent();
+@Mixin(TextFieldWidget.class)
+public interface AxoConfigTextFieldWidgetAccessor {
+	@Accessor("changedListener")
+	Consumer<String> getResponder();
 }

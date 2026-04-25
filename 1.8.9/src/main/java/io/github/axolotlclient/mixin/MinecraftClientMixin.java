@@ -24,7 +24,7 @@ package io.github.axolotlclient.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.bridge.events.types.WorldLoadEvent;
@@ -33,10 +33,9 @@ import io.github.axolotlclient.modules.blur.MenuBlur;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.HudManagerCommon;
 import io.github.axolotlclient.modules.rpc.DiscordRPC;
+import io.github.axolotlclient.modules.screenshotUtils.ScreenshotUtils;
 import io.github.axolotlclient.modules.zoom.Zoom;
 import io.github.axolotlclient.util.Util;
-import io.github.axolotlclient.util.events.Events;
-import io.github.axolotlclient.util.events.impl.MouseInputEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.living.player.LocalClientPlayerEntity;
 import net.minecraft.client.gui.chat.ChatGui;
@@ -45,6 +44,7 @@ import net.minecraft.client.main.RunArgs;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.render.texture.TextureManager;
+import net.minecraft.client.render.vertex.BufferBuilder;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.world.WorldSettings;
 import org.apache.logging.log4j.Logger;
@@ -96,10 +96,6 @@ public abstract class MinecraftClientMixin {
 		io.github.axolotlclient.bridge.events.Events.WORLD_LOAD_EVENT.invoker().accept(new WorldLoadEvent(clientWorld));
 	}
 
-	/**
-	 * @author moehreag
-	 * @reason Customize Window title for use in AxolotlClient
-	 */
 	@Inject(method = "initDisplay", at = @At("TAIL"))
 	public void axolotlclient$setWindowTitle(CallbackInfo ci) {
 		if (AxolotlClient.config().customWindowTitle.get()) {
@@ -118,7 +114,7 @@ public abstract class MinecraftClientMixin {
 	}
 
 	// Don't ask me why we need both here, but otherwise it looks ugly
-	@WrapOperation(method = "renderMojangLogo", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferBuilder;color(IIII)Lcom/mojang/blaze3d/vertex/BufferBuilder;"))
+	@WrapOperation(method = "renderLoadingScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/vertex/BufferBuilder;color(IIII)Lnet/minecraft/client/render/vertex/BufferBuilder;"))
 	public BufferBuilder axolotlclient$loadingScreenColor(BufferBuilder instance, int red, int green, int blue, int alpha, Operation<BufferBuilder> original) {
 		if (!AxolotlClient.config().customLoadingScreenColor.get())
 			return original.call(instance, red, green, blue, alpha);
@@ -128,7 +124,7 @@ public abstract class MinecraftClientMixin {
 			AxolotlClient.config().loadingScreenColor.get().getAlpha());
 	}
 
-	@WrapOperation(method = "renderLoadingScreen", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/BufferBuilder;color(IIII)Lcom/mojang/blaze3d/vertex/BufferBuilder;"))
+	@WrapOperation(method = "renderLoadingScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/vertex/BufferBuilder;color(IIII)Lnet/minecraft/client/render/vertex/BufferBuilder;"))
 	public BufferBuilder axolotlclient$loadingScreenBg(BufferBuilder instance, int red, int green, int blue, int alpha, Operation<BufferBuilder> original) {
 		if (!AxolotlClient.config().customLoadingScreenColor.get())
 			return original.call(instance, red, green, blue, alpha);
@@ -171,14 +167,7 @@ public abstract class MinecraftClientMixin {
 		return amount;
 	}
 
-	@Inject(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;getTime()J", ordinal = 0))
-	public void axolotlclient$onMouseButton(CallbackInfo ci) {
-		if (Mouse.getEventButtonState()) {
-			Events.MOUSE_INPUT.invoker().invoke(new MouseInputEvent(Mouse.getEventButton()));
-		}
-	}
-
-	@Inject(method = "onResolutionChanged(II)V", at = @At(value = "TAIL"))
+	@Inject(method = "resize(II)V", at = @At(value = "TAIL"))
 	public void axolotlclient$onResize(CallbackInfo ci) {
 		Util.window = null;
 		HudManager.getInstance().refreshAllBounds();
@@ -201,13 +190,17 @@ public abstract class MinecraftClientMixin {
 		}
 	}
 
-	@Inject(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/TitleScreen;<init>()V"))
-	private void onGameLoad(CallbackInfo ci) {
-		Events.GAME_LOAD_EVENT.invoker().invoke((Minecraft) (Object) this);
-	}
-
 	@Inject(method = "<init>", at = @At("TAIL"))
 	private void onClientInit(RunArgs runArgs, CallbackInfo ci) {
 		new AxolotlClient().onInitializeClient();
+	}
+
+	@Inject(method = "handleGuiKeyBindings", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;screenshotKey:Lnet/minecraft/client/options/KeyBinding;", opcode = Opcodes.GETFIELD), cancellable = true)
+	private void actionForScreenshotCropKey(CallbackInfo ci, @Local int keyCode) {
+		var mapping = (KeyBinding) ScreenshotUtils.getInstance().screenshotCropBinding;
+		if (keyCode == mapping.getKeyCode()) {
+			mapping.br$click();
+			ci.cancel();
+		}
 	}
 }

@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.google.gson.JsonSyntaxException;
-import com.mojang.blaze3d.shaders.Uniform;
+import net.minecraft.client.render.shaders.Uniform;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;

@@ -32,8 +32,16 @@ public abstract class IdentifierMixin implements AxoIdentifier {
 	@Shadow
 	public abstract String getPath();
 
+	@Shadow
+	public abstract String getNamespace();
+
 	@Override
 	public String br$getPath() {
 		return getPath();
+	}
+
+	@Override
+	public String br$getNamespace() {
+		return getNamespace();
 	}
 }

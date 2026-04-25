@@ -56,8 +56,8 @@ public abstract class AbstractHudEntry implements HudEntry {
 	protected final DoubleOption scale = DefaultOptions.getScale(this);
 	protected final AxoMinecraftClient client = AxoMinecraftClient.getInstance();
 	protected final BooleanOption hide = new BooleanOption("hud.hide", false);
-	private final DoubleOption x = DefaultOptions.getX(getDefaultX(), this);
-	private final DoubleOption y = DefaultOptions.getY(getDefaultY(), this);
+	private final DoubleOption x = DefaultOptions.getX(getDefaultX());
+	private final DoubleOption y = DefaultOptions.getY(getDefaultY());
 	private final Map<HudEntry, SnapAnchorType> xDependencies = new HashMap<>();
 	private final Map<HudEntry, SnapAnchorType> yDependencies = new HashMap<>();
 	@Setter
@@ -97,18 +97,20 @@ public abstract class AbstractHudEntry implements HudEntry {
 	public void renderPlaceholderBackground(AxoRenderContext context) {
 		var bounds = getTrueBounds();
 		if (hovered) {
-			context.br$fillRect(bounds, ClientColors.SELECTOR_BLUE.withAlpha(100));
+			context.br$fillRect(bounds, ClientColors.ARGB.color(100, ClientColors.SELECTOR_BLUE.toInt()));
 		} else {
-			context.br$fillRect(bounds, ClientColors.WHITE.withAlpha(50));
+			context.br$fillRect(bounds, ClientColors.ARGB.color(50, ClientColors.WHITE.toInt()));
 		}
 		context.br$outlineRect(bounds, Colors.BLACK);
 	}
 
 	public void renderPlaceholderGrabCorners(AxoRenderContext context) {
 		if (!supportsScaling()) return;
+		var c = HudManagerCommon.getInstance().grabCornerColor.get();
+		if (c.getAlpha() == 0) return;
 		var bounds = getTrueBounds();
 		var grabTolerance = Math.min(HudManagerCommon.HUD_RESCALE_GRAB_TOLERANCE, Math.min(bounds.width(), bounds.height())/2);
-		var color = HudManagerCommon.getInstance().grabCornerColor.get().toInt();
+		var color = c.toInt();
 		float rounding = grabTolerance-.5f;
 		context.br$fillRectRoundVarying(bounds.x(), bounds.y(), grabTolerance, grabTolerance, color, 0, 0, rounding, 0);
 		context.br$fillRectRoundVarying(bounds.x(), bounds.yEnd() - grabTolerance, grabTolerance, grabTolerance, color, 0, 0, 0, rounding);
@@ -128,6 +130,14 @@ public abstract class AbstractHudEntry implements HudEntry {
 
 	public void setX(int x) {
 		this.x.set((double) intToFloat(x, (int) AxoWindow.getWindow().br$getScaledWidth(), 0));
+		onBoundsUpdate();
+	}
+
+	@Override
+	public void setPos(int x, int y) {
+		this.x.set((double) intToFloat(x, (int) AxoWindow.getWindow().br$getScaledWidth(), 0));
+		this.y.set((double) intToFloat(y, (int) AxoWindow.getWindow().br$getScaledHeight(), 0));
+		onBoundsUpdate();
 	}
 
 	@Override
@@ -154,6 +164,7 @@ public abstract class AbstractHudEntry implements HudEntry {
 
 	public void setY(int y) {
 		this.y.set((double) intToFloat(y, (int) AxoWindow.getWindow().br$getScaledHeight(), 0));
+		onBoundsUpdate();
 	}
 
 	/**
@@ -184,11 +195,11 @@ public abstract class AbstractHudEntry implements HudEntry {
 		if (scaledY < 0) {
 			scaledY = 0;
 		}
-		int trueWidth = (int) (getWidth() * getScale());
+		int trueWidth = (int)(getWidth() * getScale());
 		if (trueWidth < window.br$getScaledWidth() && scaledX + trueWidth > window.br$getScaledWidth()) {
 			scaledX = (int) (window.br$getScaledWidth() - trueWidth);
 		}
-		int trueHeight = (int) (getHeight() * getScale());
+		int trueHeight =(int)(getHeight() * getScale());
 		if (trueHeight < window.br$getScaledHeight()
 			&& scaledY + trueHeight > window.br$getScaledHeight()) {
 			scaledY = (int) (window.br$getScaledHeight() - trueHeight);
@@ -197,7 +208,7 @@ public abstract class AbstractHudEntry implements HudEntry {
 		truePosition.y = scaledY;
 		renderPosition = truePosition.divide(getScale());
 		renderBounds = new Rectangle(renderPosition.x(), renderPosition.y(), getWidth(), getHeight());
-		trueBounds = new Rectangle(scaledX, scaledY, (int) (getWidth() * getScale()), (int) (getHeight() * getScale()));
+		trueBounds = new Rectangle(scaledX, scaledY, trueWidth, trueHeight);
 	}
 
 	@Override

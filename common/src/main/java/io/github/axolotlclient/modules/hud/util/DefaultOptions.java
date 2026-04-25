@@ -41,12 +41,12 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class DefaultOptions {
-	public static DoubleOption getX(double defaultX, HudEntry entry) {
-		return new DoubleOption("x", defaultX, value -> entry.onBoundsUpdate(), 0d, 1d);
+	public static DoubleOption getX(double defaultX) {
+		return new DoubleOption("x", defaultX, 0d, 1d);
 	}
 
-	public static DoubleOption getY(double defaultY, HudEntry entry) {
-		return new DoubleOption("y", defaultY, value -> entry.onBoundsUpdate(), 0d, 1d);
+	public static DoubleOption getY(double defaultY) {
+		return new DoubleOption("y", defaultY, 0d, 1d);
 	}
 
 	public static DoubleOption getScale(HudEntry entry) {

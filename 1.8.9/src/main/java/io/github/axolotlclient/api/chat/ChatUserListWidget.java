@@ -25,7 +25,7 @@ package io.github.axolotlclient.api.chat;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.ContextMenu;
 import io.github.axolotlclient.api.requests.ChannelRequest;
@@ -139,9 +139,9 @@ public class ChatUserListWidget extends EntryListWidget {
 		public boolean mouseClicked(int index, int mouseX, int mouseY, int button, int x, int y) {
 			ChatUserListWidget.this.selectedEntry = index;
 			if (button == 0) { // left click
-				if (Minecraft.getTime() - this.time < 250L && client.world == null) { // left *double* click
+				/*if (Minecraft.getTime() - this.time < 250L && client.world == null) { // left *double* click
 
-				}
+				}*/
 				this.time = Minecraft.getTime();
 			} else if (button == 1) { // right click
 
@@ -150,7 +150,7 @@ public class ChatUserListWidget extends EntryListWidget {
 						.spacer();
 					if (!channel.isDM()) {
 						menu.entry("api.friends.chat", buttonWidget -> ChannelRequest.getOrCreateDM(user)
-							.whenCompleteAsync((channel, throwable) -> client.submit(() ->
+							.whenCompleteAsync((channel, throwable) -> client.executeTask(() ->
 								client.openScreen(new ChatScreen(screen.getParent(), channel))))).spacer();
 					}
 					if (user.getRelation() != Relation.BLOCKED) {

@@ -31,7 +31,7 @@ import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import io.github.axolotlclient.bridge.render.AxoWindow;
 import io.github.axolotlclient.util.duck.ToastInstanceExtension;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.toasts.Toast;
 import net.minecraft.client.gui.components.toasts.ToastManager;
 import org.objectweb.asm.Opcodes;
@@ -74,17 +74,17 @@ public abstract class ToastManagerMixin {
 		return visibleToasts.stream().map(ToastManager.ToastInstance::getToast).mapToInt(Toast::height).sum();
 	}
 
-	@Inject(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/components/toasts/ToastManager;visibleToasts:Ljava/util/List;", ordinal = 1, opcode = Opcodes.GETFIELD))
-	private void preRenderSetup(GuiGraphics guiGraphics, CallbackInfo ci, @Share("currentY") LocalIntRef y) {
+	@Inject(method = "extractRenderState", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/components/toasts/ToastManager;visibleToasts:Ljava/util/List;", ordinal = 1, opcode = Opcodes.GETFIELD))
+	private void preRenderSetup(GuiGraphicsExtractor guiGraphicsExtractor, CallbackInfo ci, @Share("currentY") LocalIntRef y) {
 		y.set(0); // in theory unnecessary but good practice
 	}
 
-	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/toasts/ToastManager$ToastInstance;render(Lnet/minecraft/client/gui/GuiGraphics;I)V", ordinal = 0))
-	private void preRender(ToastManager.ToastInstance<?> instance, GuiGraphics guiGraphics, int guiWidth, Operation<Void> original, @Share("currentY") LocalIntRef y) {
+	@WrapOperation(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/toasts/ToastManager$ToastInstance;extractRenderState(Lnet/minecraft/client/gui/GuiGraphicsExtractor;I)V", ordinal = 0))
+	private void preRender(ToastManager.ToastInstance<?> instance, GuiGraphicsExtractor guiGraphicsExtractor, int guiWidth, Operation<Void> original, @Share("currentY") LocalIntRef y) {
 		var ex = ((ToastInstanceExtension) instance);
 		var lerpY = y.get() + (ex.axolotlclient$getY() - y.get()) / 2;
 		ex.axolotlclient$setY(lerpY);
 		y.set(y.get() + instance.getToast().height());
-		original.call(instance, guiGraphics, guiWidth);
+		original.call(instance, guiGraphicsExtractor, guiWidth);
 	}
 }

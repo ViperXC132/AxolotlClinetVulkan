@@ -32,7 +32,7 @@ import io.github.axolotlclient.credits.Credits;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.util.ClientColors;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.PlainTextButton;
@@ -63,7 +63,7 @@ public class CreditsScreen extends Screen {
 	}
 
 	@Override
-	public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+	public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
 		if (AxolotlClient.config().someNiceBackground.get()) { // Credit to pridelib for the colors
 			graphics.fill(0, 0, width, height / 6, 0xFFff0018);
 			graphics.fill(0, height / 6, width, height * 2 / 6, 0xFFffa52c);
@@ -72,7 +72,7 @@ public class CreditsScreen extends Screen {
 			graphics.fill(0, height / 2, width, height * 2 / 3, 0xFF008018);
 			graphics.fill(0, height * 5 / 6, width, height, 0xFF86007d);
 		} else {
-			super.renderBackground(graphics, mouseX, mouseY, delta);
+			super.extractBackground(graphics, mouseX, mouseY, delta);
 		}
 	}
 
@@ -165,13 +165,13 @@ public class CreditsScreen extends Screen {
 				private final Component hoveredMessage = getMessage().copy().withColor(ClientColors.SELECTOR_RED.toInt());
 
 				@Override
-				protected void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+				protected void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
 					if (isHoveredOrFocused()) {
 						DrawUtil.outlineRect(graphics, getX(), getY(), getWidth(), getHeight(), ClientColors.ERROR.toInt());
 					}
 					//int i = this.active ? (isHoveredOrFocused() ? ClientColors.SELECTOR_RED.toInt() : -1) : 10526880;
 					//this.renderString(graphics, font, i | Mth.ceil(this.alpha * 255.0F) << 24);
-					renderDefaultLabel(graphics.textRendererForWidget(this, GuiGraphics.HoveredTextEffects.NONE));
+					extractDefaultLabel(graphics.textRendererForWidget(this, GuiGraphicsExtractor.HoveredTextEffects.NONE));
 				}
 
 				@Override
@@ -182,10 +182,10 @@ public class CreditsScreen extends Screen {
 		}
 
 		@Override
-		public void renderContent(GuiGraphics graphics, int mouseX,
+		public void extractContent(GuiGraphicsExtractor graphics, int mouseX,
 								  int mouseY, boolean hovered, float tickDelta) {
 			c.setPosition(getContentX(), getContentY());
-			c.render(graphics, mouseX, mouseY, tickDelta);
+			c.extractRenderState(graphics, mouseX, mouseY, tickDelta);
 		}
 
 		@Override
@@ -232,8 +232,8 @@ public class CreditsScreen extends Screen {
 		}
 
 		@Override
-		public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-			super.renderBackground(graphics, mouseX, mouseY, delta);
+		public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+			super.extractBackground(graphics, mouseX, mouseY, delta);
 			DrawUtil.fillRect(graphics, 100, 50, width - 200, height - 100,
 				ClientColors.DARK_GRAY.withAlpha(127).toInt());
 			DrawUtil.outlineRect(graphics, 100, 50, width - 200, height - 100,
@@ -241,8 +241,8 @@ public class CreditsScreen extends Screen {
 		}
 
 		@Override
-		public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-			super.render(graphics, mouseX, mouseY, delta);
+		public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+			super.extractRenderState(graphics, mouseX, mouseY, delta);
 			DrawUtil.drawCenteredString(graphics, font, credit.name,
 				width / 2, 57, -16784327, true);
 		}
@@ -262,7 +262,7 @@ public class CreditsScreen extends Screen {
 		}
 
 		@Override
-		public void renderContent(GuiGraphics graphics, int mouseX,
+		public void extractContent(GuiGraphicsExtractor graphics, int mouseX,
 								  int mouseY, boolean hovered, float tickDelta) {
 			DrawUtil.drawCenteredString(graphics, font, name, getContentXMiddle(), getContentY(), -128374,
 				true);

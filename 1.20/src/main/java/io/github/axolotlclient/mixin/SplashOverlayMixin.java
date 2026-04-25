@@ -29,6 +29,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.modules.auth.Auth;
+import io.github.axolotlclient.util.ThreadExecuter;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.SplashOverlay;
 import org.spongepowered.asm.mixin.Mixin;
@@ -49,7 +50,7 @@ public abstract class SplashOverlayMixin {
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/Screen;init(Lnet/minecraft/client/MinecraftClient;II)V"))
 	private void onReloadFinish(GuiGraphics graphics, int mouseX, int mouseY, float delta, CallbackInfo ci) {
 		if (!API.getInstance().isSocketConnected() && !Auth.getInstance().getCurrent().isOffline()) {
-			API.getInstance().startup(Auth.getInstance().getCurrent());
+			ThreadExecuter.scheduleTask(() -> API.getInstance().startup(Auth.getInstance().getCurrent()));
 		}
 	}
 }

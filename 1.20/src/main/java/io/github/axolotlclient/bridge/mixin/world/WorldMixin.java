@@ -29,10 +29,12 @@ import io.github.axolotlclient.bridge.entity.AxoPlayer;
 import io.github.axolotlclient.bridge.math.Vec3;
 import io.github.axolotlclient.bridge.world.AxoWorld;
 import net.minecraft.client.resource.language.I18n;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldAccess;
+import net.minecraft.world.dimension.DimensionType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -40,6 +42,12 @@ import org.spongepowered.asm.mixin.Shadow;
 public abstract class WorldMixin implements AxoWorld, WorldAccess {
 	@Shadow
 	public abstract long getTimeOfDay();
+
+	@Shadow
+	public abstract DimensionType getDimension();
+
+	@Shadow
+	public abstract RegistryKey<World> getRegistryKey();
 
 	@Override
 	public long br$getTimeOfDay() {
@@ -57,27 +65,16 @@ public abstract class WorldMixin implements AxoWorld, WorldAccess {
 		if (biome == null) {
 			return I18n.translate("coordshud.unknown_biome");
 		}
-		String path = biome.getValue().getPath();
-		if (!biome.getValue().getNamespace().equals("minecraft")) {
-			String namespace = biome.getValue().getNamespace();
-			path += " (" + Character.toTitleCase(namespace.charAt(0)) + namespace.substring(1) + ")";
-		}
-		final String str = path.replace("_", " ");
-		if (str.isEmpty()) {
-			return str;
-		}
+		return biome.getValue().br$getAsFriendlyString();
+	}
 
-		final int[] codepoints = str.codePoints().toArray();
-		boolean capitalizeNext = true;
-		for (int i = 0; i < codepoints.length; i++) {
-			final int ch = codepoints[i];
-			if (Character.isWhitespace(ch)) {
-				capitalizeNext = true;
-			} else if (capitalizeNext) {
-				codepoints[i] = Character.toTitleCase(ch);
-				capitalizeNext = false;
-			}
-		}
-		return new String(codepoints, 0, codepoints.length);
+	@Override
+	public boolean br$isOverworld() {
+		return getRegistryKey() == World.OVERWORLD;
+	}
+
+	@Override
+	public boolean br$isNether() {
+		return getRegistryKey() == World.NETHER;
 	}
 }

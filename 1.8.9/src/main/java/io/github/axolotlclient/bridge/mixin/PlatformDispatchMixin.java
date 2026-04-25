@@ -27,7 +27,7 @@ import java.util.Base64;
 import java.util.List;
 
 import com.google.common.hash.Hashing;
-import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.impl.util.GraphicsImpl;
 import io.github.axolotlclient.bridge.PlatformDispatch;
 import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
@@ -101,7 +101,7 @@ public abstract class PlatformDispatchMixin {
 	public static void pingHud$updatePing(MutableInt currentServerPing) {
 		if (Minecraft.getInstance().getCurrentServerEntry() != null) {
 			ServerAddress address = ServerAddress
-				.parse(Minecraft.getInstance().getCurrentServerEntry().address);
+				.parse(Minecraft.getInstance().getCurrentServerEntry().ip);
 			getRealTimeServerPing(address.getAddress(), address.getPort(), currentServerPing);
 		} else if (((MinecraftClientAccessor) Minecraft.getInstance()).getServerAddress() != null) {
 			getRealTimeServerPing(((MinecraftClientAccessor) Minecraft.getInstance()).getServerAddress(),
@@ -124,7 +124,7 @@ public abstract class PlatformDispatchMixin {
 		var serverEntry = minecraft.getCurrentServerEntry();
 		if (serverEntry == null) return null; // 1.8.9 does not store singleplayer world icons
 		graphics.setPixelData(Base64.getDecoder().decode(serverEntry.getIcon()));
-		final var icon = Util.getTexture(graphics, "servers/" + Hashing.sha1().hashUnencodedChars(serverEntry.address) + "/icon");
+		final var icon = Util.getTexture(graphics, "servers/" + Hashing.sha1().hashUnencodedChars(serverEntry.ip) + "/icon");
 
 		class Impl implements AxoSprite.Dynamic, AxoSpriteImpl {
 			@Override
@@ -137,7 +137,7 @@ public abstract class PlatformDispatchMixin {
 
 			@Override
 			public void close() {
-				minecraft.submit(() -> minecraft.getTextureManager().close(icon));
+				minecraft.executeTask(() -> minecraft.getTextureManager().close(icon));
 			}
 		}
 

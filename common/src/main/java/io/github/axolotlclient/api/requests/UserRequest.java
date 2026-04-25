@@ -59,7 +59,8 @@ public class UserRequest {
 			return true;
 		}
 
-		if (!onlineCache.asMap().containsKey(sanitized)) {
+		var isOnline = onlineCache.getIfPresent(sanitized);
+		if (isOnline == null) {
 			if (!onlineRequests.contains(sanitized)) {
 				onlineRequests.add(sanitized);
 				CompletableFuture.runAsync(() -> {
@@ -70,7 +71,7 @@ public class UserRequest {
 			}
 			return false;
 		}
-		return onlineCache.asMap().get(sanitized);
+		return isOnline;
 	}
 
 	private static class UserResponse {
@@ -90,8 +91,10 @@ public class UserRequest {
 
 	public static CompletableFuture<Optional<User>> get(String dUuid) {
 		final String uuid = API.sanitizeUUID(dUuid);
-		if (userCache.asMap().containsKey(uuid)) {
-			return CompletableFuture.completedFuture(userCache.asMap().get(uuid));
+		var cached = userCache.getIfPresent(uuid);
+		//noinspection OptionalAssignedToNull
+		if (cached != null) {
+			return CompletableFuture.completedFuture(cached);
 		}
 		return API.getInstance().get(Request.Route.USER.builder().path(uuid).build()).thenApply(response -> {
 			if (response.isError()) {

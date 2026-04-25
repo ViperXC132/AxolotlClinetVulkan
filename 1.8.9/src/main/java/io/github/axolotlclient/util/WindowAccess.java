@@ -25,7 +25,10 @@ package io.github.axolotlclient.util;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.util.ArrayList;
+import java.util.List;
 
+import net.ornithemc.osl.lifecycle.api.client.MinecraftClientEvents;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.sdl.SDLMouse;
 
@@ -42,18 +45,22 @@ public sealed abstract class WindowAccess permits WindowAccess.GLFWAccess, Windo
 		return WindowAccess.SDL_AVAILABLE;
 	}
 
-	public enum Cursor {
-		RESIZE_ALL,
+	enum Cursor {
 		ARROW,
-		RESIZE_NWSE,
-		RESIZE_NESW
+		CROSSHAIR,
+		IBEAM,
+		NOT_ALLOWED,
+		POINTING_HAND,
+		RESIZE_ALL,
+		RESIZE_EW,
+		RESIZE_NESW,
+		RESIZE_NS,
+		RESIZE_NWSE
 	}
 
-	public abstract long createCursor(Cursor cursor);
+	abstract long createCursor(Cursor cursor);
 
-	public abstract void setCursor(long cursor);
-
-	public abstract void destroyStandardCursor(long... cursors);
+	abstract void setCursor(long cursor);
 
 	public abstract boolean rawMouseMotionAvailable();
 
@@ -105,11 +112,6 @@ public sealed abstract class WindowAccess permits WindowAccess.GLFWAccess, Windo
 		}
 
 		@Override
-		public void destroyStandardCursor(long... cursors) {
-
-		}
-
-		@Override
 		public boolean rawMouseMotionAvailable() {
 			return false;
 		}
@@ -121,28 +123,34 @@ public sealed abstract class WindowAccess permits WindowAccess.GLFWAccess, Windo
 	}
 
 	final static class SDLAccess extends WindowAccess {
+		private final List<Long> createdCursors = new ArrayList<>(20);
+
+		SDLAccess() {
+			MinecraftClientEvents.STOP.register(mc -> createdCursors.forEach(SDLMouse::SDL_DestroyCursor));
+		}
 
 		@Override
 		public long createCursor(Cursor cursor) {
-			return SDLMouse.SDL_CreateSystemCursor(switch (cursor) {
+			var c = SDLMouse.SDL_CreateSystemCursor(switch (cursor) {
 				case RESIZE_ALL -> SDLMouse.SDL_SYSTEM_CURSOR_MOVE;
 				case ARROW -> SDLMouse.SDL_SYSTEM_CURSOR_DEFAULT;
 				case RESIZE_NWSE -> SDLMouse.SDL_SYSTEM_CURSOR_NWSE_RESIZE;
 				case RESIZE_NESW -> SDLMouse.SDL_SYSTEM_CURSOR_NESW_RESIZE;
+				case RESIZE_NS -> SDLMouse.SDL_SYSTEM_CURSOR_NS_RESIZE;
+				case IBEAM -> SDLMouse.SDL_SYSTEM_CURSOR_TEXT;
+				case CROSSHAIR -> SDLMouse.SDL_SYSTEM_CURSOR_CROSSHAIR;
+				case POINTING_HAND -> SDLMouse.SDL_SYSTEM_CURSOR_POINTER;
+				case NOT_ALLOWED -> SDLMouse.SDL_SYSTEM_CURSOR_NOT_ALLOWED;
+				case RESIZE_EW -> SDLMouse.SDL_SYSTEM_CURSOR_EW_RESIZE;
 			});
+			createdCursors.add(c);
+			return c;
 		}
 
 		@Override
 		public void setCursor(long cursor) {
 			if (cursor != 0) {
 				SDLMouse.SDL_SetCursor(cursor);
-			}
-		}
-
-		@Override
-		public void destroyStandardCursor(long... cursors) {
-			for (long c : cursors) {
-				SDLMouse.SDL_DestroyCursor(c);
 			}
 		}
 
@@ -166,17 +174,18 @@ public sealed abstract class WindowAccess permits WindowAccess.GLFWAccess, Windo
 				case ARROW -> GLFW.GLFW_ARROW_CURSOR;
 				case RESIZE_NWSE -> GLFW.GLFW_RESIZE_NWSE_CURSOR;
 				case RESIZE_NESW -> GLFW.GLFW_RESIZE_NESW_CURSOR;
+				case RESIZE_NS -> GLFW.GLFW_RESIZE_NS_CURSOR;
+				case IBEAM -> GLFW.GLFW_IBEAM_CURSOR;
+				case CROSSHAIR -> GLFW.GLFW_CROSSHAIR_CURSOR;
+				case POINTING_HAND -> GLFW.GLFW_POINTING_HAND_CURSOR;
+				case NOT_ALLOWED -> GLFW.GLFW_NOT_ALLOWED_CURSOR;
+				case RESIZE_EW -> GLFW.GLFW_RESIZE_EW_CURSOR;
 			});
 		}
 
 		@Override
 		public void setCursor(long cursor) {
 			GLFW.glfwSetCursor(WindowHandleAccess.getWindowHandle(), cursor);
-		}
-
-		@Override
-		public void destroyStandardCursor(long... cursors) {
-			// we do not need to destroy glfw standard cursors ourselves
 		}
 
 		@Override

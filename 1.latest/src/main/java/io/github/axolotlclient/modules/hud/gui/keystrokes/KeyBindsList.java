@@ -29,7 +29,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -85,7 +85,7 @@ public class KeyBindsList extends ContainerObjectSelectionList<KeyBindsList.Entr
 		}
 
 		@Override
-		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+		public void extractContent(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, boolean hovering, float partialTick) {
 
 		}
 
@@ -124,23 +124,23 @@ public class KeyBindsList extends ContainerObjectSelectionList<KeyBindsList.Entr
 		}
 
 		@Override
-		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+		public void extractContent(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, boolean hovering, float partialTick) {
 			int i = KeyBindsList.this.scrollBarX() - removeButton.getWidth() - 10;
 			int j = getContentY() - 2;
 			this.removeButton.setPosition(i, j);
-			this.removeButton.render(guiGraphics, mouseX, mouseY, partialTick);
+			this.removeButton.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 			int k = i - this.configureButton.getWidth();
 			this.configureButton.setPosition(k, j);
-			this.configureButton.render(guiGraphics, mouseX, mouseY, partialTick);
-			guiGraphics.pose().pushMatrix();
+			this.configureButton.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
+			guiGraphicsExtractor.pose().pushMatrix();
 			var rect = key.getRenderPosition();
 			float scale = Math.min((float) getContentHeight() / rect.height(), (float) 100 / rect.width());
-			guiGraphics.pose().translate(getContentX(), getContentY());
-			guiGraphics.pose().scale(scale, scale);
-			guiGraphics.pose().translate(-rect.x(), -rect.y());
-			key.render(guiGraphics);
-			guiGraphics.pose().popMatrix();
-			guiGraphics.drawString(minecraft.font, name, getContentX() + getContentWidth() / 2 - minecraft.font.width(name) / 2, getContentY() + getContentHeight() / 2 - 9 / 2, Colors.GRAY.toInt());
+			guiGraphicsExtractor.pose().translate(getContentX(), getContentY());
+			guiGraphicsExtractor.pose().scale(scale, scale);
+			guiGraphicsExtractor.pose().translate(-rect.x(), -rect.y());
+			key.render(guiGraphicsExtractor);
+			guiGraphicsExtractor.pose().popMatrix();
+			guiGraphicsExtractor.text(minecraft.font, name, getContentX() + getContentWidth() / 2 - minecraft.font.width(name) / 2, getContentY() + getContentHeight() / 2 - 9 / 2, Colors.GRAY.toInt());
 		}
 
 		@Override
@@ -177,17 +177,17 @@ public class KeyBindsList extends ContainerObjectSelectionList<KeyBindsList.Entr
 		}
 
 		@Override
-		public void renderContent(GuiGraphics guiGraphics, int mouseX, int mouseY, boolean hovering, float partialTick) {
+		public void extractContent(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, boolean hovering, float partialTick) {
 			int i = KeyBindsList.this.scrollBarX() - getContentWidth()/2 - (300+8)/2 - 10;
 			int j = getContentY() - 2;
 			this.addCustomButton.setPosition(i, j);
-			this.addCustomButton.render(guiGraphics, mouseX, mouseY, partialTick);
+			this.addCustomButton.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 			i += addCustomButton.getWidth() + 4;
 			this.addSpecialButton.setPosition(i, j);
-			this.addSpecialButton.render(guiGraphics, mouseX, mouseY, partialTick);
+			this.addSpecialButton.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 			i += addSpecialButton.getWidth() + 4;
 			this.addButton.setPosition(i, j);
-			this.addButton.render(guiGraphics, mouseX, mouseY, partialTick);
+			this.addButton.extractRenderState(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 		}
 
 		@Override

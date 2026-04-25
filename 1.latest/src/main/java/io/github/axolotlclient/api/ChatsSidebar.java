@@ -36,7 +36,7 @@ import io.github.axolotlclient.api.types.User;
 import io.github.axolotlclient.api.util.AlphabeticalComparator;
 import lombok.Getter;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.components.events.AbstractContainerEventHandler;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -71,36 +71,36 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
 		if (parent != null) {
-			parent.render(graphics, -1, -1, delta);
+			parent.extractRenderState(graphics, -1, -1, delta);
 		}
 		graphics.pose().pushMatrix();
 		//graphics.pose().translate(0, 0, 1000);
 		graphics.fill(sidebarAnimX, 0, sidebarWidth + sidebarAnimX, height, 0x99000000);
 
-		graphics.drawString(font, Component.translatable("api.chats"), 10 + sidebarAnimX, 10, -1);
+		graphics.text(font, Component.translatable("api.chats"), 10 + sidebarAnimX, 10, -1);
 
 		if (hasChat) {
 			graphics.fill(70 + sidebarAnimX, 0, 70 + sidebarAnimX + 1, height, 0xFF000000);
-			graphics.drawString(font, channel.getName(), sidebarAnimX + 75, 20, -1);
+			graphics.text(font, channel.getName(), sidebarAnimX + 75, 20, -1);
 			if (channel.isDM() && ((Channel.DM) channel).getReceiver().getStatus().isOnline()) {
-				graphics.drawString(font, ChatFormatting.ITALIC + ((Channel.DM) channel).getReceiver().getStatus().getTitle() + ": " + ((Channel.DM) channel).getReceiver().getStatus().getDescription(),
+				graphics.text(font, ChatFormatting.ITALIC + ((Channel.DM) channel).getReceiver().getStatus().getTitle() + ": " + ((Channel.DM) channel).getReceiver().getStatus().getDescription(),
 					sidebarAnimX + 80, 30, 0x808080);
 			}
 		}
 
-		super.render(graphics, mouseX, mouseY, delta);
-		contextMenu.render(graphics, mouseX, mouseY, delta);
+		super.extractRenderState(graphics, mouseX, mouseY, delta);
+		contextMenu.extractRenderState(graphics, mouseX, mouseY, delta);
 
 		animate();
 		graphics.pose().popMatrix();
 	}
 
 	@Override
-	public void renderBackground(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+	public void extractBackground(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, float partialTick) {
 		if (parent != null) {
-			super.renderBackground(guiGraphics, mouseX, mouseY, partialTick);
+			super.extractBackground(guiGraphicsExtractor, mouseX, mouseY, partialTick);
 		}
 	}
 
@@ -230,7 +230,7 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 		});
 		input.setSuggestion(input.getMessage().getString());
 		input.setResponder(s -> {
-			if (s.isEmpty()) {
+			if (s.isEmpty() && !input.isFocused()) {
 				input.setSuggestion(input.getMessage().getString());
 			} else {
 				input.setSuggestion("");
@@ -282,7 +282,7 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 		}
 
 		@Override
-		public void render(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+		public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
 			if (visible) {
 				graphics.pose().pushMatrix();
 				graphics.enableScissor(x, y, x + width, y + height);
@@ -290,7 +290,7 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 				AtomicInteger buttonY = new AtomicInteger(y);
 				elements.forEach(e -> {
 					e.setY(buttonY.get() - scrollAmount);
-					e.render(graphics, mouseX, mouseY, delta);
+					e.extractRenderState(graphics, mouseX, mouseY, delta);
 					buttonY.getAndAdd(entryHeight);
 				});
 

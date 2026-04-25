@@ -57,7 +57,7 @@ public class DeviceCodeDisplayScreen extends Screen {
 			((ticksLeft / 20) / 60) + "m" + ((ticksLeft / 20) % 60) + "s");
 		data.setStatusConsumer(s -> {
 			if (s.equals("auth.finished")) {
-				Minecraft.getInstance().submit(() -> Minecraft.getInstance().openScreen(parent));
+				Minecraft.getInstance().executeTask(() -> Minecraft.getInstance().openScreen(parent));
 			}
 			working = true;
 			buttons.clear();

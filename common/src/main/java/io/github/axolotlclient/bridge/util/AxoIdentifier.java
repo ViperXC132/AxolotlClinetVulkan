@@ -43,4 +43,34 @@ public interface AxoIdentifier {
 	default String br$getPath() {
 		throw BridgeUtil.noImpl();
 	}
+
+	@RequiresImpl
+	default String br$getNamespace() {
+		throw BridgeUtil.noImpl();
+	}
+
+	default String br$getAsFriendlyString() {
+		String path = br$getPath();
+		String namespace = br$getNamespace();
+		if (!namespace.equals("minecraft")) {
+			path += " (" + Character.toTitleCase(namespace.charAt(0)) + namespace.substring(1) + ")";
+		}
+		final String str = path.replace("_", " ");
+		if (str.isEmpty()) {
+			return str;
+		}
+
+		final int[] codepoints = str.codePoints().toArray();
+		boolean capitalizeNext = true;
+		for (int i = 0; i < codepoints.length; i++) {
+			final int ch = codepoints[i];
+			if (Character.isWhitespace(ch)) {
+				capitalizeNext = true;
+			} else if (capitalizeNext) {
+				codepoints[i] = Character.toTitleCase(ch);
+				capitalizeNext = false;
+			}
+		}
+		return new String(codepoints, 0, codepoints.length);
+	}
 }

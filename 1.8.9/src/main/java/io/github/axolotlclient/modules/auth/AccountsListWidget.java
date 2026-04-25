@@ -25,7 +25,7 @@ package io.github.axolotlclient.modules.auth;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import lombok.Getter;
 import net.fabricmc.api.EnvType;

@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.ChatsSidebar;
 import io.github.axolotlclient.api.ContextMenu;
@@ -214,7 +214,7 @@ public class ChatWidget extends EntryListWidget {
 					.spacer();
 				if (!origin.sender().equals(API.getInstance().getSelf())) {
 					builder.entry("api.friends.chat", buttonWidget -> ChannelRequest.getOrCreateDM(origin.sender())
-							.whenCompleteAsync((channel, throwable) -> client.submit(() -> client.openScreen(new ChatScreen(screen.getParent(), channel)))))
+							.whenCompleteAsync((channel, throwable) -> client.executeTask(() -> client.openScreen(new ChatScreen(screen.getParent(), channel)))))
 						.spacer();
 				}
 				builder.entry("api.chat.report.message", buttonWidget -> {

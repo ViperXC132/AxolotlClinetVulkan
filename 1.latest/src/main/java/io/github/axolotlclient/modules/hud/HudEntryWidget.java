@@ -29,7 +29,7 @@ import io.github.axolotlclient.util.ClientColors;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
@@ -90,10 +90,10 @@ public class HudEntryWidget implements Renderable, GuiEventListener, NarratableE
 	}
 
 	@Override
-	public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+	public void extractRenderState(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, float partialTick) {
 		if (isFocused()) {
 			var bounds = entry.getTrueBounds();
-			guiGraphics.br$outlineRect(bounds.x() - 1, bounds.y() - 1, bounds.width() + 2, bounds.height() + 2, moving ? ClientColors.SELECTOR_RED.toInt() : -1);
+			guiGraphicsExtractor.br$outlineRect(bounds.x() - 1, bounds.y() - 1, bounds.width() + 2, bounds.height() + 2, moving ? ClientColors.SELECTOR_RED.toInt() : -1);
 		}
 	}
 

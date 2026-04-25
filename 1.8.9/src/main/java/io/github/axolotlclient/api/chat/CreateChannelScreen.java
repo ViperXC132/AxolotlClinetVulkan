@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.DoubleOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.ButtonWidget;
@@ -155,7 +155,7 @@ public class CreateChannelScreen extends io.github.axolotlclient.AxolotlClientCo
 			ChannelRequest.createChannel(nameField.getText(),
 					Persistence.of(persistence.getValue(), count.get().get(), duration.get().get()),
 					Arrays.stream(namesInput.getText().split(",")).filter(s -> !s.isEmpty()).toArray(String[]::new))
-				.thenRun(() -> minecraft.submit(() -> minecraft.openScreen(parent)))));
+				.thenRun(() -> minecraft.executeTask(() -> minecraft.openScreen(parent)))));
 	}
 
 	private <T> Consumer<Boolean> sliderAssembly(int x, int y, Function<Double, T> valueFunc, Consumer<Supplier<T>> value) {

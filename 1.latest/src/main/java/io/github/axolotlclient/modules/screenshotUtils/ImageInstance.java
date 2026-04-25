@@ -30,9 +30,11 @@ import java.util.Locale;
 
 import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.platform.NativeImage;
+import io.github.axolotlclient.AxolotlClientCommon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.Identifier;
+import net.minecraft.util.Util;
 
 public interface ImageInstance {
 
@@ -89,6 +91,19 @@ public interface ImageInstance {
 			this(Identifier.fromNamespaceAndPath("axolotlclient", "gallery_remote_" + Hashing.sha256().hashUnencodedChars(url.toLowerCase(Locale.ROOT).replaceAll("[./]", "_"))),
 				image, filename, uploader, sharedAt, url
 			);
+			register(id(), image());
+		}
+	}
+
+	record Memory(Identifier id, NativeImage image, String filename) implements ImageInstance {
+		public Memory(NativeImage image) {
+			this(image, Util.getFilenameFormattedDateTime() + ".png");
+		}
+
+		public Memory(NativeImage image, String name) {
+			this(Identifier.fromNamespaceAndPath(AxolotlClientCommon.MODID,
+				"gallery_memory_" + Hashing.sha256()
+					.hashUnencodedChars(name.toLowerCase(Locale.ROOT).replaceAll("[./]", "_"))), image, name);
 			register(id(), image());
 		}
 	}

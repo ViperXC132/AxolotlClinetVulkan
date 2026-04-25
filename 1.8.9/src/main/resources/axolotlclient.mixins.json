@@ -5,6 +5,7 @@
 	"compatibilityLevel": "JAVA_17",
 	"client": [
 		"AddServerScreenMixin",
+		"AxoConfigTextFieldWidgetAccessor",
 		"BeaconBlockEntityRendererMixin",
 		"BiPedModelMixin",
 		"BufferBuilderMixin",
@@ -57,8 +58,7 @@
 		"SharedConstantsMixin",
 		"SimpleTextureMixin",
 		"SoundEngineMixin",
-		"SoundManagerAccessor",
-		"SoundSystemAccessor",
+		"SoundFixSubtitlesHudMixin",
 		"TextRendererMixin",
 		"TextRenderUtilsMixin",
 		"TextureManagerAccessor",

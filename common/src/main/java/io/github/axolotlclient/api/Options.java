@@ -97,6 +97,7 @@ public abstract class Options implements Module {
 	public final BooleanOption allowFriendsImageAccess = new BooleanOption("api.account.settings.allow_friends_image_access", true, settingUpdated::accept);
 
 	protected final OptionCategory category = OptionCategory.create("api.category");
+	protected final OptionCategory badgeOptions = OptionCategory.create("api.badge_options");
 	protected final OptionCategory pluralkit = OptionCategory.create("api.pluralkit");
 	protected final OptionCategory account = OptionCategory.create("api.account");
 
@@ -115,7 +116,9 @@ public abstract class Options implements Module {
 		pluralkit.add(pkToken, false);
 		pluralkit.add(autoproxy, autoproxyMode, autoproxyMember);
 		account.add(showRegistered, retainUsernames, showLastOnline, showActivity, allowFriendsImageAccess);
-		category.add(pluralkit);
+		var globalConfig = AxolotlClientCommon.getInstance().getConfig();
+		badgeOptions.add(globalConfig.showBadges, globalConfig.customBadge, globalConfig.badgeText, globalConfig.tabBadgeMode);
+		category.add(pluralkit, badgeOptions);
 		category.add(account, false);
 		category.add(enabled, privacyAccepted, friendRequestsEnabled, sendStatusUpdates, statusUpdateNotifs, channelInvitesEnabled, detailedLogging, updateNotifications, displayNotes, addShortcutButtons, allowFriendsServerJoin);
 	}

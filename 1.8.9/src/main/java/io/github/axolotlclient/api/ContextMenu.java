@@ -25,7 +25,7 @@ package io.github.axolotlclient.api;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.util.Util;
 import net.minecraft.client.Minecraft;
@@ -195,7 +195,7 @@ public class ContextMenu {
 		}
 
 		public boolean onPress(double mouseX, double mouseY, int button) {
-			if (isMouseOver(client, (int) mouseX, (int) mouseY) && button == 0) {
+			if (mouseClicked(client, (int) mouseX, (int) mouseY) && button == 0) {
 				playClickSound(client.getSoundManager());
 				action.onPress(this);
 				return true;

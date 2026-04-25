@@ -37,7 +37,7 @@ public abstract class NameTagFeatureRendererStorageMixin implements NameTagFeatu
 
 	@Shadow
 	@Final
-	List<SubmitNodeStorage.NameTagSubmit> nameTagSubmitsNormal;
+	private List<SubmitNodeStorage.NameTagSubmit> nameTagSubmitsNormal;
 
 	@Override
 	public void axolotlclient$lastNameTagSubmitHasBadge() {

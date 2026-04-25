@@ -137,7 +137,7 @@ public class FriendsScreen extends Screen {
 		if (entry != null) {
 			chatButton.active = false;
 			ChannelRequest.getOrCreateDM(entry.getUser())
-				.thenAccept(c -> minecraft.submit(() -> minecraft.openScreen(new ChatScreen(this, c))));
+				.thenAccept(c -> minecraft.executeTask(() -> minecraft.openScreen(new ChatScreen(this, c))));
 		}
 	}
 
@@ -145,7 +145,7 @@ public class FriendsScreen extends Screen {
 		UserListWidget.UserListEntry entry = widget.getSelectedEntry();
 		if (entry != null) {
 			acceptButton.active = false;
-			FriendRequest.getInstance().acceptFriendRequest(entry.getUser()).thenRun(() -> minecraft.submit(this::refresh));
+			FriendRequest.getInstance().acceptFriendRequest(entry.getUser()).thenRun(() -> minecraft.executeTask(this::refresh));
 		}
 	}
 
@@ -153,7 +153,7 @@ public class FriendsScreen extends Screen {
 		UserListWidget.UserListEntry entry = widget.getSelectedEntry();
 		if (entry != null) {
 			denyButton.active = false;
-			FriendRequest.getInstance().denyFriendRequest(entry.getUser()).thenRun(() -> minecraft.submit(this::refresh));
+			FriendRequest.getInstance().denyFriendRequest(entry.getUser()).thenRun(() -> minecraft.executeTask(this::refresh));
 		}
 	}
 
@@ -188,7 +188,7 @@ public class FriendsScreen extends Screen {
 				UserListWidget.UserListEntry entry = this.widget.getSelectedEntry();
 				if (entry != null) {
 					removeButton.active = false;
-					FriendRequest.getInstance().removeFriend(entry.getUser()).thenRun(() -> minecraft.submit(this::refresh));
+					FriendRequest.getInstance().removeFriend(entry.getUser()).thenRun(() -> minecraft.executeTask(this::refresh));
 				}
 				break;
 			case 5:
@@ -208,11 +208,11 @@ public class FriendsScreen extends Screen {
 				break;
 			case 10:
 				buttonWidget.active = false;
-				FriendRequest.getInstance().unblockUser(widget.getSelectedEntry().getUser()).thenRun(() -> minecraft.submit(this::refresh));
+				FriendRequest.getInstance().unblockUser(widget.getSelectedEntry().getUser()).thenRun(() -> minecraft.executeTask(this::refresh));
 				break;
 			case 11:
 				buttonWidget.active = false;
-				FriendRequest.getInstance().cancelFriendRequest(widget.getSelectedEntry().getUser()).thenRun(() -> minecraft.submit(this::refresh));
+				FriendRequest.getInstance().cancelFriendRequest(widget.getSelectedEntry().getUser()).thenRun(() -> minecraft.executeTask(this::refresh));
 				break;
 		}
 	}

@@ -39,7 +39,7 @@ import io.github.axolotlclient.util.ClientColors;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.numbers.StyledFormat;
 import net.minecraft.resources.Identifier;
@@ -115,18 +115,18 @@ public class ScoreboardHud extends TextHudEntry {
 		Objective objective2 =
 			objective != null ? objective : scoreboard.getDisplayObjective(DisplaySlot.SIDEBAR);
 		if (objective2 != null) {
-			this.displayScoreboardSidebar((GuiGraphics) graphics, objective2, false);
+			this.displayScoreboardSidebar((GuiGraphicsExtractor) graphics, objective2, false);
 		}
 	}
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
-		displayScoreboardSidebar((GuiGraphics) graphics, placeholder, true);
+		displayScoreboardSidebar((GuiGraphicsExtractor) graphics, placeholder, true);
 	}
 
 	// Abusing this could break some stuff/could allow for unfair advantages. The goal is not to do this, so it won't
 	// show any more information than it would have in vanilla.
-	private void displayScoreboardSidebar(GuiGraphics graphics, Objective objective, boolean placeholder) {
+	private void displayScoreboardSidebar(GuiGraphicsExtractor graphics, Objective objective, boolean placeholder) {
 		var font = client.font;
 		var scoreboard = objective.getScoreboard();
 		var numberFormat = objective.numberFormatOrDefault(StyledFormat.SIDEBAR_DEFAULT);
@@ -183,28 +183,30 @@ public class ScoreboardHud extends TextHudEntry {
 		var bgBounds = getBounds();
 		var maxRounding = Math.min(Math.min(font.lineHeight + topPadding.get() * 2 + backgroundPadding.get(), titleEnd - 1 - bgBounds.y()), xEnd - textX - 3) / 2f;
 		float rounding = Math.min(maxRounding, backgroundRounding.get());
-		if (!placeholder && background.get()) {
-			if (roundBackground.get()) {
-				graphics.axolotlclient_rendering$roundedRectVarying(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), titleEnd - 1,
-					topColor.get().toInt(), rounding, 0, 0, rounding);
-				graphics.axolotlclient_rendering$roundedRectVarying(bgBounds.x(), titleEnd - 1, bgBounds.xEnd(), bgBounds.yEnd(),
-					backgroundColor.get().toInt(), 0, rounding, rounding, 0);
-			} else {
-				graphics.fill(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), titleEnd - 1, topColor.get().toInt());
-				graphics.fill(bgBounds.x(), titleEnd - 1, bgBounds.xEnd(), bgBounds.yEnd(), backgroundColor.get().toInt());
+		if (!placeholder) {
+			if (background.get()) {
+				if (roundBackground.get()) {
+					graphics.axolotlclient_rendering$roundedRectVarying(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), titleEnd - 1,
+						topColor.get().toInt(), rounding, 0, 0, rounding);
+					graphics.axolotlclient_rendering$roundedRectVarying(bgBounds.x(), titleEnd - 1, bgBounds.xEnd(), bgBounds.yEnd(),
+						backgroundColor.get().toInt(), 0, rounding, rounding, 0);
+				} else {
+					graphics.fill(bgBounds.x(), bgBounds.y(), bgBounds.xEnd(), titleEnd - 1, topColor.get().toInt());
+					graphics.fill(bgBounds.x(), titleEnd - 1, bgBounds.xEnd(), bgBounds.yEnd(), backgroundColor.get().toInt());
+				}
 			}
 		} else {
 			graphics.br$fillRect(bgBounds.x()+1, bgBounds.y()+1, bgBounds.width()-2, titleEnd - 1 - bgBounds.y()-1, ClientColors.DARK_GRAY.withAlpha(100));
 		}
-		graphics.drawString(font, title, textX + maxWidth / 2 - titleWidth / 2, titleEnd - font.lineHeight - topPadding.get(),
+		graphics.text(font, title, textX + maxWidth / 2 - titleWidth / 2, titleEnd - font.lineHeight - topPadding.get(),
 			ARGB.color(textAlpha.get(), -1), shadow.get());
 
 		for (int v = 0; v < entryCount; v++) {
 			DisplayEntry entry = entries[v];
 			int y = yEnd - (entryCount - v) * font.lineHeight;
-			graphics.drawString(font, entry.name, textX, y, ARGB.color(textAlpha.get(), -1), shadow.get());
+			graphics.text(font, entry.name, textX, y, ARGB.color(textAlpha.get(), -1), shadow.get());
 			if (scores.get()) {
-				graphics.drawString(font, entry.score, xEnd - entry.scoreWidth, y, scoreColor.get().toInt(),
+				graphics.text(font, entry.score, xEnd - entry.scoreWidth, y, scoreColor.get().toInt(),
 					shadow.get());
 			}
 		}

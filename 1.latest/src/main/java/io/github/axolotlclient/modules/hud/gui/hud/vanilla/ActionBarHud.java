@@ -31,7 +31,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
@@ -60,9 +60,9 @@ public class ActionBarHud extends TextHudEntry {
 	public void renderComponent(AxoRenderContext graphics, float delta) {
 	}
 
-	public void render(GuiGraphics graphics, Component actionBar, int color) {
+	public void render(GuiGraphicsExtractor graphics, Component actionBar, int color) {
 
-		graphics.drawString(client.font, actionBar,
+		graphics.text(client.font, actionBar,
 			(int) ((float) getContentPos().x() + Math.round((float) getContentWidth() / 2) -
 				(float) client.font.width(actionBar) / 2), (int) ((float) getContentPos().y() + 3),
 			customTextColor.get() ? (textColor.get().getAlpha() == 255 ? new Color(

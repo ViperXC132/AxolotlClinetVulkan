@@ -23,12 +23,13 @@
 package io.github.axolotlclient.api.chat;
 
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.DoubleOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.ButtonWidget;
@@ -158,7 +159,8 @@ public class ChannelSettingsScreen extends io.github.axolotlclient.AxolotlClient
 		addDrawableChild(new VanillaButtonWidget(width / 2 + 4, footerY, 150, 20, I18n.translate("gui.done"), widget -> {
 			ChannelRequest.updateChannel(channel.getId(), nameField.getText(),
 				Persistence.of(persistence.getValue(), count.get().get(), duration.get().get()),
-				Arrays.stream(namesInput.getText().split(",")).filter(s -> !s.isEmpty()).map(UUIDHelper::ensureUuid).toArray(String[]::new));
+				Arrays.stream(namesInput.getText().split(",")).filter(s -> !s.isEmpty()).map(UUIDHelper::ensureUuid)
+					.map(CompletableFuture::join).toArray(String[]::new));
 			minecraft.openScreen(parent);
 		}));
 	}

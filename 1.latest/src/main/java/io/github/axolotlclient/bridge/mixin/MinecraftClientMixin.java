@@ -97,7 +97,7 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	public LevelRenderer levelRenderer;
 
 	@Shadow
-	private Entity cameraEntity;
+	public abstract Entity getCameraEntity();
 
 	@Override
 	public @Nullable AxoPlayer br$getPlayer() {
@@ -153,7 +153,7 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 
 	@Override
 	public void br$sendToClient(AxoText msg) {
-		gui.getChat().addMessage((Component) msg);
+		gui.getChat().addClientSystemMessage((Component) msg);
 	}
 
 	@Override
@@ -195,7 +195,7 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 
 	@Override
 	public AxoEntity br$getCameraEntity() {
-		return cameraEntity;
+		return getCameraEntity();
 	}
 
 	@Override

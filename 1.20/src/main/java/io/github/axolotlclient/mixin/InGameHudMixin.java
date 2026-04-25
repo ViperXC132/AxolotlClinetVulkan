@@ -28,22 +28,23 @@ import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
+import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.PotionsHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ActionBarHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.CrosshairHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.HotbarHud;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.ScoreboardHud;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.hud.ChatHud;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.gui.hud.PlayerListHud;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
@@ -67,7 +68,8 @@ public abstract class InGameHudMixin {
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/InGameHud;renderStatusEffectOverlay(Lnet/minecraft/client/gui/GuiGraphics;)V"))
 	private void axolotlclient$onHudRender(GuiGraphics graphics, float tickDelta, CallbackInfo ci) {
-		if (!MinecraftClient.getInstance().options.hudHidden) {
+		//noinspection ConstantValue
+		if (!MinecraftClient.getInstance().options.hudHidden && !(AxoMinecraftClient.getInstance().br$getScreen() instanceof HudEditScreen)) {
 			HudManager.getInstance().render(graphics, tickDelta);
 		}
 	}
@@ -224,5 +226,19 @@ public abstract class InGameHudMixin {
 	@WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/ChatHud;render(Lnet/minecraft/client/gui/GuiGraphics;III)V"))
 	private boolean hideChat(ChatHud instance, GuiGraphics graphics, int tickDelta, int mouseX, int mouseY) {
 		return !AxolotlClient.config().hideChat.get();
+	}
+
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/hud/PlayerListHud;render(Lnet/minecraft/client/gui/GuiGraphics;ILnet/minecraft/scoreboard/Scoreboard;Lnet/minecraft/scoreboard/ScoreboardObjective;)V"))
+	private void translateTabOverlay(PlayerListHud instance, GuiGraphics graphics, int scaledWindowWidth, Scoreboard scoreboard, ScoreboardObjective objective, Operation<Void> original) {
+		var hud = (PlayerTabOverlayHud) HudManager.getInstance().get(PlayerTabOverlayHud.ID);
+		if (!hud.isHidden()) {
+			graphics.br$pushMatrix();
+			if (hud.isEnabled()) {
+				graphics.br$translateMatrix(-graphics.br$guiWidth() / 2f, -9);
+				graphics.br$translateMatrix(hud.getRawTrueX() + hud.getTrueWidth()/2f, hud.getRawTrueY());
+			}
+			original.call(instance, graphics, scaledWindowWidth, scoreboard, objective);
+			graphics.br$popMatrix();
+		}
 	}
 }

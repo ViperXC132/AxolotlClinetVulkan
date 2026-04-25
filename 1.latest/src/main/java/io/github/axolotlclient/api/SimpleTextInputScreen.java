@@ -24,7 +24,7 @@ package io.github.axolotlclient.api;
 
 import java.util.function.Consumer;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.Screen;
@@ -62,9 +62,9 @@ public class SimpleTextInputScreen extends Screen {
 	}
 
 	@Override
-	public void render(GuiGraphics graphics, int i, int j, float f) {
-		super.render(graphics, i, j, f);
-		graphics.drawString(font, inputLabel, (int) (width / 2F - 100), (int) (height / 2f - 20), -1);
-		graphics.drawCenteredString(font, this.title, this.width / 2, 20, -1);
+	public void extractRenderState(GuiGraphicsExtractor graphics, int i, int j, float f) {
+		super.extractRenderState(graphics, i, j, f);
+		graphics.text(font, inputLabel, (int) (width / 2F - 100), (int) (height / 2f - 20), -1);
+		graphics.centeredText(font, this.title, this.width / 2, 20, -1);
 	}
 }

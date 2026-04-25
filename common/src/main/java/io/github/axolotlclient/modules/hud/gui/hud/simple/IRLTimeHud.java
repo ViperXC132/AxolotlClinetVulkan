@@ -24,6 +24,7 @@ package io.github.axolotlclient.modules.hud.gui.hud.simple;
 
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -81,7 +82,7 @@ public class IRLTimeHud extends SimpleTextHudEntry {
 			updateDateTimeFormatter(format.get());
 			return getPlaceholderValue();
 		}
-		return formatter.format(LocalDateTime.now());
+		return formatter.format(ZonedDateTime.now());
 	}
 
 	@Override

@@ -24,14 +24,12 @@ package io.github.axolotlclient.util;
 
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import io.github.axolotlclient.mixin.GameRendererAccessor;
-import io.github.axolotlclient.mixin.GuiGraphicsAccessor;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.client.gui.render.TextureSetup;
-import net.minecraft.client.gui.render.state.GuiElementRenderState;
 import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.state.gui.GuiElementRenderState;
 import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix3x2f;
 
@@ -47,14 +45,14 @@ public record HorizontalGradientRectangleRenderState(RenderPipeline pipeline,
 													 @Nullable ScreenRectangle scissorArea,
 													 @Nullable ScreenRectangle bounds) implements GuiElementRenderState {
 
-	public static HorizontalGradientRectangleRenderState create(GuiGraphics graphics, int x0, int y0, int x1, int y1, int col1, int col2) {
+	public static HorizontalGradientRectangleRenderState create(GuiGraphicsExtractor graphics, int x0, int y0, int x1, int y1, int col1, int col2) {
 		var matrix = new Matrix3x2f(graphics.pose());
-		var area = ((GuiGraphicsAccessor) graphics).getScissorStack().peek();
+		var area = graphics.scissorStack.peek();
 		return new HorizontalGradientRectangleRenderState(RenderPipelines.GUI, TextureSetup.noTexture(), matrix, x0, y0, x1, y1, col1, col2, area, getBounds(x0, y0, x1, y1, matrix, area));
 	}
 
 	public void submit() {
-		((GameRendererAccessor) Minecraft.getInstance().gameRenderer).getGuiRenderState().submitGuiElement(this);
+		Minecraft.getInstance().gameRenderer.getGameRenderState().guiRenderState.addGuiElement(this);
 	}
 
 	@Override

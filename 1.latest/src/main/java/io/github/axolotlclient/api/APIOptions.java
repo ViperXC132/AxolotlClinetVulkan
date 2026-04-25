@@ -66,27 +66,27 @@ public class APIOptions extends Options {
 			new KeyMapping("api.chats.sidebar.open", InputConstants.KEY_O, KeyBinds.CATEGORY_AXOLOTLCLIENT), () -> {
 				if (API.getInstance().isAuthenticated()) {
 					var parent = client.screen;
-					client.setScreen(new ChatsSidebar(parent));
+					client.execute(() -> client.setScreen(new ChatsSidebar(parent)));
 				}
 			});
 		category.add(
 			new GenericOption("viewFriends", "clickToOpen", () -> {
 				var parent = client.screen;
-				client.setScreen(new FriendsScreen(parent));
+				client.execute(() -> client.setScreen(new FriendsScreen(parent)));
 			}));
 		category.add(
 			new GenericOption("viewChats", "clickToOpen", () -> {
 				var parent = client.screen;
-				client.setScreen(new ChatListScreen(parent));
+				client.execute(() -> client.setScreen(new ChatListScreen(parent)));
 			}));
 		category.add(new GenericOption("api.channels.invites.view", "clickToOpen", () -> {
 			var parent = client.screen;
-			client.setScreen(new ChannelInvitesScreen(parent));
+			client.execute(() -> client.setScreen(new ChannelInvitesScreen(parent)));
 		}));
 		account.add(new GenericOption("api.account.usernames", "clickToOpen",
 			() -> {
 				var parent = client.screen;
-				client.setScreen(new UsernameManagementScreen(parent));
+				client.execute(() -> client.setScreen(new UsernameManagementScreen(parent)));
 			}
 		));
 		account.add(new GenericOption("api.account.export", "api.account.export_data", () -> ThreadExecuter.scheduleTask(() -> {

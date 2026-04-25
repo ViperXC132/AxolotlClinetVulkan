@@ -26,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
+import io.github.axolotlclient.util.MathUtil;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.narration.NarrationMessageBuilder;
@@ -38,7 +39,6 @@ import net.minecraft.client.render.RenderLayer;
 import net.minecraft.text.CommonTexts;
 import net.minecraft.text.Text;
 import net.minecraft.util.Util;
-import net.minecraft.util.math.MathHelper;
 import org.joml.Matrix4f;
 
 public class LoadingImageScreen extends Screen {
@@ -99,14 +99,6 @@ public class LoadingImageScreen extends Screen {
 		consumer.xyz(matrix4f, x2, y1, 0).color(LoadingImageScreen.accent);
 	}
 
-	private double easeInOutCubic(double x) {
-		return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
-	}
-
-	private int lerp(float delta, int start, int end) {
-		return MathHelper.clamp(MathHelper.lerp(delta, start, end), start, end);
-	}
-
 	private class LoadingWidget extends ClickableWidget {
 
 		public LoadingWidget(int width, int height) {
@@ -117,7 +109,7 @@ public class LoadingImageScreen extends Screen {
 		@Override
 		protected void drawWidget(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
 			guiGraphics.fill(getX(), getY(), getXEnd(), getYEnd(), bgColor);
-			drawHorizontalGradient(guiGraphics, getX(), getY(), getYEnd(), lerp((float) easeInOutCubic((Util.getMeasuringTimeMs() - loadStart) % 1000f / 1000f), getX(), getXEnd()));
+			drawHorizontalGradient(guiGraphics, getX(), getY(), getYEnd(), MathUtil.lerp((float) MathUtil.easeInOutCubic((Util.getMeasuringTimeMs() - loadStart) % 1000f / 1000f), getX(), getXEnd()));
 		}
 
 		@Override

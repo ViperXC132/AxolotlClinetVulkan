@@ -22,23 +22,24 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.AxolotlClient;
 import net.minecraft.client.option.GameOptions;
 import net.minecraft.client.option.Option;
 import net.minecraft.client.render.LightmapTextureManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(LightmapTextureManager.class)
 public abstract class LightmapManagerMixin {
 
-	@Redirect(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/GameOptions;getGamma()Lnet/minecraft/client/option/Option;"))
-	public Option<Double> axolotlclient$fullBright(GameOptions instance) {
+	@WrapOperation(method = "update", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/option/GameOptions;getGamma()Lnet/minecraft/client/option/Option;"))
+	public Option<Double> axolotlclient$fullBright(GameOptions instance, Operation<Option<Double>> original) {
 		if (AxolotlClient.config().fullBright.get())
 			return new Option<>("options.gamma", Option.emptyTooltip(), (optionText, value) -> optionText,
 				Option.UnitDoubleValueSet.INSTANCE, 15D, value -> {
 			});
-		return instance.getGamma();
+		return original.call(instance);
 	}
 }

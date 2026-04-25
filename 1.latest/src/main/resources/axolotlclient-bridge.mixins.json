@@ -3,7 +3,7 @@
 	"minVersion": "0.8",
 	"package": "io.github.axolotlclient.bridge.mixin",
 	"plugin": "io.github.axolotlclient.bridge.internal.BridgeValidationPostprocessor",
-	"compatibilityLevel": "JAVA_17",
+	"compatibilityLevel": "JAVA_21",
 	"client": [
 		"MinecraftClientMixin",
 		"PlatformDispatchMixin",

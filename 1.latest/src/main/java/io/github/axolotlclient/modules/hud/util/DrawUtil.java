@@ -25,7 +25,7 @@ package io.github.axolotlclient.modules.hud.util;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
@@ -36,41 +36,41 @@ import net.minecraft.client.gui.GuiGraphics;
 
 public class DrawUtil {
 
-	public static void fillRect(GuiGraphics graphics, Rectangle rectangle, Color color) {
+	public static void fillRect(GuiGraphicsExtractor graphics, Rectangle rectangle, Color color) {
 		fillRect(graphics, rectangle.x, rectangle.y, rectangle.width, rectangle.height, color.toInt());
 	}
 
-	public static void fillRect(GuiGraphics graphics, int x, int y, int width, int height, int color) {
+	public static void fillRect(GuiGraphicsExtractor graphics, int x, int y, int width, int height, int color) {
 		graphics.fill(x, y, x + width, y + height, color);
 	}
 
-	public static void outlineRect(GuiGraphics graphics, Rectangle rectangle, Color color) {
+	public static void outlineRect(GuiGraphicsExtractor graphics, Rectangle rectangle, Color color) {
 		outlineRect(graphics, rectangle.x, rectangle.y, rectangle.width, rectangle.height, color.toInt());
 	}
 
-	public static void outlineRect(GuiGraphics graphics, int x, int y, int width, int height, int color) {
+	public static void outlineRect(GuiGraphicsExtractor graphics, int x, int y, int width, int height, int color) {
 		graphics.fill(x, y, x + width, y + 1, color);
 		graphics.fill(x, y + height - 1, x + width, y + height, color);
 		graphics.fill(x, y + 1, x + 1, y + height - 1, color);
 		graphics.fill(x + width - 1, y + 1, x + width, y + height - 1, color);
 	}
 
-	public static void drawCenteredString(GuiGraphics graphics, Font renderer, String text, int x, int y, Color color, boolean shadow) {
+	public static void drawCenteredString(GuiGraphicsExtractor graphics, Font renderer, String text, int x, int y, Color color, boolean shadow) {
 		drawCenteredString(graphics, renderer, text, x, y, color.toInt(), shadow);
 	}
 
-	public static void drawCenteredString(GuiGraphics graphics, Font renderer, String text, int x, int y, int color, boolean shadow) {
+	public static void drawCenteredString(GuiGraphicsExtractor graphics, Font renderer, String text, int x, int y, int color, boolean shadow) {
 		if (shadow) {
-			graphics.drawCenteredString(renderer, text, x, y, color);
-		} else graphics.drawString(renderer, text, (x - renderer.width(text) / 2), y, color);
+			graphics.centeredText(renderer, text, x, y, color);
+		} else graphics.text(renderer, text, (x - renderer.width(text) / 2), y, color);
 	}
 
-	public static int drawString(GuiGraphics graphics, String text, int x, int y, int color, boolean shadow) {
-		graphics.drawString(Minecraft.getInstance().font, text, x, y, color, shadow);
+	public static int drawString(GuiGraphicsExtractor graphics, String text, int x, int y, int color, boolean shadow) {
+		graphics.text(Minecraft.getInstance().font, text, x, y, color, shadow);
 		return x + Minecraft.getInstance().font.width(text);
 	}
 
-	public static int drawString(GuiGraphics graphics, String text, int x, int y, Color color, boolean shadow) {
+	public static int drawString(GuiGraphicsExtractor graphics, String text, int x, int y, Color color, boolean shadow) {
 		return drawString(graphics, text, x, y, color.toInt(), shadow);
 	}
 }

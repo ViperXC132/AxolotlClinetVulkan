@@ -22,20 +22,24 @@
 
 package io.github.axolotlclient.mixin;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.AxolotlClient;
-import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.LightmapRenderStateExtractor;
+import net.minecraft.client.renderer.state.LightmapRenderState;
+import org.joml.Vector3f;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(LightTexture.class)
+@Mixin(LightmapRenderStateExtractor.class)
 public abstract class LightmapManagerMixin {
 
-	@WrapOperation(method = "updateLightTexture", at = @At(value = "INVOKE", target = "Ljava/lang/Double;floatValue()F", ordinal = 1))
-	public float axolotlclient$fullBright(Double instance, Operation<Float> original) {
-		if (AxolotlClient.config().fullBright.get())
-			return 15;
-		return original.call(instance);
+	@Inject(method = "extract", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/state/LightmapRenderState;brightness:F", shift = At.Shift.AFTER, opcode = Opcodes.PUTFIELD))
+	private void fullBright(LightmapRenderState renderState, float partialTicks, CallbackInfo ci) {
+		if (AxolotlClient.config().fullBright.get()) {
+			renderState.brightness = 15f;
+			renderState.blockLightTint = renderState.ambientColor = renderState.skyLightColor = new Vector3f(1, 1, 1);
+		}
 	}
 }

@@ -34,11 +34,6 @@ import io.github.axolotlclient.api.types.User;
 import io.github.axolotlclient.api.util.SocketMessageHandler;
 import io.github.axolotlclient.api.util.UUIDHelper;
 import io.github.axolotlclient.util.GsonHelper;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
-import lombok.experimental.Accessors;
 
 public class StatusUpdateHandler implements SocketMessageHandler {
 
@@ -57,14 +52,7 @@ public class StatusUpdateHandler implements SocketMessageHandler {
 		return "activity_update".equals(target) && API.getInstance().getApiOptions().statusUpdateNotifs.get();
 	}
 
-	@AllArgsConstructor
-	@Getter
-	@Accessors(fluent = true)
-	@ToString
-	@EqualsAndHashCode
-	private static class StatusUpdateMessage {
-		private final String user;
-		private final Status.Activity activity;
+	private record StatusUpdateMessage(String user, Status.Activity activity) {
 	}
 
 	@Override

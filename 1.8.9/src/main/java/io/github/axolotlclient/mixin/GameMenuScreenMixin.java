@@ -39,6 +39,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.resource.language.I18n;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
@@ -48,6 +49,7 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 @Mixin(GameMenuScreen.class)
 public abstract class GameMenuScreenMixin extends Screen {
 
+	@Unique
 	private static boolean axolotlclient$hasModMenu() {
 		return FabricLoader.getInstance().isModLoaded("modmenu") && !FabricLoader.getInstance().isModLoaded("axolotlclient-modmenu");
 	}
@@ -66,7 +68,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 		if (!AxolotlClientConfigCommon.instance().gameMenuScreenOptionButtonMode.get().showButton())
 			return;
 
-		if (minecraft.isInSingleplayer() && !this.minecraft.getServer().isPublished()) {
+		if (minecraft.isSingleplayer() && !this.minecraft.getServer().isPublished()) {
 			buttons.add(new ButtonWidget(20, width / 2 - 100,
 				height / 4 + 82,
 				I18n.translate("config")));
@@ -90,7 +92,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 		if (axolotlclient$hasModMenu())
 			return;
 
-		if (!minecraft.isInSingleplayer() && ((minecraft.getServer() != null
+		if (!minecraft.isSingleplayer() && ((minecraft.getServer() != null
 			&& minecraft.getServer().isPublished())
 			|| minecraft.getCurrentServerEntry() != null)) {
 			args.set(0, 20);
@@ -106,7 +108,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 			FeatureDisablerCommon.getInstance().clear();
 			if (HypixelMods.getInstance().cacheMode.get() != null
 				&& Objects.equals(HypixelMods.getInstance().cacheMode.get(),
-				HypixelMods.HypixelApiCacheMode.ON_CLIENT_DISCONNECT.toString())) {
+				HypixelMods.HypixelApiCacheMode.ON_CLIENT_DISCONNECT)) {
 				HypixelAbstractionLayer.getInstance().clearPlayerData();
 			}
 		} else if (button.id == 234) {

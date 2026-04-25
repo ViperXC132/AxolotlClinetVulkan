@@ -24,9 +24,9 @@ package io.github.axolotlclient.modules.auth;
 
 import io.github.axolotlclient.api.API;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.PlayerFaceRenderer;
+import net.minecraft.client.gui.components.PlayerFaceExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
@@ -42,10 +42,10 @@ public class AuthWidget extends Button.Plain {
 	}
 
 	@Override
-	public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		super.renderContents(graphics, mouseX, mouseY, delta);
+	public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+		super.extractContents(graphics, mouseX, mouseY, delta);
 		Identifier texture = Auth.getInstance().getSkinTexture(Auth.getInstance().getCurrent());
-		PlayerFaceRenderer.draw(graphics, texture, getX() + 1, getY() + 1, getHeight() - 2, true, false, ARGB.color(alpha, -1));
+		PlayerFaceExtractor.extractRenderState(graphics, texture, getX() + 1, getY() + 1, getHeight() - 2, true, false, ARGB.color(alpha, -1));
 		if (API.getInstance().getApiOptions().enabled.get()) {
 			graphics.pose().pushMatrix();
 			graphics.pose().translate(getX() + getHeight() - 1, getY() + getHeight() - 1);

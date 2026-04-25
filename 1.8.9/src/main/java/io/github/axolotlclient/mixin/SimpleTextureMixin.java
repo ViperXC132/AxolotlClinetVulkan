@@ -57,7 +57,7 @@ public class SimpleTextureMixin {
 		return original.call(instance);
 	}
 
-	@Inject(method = "load", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/TextureUtil;upload(ILjava/awt/image/BufferedImage;ZZ)I"))
+	@Inject(method = "load", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/texture/TextureUtil;upload(ILjava/awt/image/BufferedImage;ZZ)I"))
 	private void beforeUpload(ResourceManager resourceManager, CallbackInfo ci, @Local BufferedImage image) {
 		if (this.location.equals(GuiElement.ICONS_LOCATION)) {
 			// Fix the crosshair texture if it has a black background instead of the usual transparent one.

@@ -22,9 +22,9 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud;
 
-import com.mojang.blaze3d.platform.GLX;
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.platform.Lighting;
+import net.minecraft.client.render.platform.GLX;
+import net.minecraft.client.render.platform.GlStateManager;
+import net.minecraft.client.render.platform.Lighting;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.PlayerDirectionChangeEvent;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
@@ -100,11 +100,11 @@ public class PlayerHud extends PlayerHudCommon {
 		float pastYaw = client.player.yaw;
 		float pastBodyYaw = client.player.bodyYaw;
 		float pastHeadYaw = client.player.headYaw;
-		float pastPrevHeadYaw = client.player.prevHeadYaw;
-		float pastPrevYaw = client.player.prevYaw;
+		float pastPrevHeadYaw = client.player.lastHeadYaw;
+		float pastPrevYaw = client.player.lastYaw;
 
 		client.player.headYaw = client.player.yaw;
-		client.player.prevHeadYaw = client.player.yaw;
+		client.player.lastHeadYaw = client.player.yaw;
 
 		GlStateManager.rotatef(deltaYaw - 180 + rotation.get().floatValue(), 0, 1, 0);
 		Lighting.turnOn();
@@ -122,8 +122,8 @@ public class PlayerHud extends PlayerHudCommon {
 
 		client.player.yaw = pastYaw;
 		client.player.headYaw = pastHeadYaw;
-		client.player.prevHeadYaw = pastPrevHeadYaw;
-		client.player.prevYaw = pastPrevYaw;
+		client.player.lastHeadYaw = pastPrevHeadYaw;
+		client.player.lastYaw = pastPrevYaw;
 		client.player.bodyYaw = pastBodyYaw;
 
 		Lighting.turnOff();
@@ -138,7 +138,7 @@ public class PlayerHud extends PlayerHudCommon {
 		// inspired by tr7zw's mod
 		LocalClientPlayerEntity player = Minecraft.getInstance().player;
 		return player.isSneaking() || player.isSprinting() || player.abilities.flying
-			|| player.isSubmergedIn(Material.WATER) || player.hasVehicle() || player.isUsingItem()
-			|| player.handSwinging || player.hurtTime > 0 || player.isOnFire();
+			|| player.isSubmergedIn(Material.WATER) || player.isRidingRideableMob() || player.isUsingItem()
+			|| player.armSwinging || player.damagedTimer > 0 || player.isOnFire();
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2026 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -20,16 +20,13 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.mixin;
+package io.github.axolotlclient.util;
 
-import net.minecraft.client.sound.system.SoundEngine;
-import net.minecraft.client.sound.system.SoundManager;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+import com.mojang.blaze3d.platform.cursor.CursorType;
+import com.mojang.blaze3d.platform.cursor.CursorTypes;
+import org.lwjgl.glfw.GLFW;
 
-@Mixin(SoundManager.class)
-public interface SoundManagerAccessor {
-
-	@Accessor("engine")
-	SoundEngine getSoundSystem();
+public final class ExtraCursorTypes {
+	public static final CursorType RESIZE_NWSE = CursorType.createStandardCursor(GLFW.GLFW_RESIZE_NWSE_CURSOR, "resize_nwse", CursorTypes.POINTING_HAND),
+		RESIZE_NESW = CursorType.createStandardCursor(GLFW.GLFW_RESIZE_NESW_CURSOR, "resize_nesw", CursorTypes.POINTING_HAND);
 }

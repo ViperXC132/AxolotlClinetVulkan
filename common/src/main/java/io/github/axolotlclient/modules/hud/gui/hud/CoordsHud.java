@@ -67,6 +67,7 @@ public class CoordsHud extends TextHudEntry {
 	private final StringOption delimiter = new StringOption("coordshud.delimiter", " ");
 	private final StringOption separator = new StringOption("coordshud.separator", ", ");
 	private final ColorOption separatorColor = new ColorOption("coordshud.separator.color", firstColor.getDefault());
+	private final BooleanOption showNetherConversions = new BooleanOption("coordshud.show_nether_conversions", false);
 
 	private DecimalFormat format = new DecimalFormat("0");
 
@@ -136,69 +137,99 @@ public class CoordsHud extends TextHudEntry {
 		};
 	}
 
-	private void doRender(AxoRenderContext context, double yaw, Vec3 playerPos, String biomeName) {
+	private void doRender(AxoRenderContext context, double yaw, Vec3 playerPos, String biomeName, boolean isOverworld, boolean isNether) {
 		DrawPosition pos = getContentPos();
-		String fx = format.format(playerPos.x());
-		String fy = format.format(playerPos.y());
-		String fz = format.format(playerPos.z());
 
 		int dir = getDirection(yaw);
 		String direction = getWordedDirection(dir);
+		String del = delimiter.get();
 
 		int width, height;
 		int xStart = pos.x() + 2;
 
-		String del = delimiter.get();
+		String fx = format.format(playerPos.x());
+		String fy = format.format(playerPos.y());
+		String fz = format.format(playerPos.z());
 		if (minimal.get()) {
 			int currPos = xStart;
 			String separator = this.separator.get();
-			currPos = context.br$drawString("XYZ" + del, currPos, pos.y() + 2, firstColor.get().toInt(), shadow.get());
-			currPos = context.br$drawString(fx, currPos, pos.y() + 2, secondColor.get().toInt(),
+			currPos = context.br$drawString("XYZ" + del, currPos, pos.y() + 2, firstColor.get(), shadow.get());
+			currPos = context.br$drawString(fx, currPos, pos.y() + 2, secondColor.get(),
 				shadow.get());
-			currPos = context.br$drawString(separator, currPos, pos.y() + 2, separatorColor.get().toInt(), shadow.get());
-			currPos = context.br$drawString(fy, currPos, pos.y() + 2, secondColor.get().toInt(),
+			currPos = context.br$drawString(separator, currPos, pos.y() + 2, separatorColor.get(), shadow.get());
+			currPos = context.br$drawString(fy, currPos, pos.y() + 2, secondColor.get(),
 				shadow.get());
-			currPos = context.br$drawString(separator, currPos, pos.y() + 2, separatorColor.get().toInt(), shadow.get());
-			currPos = context.br$drawString(fz, currPos, pos.y() + 2, secondColor.get().toInt(),
+			currPos = context.br$drawString(separator, currPos, pos.y() + 2, separatorColor.get(), shadow.get());
+			currPos = context.br$drawString(fz, currPos, pos.y() + 2, secondColor.get(),
 				shadow.get());
 			width = currPos - pos.x() + 2;
 			height = 11;
+			if (showNetherConversions.get() && (isNether || isOverworld)) {
+				var name = AxoI18n.translate(isNether ? "coordshud.dimension.overworld" : "coordshud.dimension.nether");
+				var factor = isNether ? 8f : 1 / 8f;
+				currPos = xStart;
+				currPos = context.br$drawString(name + del, currPos, pos.y() + 2, firstColor.get(), shadow.get());
+				currPos = context.br$drawString("XYZ" + del, currPos, pos.y() + 2, firstColor.get(), shadow.get());
+				currPos = context.br$drawString(format.format(playerPos.x() * factor), currPos, pos.y() + 2, secondColor.get(), shadow.get());
+				currPos = context.br$drawString(format.format(playerPos.y() * factor), currPos, pos.y() + 2, secondColor.get(), shadow.get());
+				currPos = context.br$drawString(format.format(playerPos.z() * factor), currPos, pos.y() + 2, secondColor.get(), shadow.get());
+				width = Math.max(width, currPos - pos.x()+2);
+				height += 10;
+			}
 		} else {
 			int xEnd;
 			int yEnd = pos.y() + 2;
-			int nextX = context.br$drawString("X" + del, xStart, yEnd, firstColor.get().toInt(), shadow.get());
+			int nextX = context.br$drawString("X" + del, xStart, yEnd, firstColor.get(), shadow.get());
 			xEnd = context.br$drawString(fx, nextX, yEnd,
-				secondColor.get().toInt(), shadow.get());
+				secondColor.get(), shadow.get());
 			yEnd += 10;
 
-			nextX = context.br$drawString("Y" + del, xStart, yEnd, firstColor.get().toInt(), shadow.get());
+			nextX = context.br$drawString("Y" + del, xStart, yEnd, firstColor.get(), shadow.get());
 			xEnd = Math.max(xEnd, context.br$drawString(fy, nextX, yEnd,
-				secondColor.get().toInt(), shadow.get()));
+				secondColor.get(), shadow.get()));
 
 			yEnd += 10;
 
-			nextX = context.br$drawString("Z" + del, xStart, yEnd, firstColor.get().toInt(), shadow.get());
+			nextX = context.br$drawString("Z" + del, xStart, yEnd, firstColor.get(), shadow.get());
 
-			xEnd = Math.max(xEnd, context.br$drawString(fz, nextX, yEnd, secondColor.get().toInt(), shadow.get()));
+			xEnd = Math.max(xEnd, context.br$drawString(fz, nextX, yEnd, secondColor.get(), shadow.get()));
 
 			yEnd += 10;
 
 			xEnd = Math.max(pos.x() + 60, xEnd + 4);
 
-			context.br$drawString(direction, xEnd, pos.y() + 12, firstColor.get().toInt(), shadow.get());
+			context.br$drawString(direction, xEnd, pos.y() + 12, firstColor.get(), shadow.get());
 
-			context.br$drawString(getXDir(dir), xEnd, pos.y() + 2, secondColor.get().toInt(),
+			context.br$drawString(getXDir(dir), xEnd, pos.y() + 2, secondColor.get(),
 				shadow.get());
-			context.br$drawString(getZDir(dir), xEnd, pos.y() + 22, secondColor.get().toInt(),
+			context.br$drawString(getZDir(dir), xEnd, pos.y() + 22, secondColor.get(),
 				shadow.get());
 			xEnd += 14;
+
+			if (showNetherConversions.get() && (isNether || isOverworld)) {
+				var name = AxoI18n.translate(isNether ? "coordshud.dimension.overworld" : "coordshud.dimension.nether");
+				var offset = context.br$getFont().br$getWidth(name + del);
+				var factor = isNether ? 8f : 1 / 8f;
+				nextX = context.br$drawString(name + del + "X" + del, xStart, yEnd, firstColor.get(), shadow.get());
+				xEnd = Math.max(xEnd, context.br$drawString(format.format(playerPos.x() * factor), nextX, yEnd, secondColor.get(), shadow.get()) + 4);
+				yEnd += 10;
+
+				nextX = context.br$drawString("Y" + del, xStart + offset, yEnd, firstColor.get(), shadow.get());
+				xEnd = Math.max(xEnd, context.br$drawString(format.format(playerPos.y() * factor), nextX, yEnd, secondColor.get(), shadow.get()) + 4);
+				yEnd += 10;
+
+				nextX = context.br$drawString("Z" + del, xStart + offset, yEnd, firstColor.get(), shadow.get());
+				xEnd = Math.max(xEnd, context.br$drawString(format.format(playerPos.z() * factor), nextX, yEnd, secondColor.get(), shadow.get()) + 4);
+				yEnd += 10;
+			}
+
 			width = xEnd - pos.x();
 			height = yEnd + 1 - pos.y();
 		}
 
 		if (biome.get()) {
-			int bX = context.br$drawString(AxoI18n.translate("coordshud.biome") + del, xStart, height + pos.y(), firstColor.get().toInt(), shadow.get());
-			width = Math.max(width + pos.x() - 1, context.br$drawString(biomeName, bX, height + pos.y(), secondColor.get().toInt(), shadow.get())) - pos.x() + 1;
+			int bX = context.br$drawString(AxoI18n.translate("coordshud.biome") + del, xStart, height + pos.y(), firstColor.get(), shadow.get());
+			width = Math.max(width + pos.x() - 1, context.br$drawString(biomeName, bX, height + pos.y(), secondColor.get(), shadow.get())) - pos.x() + 1;
 			height += 10;
 		}
 
@@ -225,7 +256,7 @@ public class CoordsHud extends TextHudEntry {
 			return;
 		}
 
-		doRender(context, client.br$getPlayer().br$getYaw() + 180, client.br$getPlayer().br$getPos(), client.br$getWorld().br$getBiomeName(client.br$getPlayer().br$getPos()));
+		doRender(context, client.br$getPlayer().br$getYaw() + 180, client.br$getPlayer().br$getPos(), client.br$getWorld().br$getBiomeName(client.br$getPlayer().br$getPos()), client.br$getWorld().br$isOverworld(), client.br$getWorld().br$isNether());
 	}
 
 	public String getWordedDirection(int dir) {
@@ -245,7 +276,7 @@ public class CoordsHud extends TextHudEntry {
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
-		doRender(context, 180, new Vec3(109.2325, 180.8981, -5098.32698), "Plains");
+		doRender(context, 180, new Vec3(109.2325, 180.8981, -5098.32698), "Plains", true, false);
 	}
 
 	@Override
@@ -257,6 +288,7 @@ public class CoordsHud extends TextHudEntry {
 		options.add(decimalPlaces);
 		options.add(minimal);
 		options.add(biome);
+		options.add(showNetherConversions);
 		options.add(delimiter);
 		options.add(separator);
 		options.add(separatorColor);

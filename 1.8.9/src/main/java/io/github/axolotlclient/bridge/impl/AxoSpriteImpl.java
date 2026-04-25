@@ -22,7 +22,7 @@
 
 package io.github.axolotlclient.bridge.impl;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.util.ClientColors;

@@ -24,10 +24,8 @@ package io.github.axolotlclient.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.realmsclient.gui.screens.RealmsNotificationsScreen;
 import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.APIOptions;
@@ -38,9 +36,8 @@ import io.github.axolotlclient.api.requests.GlobalDataRequest;
 import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.auth.AuthWidget;
 import io.github.axolotlclient.modules.hud.HudEditScreen;
-import io.github.axolotlclient.modules.zoom.Zoom;
+import io.github.axolotlclient.util.ThreadExecuter;
 import net.minecraft.SharedConstants;
-import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -52,7 +49,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(TitleScreen.class)
@@ -64,14 +60,6 @@ public abstract class TitleScreenMixin extends Screen {
 
 	protected TitleScreenMixin() {
 		super(Component.empty());
-	}
-
-	@Inject(method = "init", at = @At("HEAD"))
-	private void atInit(CallbackInfo ci) {
-		if (minecraft.options.keySaveHotbarActivator.same((KeyMapping) Zoom.getInstance().getKey())) {
-			minecraft.options.keySaveHotbarActivator.setKey(InputConstants.UNKNOWN);
-			AxolotlClientCommon.getInstance().getLogger().info("Unbound \"Save Toolbar Activator\" to resolve conflict with the zoom key!");
-		}
 	}
 
 	@Inject(method = "createNormalMenuOptions", at = @At("HEAD"))
@@ -96,7 +84,7 @@ public abstract class TitleScreenMixin extends Screen {
 			}
 		}
 
-		GlobalDataRequest.get().thenAccept(data -> {
+		ThreadExecuter.scheduleTask(() -> GlobalDataRequest.get().thenAccept(data -> {
 			int buttonY = 10;
 			if (APIOptions.getInstance().updateNotifications.get() &&
 				data.success() &&
@@ -112,7 +100,7 @@ public abstract class TitleScreenMixin extends Screen {
 						minecraft.setScreen(new NewsScreen(this)))
 					.bounds(width - 90, buttonY, 80, 20).build());
 			}
-		});
+		}));
 	}
 
 	@Inject(method = "realmsNotificationsEnabled", at = @At("HEAD"), cancellable = true)
@@ -134,7 +122,7 @@ public abstract class TitleScreenMixin extends Screen {
 		return original.call(message, onPress);
 	}
 
-	@ModifyArg(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;III)V"), index = 1)
+	@ModifyArg(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphicsExtractor;text(Lnet/minecraft/client/gui/Font;Ljava/lang/String;III)V"), index = 1)
 	private String axolotlclient$setVersionText(String s) {
 		return "Minecraft " + SharedConstants.getCurrentVersion().name() + "/AxolotlClient "
 			+ AxolotlClient.VERSION;

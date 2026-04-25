@@ -22,10 +22,6 @@
 
 package io.github.axolotlclient.bridge.impl;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tessellator;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
@@ -33,10 +29,19 @@ import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.ItemUtil;
+import io.github.axolotlclient.rendering.font.StringSplitter;
+import io.github.axolotlclient.util.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.render.TextRenderer;
+import net.minecraft.client.render.platform.GlStateManager;
+import net.minecraft.client.render.vertex.BufferBuilder;
+import net.minecraft.client.render.vertex.DefaultVertexFormat;
+import net.minecraft.client.render.vertex.Tesselator;
+import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.opengl.GL11;
+import org.spongepowered.asm.mixin.Unique;
 
 public class AxoRenderContextImpl extends io.github.axolotlclient.rendering.DrawUtil implements AxoRenderContext {
 	@Nullable
@@ -50,7 +55,9 @@ public class AxoRenderContextImpl extends io.github.axolotlclient.rendering.Draw
 		return INSTANCE;
 	}
 
+
 	private final Minecraft client = Minecraft.getInstance();
+	private final StringSplitter splitter = new StringSplitter((cp, style) -> client.textRenderer.getWidth(style.asString() + Character.toString(cp)));
 
 	@Override
 	public void br$popMatrix() {
@@ -99,13 +106,13 @@ public class AxoRenderContextImpl extends io.github.axolotlclient.rendering.Draw
 		GlStateManager.disableAlphaTest();
 		GlStateManager.blendFuncSeparate(770, 771, 1, 0);
 		GlStateManager.shadeModel(7425);
-		BufferBuilder consumer = Tessellator.getInstance().getBuilder();
+		BufferBuilder consumer = Tesselator.getInstance().getBuffer();
 		consumer.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_COLOR);
 		consumer.vertex(x + width, y, 0).color(color1 >> 16 & 255, color1 >> 8 & 255, color1 & 255, color1 >> 24 & 255);
 		consumer.vertex(x, y, 0).color(color1 >> 16 & 255, color1 >> 8 & 255, color1 & 255, color1 >> 24 & 255);
 		consumer.vertex(x, y + height, 0).color(color2 >> 16 & 255, color2 >> 8 & 255, color2 & 255, color2 >> 24 & 255);
 		consumer.vertex(x + width, y + height, 0).color(color2 >> 16 & 255, color2 >> 8 & 255, color2 & 255, color2 >> 24 & 255);
-		Tessellator.getInstance().end();
+		Tesselator.getInstance().end();
 		GlStateManager.shadeModel(7424);
 		GlStateManager.disableBlend();
 		GlStateManager.enableAlphaTest();
@@ -119,13 +126,13 @@ public class AxoRenderContextImpl extends io.github.axolotlclient.rendering.Draw
 		GlStateManager.disableAlphaTest();
 		GlStateManager.blendFuncSeparate(770, 771, 1, 0);
 		GlStateManager.shadeModel(7425);
-		BufferBuilder consumer = Tessellator.getInstance().getBuilder();
+		BufferBuilder consumer = Tesselator.getInstance().getBuffer();
 		consumer.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_COLOR);
 		consumer.vertex(x, y, 0).color(color1 >> 16 & 255, color1 >> 8 & 255, color1 & 255, color1 >> 24 & 255);
 		consumer.vertex(x, y + height, 0).color(color1 >> 16 & 255, color1 >> 8 & 255, color1 & 255, color1 >> 24 & 255);
 		consumer.vertex(x + width, y + height, 0).color(color2 >> 16 & 255, color2 >> 8 & 255, color2 & 255, color2 >> 24 & 255);
 		consumer.vertex(x + width, y, 0).color(color2 >> 16 & 255, color2 >> 8 & 255, color2 & 255, color2 >> 24 & 255);
-		Tessellator.getInstance().end();
+		Tesselator.getInstance().end();
 		GlStateManager.shadeModel(7424);
 		GlStateManager.disableBlend();
 		GlStateManager.enableAlphaTest();
@@ -163,6 +170,11 @@ public class AxoRenderContextImpl extends io.github.axolotlclient.rendering.Draw
 	}
 
 	@Override
+	public void br$outlineRectRoundVarying(int x, int y, int width, int height, int color, float roundingTL, float roundingBL, float roundingBR, float roundingTR, float outlineWidth) {
+		axolotlclient_rendering$outlineRoundedRectVarying(x, y, x + width, y + height, color, roundingTL, roundingBL, roundingBR, roundingTR, outlineWidth);
+	}
+
+	@Override
 	public void br$drawTexture(AxoSprite sprite, int x, int y, int width, int height, int color) {
 		((AxoSpriteImpl) sprite).draw(client, x, y, width, height, color);
 	}
@@ -180,6 +192,62 @@ public class AxoRenderContextImpl extends io.github.axolotlclient.rendering.Draw
 	@Override
 	public void br$drawCenteredString(String value, int x, int y, int color, boolean shadow) {
 		AxoRenderContext.super.br$drawCenteredString(value, x, y, color, shadow);
+	}
+
+	@Unique
+	private void drawWordWrap(TextRenderer renderer, Text text, int x, int y, int width, boolean shadow, int color) {
+		for (var orderedText : splitter.splitLines(text, width, new Style())) {
+			br$drawString(orderedText, x, y, color, shadow);
+			y += renderer.fontHeight;
+		}
+	}
+
+	@Unique
+	private void drawCenteredWordWrap(TextRenderer renderer, Text text, int x, int y, int width, boolean shadow, int color) {
+		for (var orderedText : splitter.splitLines(text, width, new Style())) {
+			br$drawCenteredString(orderedText, x - br$getFont().br$getWidth(orderedText) / 2, y, color, shadow);
+			y += renderer.fontHeight;
+		}
+	}
+
+	@Unique
+	private void drawCenteredCenteredWordWrap(TextRenderer renderer, Text text, int x, int y, int width, boolean shadow, int color) {
+		var lines = splitter.splitLines(text, width, new Style());
+		y -= (lines.size() * renderer.fontHeight) / 2;
+		for (var orderedText : lines) {
+			br$drawCenteredString(orderedText, x - br$getFont().br$getWidth(orderedText) / 2, y, color, shadow);
+			y += renderer.fontHeight;
+		}
+	}
+
+	@Override
+	public void br$drawWordWrap(String text, int x, int y, int width, boolean shadow, int color) {
+		drawWordWrap(client.textRenderer, (Text) AxoText.literal(text), x, y, width, shadow, color);
+	}
+
+	@Override
+	public void br$drawWordWrap(AxoText text, int x, int y, int width, boolean shadow, int color) {
+		drawWordWrap(client.textRenderer, (Text) text, x, y, width, shadow, color);
+	}
+
+	@Override
+	public void br$drawCenteredWordWrap(String text, int x, int y, int width, boolean shadow, int color) {
+		drawCenteredWordWrap(client.textRenderer, (Text) AxoText.literal(text), x, y, width, shadow, color);
+	}
+
+	@Override
+	public void br$drawCenteredWordWrap(AxoText text, int x, int y, int width, boolean shadow, int color) {
+		drawCenteredWordWrap(client.textRenderer, (Text) text, x, y, width, shadow, color);
+	}
+
+	@Override
+	public void br$drawCenteredCenteredWordWrap(String text, int centerX, int centerY, int width, boolean shadow, int color) {
+		drawCenteredCenteredWordWrap(client.textRenderer, (Text) AxoText.literal(text), centerX, centerY, width, shadow, color);
+	}
+
+	@Override
+	public void br$drawCenteredCenteredWordWrap(AxoText text, int centerX, int centerY, int width, boolean shadow, int color) {
+		drawCenteredCenteredWordWrap(client.textRenderer, (Text) text, centerX, centerY, width, shadow, color);
 	}
 
 	@Override
@@ -203,5 +271,15 @@ public class AxoRenderContextImpl extends io.github.axolotlclient.rendering.Draw
 			Bridge.unwrapStack(stack), x, y, countLabel, textColor,
 			shadow
 		);
+	}
+
+	@Override
+	public int br$guiWidth() {
+		return Util.getWindow().getWidth();
+	}
+
+	@Override
+	public int br$guiHeight() {
+		return Util.getWindow().getHeight();
 	}
 }

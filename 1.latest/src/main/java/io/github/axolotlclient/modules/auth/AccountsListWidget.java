@@ -28,9 +28,9 @@ import lombok.Getter;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ObjectSelectionList;
-import net.minecraft.client.gui.components.PlayerFaceRenderer;
+import net.minecraft.client.gui.components.PlayerFaceExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
@@ -89,7 +89,7 @@ public class AccountsListWidget extends ObjectSelectionList<AccountsListWidget.E
 		}
 
 		@Override
-		public void renderContent(GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			if (Auth.getInstance().getCurrent().equals(account)) {
 				graphics.blit(RenderPipelines.GUI_TEXTURED, checkmark, getContentX() - 35, getContentY() + 1, 0, 0, 32, 32, 32, 32);
 			} else if (account.isExpired()) {
@@ -98,10 +98,10 @@ public class AccountsListWidget extends ObjectSelectionList<AccountsListWidget.E
 
 
 			Identifier texture = Auth.getInstance().getSkinTexture(account);
-			PlayerFaceRenderer.draw(graphics, texture, getContentX() - 1, getContentY() - 1, 33, true, false, -1);
+			PlayerFaceExtractor.extractRenderState(graphics, texture, getContentX() - 1, getContentY() - 1, 33, true, false, -1);
 
-			graphics.drawString(client.font, account.getName(), getContentX() + 3 + 33, getContentY() + 1, -1);
-			graphics.drawString(client.font, account.getUuid(), getContentX() + 3 + 33, getContentY() + 12, 0xFF808080);
+			graphics.text(client.font, account.getName(), getContentX() + 3 + 33, getContentY() + 1, -1);
+			graphics.text(client.font, account.getUuid(), getContentX() + 3 + 33, getContentY() + 12, 0xFF808080);
 		}
 
 		@Override

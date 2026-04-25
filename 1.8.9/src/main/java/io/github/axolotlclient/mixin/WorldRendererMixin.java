@@ -22,7 +22,7 @@
 
 package io.github.axolotlclient.mixin;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.sky.SkyboxManager;
 import net.minecraft.client.Minecraft;
@@ -60,7 +60,7 @@ public abstract class WorldRendererMixin {
 
 	@Inject(method = "renderSky", at = @At("HEAD"), cancellable = true)
 	public void axolotlclient$renderCustomSky(float tickDelta, int anaglyphFilter, CallbackInfo ci) {
-		if (this.world.dimension.isOverworld()) {
+		if (this.world.dimension.isNatural()) {
 			if (AxolotlClient.config().customSky.get() && SkyboxManager.getInstance().hasSkyBoxes()) {
 				GlStateManager.depthMask(false);
 				this.minecraft.profiler.push("Custom Skies");
@@ -85,12 +85,12 @@ public abstract class WorldRendererMixin {
 		return width;
 	}
 
-	@Inject(method = "renderBlockOutline", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;depthMask(Z)V", ordinal = 1))
+	@Inject(method = "renderBlockOutline", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;depthMask(Z)V", ordinal = 1))
 	private void resetOutlineWidth(PlayerEntity playerEntity, HitResult hitResult, int i, float f4, CallbackInfo ci) {
 		GL11.glLineWidth(2.0F);
 	}
 
-	@Inject(method = "renderBlockOutline", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;color4f(FFFF)V", shift = At.Shift.AFTER))
+	@Inject(method = "renderBlockOutline", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;color4f(FFFF)V", shift = At.Shift.AFTER))
 	public void axolotlclient$customOutlineColor(PlayerEntity playerEntity, HitResult hitResult, int i, float f, CallbackInfo ci) {
 		if (AxolotlClient.config().enableCustomOutlines.get()) {
 			GlStateManager.clearColor();

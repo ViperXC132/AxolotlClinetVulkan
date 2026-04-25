@@ -80,9 +80,6 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	private Session session;
 
 	@Shadow
-	public abstract boolean isInSingleplayer();
-
-	@Shadow
 	public abstract ServerListEntry getCurrentServerEntry();
 
 	@Shadow
@@ -95,16 +92,19 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	public abstract ResourceManager getResourceManager();
 
 	@Shadow
-	public abstract ListenableFuture<Object> submit(Runnable runnable);
-
-	@Shadow
 	public WorldRenderer worldRenderer;
 
 	@Shadow
 	private Entity camera;
 
 	@Shadow
-	private String serverAddress;
+	public abstract boolean isSingleplayer();
+
+	@Shadow
+	private String startupServerAddress;
+
+	@Shadow
+	public abstract ListenableFuture<Object> executeTask(Runnable par1);
 
 	@Override
 	public @Nullable AxoPlayer br$getPlayer() {
@@ -134,14 +134,14 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 
 	@Override
 	public boolean br$isLocalServer() {
-		return isInSingleplayer();
+		return isSingleplayer();
 	}
 
 	@Override
 	public String br$getServerAddress() {
 		return Optional.ofNullable(getCurrentServerEntry())
-			.map(x -> x.address)
-			.orElse(serverAddress);
+			.map(x -> x.ip)
+			.orElse(startupServerAddress);
 	}
 
 	@Override
@@ -193,7 +193,7 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 
 	@Override
 	public void execute(@NotNull Runnable command) {
-		this.submit(command);
+		this.executeTask(command);
 	}
 
 	@Override

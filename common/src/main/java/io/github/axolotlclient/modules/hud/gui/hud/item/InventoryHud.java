@@ -20,10 +20,11 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
+package io.github.axolotlclient.modules.hud.gui.hud.item;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -33,6 +34,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
+import io.github.axolotlclient.bridge.BridgeVersion;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoItems;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
@@ -41,10 +43,11 @@ import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable
 import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DefaultOptions;
+import io.github.axolotlclient.util.CommonUtil;
 
 public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable {
 	public static final AxoIdentifier ID = AxoIdentifier.of(AxolotlClientCommon.MODID, "inventoryhud");
-	private static final List<AxoItemStack> PLACEHOLDER = Stream.of(
+	private static final Supplier<List<AxoItemStack>> PLACEHOLDER = CommonUtil.memoize(() -> Stream.of(
 		IntStream.range(0, 9).mapToObj(x -> AxoItemStack.of(AxoItems.STONE)),
 		IntStream.range(0, 9).mapToObj(x -> (AxoItemStack) null),
 		Stream.of(
@@ -56,7 +59,7 @@ public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable
 			null, null, null,
 			AxoItemStack.of(AxoItems.GLOWSTONE_DUST, 63)
 		)
-	).flatMap(x -> x).toList();
+	).flatMap(x -> x).toList());
 
 	private static final int ITEM_SIZE = 18;
 	private static final int ITEM_TILE_SIZE = 16;
@@ -106,7 +109,14 @@ public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
-		render(graphics, PLACEHOLDER);
+		if (BridgeVersion.V26_1.isCurrent()) {
+			if (client.br$getWorld() == null) {
+				var pos = getContentPos();
+				graphics.br$drawCenteredString(getName(), pos.x() + getContentWidth() / 2, pos.y() + getContentHeight() / 2, -1);
+				return;
+			}
+		}
+		render(graphics, PLACEHOLDER.get());
 	}
 
 	private void render(AxoRenderContext graphics, List<? extends AxoItemStack> inventorySlots) {

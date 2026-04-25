@@ -22,7 +22,7 @@
 
 package io.github.axolotlclient.modules.hud;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.hud.ChatHud;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
@@ -30,7 +30,9 @@ import io.github.axolotlclient.modules.hud.gui.hud.PackDisplayHud;
 import io.github.axolotlclient.modules.hud.gui.hud.PlayerHud;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
 import lombok.Getter;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.render.platform.GlStateManager;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
@@ -59,6 +61,14 @@ public class HudManager extends HudManagerCommon {
 		add(new PackDisplayHud());
 		add(new PlayerHud());
 		add(new ChatHud());
+	}
+
+	@Override
+	public void lateInit() {
+		super.lateInit();
+		if (!FabricLoader.getInstance().isModLoaded("soundfix")) {
+			AxolotlClient.getInstance().getConfigManager().suppressName(SubtitlesHudHud.ID.br$getPath());
+		}
 	}
 
 	@Override

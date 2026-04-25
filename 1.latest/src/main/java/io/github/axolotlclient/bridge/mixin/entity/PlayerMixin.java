@@ -43,7 +43,7 @@ public abstract class PlayerMixin implements AxoPlayer {
 
 	@Shadow
 	@Final
-	Inventory inventory;
+	private Inventory inventory;
 
 	@Shadow
 	public abstract ItemStack getProjectile(ItemStack weaponStack);

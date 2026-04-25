@@ -37,7 +37,6 @@ import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import io.github.axolotlclient.modules.particles.Particles;
 import io.github.axolotlclient.modules.screenshotUtils.ScreenshotUtils;
 import io.github.axolotlclient.modules.scrollableTooltips.ScrollableTooltips;
-import io.github.axolotlclient.modules.tablist.Tablist;
 import io.github.axolotlclient.util.FeatureDisabler;
 import io.github.axolotlclient.util.FeatureDisablerCommon;
 import io.github.axolotlclient.util.notifications.Notifications;
@@ -56,7 +55,6 @@ public class AxolotlClient extends AxolotlClientCommon implements ClientModIniti
 		registerModule(ScrollableTooltips.getInstance());
 		registerModule(Particles.getInstance());
 		registerModule(ScreenshotUtils.getInstance());
-		registerModule(Tablist.getInstance());
 		registerModule(Auth.getInstance());
 	}
 

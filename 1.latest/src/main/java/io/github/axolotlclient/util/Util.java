@@ -85,7 +85,7 @@ public class Util {
 	}
 
 	public static void addMessageToChatHud(Component msg) {
-		Minecraft.getInstance().gui.getChat().addMessage(msg);
+		Minecraft.getInstance().gui.getChat().addClientSystemMessage(msg);
 	}
 
 	public static Identifier getTexture(GraphicsOption option) {

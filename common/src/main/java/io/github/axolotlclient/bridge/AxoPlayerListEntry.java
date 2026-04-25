@@ -37,4 +37,9 @@ public interface AxoPlayerListEntry {
 	default UUID br$getId() {
 		throw BridgeUtil.noImpl();
 	}
+
+	@RequiresImpl
+	default int br$getPing() {
+		throw BridgeUtil.noImpl();
+	}
 }

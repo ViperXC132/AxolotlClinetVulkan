@@ -24,12 +24,14 @@ package io.github.axolotlclient.modules.hud.gui.hud.item;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
+import io.github.axolotlclient.bridge.BridgeVersion;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoItems;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
@@ -39,6 +41,7 @@ import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
 import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.util.ClientColors;
+import io.github.axolotlclient.util.CommonUtil;
 import io.github.axolotlclient.util.ItemUtil;
 
 /**
@@ -50,13 +53,13 @@ import io.github.axolotlclient.util.ItemUtil;
 public class ItemUpdateHud extends TextHudEntry {
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "itemupdatehud");
 
-	private static final List<ItemUtil.TimedItemStorage> PLACEHOLDER_ADDED = List.of(
+	private static final Supplier<List<ItemUtil.TimedItemStorage>> PLACEHOLDER_ADDED = CommonUtil.memoize(() -> List.of(
 		new ItemUtil.TimedItemStorage(AxoItemStack.of(AxoItems.DIAMOND, 2), 0)
-	);
+	));
 
-	private static final List<ItemUtil.TimedItemStorage> PLACEHOLDER_REMOVED = List.of(
+	private static final Supplier<List<ItemUtil.TimedItemStorage>> PLACEHOLDER_REMOVED = CommonUtil.memoize(() -> List.of(
 		new ItemUtil.TimedItemStorage(AxoItemStack.of(AxoItems.EMERALD, 3), 0)
-	);
+	));
 
 	private final IntegerOption timeout = new IntegerOption("timeout", 6, 1, 60);
 	private final ColorOption bracketColor = new ColorOption("itemupdatehud.bracket_color", Colors.DARK_GRAY);
@@ -182,7 +185,14 @@ public class ItemUpdateHud extends TextHudEntry {
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
-		renderInternal(context, PLACEHOLDER_ADDED, PLACEHOLDER_REMOVED);
+		if (BridgeVersion.V26_1.isCurrent()) {
+			if (client.br$getWorld() == null) {
+				var pos = getContentPos();
+				context.br$drawCenteredString(getName(), pos.x() + getContentWidth() / 2, pos.y() + getContentHeight() / 2, textColor.get());
+				return;
+			}
+		}
+		renderInternal(context, PLACEHOLDER_ADDED.get(), PLACEHOLDER_REMOVED.get());
 	}
 
 	@Override

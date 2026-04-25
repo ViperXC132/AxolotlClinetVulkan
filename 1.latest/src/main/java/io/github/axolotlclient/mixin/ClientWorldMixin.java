@@ -51,7 +51,7 @@ public abstract class ClientWorldMixin {
 		}
 	}
 
-	@ModifyArg(method = "setTimeFromServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel$ClientLevelData;setDayTime(J)V"))
+	@ModifyArg(method = "setTimeFromServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel$ClientLevelData;setGameTime(J)V"))
 	public long axolotlclient$timeChanger(long time) {
 		if (AxolotlClient.config().timeChangerEnabled.get()) {
 			return AxolotlClient.config().customTime.get();

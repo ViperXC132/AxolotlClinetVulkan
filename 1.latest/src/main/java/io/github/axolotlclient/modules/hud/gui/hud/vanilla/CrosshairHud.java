@@ -25,9 +25,8 @@ package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 import java.util.List;
 
 import com.mojang.blaze3d.pipeline.BlendFunction;
+import com.mojang.blaze3d.pipeline.ColorTargetState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
-import com.mojang.blaze3d.platform.DestFactor;
-import com.mojang.blaze3d.platform.SourceFactor;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
@@ -37,7 +36,6 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
-import io.github.axolotlclient.mixin.GameRendererAccessor;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.AbstractHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
@@ -46,7 +44,7 @@ import io.github.axolotlclient.util.Util;
 import net.minecraft.client.AttackIndicatorStatus;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
@@ -161,7 +159,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 
 	private static final RenderPipeline CROSSHAIR_NO_TEX = RenderPipelines.register(RenderPipeline.builder(RenderPipelines.GUI_SNIPPET)
 		.withLocation("pipeline/crosshair_no_tex")
-		.withBlend(new BlendFunction(SourceFactor.ONE_MINUS_DST_COLOR, DestFactor.ONE_MINUS_SRC_COLOR, SourceFactor.ONE, DestFactor.ZERO))
+		.withColorTargetState(new ColorTargetState(BlendFunction.INVERT))
 		.build()
 	);
 
@@ -169,7 +167,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 	public void render(AxoRenderContext graphics, float delta) {
 	}
 
-	public void renderCrosshair(GuiGraphics graphics) {
+	public void renderCrosshair(GuiGraphicsExtractor graphics) {
 		if (!client.options.getCameraType().isFirstPerson() && !showInF5.get()) {
 			return;
 		}
@@ -218,7 +216,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			matrixStack.rotateX(-camera.xRot() * 0.017453292F);
 			matrixStack.rotateY(camera.yRot() * 0.017453292F);
 			matrixStack.scale(-getScale(), -getScale(), -getScale());
-			client.gui.getDebugOverlay().render3dCrosshair(((GameRendererAccessor) client.gameRenderer).getCamera());
+			client.gui.getDebugOverlay().render3dCrosshair(client.gameRenderer.getGameRenderState().levelRenderState.cameraRenderState, client.gameRenderer.getGameRenderState().windowRenderState.guiScale);
 			matrixStack.popMatrix();
 		} else if (isTex) {
 			if (type.equals(Crosshair.TEXTURE)) {
@@ -284,7 +282,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		return blend ? RenderPipelines.CROSSHAIR : RenderPipelines.GUI_TEXTURED;
 	}
 
-	private void fillRenderType(GuiGraphics graphics, boolean blend, int x, int y, int width, int height, Color color) {
+	private void fillRenderType(GuiGraphicsExtractor graphics, boolean blend, int x, int y, int width, int height, Color color) {
 		if (blend) {
 			graphics.fill(CROSSHAIR_NO_TEX, x, y, width + x, height + y, color.toInt());
 		} else {

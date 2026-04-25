@@ -34,9 +34,10 @@ import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import io.github.axolotlclient.util.duck.SubmitNodeCollectorExtension;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.entity.player.AvatarRenderer;
+import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -47,19 +48,20 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(AvatarRenderer.class)
-public abstract class PlayerEntityRendererMixin {
+@Mixin(EntityRenderer.class)
+public abstract class EntityRendererMixin {
 
-	@WrapOperation(method = "submitNameTag(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V",
-		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitNameTag(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/phys/Vec3;ILnet/minecraft/network/chat/Component;ZIDLnet/minecraft/client/renderer/state/CameraRenderState;)V"))
-	private void axolotlclient$modifiyName(SubmitNodeCollector instance, PoseStack poseStack, Vec3 vec3, int a, Component component, boolean b, int i, double v, CameraRenderState cameraRenderState, Operation<Void> original, @Local(argsOnly = true) AvatarRenderState state) {
-		if (AxolotlClient.config() != null) {
+	@WrapOperation(method = "submitNameDisplay(Lnet/minecraft/client/renderer/entity/state/EntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;I)V",
+		at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitNameTag(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/phys/Vec3;ILnet/minecraft/network/chat/Component;ZIDLnet/minecraft/client/renderer/state/level/CameraRenderState;)V"))
+	private void axolotlclient$modifiyName(SubmitNodeCollector instance, PoseStack poseStack, Vec3 vec3, int offset, Component component, boolean b, int light, double v, CameraRenderState cameraRenderState, Operation<Void> original, @Local(argsOnly = true) EntityRenderState entityState) {
+		if (AxolotlClient.config() != null && entityState instanceof AvatarRenderState state) {
 			var mc = Minecraft.getInstance();
 			if (mc.player != null) {
 				Level level = Minecraft.getInstance().level;
 				if (level == null) return;
 				Entity player = level.getEntity(state.id);
-				if (player == null) return; // some mods seem to create players without adding them to a level for gui rendering. why?
+				if (player == null)
+					return; // some mods seem to create players without adding them to a level for gui rendering. why?
 				boolean self = player.getUUID() == mc.player.getUUID();
 				if (self && NickHider.getInstance().hideOwnName.get()) {
 					component = (Component) NickHider.getInstance().editComponent(component, player.getName().getString(), NickHider.getInstance().hiddenNameSelf.get());
@@ -68,14 +70,16 @@ public abstract class PlayerEntityRendererMixin {
 				}
 			}
 		}
-		original.call(instance, poseStack, vec3, a, component, b, i, v, cameraRenderState);
+		original.call(instance, poseStack, vec3, offset, component, b, light, v, cameraRenderState);
 	}
 
-	@Inject(method = "submitNameTag(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitNameTag(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/phys/Vec3;ILnet/minecraft/network/chat/Component;ZIDLnet/minecraft/client/renderer/state/CameraRenderState;)V", ordinal = 1, shift = At.Shift.AFTER))
-	public void axolotlclient$addBadges(AvatarRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
-		if (!state.isDiscrete) {
+	@Inject(method = "submitNameDisplay(Lnet/minecraft/client/renderer/entity/state/EntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;I)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitNameTag(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/world/phys/Vec3;ILnet/minecraft/network/chat/Component;ZIDLnet/minecraft/client/renderer/state/level/CameraRenderState;)V", ordinal = 1, shift = At.Shift.AFTER))
+	public void axolotlclient$addBadges(EntityRenderState entityRenderState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera, int offset, CallbackInfo ci) {
+		if (!entityRenderState.isDiscrete && entityRenderState instanceof AvatarRenderState state) {
 			if (AxolotlClient.config().showBadges.get()) {
-				Entity entity = Minecraft.getInstance().level.getEntity(state.id);
+				Level level = Minecraft.getInstance().level;
+				if (level == null) return;
+				Entity entity = level.getEntity(state.id);
 				if (entity instanceof Player player && UserRequest.getOnline(player.getStringUUID())) {
 					((SubmitNodeCollectorExtension) submitNodeCollector).axolotlclient$lastNameTagSubmitHasBadge();
 				}
@@ -83,10 +87,12 @@ public abstract class PlayerEntityRendererMixin {
 		}
 	}
 
-	@Inject(method = "submitNameTag(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/CameraRenderState;)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V"))
-	private void addLevel(AvatarRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState cameraRenderState, CallbackInfo ci) {
-		if (Minecraft.getInstance().getCurrentServer() != null && Minecraft.getInstance().getCurrentServer().ip.endsWith("hypixel.net")) {
-			var entity = Minecraft.getInstance().level.getEntity(state.id);
+	@Inject(method = "submitNameDisplay(Lnet/minecraft/client/renderer/entity/state/EntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/state/level/CameraRenderState;I)V", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V"))
+	private void addLevel(EntityRenderState entityState, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera, int offset, CallbackInfo ci) {
+		if (Minecraft.getInstance().getCurrentServer() != null && Minecraft.getInstance().getCurrentServer().ip.endsWith("hypixel.net") && entityState instanceof AvatarRenderState state) {
+			Level level = Minecraft.getInstance().level;
+			if (level == null) return;
+			var entity = level.getEntity(state.id);
 			if (entity instanceof Player player) {
 				if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().inGame() && BedwarsMod.getInstance().bedwarsLevelHead.get()) {
 					String text = BedwarsMod.getInstance().getGame().get().getLevelHead(player);
@@ -97,7 +103,7 @@ public abstract class PlayerEntityRendererMixin {
 							y -= 2;
 						}
 
-						submitNodeCollector.submitNameTag(poseStack, state.nameTagAttachment, y, Component.literal(text).withStyle(s -> s.withColor(LevelHead.getInstance().textColor.get().toInt())), !state.isDiscrete, state.lightCoords, state.distanceToCameraSq, cameraRenderState);
+						submitNodeCollector.submitNameTag(poseStack, state.nameTagAttachment, y, Component.literal(text).withStyle(s -> s.withColor(LevelHead.getInstance().textColor.get().toInt())), !state.isDiscrete, state.lightCoords, state.distanceToCameraSq, camera);
 						((SubmitNodeCollectorExtension) submitNodeCollector).axolotlclient$lastNameTagSubmitIsLevelHead();
 					}
 				} else if (LevelHead.getInstance().enabled.get()) {
@@ -109,7 +115,7 @@ public abstract class PlayerEntityRendererMixin {
 						y -= 2;
 					}
 
-					submitNodeCollector.submitNameTag(poseStack, state.nameTagAttachment, y, Component.literal(text).withStyle(s -> s.withColor(LevelHead.getInstance().textColor.get().toInt())), !state.isDiscrete, state.lightCoords, state.distanceToCameraSq, cameraRenderState);
+					submitNodeCollector.submitNameTag(poseStack, state.nameTagAttachment, y, Component.literal(text).withStyle(s -> s.withColor(LevelHead.getInstance().textColor.get().toInt())), !state.isDiscrete, state.lightCoords, state.distanceToCameraSq, camera);
 					((SubmitNodeCollectorExtension) submitNodeCollector).axolotlclient$lastNameTagSubmitIsLevelHead();
 				}
 			}

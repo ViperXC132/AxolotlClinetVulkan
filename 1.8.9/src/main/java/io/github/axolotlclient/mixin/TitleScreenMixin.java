@@ -45,8 +45,8 @@ import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.auth.AuthWidget;
 import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.util.OSUtil;
+import io.github.axolotlclient.util.ThreadExecuter;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.ClientBrandRetriever;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.ConfirmChatLinkScreen;
 import net.minecraft.client.gui.screen.Screen;
@@ -68,7 +68,7 @@ public abstract class TitleScreenMixin extends Screen {
 	public abstract void render(int par1, int par2, float par3);
 
 	@Shadow
-	private boolean f_2867010;
+	private boolean realmsEnabled;
 
 	@Inject(method = "initWidgetsNormal", at = @At("TAIL"))
 	private void axolotlclient$replaceRealmsButton(int i, int j, CallbackInfo ci) {
@@ -92,10 +92,10 @@ public abstract class TitleScreenMixin extends Screen {
 			if (API.getInstance().isSocketConnected()) {
 				addApiButtons.run();
 			} else {
-				API.addStartupListener(() -> minecraft.submit(addApiButtons), API.ListenerType.ONCE);
+				API.addStartupListener(() -> minecraft.executeTask(addApiButtons), API.ListenerType.ONCE);
 			}
 		}
-		GlobalDataRequest.get().thenAccept(data -> {
+		ThreadExecuter.scheduleTask(() -> GlobalDataRequest.get().thenAccept(data -> {
 			int buttonY = 10;
 			if (APIOptions.getInstance().updateNotifications.get() &&
 				data.success() &&
@@ -112,7 +112,7 @@ public abstract class TitleScreenMixin extends Screen {
 				this.buttons.add(notes);
 				buttons.add(notes);
 			}
-		});
+		}));
 
 		if (FabricLoader.getInstance().isModLoaded("modmenu")) {
 			try {
@@ -174,7 +174,7 @@ public abstract class TitleScreenMixin extends Screen {
 	public void axolotlclient$customBranding(TitleScreen instance, TextRenderer textRenderer, String s, int x, int y, int color) {
 		if (FabricLoader.getInstance().getModContainer("axolotlclient").isPresent()) {
 			instance.drawString(textRenderer,
-				"Minecraft 1.8.9/" + ClientBrandRetriever.getClientModName() + " " + AxolotlClient.VERSION,
+				"Minecraft 1.8.9/AxolotlClient " + AxolotlClient.VERSION,
 				x, y, color);
 		} else {
 			instance.drawString(textRenderer, s, x, y, color);
@@ -193,6 +193,6 @@ public abstract class TitleScreenMixin extends Screen {
 
 	@Inject(method = "<init>", at = @At("TAIL"))
 	private void disableRealms(CallbackInfo ci) {
-		this.f_2867010 = true;
+		this.realmsEnabled = true;
 	}
 }

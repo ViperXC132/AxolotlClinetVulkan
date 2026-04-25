@@ -32,23 +32,25 @@ import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.util.HorizontalGradientRectangleRenderState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix3x2fStack;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 
-@Mixin(GuiGraphics.class)
+@Mixin(GuiGraphicsExtractor.class)
 public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	@Shadow
 	@Final
-	Minecraft minecraft;
+	private Minecraft minecraft;
 
 	@Shadow
 	@Final
@@ -64,23 +66,35 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	public abstract void fill(int x1, int y1, int x2, int y2, int color);
 
 	@Shadow
-	public abstract void renderItem(ItemStack par1, int par2, int par3);
-
-	@Shadow
-	public abstract void renderItemDecorations(Font par1, ItemStack par2, int par3, int par4, String par5);
-
-	@Shadow
-	public abstract void drawString(Font par1, String par2, int par3, int par4, int par5, boolean par6);
-
-	@Shadow
-	public abstract void drawString(Font par1, Component par2, int par3, int par4, int par5, boolean par6);
-
-	@Shadow
 	public abstract void fillGradient(int startX, int startY, int endX, int endY, int startColor, int endColor);
 
+	@Shadow
+	public abstract void text(Font font, Component str, int x, int y, int color, boolean dropShadow);
+
+	@Shadow
+	public abstract void text(Font font, @Nullable String str, int x, int y, int color, boolean dropShadow);
+
+	@Shadow
+	public abstract void item(ItemStack itemStack, int x, int y);
+
+	@Shadow
+	public abstract void itemDecorations(Font font, ItemStack itemStack, int x, int y, @Nullable String countText);
+
+	@Shadow
+	public abstract int guiHeight();
+
+	@Shadow
+	public abstract int guiWidth();
+
+	@Shadow
+	public abstract void text(Font font, FormattedCharSequence str, int x, int y, int color, boolean dropShadow);
+
+	@Shadow
+	public abstract void centeredText(Font font, String str, int x, int y, int color);
+
 	@Unique
-	private @NotNull GuiGraphics self() {
-		return (GuiGraphics) (Object) this;
+	private @NotNull GuiGraphicsExtractor self() {
+		return (GuiGraphicsExtractor) (Object) this;
 	}
 
 	@Override
@@ -126,14 +140,70 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 
 	@Override
 	public int br$drawString(String value, int x, int y, int color, boolean shadow) {
-		drawString(minecraft.font, value, x, y, color, shadow);
+		text(minecraft.font, value, x, y, color, shadow);
 		return x + minecraft.font.width(value);
 	}
 
 	@Override
 	public int br$drawString(AxoText value, int x, int y, int color, boolean shadow) {
-		drawString(minecraft.font, (Component) value, x, y, color, shadow);
+		text(minecraft.font, (Component) value, x, y, color, shadow);
 		return x + minecraft.font.width((FormattedText) value);
+	}
+
+	@Unique
+	private void drawWordWrap(Font renderer, FormattedText text, int x, int y, int width, boolean shadow, int color) {
+		for (var orderedText : renderer.split(text, width)) {
+			text(renderer, orderedText, x, y, color, shadow);
+			y += renderer.lineHeight;
+		}
+	}
+
+	@Unique
+	private void drawCenteredWordWrap(Font renderer, FormattedText text, int x, int y, int width, boolean shadow, int color) {
+		for (var orderedText : renderer.split(text, width)) {
+			text(renderer, orderedText, x - renderer.width(orderedText) / 2, y, color, shadow);
+			y += renderer.lineHeight;
+		}
+	}
+
+	@Unique
+	private void drawCenteredCenteredWordWrap(Font renderer, FormattedText text, int x, int y, int width, boolean shadow, int color) {
+		var lines = renderer.split(text, width);
+		y -= (lines.size() * renderer.lineHeight) / 2;
+		for (var orderedText : lines) {
+			text(renderer, orderedText, x - renderer.width(orderedText) / 2, y, color, shadow);
+			y += renderer.lineHeight;
+		}
+	}
+
+	@Override
+	public void br$drawWordWrap(String text, int x, int y, int width, boolean shadow, int color) {
+		drawWordWrap(minecraft.font, FormattedText.of(text), x, y, width, shadow, color);
+	}
+
+	@Override
+	public void br$drawWordWrap(AxoText text, int x, int y, int width, boolean shadow, int color) {
+		drawWordWrap(minecraft.font, (Component) text, x, y, width, shadow, color);
+	}
+
+	@Override
+	public void br$drawCenteredWordWrap(String text, int x, int y, int width, boolean shadow, int color) {
+		drawCenteredWordWrap(minecraft.font, FormattedText.of(text), x, y, width, shadow, color);
+	}
+
+	@Override
+	public void br$drawCenteredWordWrap(AxoText text, int x, int y, int width, boolean shadow, int color) {
+		drawCenteredWordWrap(minecraft.font, (Component) text, x, y, width, shadow, color);
+	}
+
+	@Override
+	public void br$drawCenteredCenteredWordWrap(String text, int centerX, int centerY, int width, boolean shadow, int color) {
+		drawCenteredCenteredWordWrap(minecraft.font, FormattedText.of(text), centerX, centerY, width, shadow, color);
+	}
+
+	@Override
+	public void br$drawCenteredCenteredWordWrap(AxoText text, int centerX, int centerY, int width, boolean shadow, int color) {
+		drawCenteredCenteredWordWrap(minecraft.font, (Component) text, centerX, centerY, width, shadow, color);
 	}
 
 	@Override
@@ -182,6 +252,11 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	}
 
 	@Override
+	public void br$outlineRectRoundVarying(int x, int y, int width, int height, int color, float roundingTL, float roundingBL, float roundingBR, float roundingTR, float outlineWidth) {
+		self().axolotlclient_rendering$outlineRoundedRectVarying(x, y, x + width, y + height, color, roundingTL, roundingBL, roundingBR, roundingTR, outlineWidth);
+	}
+
+	@Override
 	public void br$drawTexture(AxoSprite sprite, int x, int y, int width, int height, int color) {
 		((AxoSpriteImpl) sprite).draw(minecraft, self(), x, y, width, height, color);
 	}
@@ -189,12 +264,12 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	// item model rendering
 
 	public void br$renderGuiItemModel(AxoItemStack stack, int x, int y) {
-		renderItem((ItemStack) stack, x, y);
+		item((ItemStack) stack, x, y);
 	}
 
 	public void br$renderGuiItemOverlay(AxoItemStack stack, int x, int y, String countLabel, int textColor,
 										boolean shadow) {
-		renderItemDecorations(minecraft.font, (ItemStack) stack, x, y, countLabel);
+		itemDecorations(minecraft.font, (ItemStack) stack, x, y, countLabel);
 	}
 
 	@ApiStatus.NonExtendable
@@ -205,5 +280,15 @@ public abstract class GuiGraphicsMixin implements AxoRenderContext {
 	// misc methods
 	public AxoFont br$getFont() {
 		return minecraft.font;
+	}
+
+	@Override
+	public int br$guiHeight() {
+		return guiHeight();
+	}
+
+	@Override
+	public int br$guiWidth() {
+		return guiWidth();
 	}
 }

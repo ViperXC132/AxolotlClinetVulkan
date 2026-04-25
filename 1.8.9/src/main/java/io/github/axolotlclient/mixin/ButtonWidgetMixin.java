@@ -31,6 +31,7 @@ import net.minecraft.resource.Identifier;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -73,10 +74,13 @@ public abstract class ButtonWidgetMixin {
 
 	}
 
+	@Unique
+	private static final DrawUtil.NineSlice SLICE = new DrawUtil.NineSlice(200, 20, 3);
+
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/widget/ButtonWidget;renderBackground(Lnet/minecraft/client/Minecraft;II)V"))
 	private void addSlices(Minecraft minecraft, int i, int j, CallbackInfo ci) {
 		Identifier tex = ButtonWidgetTextures.get(getYImage(hovered));
-		DrawUtil.blitSprite(tex, x, y, width, height, new DrawUtil.NineSlice(200, 20, 3));
+		DrawUtil.blitSprite(tex, x, y, width, height, SLICE);
 		minecraft.getTextureManager().bind(WIDGETS_LOCATION);
 	}
 }

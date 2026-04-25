@@ -53,7 +53,9 @@ import io.github.axolotlclient.modules.hud.gui.hud.item.ArmorHud;
 import io.github.axolotlclient.modules.hud.gui.hud.item.ArrowHud;
 import io.github.axolotlclient.modules.hud.gui.hud.item.ItemUpdateHud;
 import io.github.axolotlclient.modules.hud.gui.hud.simple.*;
-import io.github.axolotlclient.modules.hud.gui.hud.vanilla.InventoryHud;
+import io.github.axolotlclient.modules.hud.gui.hud.item.InventoryHud;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.PlayerTabOverlayHud;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.SubtitlesHudHud;
 import io.github.axolotlclient.modules.hud.gui.layout.SnapAnchorType;
 import io.github.axolotlclient.modules.hud.snapping.SnappingHelper;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
@@ -81,6 +83,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 	private final OptionCategory hudEditScreenCategory = OptionCategory.create("hudEditScreen");
 	private final BooleanOption snapping = new BooleanOption("snapping", true);
 	private final BooleanOption enabled = new BooleanOption("enabled", true);
+	public final BooleanOption hudLinkCreationEnabled = new BooleanOption("hud_link_creation_enabled", true);
 	private final FloatOption hudLinkLineWidth = new FloatOption("hud.hud_link_line_width", 3f, 1f, 10f);
 	public final ColorOption grabCornerColor = new ColorOption("rescale_grab_corner_color", Colors.PINK);
 	private final Map<AxoIdentifier, HudEntry> entries;
@@ -95,9 +98,12 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 
 	public void init() {
 		key.br$registerOnConsumeClick(this::openScreen);
-		toggleHud.br$registerOnConsumeClick(enabled::toggle);
+		toggleHud.br$registerOnConsumeClick(() -> {
+			enabled.toggle();
+			AxolotlClientCommon.getInstance().saveConfig();
+		});
 		AxolotlClientCommon.getInstance().getConfig().addCategory(hudCategory);
-		hudCategory.add(enabled, grabCornerColor, hudLinkLineWidth);
+		hudCategory.add(enabled, grabCornerColor, hudLinkCreationEnabled, hudLinkLineWidth);
 		hudEditScreenCategory.add(snapping);
 		AxolotlClientCommon.getInstance().getConfig().hidden.add(hudEditScreenCategory);
 		add(new PingHud());
@@ -123,6 +129,8 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 		add(new DayCounterHud());
 		add(new InventoryHud());
 		add(new XPHud());
+		add(new PlayerTabOverlayHud());
+		add(new SubtitlesHudHud());
 
 		addExtraHud();
 
@@ -439,8 +447,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 		visitedEntries.push(origin);
 		var entries = HudManagerCommon.getInstance().getMoveableEntries();
 		entries.remove(origin);
-		entries.removeIf(e -> visitedEntries.stream().anyMatch(v -> v.dependsOnX(e).isPresent()));
-		entries.removeIf(e -> visitedEntries.stream().anyMatch(v -> v.dependsOnY(e).isPresent()));
+		entries.removeIf(e -> visitedEntries.stream().anyMatch(v -> v.dependsOnY(e).or(() -> v.dependsOnX(e)).isPresent()));
 		for (HudEntry entry : entries) {
 			entry.dependsOnX(origin).ifPresent(type -> type.updatePosX(origin, entry));
 			entry.dependsOnY(origin).ifPresent(type -> type.updatePosY(origin, entry));
@@ -454,6 +461,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 
 	public void toggleSnapping() {
 		snapping.toggle();
+		AxolotlClientCommon.getInstance().saveConfig();
 	}
 
 	protected abstract void openScreen();

@@ -33,6 +33,7 @@ import io.github.axolotlclient.bridge.impl.commands.CommandsImpl;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.ChatScreen;
 import org.jetbrains.annotations.Nullable;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -52,8 +53,8 @@ public abstract class ChatScreenMixin {
 		method = "goThroughHistory(Ljava/lang/String;Ljava/lang/String;)V",
 		at = @At(
 			value = "FIELD",
-			target = "Lnet/minecraft/client/gui/screen/ChatScreen;completed:Z"
-		)
+			target = "Lnet/minecraft/client/gui/screen/ChatScreen;completed:Z",
+			opcode = Opcodes.PUTFIELD)
 	)
 	private void prepareClientSideSuggestions(String partialMessage, String nextWord, CallbackInfo ci) {
 		lcu$clientSuggestions = CommandsImpl.getInstance().getCompletionsClient(partialMessage);
@@ -80,7 +81,7 @@ public abstract class ChatScreenMixin {
 					).toArray(String[]::new)
 				);
 			}
-		}, Minecraft.getInstance()::submit);
+		}, Minecraft.getInstance()::executeTask);
 
 		lcu$clientSuggestions = null;
 	}

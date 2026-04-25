@@ -11,34 +11,33 @@ base.archivesName.set(project.property("archives_base_name").toString() + "-comm
 
 dependencies {
 	compileOnly("net.fabricmc:fabric-loader:${project.property("fabric_loader")}")
-	testCompileOnly("net.fabricmc:fabric-loader:${project.property("fabric_loader")}")
 	compileOnly("net.fabricmc:sponge-mixin:0.16.1+mixin.0.8.7")
 	compileOnly("org.jetbrains:annotations:24.0.0")
 
 	// take the oldest version just to build against
-	testRuntimeOnly(compileOnly("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+1.8.9") {
+	compileOnly("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+1.8.9") {
+		isTransitive = false
+	}
+	compileOnly("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:${project.property("config")}")
+
+	compileOnly("com.google.guava:guava:17.0")
+	compileOnly("org.apache.httpcomponents:httpclient:4.3.3")
+	compileOnly("com.google.code.gson:gson:2.10")
+	compileOnly("commons-io:commons-io:2.4")
+	compileOnly("org.apache.commons:commons-lang3:3.3.2")
+	compileOnly("it.unimi.dsi:fastutil:8.5.9")
+	compileOnly("org.lwjgl:lwjgl-glfw:3.3.2")
+	compileOnly("org.lwjgl:lwjgl-tinyfd:3.3.2")
+	compileOnly("org.lwjgl:lwjgl-sdl:3.4.1")
+
+	shadow(implementation("io.github.cdagaming:DiscordIPC:0.11.3") {
 		isTransitive = false
 	})
-	testRuntimeOnly(testCompileOnly(compileOnly("io.github.axolotlclient.AxolotlClient-config:AxolotlClientConfig-common:${project.property("config")}")!!)!!)
+	shadow(runtimeOnly(compileOnly("com.kohlschutter.junixsocket:junixsocket-common:2.10.1")!!)!!)
+	shadow(runtimeOnly(compileOnly("com.kohlschutter.junixsocket:junixsocket-native-common:2.10.1")!!)!!)
 
-	testRuntimeOnly(compileOnly("com.google.guava:guava:17.0")!!)
-	testImplementation(compileOnly("org.apache.httpcomponents:httpclient:4.3.3")!!)
-	testImplementation(compileOnly("com.google.code.gson:gson:2.8.0")!!)
-	testRuntimeOnly(compileOnly("commons-io:commons-io:2.4")!!)
-	testRuntimeOnly(compileOnly("org.apache.commons:commons-lang3:3.3.2")!!)
-	testRuntimeOnly(compileOnly("it.unimi.dsi:fastutil:8.2.1")!!)
-	testRuntimeOnly(compileOnly("org.lwjgl:lwjgl-glfw:3.3.2")!!)
-	testRuntimeOnly(compileOnly("org.lwjgl:lwjgl-tinyfd:3.2.2")!!)
-	testRuntimeOnly(compileOnly("org.lwjgl:lwjgl-sdl:3.4.1")!!)
-
-	shadow(implementation("io.github.cdagaming:DiscordIPC:0.11.2") {
-		isTransitive = false
-	})
-	shadow(implementation("com.kohlschutter.junixsocket:junixsocket-common:2.10.1")!!)
-	shadow(implementation("com.kohlschutter.junixsocket:junixsocket-native-common:2.10.1")!!)
-
-	shadow(implementation("com.github.mizosoft.methanol:methanol:1.8.3")!!)
-	shadow(implementation("io.nayuki:qrcodegen:1.8.0")!!)
+	shadow(runtimeOnly(compileOnly("com.github.mizosoft.methanol:methanol:1.9.0")!!)!!)
+	shadow(runtimeOnly(compileOnly("io.nayuki:qrcodegen:1.8.0")!!)!!)
 
 	compileOnly("net.hypixel:mod-api:1.0.1")
 	compileOnly("com.mojang:brigadier:1.0.18")

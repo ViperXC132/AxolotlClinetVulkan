@@ -1,22 +1,19 @@
 @file:Suppress("UnstableApiUsage")
 
 plugins {
-	id("fabric-loom")
-	id("io.github.p03w.machete")
+	id("net.fabricmc.fabric-loom")
 }
 
-val minecraft = "1.21.11"
-val minecraftFriendly = "1.21.11"
-val parchmentMinecraft = "1.21.11"
-val parchment = "2025.12.20"
-val modmenu = "17.0.0-alpha.1"
-val fapi = "0.140.2"
+val minecraft = "26.1.2"
+val minecraftFriendly = "26.1"
+val modmenu = "18.0.0-alpha.6"
+val fapi = "0.145.4+26.1.1"
 group = project.property("maven_group") as String
 version = "${project.property("version")}+$minecraftFriendly"
 base.archivesName = "AxolotlClient"
 
 loom {
-	accessWidenerPath.set(file("src/main/resources/axolotlclient.accesswidener"))
+	accessWidenerPath.set(file("src/main/resources/axolotlclient.classtweaker"))
 	mods {
 		create("axolotlclient") {
 			sourceSet("main")
@@ -34,38 +31,31 @@ repositories {
 
 dependencies {
 	minecraft("com.mojang:minecraft:$minecraft")
-	mappings(loom.layered {
-		officialMojangMappings {
-			nameSyntheticMembers = true
-		}
-		parchment("org.parchmentmc.data:parchment-$parchmentMinecraft:$parchment@zip")
-	})
+	implementation("net.fabricmc:fabric-loader:${project.property("fabric_loader")}")
 
-	modImplementation("net.fabricmc:fabric-loader:${project.property("fabric_loader")}")
+	implementation("net.fabricmc.fabric-api:fabric-api:$fapi")
 
-	modImplementation("net.fabricmc.fabric-api:fabric-api:$fapi+$minecraftFriendly")
-
-	modImplementation("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+$minecraftFriendly")
+	implementation("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+$minecraftFriendly")
 	include("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+$minecraftFriendly")
-	modImplementation(include("io.github.axolotlclient:AxolotlClient-config-rounded:${project.property("config")}+$minecraftFriendly")!!)
+	implementation(include("io.github.axolotlclient:AxolotlClient-config-rounded:${project.property("config")}+$minecraftFriendly")!!)
 
-	modCompileOnly("com.terraformersmc:modmenu:$modmenu")
+	compileOnly("com.terraformersmc:modmenu:$modmenu")
 
-	implementation(include(project(path = ":common", configuration = "shadow"))!!)
+	api(include(project(path = ":common", configuration = "shadow"))!!)
 
-	modCompileOnly("maven.modrinth:world-host:0.5.0+1.21.3-fabric")
+	//compileOnly("maven.modrinth:world-host:0.5.0+1.21.3-fabric")
 	//implementation("org.quiltmc.parsers:json:0.3.0")
 	//implementation("org.semver4j:semver4j:5.3.0")
 
-	val noxesiumVersion = "2.5.0"
-	modCompileOnly("maven.modrinth:noxesium:$noxesiumVersion")
-	//modImplementation("com.noxcrew.noxesium:api:$noxesiumVersion")
+	//val noxesiumVersion = "2.5.0"
+	//compileOnly("maven.modrinth:noxesium:$noxesiumVersion")
+	//implementation("com.noxcrew.noxesium:api:$noxesiumVersion")
 	//localRuntime("org.khelekore:prtree:1.5")
 
-	modCompileOnly("maven.modrinth:e4mc:6.0.6-fabric")
+	compileOnly("maven.modrinth:e4mc:6.0.6-fabric")
 
-	implementation("net.hypixel:mod-api:1.0.1")
-	include(modImplementation("maven.modrinth:hypixel-mod-api:1.0.1+build.1+mc1.21")!!)
+	implementation("net.hypixel:mod-api:1.0.2")
+	include(implementation("maven.modrinth:hypixel-mod-api:1.0.2+build.1+mc26.1")!!)
 }
 
 tasks.processResources {
@@ -79,14 +69,14 @@ tasks.processResources {
 tasks.withType(JavaCompile::class).configureEach {
 	options.encoding = "UTF-8"
 
-	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_22)) {
-		options.release = 21
+	if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_26)) {
+		options.release = 25
 	}
 }
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_21
-	targetCompatibility = JavaVersion.VERSION_21
+	sourceCompatibility = JavaVersion.VERSION_25
+	targetCompatibility = JavaVersion.VERSION_25
 }
 
 tasks.runClient {
@@ -117,7 +107,7 @@ publishing {
 }
 
 tasks.modrinth {
-	dependsOn(tasks.getByName("optimizeOutputsOfRemapJar"))
+	dependsOn(tasks.getByName("jar"))
 }
 
 modrinth {
@@ -125,10 +115,10 @@ modrinth {
 	projectId = "p2rxzX0q"
 	versionNumber = "${project.version}"
 	versionType = "release"
-	uploadFile = tasks.remapJar.get()
+	uploadFile = tasks.jar.get()
 	gameVersions.set(listOf(minecraft))
 	loaders.set(listOf("quilt", "fabric"))
-	additionalFiles.set(listOf(tasks.remapSourcesJar))
+	additionalFiles.set(listOf(tasks.sourcesJar))
 	dependencies {
 		required.project("fabric-api")
 	}

@@ -27,7 +27,7 @@ import java.util.List;
 
 import io.github.axolotlclient.modules.particles.Particles;
 import net.minecraft.client.entity.particle.Particle;
-import net.minecraft.client.entity.particle.ParticleManager;
+import net.minecraft.client.ParticleManager;
 import net.minecraft.entity.particle.ParticleType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -54,7 +54,7 @@ public abstract class ParticleManagerMixin {
 		}
 	}
 
-	@Inject(method = "addParticle(Lnet/minecraft/client/entity/particle/Particle;)V", at = @At(value = "HEAD"))
+	@Inject(method = "add", at = @At(value = "HEAD"))
 	public void axolotlclient$afterCreation(Particle particle, CallbackInfo ci) {
 		if (cachedType != null) {
 			Particles.getInstance().particleMap.put(particle, cachedType);
@@ -62,7 +62,7 @@ public abstract class ParticleManagerMixin {
 		}
 	}
 
-	@Inject(method = "addParticle(Lnet/minecraft/client/entity/particle/Particle;)V", at = @At(value = "INVOKE", target = "Ljava/util/List;remove(I)Ljava/lang/Object;"))
+	@Inject(method = "add", at = @At(value = "INVOKE", target = "Ljava/util/List;remove(I)Ljava/lang/Object;"))
 	public void axolotlclient$removeParticlesWhenTooMany(Particle particle, CallbackInfo ci) {
 		Particles.getInstance().particleMap.remove(particle);
 	}
@@ -79,7 +79,7 @@ public abstract class ParticleManagerMixin {
 		return instance.removeAll(objects);
 	}
 
-	@Redirect(method = "renderParticles", at = @At(value = "INVOKE", target = "Ljava/util/List;get(I)Ljava/lang/Object;"))
+	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Ljava/util/List;get(I)Ljava/lang/Object;"))
 	public <E> E axolotlclient$applyOptions(List<E> instance, int i) {
 		E particle = instance.get(i);
 		if (Particles.getInstance().particleMap.containsKey(((Particle) particle))) {

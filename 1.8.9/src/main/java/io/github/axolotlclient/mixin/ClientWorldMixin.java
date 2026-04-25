@@ -39,7 +39,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ClientWorld.class)
 public abstract class ClientWorldMixin {
 
-	@Inject(method = "onEntityRemoved", at = @At("HEAD"))
+	@Inject(method = "removeEntity(Lnet/minecraft/entity/Entity;)V", at = @At("HEAD"))
 	public void axolotlclient$onEntityRemoved(Entity entity, CallbackInfo ci) {
 		if (entity instanceof PlayerEntity && Objects.equals(HypixelMods.getInstance().cacheMode.get(),
 			HypixelMods.HypixelApiCacheMode.ON_PLAYER_DISCONNECT)) {

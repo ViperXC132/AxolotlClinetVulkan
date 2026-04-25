@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import com.mojang.blaze3d.platform.GlStateManager;
+import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.util.UUIDHelper;
@@ -65,9 +65,9 @@ public class ImageScreen extends Screen {
 		}
 		return new LoadingImageScreen(parent, future.thenAccept(i -> {
 			if (i != null) {
-				Minecraft.getInstance().submit(() -> Minecraft.getInstance().openScreen(new ImageScreen(parent, i, freeOnClose)));
+				Minecraft.getInstance().executeTask(() -> Minecraft.getInstance().openScreen(new ImageScreen(parent, i, freeOnClose)));
 			} else {
-				Minecraft.getInstance().submit(() -> Minecraft.getInstance().openScreen(parent));
+				Minecraft.getInstance().executeTask(() -> Minecraft.getInstance().openScreen(parent));
 			}
 		}), freeOnClose);
 	}
@@ -127,6 +127,7 @@ public class ImageScreen extends Screen {
 			}
 			actions.add(new ButtonWidget(1, 0, 0, buttonWidth, 20, I18n.translate("gallery.image.copy")));
 			actions.add(new ButtonWidget(2, 0, 0, buttonWidth, 20, I18n.translate("gallery.image.open.external")));
+			actions.add(new ButtonWidget(8, 0, 0, buttonWidth, 20, I18n.translate("gallery.image.delete")));
 		}
 		if (image instanceof ImageInstance.Remote) {
 			if (!(image instanceof ImageInstance.Local)) {
@@ -136,6 +137,7 @@ public class ImageScreen extends Screen {
 			actions.add(new ButtonWidget(5, 0, 0, buttonWidth, 20, I18n.translate("gallery.image.open.external.browser")));
 			actions.add(new ButtonWidget(6, 0, 0, buttonWidth, 20, I18n.translate("gallery.image.copy_url")));
 		}
+		actions.add(new ButtonWidget(9, 0, 0, buttonWidth, 20, I18n.translate("gallery.image.crop")));
 		int actionY = element.y;
 		for (ButtonWidget w : actions) {
 			w.x = actionX;
@@ -149,57 +151,61 @@ public class ImageScreen extends Screen {
 
 	@Override
 	protected void buttonClicked(ButtonWidget b) {
-		if (b.id == 0) {
-			b.active = false;
-			ImageInstance.Local local = (ImageInstance.Local) image;
-			ImageShare.getInstance().upload(local.location()).thenAccept(s -> {
-				if (s.isEmpty()) {
-					Notifications.getInstance().addStatus("gallery.image.upload.failure", "gallery.image.upload.failure.description");
-				} else {
-					minecraft.submit(() -> minecraft.openScreen(new ImageScreen(parent, local.toShared(s, API.getInstance().getSelf().getUuid(), Instant.now()), freeOnClose)));
-					setClipboard(s);
-					Notifications.getInstance().addStatus("gallery.image.upload.success", "gallery.image.upload.success.description", s);
+		switch (b.id) {
+			case 0 -> {
+				b.active = false;
+				ImageInstance.Local local = (ImageInstance.Local) image;
+				ImageShare.getInstance().upload(local.location()).thenAccept(s -> {
+					if (s.isEmpty()) {
+						Notifications.getInstance().addStatus("gallery.image.upload.failure", "gallery.image.upload.failure.description");
+					} else {
+						minecraft.executeTask(() -> minecraft.openScreen(new ImageScreen(parent, local.toShared(s, API.getInstance().getSelf().getUuid(), Instant.now()), freeOnClose)));
+						setClipboard(s);
+						Notifications.getInstance().addStatus("gallery.image.upload.success", "gallery.image.upload.success.description", s);
+					}
+				});
+			}
+			case 1 -> ScreenshotCopying.copy(((ImageInstance.Local) image).location());
+			case 2 -> OSUtil.getOS().open(((ImageInstance.Local) image).location().toUri());
+			case 3 -> {
+				ImageInstance.Remote remote = (ImageInstance.Remote) image;
+				b.active = false;
+				try {
+					Path out = saveSharedImage(remote);
+					minecraft.openScreen(new ImageScreen(parent, remote.toShared(out), freeOnClose));
+				} catch (IOException e) {
+					Notifications.getInstance().addStatus("gallery.image.save.failure", "gallery.image.save.failure.description", e.getMessage());
+					AxolotlClientCommon.getInstance().getLogger().warn("Failed to save shared image!", e);
 				}
-			});
-		} else if (b.id == 1) {
-			ImageInstance.Local local = (ImageInstance.Local) image;
-			ScreenshotCopying.copy(local.location());
-		} else if (b.id == 2) {
-			ImageInstance.Local local = (ImageInstance.Local) image;
-			OSUtil.getOS().open(local.location().toUri());
-		} else if (b.id == 3) {
-			ImageInstance.Remote remote = (ImageInstance.Remote) image;
-			b.active = false;
-			try {
-				Path out = saveSharedImage(remote);
-				minecraft.openScreen(new ImageScreen(parent, remote.toShared(out), freeOnClose));
-			} catch (IOException e) {
-				Notifications.getInstance().addStatus("gallery.image.save.failure", "gallery.image.save.failure.description", e.getMessage());
-				AxolotlClientCommon.getInstance().getLogger().warn("Failed to save shared image!", e);
 			}
-		} else if (b.id == 4) {
-			try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-				ImageIO.write(image.image(), "png", baos);
-				ScreenshotCopying.copy(baos.toByteArray());
-			} catch (IOException e) {
-				Notifications.getInstance().addStatus("gallery.image.copy.failure", "gallery.image.copy.failure.description", e.getMessage());
-				AxolotlClientCommon.getInstance().getLogger().warn("Failed to copy shared image!", e);
+			case 4 -> {
+				try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+					ImageIO.write(image.image(), "png", baos);
+					ScreenshotCopying.copy(baos.toByteArray());
+				} catch (IOException e) {
+					Notifications.getInstance().addStatus("gallery.image.copy.failure", "gallery.image.copy.failure.description", e.getMessage());
+					AxolotlClientCommon.getInstance().getLogger().warn("Failed to copy shared image!", e);
+				}
 			}
-
-		} else if (b.id == 5) {
-			ImageInstance.Remote remote = (ImageInstance.Remote) image;
-			OSUtil.getOS().open(remote.url());
-
-		} else if (b.id == 6) {
-			ImageInstance.Remote remote = (ImageInstance.Remote) image;
-			setClipboard(remote.url());
-
-		} else if (b.id == 7) {
-			if (freeOnClose) {
-				minecraft.getTextureManager().close(image.id());
+			case 5 -> OSUtil.getOS().open(((ImageInstance.Remote) image).url());
+			case 6 -> setClipboard(((ImageInstance.Remote) image).url());
+			case 7 -> {
+				if (freeOnClose) {
+					minecraft.getTextureManager().close(image.id());
+				}
+				minecraft.openScreen(parent);
 			}
-			minecraft.openScreen(parent);
-
+			case 8 -> {
+				var loc = ((ImageInstance.Local) image).location();
+				try {
+					Files.delete(loc);
+					Notifications.getInstance().addStatus("gallery.image.delete.success", "gallery.image.delete.success.description", loc);
+				} catch (IOException e) {
+					Notifications.getInstance().addStatus("gallery.image.delete.failure", "gallery.image.delete.failure.description", loc);
+					AxolotlClientCommon.getInstance().getLogger().warn("Failed to delete image!", e);
+				}
+			}
+			case 9 -> minecraft.openScreen(new CropImageScreen(this, image));
 		}
 	}
 

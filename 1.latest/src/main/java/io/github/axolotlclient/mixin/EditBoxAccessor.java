@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2026 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -22,18 +22,14 @@
 
 package io.github.axolotlclient.mixin;
 
-import net.minecraft.client.Camera;
-import net.minecraft.client.gui.render.state.GuiRenderState;
-import net.minecraft.client.renderer.GameRenderer;
+import java.util.function.Consumer;
+
+import net.minecraft.client.gui.components.EditBox;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(GameRenderer.class)
-public interface GameRendererAccessor {
-
-	@Accessor("guiRenderState")
-	GuiRenderState getGuiRenderState();
-
-	@Accessor("mainCamera")
-	Camera getCamera();
+@Mixin(EditBox.class)
+public interface EditBoxAccessor {
+	@Accessor("responder")
+	Consumer<String> getResponder();
 }

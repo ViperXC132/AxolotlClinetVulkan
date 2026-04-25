@@ -52,6 +52,6 @@ public class DrawPosition {
 	}
 
 	public DrawPosition divide(float scale) {
-		return new DrawPosition((int) (x / scale), (int) (y / scale));
+		return new DrawPosition(Math.round(x / scale), Math.round(y / scale));
 	}
 }

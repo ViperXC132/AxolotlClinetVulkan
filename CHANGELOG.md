@@ -1,5 +1,17 @@
 ## Changelog:
 
+### 3.1.10
+
+- add screenshot cropping
+- (1.8.9) update to Ornithe Gen2
+- update to 26.1, drop 1.21.11
+- (26.1) temporarily disable integrations with WorldHost & Noxesium
+- (CoordsHud) add nether conversions
+- Add PlayerTabOverlayHud
+- (26.1) add HotbarHud
+- Add SubtitlesHud(Hud)
+- fix more bugs
+
 ### 3.1.9
 
 - fix bugs with the Bedwars module

@@ -60,7 +60,7 @@ public abstract class PlayerEntityMixin extends Entity {
 		}
 	}
 
-	@Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
+	@Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;takeDamage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
 	private void onAttack(Entity target, CallbackInfo ci, @Local(ordinal = 0) boolean crit, @Local(ordinal = 1) float enchantedDamage) {
 		if (Minecraft.getInstance().isOnSameThread()) {
 			Events.PLAYER_ATTACK.invoker().accept((PlayerEntity) (Object) this, target);
@@ -73,7 +73,7 @@ public abstract class PlayerEntityMixin extends Entity {
 		}
 	}
 
-	@Inject(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/LivingEntity;damage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
+	@Inject(method = "takeDamage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/living/LivingEntity;takeDamage(Lnet/minecraft/entity/damage/DamageSource;F)Z"))
 	private void onDamage(DamageSource damageSource, float f, CallbackInfoReturnable<Boolean> cir) {
 		Events.PLAYER_HURT.invoker().accept((PlayerEntity) (Object) this, damageSource.getAttacker());
 	}

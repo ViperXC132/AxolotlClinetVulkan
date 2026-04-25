@@ -40,7 +40,6 @@ import io.github.axolotlclient.modules.particles.Particles;
 import io.github.axolotlclient.modules.screenshotUtils.ScreenshotUtils;
 import io.github.axolotlclient.modules.scrollableTooltips.ScrollableTooltips;
 import io.github.axolotlclient.modules.sky.SkyResourceManager;
-import io.github.axolotlclient.modules.tablist.Tablist;
 import io.github.axolotlclient.modules.unfocusedFpsLimiter.UnfocusedFpsLimiter;
 import io.github.axolotlclient.util.FeatureDisabler;
 import io.github.axolotlclient.util.FeatureDisablerCommon;
@@ -63,7 +62,6 @@ public class AxolotlClient extends AxolotlClientCommon {
 		registerModule(Particles.getInstance());
 		registerModule(ScreenshotUtils.getInstance());
 		registerModule(UnfocusedFpsLimiter.getInstance());
-		registerModule(Tablist.getInstance());
 		registerModule(Auth.getInstance());
 	}
 

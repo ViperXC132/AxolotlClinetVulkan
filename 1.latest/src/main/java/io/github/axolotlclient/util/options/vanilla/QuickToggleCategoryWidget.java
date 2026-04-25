@@ -29,7 +29,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.Categ
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ActiveTextCollector;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
@@ -61,18 +61,18 @@ public class QuickToggleCategoryWidget extends CategoryWidget {
 	}
 
 	@Override
-	public void renderContents(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-		super.renderContents(graphics, mouseX, mouseY, delta);
+	public void extractContents(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+		super.extractContents(graphics, mouseX, mouseY, delta);
 
 		if (enabledButton != null) {
 			enabledButton.setY(getY() + 2);
 			enabledButton.update();
-			enabledButton.render(graphics, mouseX, mouseY, delta);
+			enabledButton.extractRenderState(graphics, mouseX, mouseY, delta);
 		}
 	}
 
 	@Override
-	protected void renderScrollingStringOverContents(ActiveTextCollector activeTextCollector, Component component, int i) {
+	protected void extractScrollingStringOverContents(ActiveTextCollector activeTextCollector, Component component, int i) {
 		int j = this.getX() + i;
 		int k = this.getX() + this.getWidth() - i;
 		if (enabledButton != null) {

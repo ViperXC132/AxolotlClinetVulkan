@@ -31,6 +31,7 @@ import io.github.axolotlclient.bridge.impl.AxoKeyImpl;
 import io.github.axolotlclient.bridge.key.AxoKey;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import net.minecraft.client.options.KeyBinding;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -52,6 +53,8 @@ public abstract class KeyBindingMixin implements AxoKeybinding {
 	@Shadow
 	public abstract boolean consumeClick();
 
+	@Shadow
+	private int clickCount;
 	@Unique
 	private List<Runnable> axolotlclient$onClicked = null;
 
@@ -61,7 +64,7 @@ public abstract class KeyBindingMixin implements AxoKeybinding {
 	@Unique
 	private List<Runnable> axolotlclient$onReleased = null;
 
-	@Inject(method = "set", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/KeyBinding;pressed:Z"))
+	@Inject(method = "set", at = @At(value = "FIELD", target = "Lnet/minecraft/client/options/KeyBinding;pressed:Z", opcode = Opcodes.PUTFIELD))
 	private static void dispatchHandlers(int i, boolean bl, CallbackInfo ci, @Local KeyBinding binding) {
 		List<Runnable> handlers = bl ? ((KeyBindingMixin) (Object) binding).axolotlclient$onClicked : ((KeyBindingMixin) (Object) binding).axolotlclient$onReleased;
 		if (handlers != null) {
@@ -115,5 +118,10 @@ public abstract class KeyBindingMixin implements AxoKeybinding {
 	@Override
 	public boolean br$consumeClick() {
 		return consumeClick();
+	}
+
+	@Override
+	public void br$click() {
+		clickCount++;
 	}
 }

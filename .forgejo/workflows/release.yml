@@ -14,14 +14,14 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: https://data.forgejo.org/actions/checkout@v5
+      - uses: https://data.forgejo.org/actions/checkout@v6
 
       - uses: https://github.com/gradle/actions/wrapper-validation@v5.0.0
 
-      - uses: https://github.com/actions/setup-java@v4
+      - uses: https://github.com/actions/setup-java@v5
         with:
           distribution: "temurin"
-          java-version: 21
+          java-version: 25
 
       - name: Setup Gradle
         uses: https://github.com/gradle/actions/setup-gradle@v5.0.0
@@ -40,3 +40,11 @@ jobs:
             direction: upload
             release-dir: builds/
             release-notes-file: build/changelog
+
+      - name: Publish to Modrinth
+        run: ./gradlew modrinth
+        env:
+            MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+
+      - name: Publish to Maven
+        run: ./gradlew publish -PowlMavenPassword=${{ secrets.MAVEN_PASSWORD }} -PowlMavenUsername=${{ secrets.MAVEN_USERNAME }}

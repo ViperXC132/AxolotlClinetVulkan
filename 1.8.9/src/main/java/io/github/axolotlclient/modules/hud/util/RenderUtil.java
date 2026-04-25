@@ -24,10 +24,10 @@ package io.github.axolotlclient.modules.hud.util;
 
 import java.util.function.Supplier;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tessellator;
+import net.minecraft.client.render.platform.GlStateManager;
+import net.minecraft.client.render.vertex.BufferBuilder;
+import net.minecraft.client.render.vertex.DefaultVertexFormat;
+import net.minecraft.client.render.vertex.Tesselator;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
 import lombok.experimental.UtilityClass;
@@ -89,7 +89,7 @@ public class RenderUtil {
 		float r = (float) (color >> 16 & 0xFF) / 255.0f;
 		float g = (float) (color >> 8 & 0xFF) / 255.0f;
 		float b = (float) (color & 0xFF) / 255.0f;
-		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuilder();
+		BufferBuilder bufferBuilder = Tesselator.getInstance().getBuffer();
 		GlStateManager.enableBlend();
 		GlStateManager.disableTexture();
 		GlStateManager.blendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO);
@@ -103,13 +103,9 @@ public class RenderUtil {
 		bufferBuilder.vertex(x2, y2, 0.0f).color(r, g, b, a).nextVertex();
 		bufferBuilder.vertex(x2, y1, 0.0f).color(r, g, b, a).nextVertex();
 		bufferBuilder.vertex(x1, y1, 0.0f).color(r, g, b, a).nextVertex();
-		Tessellator.getInstance().end();
+		Tesselator.getInstance().end();
 		GlStateManager.enableTexture();
 		GlStateManager.disableBlend();
-	}
-
-	public void drawOutline(int x, int y, int width, int height, Color color) {
-		fillOutline(x, y, x + width, y + height, color);
 	}
 
 	public void fillOutline(int x, int y, int x2, int y2, Color color) {
@@ -124,7 +120,7 @@ public class RenderUtil {
 	}
 
 	public void fill(int x1, int y1, int x2, int y2, Color color) {
-		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuilder();
+		BufferBuilder bufferBuilder = Tesselator.getInstance().getBuffer();
 		int colorInt = colorPreRender(color);
 		float a = (float) (colorInt >> 24 & 0xFF) / 255.0f;
 		float r = (float) (colorInt >> 16 & 0xFF) / 255.0f;
@@ -136,7 +132,7 @@ public class RenderUtil {
 		bufferBuilder.vertex(x2, y1, 0.0f).color(r, g, b, a).nextVertex();
 		bufferBuilder.vertex(x1, y1, 0.0f).color(r, g, b, a).nextVertex();
 
-		Tessellator.getInstance().end();
+		Tesselator.getInstance().end();
 		colorPostRender(color);
 	}
 
@@ -158,24 +154,10 @@ public class RenderUtil {
 	}
 
 	/**
-	 * Draws a vertical line
-	 */
-	public void drawVerticalLine(int x, int y, int height, int color) {
-		drawRectangle(x, y, 1, height, color);
-	}
-
-	/**
 	 * Fills in a rectangle with a color. x/y width/height
 	 */
 	public void drawRectangle(int x, int y, int width, int height, int color) {
 		fill(x, y, x + width, y + height, color);
-	}
-
-	/**
-	 * Draws a horizontal line
-	 */
-	public void drawHorizontalLine(int x, int y, int width, int color) {
-		drawRectangle(x, y, width, 1, color);
 	}
 
 	public void drawRectangle(int x, int y, int width, int height, Color color) {
@@ -192,7 +174,7 @@ public class RenderUtil {
 
 	public void fillBlend(int x1, int y1, int x2, int y2, int color) {
 		GlStateManager.disableTexture();
-		BufferBuilder bufferBuilder = Tessellator.getInstance().getBuilder();
+		BufferBuilder bufferBuilder = Tesselator.getInstance().getBuffer();
 		float a = (float) (color >> 24 & 0xFF) / 255.0f;
 		float r = (float) (color >> 16 & 0xFF) / 255.0f;
 		float g = (float) (color >> 8 & 0xFF) / 255.0f;
@@ -202,7 +184,7 @@ public class RenderUtil {
 		bufferBuilder.vertex(x2, y2, 0.0f).color(r, g, b, a).nextVertex();
 		bufferBuilder.vertex(x2, y1, 0.0f).color(r, g, b, a).nextVertex();
 		bufferBuilder.vertex(x1, y1, 0.0f).color(r, g, b, a).nextVertex();
-		Tessellator.getInstance().end();
+		Tesselator.getInstance().end();
 		GlStateManager.enableTexture();
 	}
 

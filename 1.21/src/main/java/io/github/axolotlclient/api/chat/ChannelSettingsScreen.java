@@ -23,6 +23,7 @@
 package io.github.axolotlclient.api.chat;
 
 import java.util.Arrays;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -121,7 +122,8 @@ public class ChannelSettingsScreen extends Screen {
 		footer.add(ButtonWidget.builder(CommonTexts.DONE, widget -> {
 			ChannelRequest.updateChannel(channel.getId(), nameField.getText(),
 				Persistence.of(persistence.getValue(), count.get().get(), duration.get().get()),
-				Arrays.stream(namesInput.getText().split(",")).filter(s -> !s.isEmpty()).map(UUIDHelper::ensureUuid).toArray(String[]::new));
+				Arrays.stream(namesInput.getText().split(",")).filter(s -> !s.isEmpty()).map(UUIDHelper::ensureUuid)
+					.map(CompletableFuture::join).toArray(String[]::new));
 			client.setScreen(parent);
 		}).build());
 		layout.addToFooter(footer);

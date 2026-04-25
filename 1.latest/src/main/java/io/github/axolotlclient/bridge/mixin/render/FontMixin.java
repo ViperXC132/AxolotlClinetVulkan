@@ -34,7 +34,7 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(Font.class)
 public abstract class FontMixin implements AxoFont {
 	@Shadow
-	public abstract int width(String text);
+	public abstract int width(String str);
 
 	@Shadow
 	@Final

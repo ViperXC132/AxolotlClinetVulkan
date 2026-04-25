@@ -31,9 +31,9 @@ import io.github.axolotlclient.modules.auth.Auth;
 import lombok.Getter;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ObjectSelectionList;
-import net.minecraft.client.gui.components.PlayerFaceRenderer;
+import net.minecraft.client.gui.components.PlayerFaceExtractor;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.Component;
@@ -120,7 +120,7 @@ public class UserListWidget extends ObjectSelectionList<UserListWidget.UserListE
 		}
 
 		@Override
-		public void renderContent(GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+		public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float tickDelta) {
 			var x = getContentX();
 			var y = getContentY();
 			var entryWidth = getContentWidth();
@@ -131,26 +131,26 @@ public class UserListWidget extends ObjectSelectionList<UserListWidget.UserListE
 						.collect(Collectors.joining("/")));
 				Component tag = Component.literal("(" + user.getSystem().getName() + "/" + user.getName() + ")")
 					.setStyle(Style.EMPTY.withItalic(true).withColor(ChatFormatting.GRAY));
-				graphics.drawString(client.font, fronters.append(tag), x + 3, y + 1, -1);
+				graphics.text(client.font, fronters.append(tag), x + 3, y + 1, -1);
 			} else {
-				graphics.drawString(client.font, user.getName(), x + 3 + 33, y + 1, -1);
+				graphics.text(client.font, user.getName(), x + 3 + 33, y + 1, -1);
 			}
 
 			if (user.getStatus().isOnline() && user.getStatus().getActivity() != null) {
-				graphics.drawString(client.font, user.getStatus().getTitle(), x + 3 + 33, y + 12, 0xFF808080);
-				graphics.drawString(client.font, user.getStatus().getDescription(), x + 3 + 40, y + 23, 0xFF808080);
+				graphics.text(client.font, user.getStatus().getTitle(), x + 3 + 33, y + 12, 0xFF808080);
+				graphics.text(client.font, user.getStatus().getDescription(), x + 3 + 40, y + 23, 0xFF808080);
 			} else if (user.getStatus().getLastOnline() != null) {
-				graphics.drawString(client.font, user.getStatus().getLastOnline(), x + 3 + 33, y + 12, 0xFF808080);
+				graphics.text(client.font, user.getStatus().getLastOnline(), x + 3 + 33, y + 12, 0xFF808080);
 			}
 
 			if (note != null) {
-				graphics.drawString(client.font, note, x + entryWidth - client.font.width(note) - 4,
+				graphics.text(client.font, note, x + entryWidth - client.font.width(note) - 4,
 					y + entryHeight - 10, 0xFF808080
 				);
 			}
 
 			Identifier texture = Auth.getInstance().getSkinTexture(user.getUuid());
-			PlayerFaceRenderer.draw(graphics, texture, x - 1, y - 1, 33, true, false, -1);
+			PlayerFaceExtractor.extractRenderState(graphics, texture, x - 1, y - 1, 33, true, false, -1);
 		}
 
 		@Override

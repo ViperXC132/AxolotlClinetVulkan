@@ -22,14 +22,14 @@
 
 package io.github.axolotlclient.modules.hud.util;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.Tessellator;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.render.TextRenderer;
+import net.minecraft.client.render.platform.GlStateManager;
+import net.minecraft.client.render.vertex.BufferBuilder;
+import net.minecraft.client.render.vertex.DefaultVertexFormat;
+import net.minecraft.client.render.vertex.Tesselator;
 import net.minecraft.resource.Identifier;
 
 /**
@@ -61,7 +61,7 @@ public class DrawUtil extends GuiElement {
 	}
 
 	public static void drawCenteredString(TextRenderer renderer, String text, int x, int y, Color color,
-										  boolean shadow) {
+	                                      boolean shadow) {
 		drawCenteredString(renderer, text, x, y, color.toInt(), shadow);
 	}
 
@@ -368,15 +368,15 @@ public class DrawUtil extends GuiElement {
 		int g = color >> 8 & 255;
 		int b = color & 255;
 		int a = color >> 24 & 255;
-		GlStateManager.color4f(r, g, b, a);
-		Tessellator tessellator = Tessellator.getInstance();
-		BufferBuilder bufferBuilder = tessellator.getBuilder();
+		GlStateManager.color4f(r / 255f, g / 255f, b / 255f, a / 255f);
+		Tesselator tesselator = Tesselator.getInstance();
+		BufferBuilder bufferBuilder = tesselator.getBuffer();
 		bufferBuilder.begin(7, DefaultVertexFormat.POSITION_TEX);
 		bufferBuilder.vertex(x, y2, 0.0F).texture(u, v2).nextVertex();
 		bufferBuilder.vertex(x2, y2, 0.0F).texture(u2, v2).nextVertex();
 		bufferBuilder.vertex(x2, y, 0.0F).texture(u2, v).nextVertex();
 		bufferBuilder.vertex(x, y, 0.0F).texture(u, v).nextVertex();
-		tessellator.end();
+		tesselator.end();
 		GlStateManager.color4f(1, 1, 1, 1);
 	}
 }

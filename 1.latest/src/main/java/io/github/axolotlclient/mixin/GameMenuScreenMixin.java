@@ -35,7 +35,7 @@ import io.github.axolotlclient.api.FriendsScreen;
 import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
 import io.github.axolotlclient.modules.hypixel.HypixelMods;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.screens.PauseScreen;
@@ -58,7 +58,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 	}
 
 	@Inject(method = "createPauseMenu", at = @At("TAIL"))
-	private void axolotlclient$addButtons(CallbackInfo ci, @Local GridLayout widget) {
+	private void axolotlclient$addButtons(CallbackInfo ci, @Local(name = "gridLayout") GridLayout widget) {
 		if (API.getInstance().isAuthenticated()) {
 			int buttonY = height - 30;
 			if (APIOptions.getInstance().addShortcutButtons.get()) {
@@ -77,8 +77,8 @@ public abstract class GameMenuScreenMixin extends Screen {
 				Component.empty(),
 				button -> minecraft.setScreen(new HudEditScreen(this)), Supplier::get) {
 				@Override
-				public void renderContents(@NonNull GuiGraphics graphics, int mouseX, int mouseY, float delta) {
-					renderDefaultSprite(graphics);
+				public void extractContents(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
+					extractDefaultSprite(graphics);
 					graphics.blit(RenderPipelines.GUI_TEXTURED, (Identifier) AxolotlClientCommon.BADGE_PATH, this.getX() + 2, this.getY() + 2, 0, 0, this.width - 4, this.height - 4, this.width - 4, this.height - 4);
 				}
 			});

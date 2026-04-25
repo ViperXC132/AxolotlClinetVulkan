@@ -27,7 +27,6 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.AxolotlClientConfig;
 import io.github.axolotlclient.AxolotlClientConfig.impl.util.ConfigStyles;
@@ -36,11 +35,14 @@ import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
 import io.github.axolotlclient.modules.hud.gui.component.Positionable;
 import io.github.axolotlclient.modules.hud.snapping.SnappingHelper;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
+import io.github.axolotlclient.util.CursorType;
+import io.github.axolotlclient.util.CursorTypes;
 import io.github.axolotlclient.util.MathUtil;
-import io.github.axolotlclient.util.WindowAccess;
+import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.resource.language.I18n;
 
 /**
@@ -52,18 +54,14 @@ import net.minecraft.client.resource.language.I18n;
 
 public class HudEditScreen extends Screen {
 
-	private final long MOVE_CURSOR = WindowAccess.getInstance().createCursor(WindowAccess.Cursor.RESIZE_ALL);
-	private final long DEFAULT_CURSOR = WindowAccess.getInstance().createCursor(WindowAccess.Cursor.ARROW);
-	private final long NWSE_RESIZE_CURSOR = WindowAccess.getInstance().createCursor(WindowAccess.Cursor.RESIZE_NWSE),
-		NESW_RESIZE_CURSOR = WindowAccess.getInstance().createCursor(WindowAccess.Cursor.RESIZE_NESW);
-
 	private final Screen parent;
 	private HudEntry current;
 	private DrawPosition offset = null;
 	private boolean mouseDown;
 	private SnappingHelper snap;
-	private long currentCursor;
+	private ModificationMode pendingMode = ModificationMode.NONE;
 	private ModificationMode mode = ModificationMode.NONE;
+	private int mouseX, mouseY;
 
 	public HudEditScreen() {
 		this(null);
@@ -91,18 +89,10 @@ public class HudEditScreen extends Screen {
 		}
 	}
 
-	private void setCursor(long cursor) {
-		if (cursor != currentCursor) {
-			currentCursor = cursor;
-			WindowAccess.getInstance().setCursor(cursor);
-		}
-	}
-
 	@Override
 	public void render(int mouseX, int mouseY, float delta) {
 		if (Minecraft.getInstance().world != null)
-			fillGradient(0, 0, width, height, 0xB0100E0E,
-				0x46212020);
+			fillGradient(0, 0, width, height, 0xB0100E0E, 0x46212020);
 		else {
 			renderBackground(0);
 		}
@@ -119,7 +109,7 @@ public class HudEditScreen extends Screen {
 			entry.ifPresent(abstractHudEntry -> abstractHudEntry.setHovered(true));
 		}
 		var graphics = AxoRenderContextImpl.getInstance();
-		if (mouseDown && snap != null) {
+		if (mouseDown && snap != null && HudManagerCommon.getInstance().hudLinkCreationEnabled.get()) {
 			snap.renderHighlights(graphics, current);
 		}
 		HudManager.getInstance().renderPlaceholder(graphics, delta);
@@ -128,30 +118,40 @@ public class HudEditScreen extends Screen {
 			if (mode == ModificationMode.NONE && bounds.isMouseOver(mouseX, mouseY)) {
 				var supportsScaling = entry.get().supportsScaling();
 				var tolerance = HudManagerCommon.HUD_RESCALE_GRAB_TOLERANCE;
-				var toleranceSquared = tolerance*tolerance;
-				var cursor = MOVE_CURSOR;
+				var toleranceSquared = tolerance * tolerance;
+				var pending = ModificationMode.MOVE;
 				if (supportsScaling) {
-					if (MathUtil.distSq(mouseX, mouseY, bounds.x(), bounds.y()) < toleranceSquared ||
-						MathUtil.distSq(mouseX, mouseY, bounds.xEnd(), bounds.yEnd()) < toleranceSquared) {
+					if (MathUtil.distSq(mouseX, mouseY, bounds.x(), bounds.y()) < toleranceSquared) {
 						// top-left
+						pending = ModificationMode.TOP_LEFT;
+					} else if (MathUtil.distSq(mouseX, mouseY, bounds.xEnd(), bounds.yEnd()) < toleranceSquared) {
 						// bottom-right
-						cursor = NWSE_RESIZE_CURSOR;
-					} else if (MathUtil.distSq(mouseX, mouseY, bounds.x(), bounds.yEnd()) < toleranceSquared ||
-						MathUtil.distSq(mouseX, mouseY, bounds.xEnd(), bounds.y()) < toleranceSquared) {
+						pending = ModificationMode.BOTTOM_RIGHT;
+					} else if (MathUtil.distSq(mouseX, mouseY, bounds.x(), bounds.yEnd()) < toleranceSquared) {
 						// bottom-left
+						pending = ModificationMode.BOTTOM_LEFT;
+					} else if (MathUtil.distSq(mouseX, mouseY, bounds.xEnd(), bounds.y()) < toleranceSquared) {
 						// top-right
-						cursor = NESW_RESIZE_CURSOR;
+						pending = ModificationMode.TOP_RIGHT;
 					}
 				}
-				setCursor(cursor);
+				pending.type.select();
+				this.pendingMode = pending;
 			}
 		} else if (current == null) {
-			setCursor(DEFAULT_CURSOR);
+			CursorType.DEFAULT.select();
+			pendingMode = ModificationMode.NONE;
 			mode = ModificationMode.NONE;
 		}
 		if (mouseDown && snap != null) {
 			snap.renderSnaps(graphics);
 		}
+		// bweh
+		if (mouseDown && (this.mouseX != mouseX || this.mouseY != mouseY)) {
+			handleDrag(mouseX, mouseY);
+		}
+		this.mouseX = mouseX;
+		this.mouseY = mouseY;
 	}
 
 	@Override
@@ -164,29 +164,10 @@ public class HudEditScreen extends Screen {
 				current = entry.get();
 				offset = new DrawPosition(mouseX - current.getTruePos().x(),
 					mouseY - current.getTruePos().y());
-				var bounds = entry.get().getTrueBounds();
-				var xBound = Math.max(0, mouseX - bounds.x());
-				var yBound = Math.max(0, mouseY - bounds.y());
-				if (currentCursor == NWSE_RESIZE_CURSOR) {
-					if (xBound < bounds.width() / 2 && yBound < bounds.height() / 2) {
-						// top-left corner
-						mode = ModificationMode.TOP_LEFT;
-					} else if (xBound - bounds.width() / 2 > 0 && yBound - bounds.height() / 2 > 0) {
-						// bottom-right corner
-						mode = ModificationMode.BOTTOM_RIGHT;
-					}
-				} else if (currentCursor == NESW_RESIZE_CURSOR) {
-					if (xBound < bounds.width() / 2 && yBound - bounds.height() / 2 > 0) {
-						// bottom-left corner
-						mode = ModificationMode.BOTTOM_LEFT;
-					} else if (xBound - bounds.width() / 2 > 0 && yBound < bounds.height() / 2) {
-						// top-right corner
-						mode = ModificationMode.TOP_RIGHT;
-					}
-				} else if (currentCursor == MOVE_CURSOR) {
+				if (pendingMode == ModificationMode.MOVE) {
 					updateSnapState();
-					mode = ModificationMode.MOVE;
 				}
+				mode = pendingMode;
 			} else {
 				mode = ModificationMode.NONE;
 				current = null;
@@ -195,7 +176,8 @@ public class HudEditScreen extends Screen {
 			entry.ifPresent(hudEntry -> {
 				Screen screen = ConfigStyles.createScreen(this, hudEntry.getCategory());
 				mode = ModificationMode.NONE;
-				setCursor(DEFAULT_CURSOR);
+				pendingMode = ModificationMode.NONE;
+				CursorTypes.ARROW.select();
 				Minecraft.getInstance().openScreen(screen);
 			});
 		}
@@ -211,17 +193,15 @@ public class HudEditScreen extends Screen {
 		snap = null;
 		mouseDown = false;
 		mode = ModificationMode.NONE;
-		setCursor(DEFAULT_CURSOR);
+		pendingMode.type.select();
 		super.mouseReleased(mouseX, mouseY, button);
 	}
 
-	@Override
-	protected void mouseDragged(int mouseX, int mouseY, int button, long mouseLastClicked) {
-		if (current != null) {
+	private void handleDrag(int mouseX, int mouseY) {
+		if (current != null && mouseDown) {
 			current.clearBoundsDependencies();
 			if (mode == ModificationMode.MOVE) {
-				current.setX((mouseX - offset.x()) + current.offsetTrueWidth());
-				current.setY(mouseY - offset.y() + current.offsetTrueHeight());
+				current.setPos(mouseX - offset.x() + current.offsetTrueWidth(), mouseY - offset.y() + current.offsetTrueHeight());
 				if (snap != null) {
 					Collection<HudEntry> entries = null;
 					Optional<Integer> snapX = snap.getCurrentXSnap(), snapY = snap.getCurrentYSnap();
@@ -233,17 +213,21 @@ public class HudEditScreen extends Screen {
 					snap.setCurrent(current.getTrueBounds());
 					if (snapX.isPresent()) {
 						current.setX(snapX.get() + current.offsetTrueWidth());
-						snap.getXTouching(entries, current).forEach(c -> {
-							c.getLeft().removeBoundsDependencyX(current);
-							current.addBoundsDependency(c.getLeft(), c.getRight());
-						});
+						if (HudManagerCommon.getInstance().hudLinkCreationEnabled.get()) {
+							snap.getXTouching(entries, current).forEach(c -> {
+								c.getLeft().removeBoundsDependencyX(current);
+								current.addBoundsDependency(c.getLeft(), c.getRight());
+							});
+						}
 					}
 					if (snapY.isPresent()) {
 						current.setY(snapY.get() + current.offsetTrueHeight());
-						snap.getYTouching(entries, current).forEach(c -> {
-							c.getLeft().removeBoundsDependencyY(current);
-							current.addBoundsDependency(c.getLeft(), c.getRight());
-						});
+						if (HudManagerCommon.getInstance().hudLinkCreationEnabled.get()) {
+							snap.getYTouching(entries, current).forEach(c -> {
+								c.getLeft().removeBoundsDependencyY(current);
+								current.addBoundsDependency(c.getLeft(), c.getRight());
+							});
+						}
 					}
 					HudManagerCommon.getInstance().saveHudDependencyLinks();
 				}
@@ -274,8 +258,7 @@ public class HudEditScreen extends Screen {
 				current.setScale(Math.max(0.1f, newScale));
 				if (mode == ModificationMode.TOP_LEFT) {
 					// top-left corner
-					current.setX(bounds.xEnd() - current.getTrueWidth());
-					current.setY(bounds.yEnd() - current.getTrueHeight());
+					current.setPos(bounds.xEnd() - current.getTrueWidth(), bounds.yEnd() - current.getTrueHeight());
 				} else if (mode == ModificationMode.BOTTOM_LEFT) {
 					// bottom-left corner
 					current.setX(bounds.xEnd() - current.getTrueWidth());
@@ -293,9 +276,9 @@ public class HudEditScreen extends Screen {
 	@Override
 	public void removed() {
 		super.removed();
-		setCursor(DEFAULT_CURSOR);
+		pendingMode = ModificationMode.NONE;
+		CursorTypes.ARROW.select();
 		mode = ModificationMode.NONE;
-		WindowAccess.getInstance().destroyStandardCursor(DEFAULT_CURSOR, NWSE_RESIZE_CURSOR, NESW_RESIZE_CURSOR, MOVE_CURSOR);
 	}
 
 	@Override
@@ -305,7 +288,6 @@ public class HudEditScreen extends Screen {
 				HudManager.getInstance().toggleSnapping();
 				button.message = I18n.translate("hud.snapping") + ": "
 					+ I18n.translate(HudManager.getInstance().isSnappingEnabled() ? "options.on" : "options.off");
-				AxolotlClient.getInstance().saveConfig();
 				break;
 			case 1:
 				Screen screen = ConfigStyles.createScreen(this, AxolotlClient.getInstance().getConfigManager().getRoot());
@@ -335,12 +317,14 @@ public class HudEditScreen extends Screen {
 			buttons.add(new ButtonWidget(2, width / 2 - 75, height - 50 + 22, 150, 20, I18n.translate("close")));
 	}
 
+	@RequiredArgsConstructor
 	private enum ModificationMode {
-		NONE,
-		MOVE,
-		TOP_LEFT,
-		TOP_RIGHT,
-		BOTTOM_LEFT,
-		BOTTOM_RIGHT
+		NONE(CursorType.DEFAULT),
+		MOVE(CursorTypes.RESIZE_ALL),
+		TOP_LEFT(CursorTypes.RESIZE_NWSE),
+		TOP_RIGHT(CursorTypes.RESIZE_NESW),
+		BOTTOM_LEFT(CursorTypes.RESIZE_NESW),
+		BOTTOM_RIGHT(CursorTypes.RESIZE_NWSE);
+		private final CursorType type;
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2025 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2026 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -19,19 +19,24 @@
  *
  * For more information, see the LICENSE file.
  */
-package io.github.axolotlclient.mixin;
 
-import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.render.state.GuiRenderState;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.gen.Accessor;
+package io.github.axolotlclient.config.migration.impl;
 
-@Mixin(GuiGraphics.class)
-public interface GuiGraphicsAccessor {
+import com.google.gson.JsonObject;
+import io.github.axolotlclient.config.migration.ConfigMigration;
 
-	@Accessor("guiRenderState")
-	GuiRenderState getGuiRenderState();
+public class V9Migration implements ConfigMigration {
+	@Override
+	public int version() {
+		return 9;
+	}
 
-	@Accessor("scissorStack")
-	GuiGraphics.ScissorStack getScissorStack();
+	@Override
+	public void apply(JsonObject config) {
+		getObject(config, "rendering").flatMap(rendering -> getObject(rendering, "tablist")).ifPresent(tablist -> {
+			var hud = getOrAddObject(config, "hud");
+			hud.add("tab_overlay_hud", tablist);
+			tablist.add("background", tablist.get("enable_background"));
+		});
+	}
 }

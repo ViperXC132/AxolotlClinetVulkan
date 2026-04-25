@@ -35,7 +35,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin({LocalClientPlayerEntity.class, RemoteClientPlayerEntity.class})
 public class LocalRemoteClientPlayerEntityMixin {
 
-	@Inject(method = "damage", at = @At("HEAD"))
+	@Inject(method = "takeDamage", at = @At("HEAD"))
 	private void onDamage(DamageSource damageSource, float f, CallbackInfoReturnable<Boolean> cir) {
 		Events.PLAYER_HURT.invoker().accept((PlayerEntity) (Object) this, damageSource.getAttacker());
 	}

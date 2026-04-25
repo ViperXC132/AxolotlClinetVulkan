@@ -25,11 +25,12 @@ package io.github.axolotlclient.mixin;
 import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.mojang.blaze3d.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.ScoreboardRenderEvent;
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
+import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.*;
 import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
@@ -37,13 +38,18 @@ import io.github.axolotlclient.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GameGui;
 import net.minecraft.client.gui.chat.ChatGui;
+import net.minecraft.client.gui.overlay.PlayerTabOverlay;
 import net.minecraft.client.render.TextRenderer;
 import net.minecraft.client.render.Window;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.entity.vehicle.RideableMinecartEntity;
+import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -53,12 +59,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GameGui.class)
 public abstract class InGameHudMixin {
 
+	@Shadow
+	private String subtitle;
+	@Shadow
+	private String title;
 	@Unique
 	private static final Entity axolotlclient$noHungerEntityTM = new RideableMinecartEntity(null);
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;color4f(FFFF)V", ordinal = 0))
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;color4f(FFFF)V", ordinal = 0))
 	private void axolotlclient$onHudRender(float tickDelta, CallbackInfo ci) {
-		HudManager.getInstance().render(AxoRenderContextImpl.getInstance(), tickDelta);
+		if (!(AxoMinecraftClient.getInstance().br$getScreen() instanceof HudEditScreen)) {
+			HudManager.getInstance().render(AxoRenderContextImpl.getInstance(), tickDelta);
+		}
 	}
 
 	@Inject(method = "renderScoreboardObjective", at = @At("HEAD"), cancellable = true)
@@ -211,22 +223,32 @@ public abstract class InGameHudMixin {
 	}
 
 	@Unique
-	private float titleScale, subtitleScale;
+	private float titleScale = -1, subtitleScale = -1;
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;scalef(FFF)V", ordinal = 0))
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;scalef(FFF)V", ordinal = 0))
 	private void scaleTitle(float f, CallbackInfo ci) {
 		if (!AxolotlClient.config().scaleTitles.get()) {
 			return;
 		}
-		GlStateManager.scalef(titleScale, titleScale, 1);
+		if (titleScale == -1) {
+			calculateTitleScale(Minecraft.getInstance(), title, Util.getWindow().getWidth() - AxolotlClient.config().titlePadding.get() * 8);
+		}
+		if (titleScale != -1) {
+			GlStateManager.scalef(titleScale, titleScale, 1);
+		}
 	}
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/GlStateManager;scalef(FFF)V", ordinal = 1))
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;scalef(FFF)V", ordinal = 1))
 	private void scaleSubtitle(float f, CallbackInfo ci) {
 		if (!AxolotlClient.config().scaleTitles.get()) {
 			return;
 		}
-		GlStateManager.scalef(subtitleScale, subtitleScale, 1);
+		if (subtitleScale == -1) {
+			calculateSubtitleScale(Minecraft.getInstance(), subtitle, Util.getWindow().getWidth() - AxolotlClient.config().titlePadding.get() * 8);
+		}
+		if (subtitleScale != -1) {
+			GlStateManager.scalef(subtitleScale, subtitleScale, 1);
+		}
 	}
 
 	@Inject(method = "setTitles", at = @At("HEAD"))
@@ -237,24 +259,51 @@ public abstract class InGameHudMixin {
 		var client = Minecraft.getInstance();
 		int padding = AxolotlClient.config().titlePadding.get();
 		int windowWidth = Util.getWindow().getWidth() - padding * 8;
-		{
-			int width = client.textRenderer.getWidth(string) * 4; // default scale for titles
-			if (width > windowWidth) {
-				float scale = (float) width / windowWidth;
-				titleScale = 1 / scale;
-			}
+		calculateTitleScale(client, string, windowWidth);
+		calculateSubtitleScale(client, string2, windowWidth);
+	}
+
+	@Inject(method = "tick", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/GameGui;title:Ljava/lang/String;", opcode = Opcodes.PUTFIELD))
+	private void resetTitleScales(CallbackInfo ci) {
+		titleScale = -1;
+		subtitleScale = -1;
+	}
+
+	@Unique
+	private void calculateTitleScale(Minecraft client, String string, int windowWidth) {
+		int width = client.textRenderer.getWidth(string) * 4; // default scale for titles
+		if (width > windowWidth) {
+			float scale = (float) width / windowWidth;
+			titleScale = 1 / scale;
 		}
-		{
-			int width = client.textRenderer.getWidth(string2) * 2; // default scale for subtitles
-			if (width > windowWidth) {
-				float scale = (float) width / windowWidth;
-				subtitleScale = 1 / scale;
-			}
+	}
+
+	@Unique
+	private void calculateSubtitleScale(Minecraft client, String string2, int windowWidth) {
+		int width = client.textRenderer.getWidth(string2) * 2; // default scale for subtitles
+		if (width > windowWidth) {
+			float scale = (float) width / windowWidth;
+			subtitleScale = 1 / scale;
 		}
 	}
 
 	@WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/chat/ChatGui;render(I)V"))
 	private boolean hideChat(ChatGui instance, int i) {
 		return !AxolotlClient.config().hideChat.get();
+	}
+
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/overlay/PlayerTabOverlay;render(ILnet/minecraft/scoreboard/Scoreboard;Lnet/minecraft/scoreboard/ScoreboardObjective;)V"))
+	private void translateTabOverlay(PlayerTabOverlay instance, int width, Scoreboard scoreboard, ScoreboardObjective displayObjective, Operation<Void> original) {
+		var hud = (PlayerTabOverlayHud) HudManager.getInstance().get(PlayerTabOverlayHud.ID);
+		if (!hud.isHidden()) {
+			var graphics = AxoRenderContextImpl.getInstance();
+			graphics.br$pushMatrix();
+			if (hud.isEnabled()) {
+				graphics.br$translateMatrix(-graphics.br$guiWidth() / 2f, -9);
+				graphics.br$translateMatrix(hud.getRawTrueX() + hud.getTrueWidth() / 2f, hud.getRawTrueY());
+			}
+			original.call(instance, width, scoreboard, displayObjective);
+			graphics.br$popMatrix();
+		}
 	}
 }
