@@ -52,8 +52,6 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 	public final BooleanOption customSky = new BooleanOption("customSky", false);
 	public final IntegerOption cloudHeight = new IntegerOption("cloudHeight", 128, 100, 512);
 
-	public final ColorOption hitColor = new ColorOption("hitColor", new Color(255, 0, 0, 77));
-
 	public final BooleanOption flatItems = new BooleanOption("flatItems", false);
 	public final BooleanOption inventoryPotionEffectOffset = new BooleanOption("inventory.potion_effect_offset", true);
 
@@ -115,7 +113,6 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 
 		rendering.add(customSky,
 			cloudHeight,
-			hitColor,
 			flatItems,
 			inventoryPotionEffectOffset);
 
@@ -150,5 +147,10 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 		} else {
 			Display.setTitle("Minecraft "+Minecraft.getInstance().getGameVersion());
 		}
+	}
+
+	@Override
+	protected void updateHitColor(Color color) {
+
 	}
 }

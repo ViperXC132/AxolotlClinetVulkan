@@ -29,6 +29,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.*;
+import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
@@ -89,6 +90,8 @@ public abstract class AxolotlClientConfigCommon {
 	public final ForceableBooleanOption fullBright = new ForceableBooleanOption("fullBright", false);
 	public final BooleanOption removeVignette = new BooleanOption("removeVignette", false);
 	public final ForceableBooleanOption lowFire = new ForceableBooleanOption("lowFire", false);
+	public final ColorOption hitColor = new ColorOption("hitColor", new Color(0x4DFF0000), this::updateHitColor);
+	public final BooleanOption hitColorOnArmor = new BooleanOption("hit_color_on_armor", false);
 
 	public final BooleanOption minimalViewBob = new BooleanOption("minimalViewBob", false);
 	public final BooleanOption noHurtCam = new BooleanOption("noHurtCam", false);
@@ -157,7 +160,9 @@ public abstract class AxolotlClientConfigCommon {
 			minimalViewBob,
 			noHurtCam,
 			noRain,
-			hideChat
+			hideChat,
+			hitColor,
+			hitColorOnArmor
 		);
 
 		hidden.add(creditsBGM, someNiceBackground, modifyClientBrand, noAltIcons);
@@ -169,6 +174,12 @@ public abstract class AxolotlClientConfigCommon {
 		AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "toggle_fullbright").br$registerOnConsumeClick(() -> {
 			fullBright.toggle();
 			AxolotlClientCommon.getInstance().saveConfig();
+		});
+
+		Events.TICK.register(() -> {
+			if (hitColor.getOriginal().isChroma()) {
+				updateHitColor(hitColor.get());
+			}
 		});
 	}
 
@@ -197,4 +208,6 @@ public abstract class AxolotlClientConfigCommon {
 	}
 
 	protected abstract void updateWindowTitle(boolean useCustom);
+
+	protected abstract void updateHitColor(Color color);
 }

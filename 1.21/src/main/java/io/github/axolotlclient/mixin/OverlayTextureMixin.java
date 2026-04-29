@@ -23,7 +23,7 @@
 package io.github.axolotlclient.mixin;
 
 import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
+import io.github.axolotlclient.util.ClientColors;
 import net.minecraft.client.render.OverlayTexture;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Constant;
@@ -34,12 +34,6 @@ public abstract class OverlayTextureMixin {
 
 	@ModifyConstant(method = "<init>", constant = @Constant(intValue = -1308622593))
 	private int axolotlclient$customHitColor(int constant) {
-
-		Color c = AxolotlClient.config().hitColor.get();
-		int color = 255 - c.getAlpha();
-		color = (color << 8) + c.getBlue();
-		color = (color << 8) + c.getGreen();
-		color = (color << 8) + c.getRed();
-		return color;
+		return ClientColors.ARGB.toABGR(ClientColors.ARGB.invertAlpha(AxolotlClient.config().hitColor.get().toInt()));
 	}
 }

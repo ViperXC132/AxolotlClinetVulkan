@@ -25,7 +25,6 @@ package io.github.axolotlclient.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mojang.blaze3d.platform.NativeImage;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
@@ -40,6 +39,7 @@ import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.config.screen.CreditsScreen;
 import io.github.axolotlclient.config.screen.ProfilesScreen;
 import io.github.axolotlclient.mixin.OverlayTextureAccessor;
+import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.options.GenericOption;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
@@ -48,24 +48,6 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 
 public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 	public final BooleanOption lowShield = new BooleanOption("lowShield", false);
-	public final ColorOption hitColor = new ColorOption("hitColor", new Color(255, 0, 0, 77),
-		value -> {
-			//noinspection resource
-			DynamicTexture texture = ((OverlayTextureAccessor) Minecraft.getInstance().gameRenderer.overlayTexture()).axolotlclient$getTexture();
-			NativeImage nativeImage = texture.getPixels();
-			int color = 255 - value.getAlpha();
-			color = (color << 8) + value.getRed();
-			color = (color << 8) + value.getGreen();
-			color = (color << 8) + value.getBlue();
-
-			for (int i = 0; i < 8; ++i) {
-				for (int j = 0; j < 8; ++j) {
-					nativeImage.setPixel(j, i, color);
-				}
-			}
-
-			texture.upload();
-		});
 
 	public final BooleanOption customLoadingScreenColor = new BooleanOption("custom_loading_bg_color", false);
 	public final ColorOption loadingScreenColor = new ColorOption("loadingBgColor", new Color(239, 50, 61, 255));
@@ -111,7 +93,7 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 			}
 		});
 
-		rendering.add(lowShield, hitColor);
+		rendering.add(lowShield);
 
 		general.add(new GenericOption("profiles.title", "profiles.configure", () ->
 			Minecraft.getInstance().setScreen(new ProfilesScreen(Minecraft.getInstance().screen))), false);
@@ -120,5 +102,13 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 	@Override
 	protected void updateWindowTitle(boolean useCustom) {
 		Minecraft.getInstance().updateTitle();
+	}
+
+	@Override
+	protected void updateHitColor(Color value) {
+		//noinspection resource
+		DynamicTexture texture = ((OverlayTextureAccessor) Minecraft.getInstance().gameRenderer.overlayTexture()).axolotlclient$getTexture();
+		texture.getPixels().fillRect(0, 0, 16, 8, ClientColors.ARGB.invertAlpha(value.toInt()));
+		texture.upload();
 	}
 }

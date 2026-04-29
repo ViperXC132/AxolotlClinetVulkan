@@ -1,5 +1,5 @@
 /*
- * Copyright © 2024 moehreag <moehreag@gmail.com> & Contributors
+ * Copyright © 2026 moehreag <moehreag@gmail.com> & Contributors
  *
  * This file is part of AxolotlClient.
  *
@@ -22,18 +22,15 @@
 
 package io.github.axolotlclient.mixin;
 
-import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.util.ClientColors;
-import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.client.render.entity.LivingEntityRenderer;
+import net.minecraft.client.render.texture.DynamicTexture;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(OverlayTexture.class)
-public abstract class OverlayTextureMixin {
-
-	@ModifyArg(method = "<init>", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/platform/NativeImage;setPixel(III)V", ordinal = 0), index = 2)
-	private int axolotlclient$customHitColor(int constant) {
-		return ClientColors.ARGB.invertAlpha(AxolotlClient.config().hitColor.get().toInt());
+@Mixin(LivingEntityRenderer.class)
+public interface LivingEntityRendererAccessor {
+	@Accessor("WHITE_TEXTURE")
+	static DynamicTexture getWhiteTexture() {
+		throw new UnsupportedOperationException("Mixin error");
 	}
 }

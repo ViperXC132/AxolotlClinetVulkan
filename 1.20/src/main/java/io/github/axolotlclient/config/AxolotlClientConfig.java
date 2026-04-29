@@ -41,6 +41,7 @@ import io.github.axolotlclient.bridge.AxoMinecraftClient;
 import io.github.axolotlclient.config.screen.CreditsScreen;
 import io.github.axolotlclient.config.screen.ProfilesScreen;
 import io.github.axolotlclient.mixin.OverlayTextureAccessor;
+import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.options.GenericOption;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
@@ -51,30 +52,6 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 	public final BooleanOption customSky = new BooleanOption("customSky", false);
 
 	public final BooleanOption lowShield = new BooleanOption("lowShield", false);
-	public final ColorOption hitColor = new ColorOption("hitColor", new Color(255, 0, 0, 77),
-		value -> {
-			//noinspection resource
-			NativeImageBackedTexture texture = ((OverlayTextureAccessor) MinecraftClient.getInstance().gameRenderer.getOverlayTexture()).axolotlclient$getTexture();
-			NativeImage nativeImage = texture.getImage();
-			if (nativeImage != null) {
-				int color = 255 - value.getAlpha();
-				color = (color << 8) + value.getBlue();
-				color = (color << 8) + value.getGreen();
-				color = (color << 8) + value.getRed();
-
-				for (int i = 0; i < 8; ++i) {
-					for (int j = 0; j < 8; ++j) {
-						nativeImage.setPixelColor(j, i, color);
-					}
-				}
-
-				RenderSystem.activeTexture(33985);
-				texture.bindTexture();
-				nativeImage.upload(0, 0, 0, 0, 0,
-					nativeImage.getWidth(), nativeImage.getHeight(), false, true, false, false);
-				RenderSystem.activeTexture(33984);
-			}
-		});
 
 	public final BooleanOption flatItems = new BooleanOption("flatItems", false);
 
@@ -126,7 +103,6 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 
 		rendering.add(customSky,
 			lowShield,
-			hitColor,
 			flatItems);
 
 		general.add(new GenericOption("profiles.title", "profiles.configure", () ->
@@ -136,5 +112,21 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 	@Override
 	protected void updateWindowTitle(boolean useCustom) {
 		MinecraftClient.getInstance().updateWindowTitle();
+	}
+
+	@Override
+	protected void updateHitColor(Color value) {
+		//noinspection resource
+		NativeImageBackedTexture texture = ((OverlayTextureAccessor) MinecraftClient.getInstance().gameRenderer.getOverlayTexture()).axolotlclient$getTexture();
+		NativeImage nativeImage = texture.getImage();
+		if (nativeImage != null) {
+			nativeImage.fillRect(0, 0, 16, 8, ClientColors.ARGB.toABGR(ClientColors.ARGB.invertAlpha(value.toInt())));
+
+			RenderSystem.activeTexture(33985);
+			texture.bindTexture();
+			nativeImage.upload(0, 0, 0, 0, 0,
+				nativeImage.getWidth(), nativeImage.getHeight(), false, true, false, false);
+			RenderSystem.activeTexture(33984);
+		}
 	}
 }
