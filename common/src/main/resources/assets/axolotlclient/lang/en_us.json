@@ -982,5 +982,10 @@
 	"tab_badge_mode.before_ping": "Before Ping",
 	"tab_overlay_hud": "Tab Overlay Hud",
 	"subtitleshud": "Subtitles HUD",
-	"subtitles.entry_background": "Entry Background"
+	"subtitles.entry_background": "Entry Background",
+	"time_changer.preset.day": "Preset: Day",
+	"time_changer.preset.noon": "Preset: Noon",
+	"time_changer.preset.night": "Preset: Night",
+	"time_changer.preset.midnight": "Preset: Midnight",
+	"time_changer.set_preset": "Set"
 }

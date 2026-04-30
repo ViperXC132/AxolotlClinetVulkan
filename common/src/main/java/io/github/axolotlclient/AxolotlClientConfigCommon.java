@@ -33,6 +33,7 @@ import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
+import io.github.axolotlclient.util.options.GenericOption;
 import net.fabricmc.loader.api.FabricLoader;
 
 public abstract class AxolotlClientConfigCommon {
@@ -146,6 +147,10 @@ public abstract class AxolotlClientConfigCommon {
 
 		timeChanger.add(timeChangerEnabled);
 		timeChanger.add(customTime);
+		timeChanger.add(new GenericOption("time_changer.preset.day", "time_changer.set_preset", () -> customTime.set(1000)));
+		timeChanger.add(new GenericOption("time_changer.preset.noon", "time_changer.set_preset", () -> customTime.set(6000)));
+		timeChanger.add(new GenericOption("time_changer.preset.night", "time_changer.set_preset", () -> customTime.set(13000)));
+		timeChanger.add(new GenericOption("time_changer.preset.midnight", "time_changer.set_preset", () -> customTime.set(18000)));
 
 		outlines.add(enableCustomOutlines);
 		outlines.add(outlineColor);
