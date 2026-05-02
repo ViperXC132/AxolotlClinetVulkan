@@ -1,6 +1,8 @@
 classTweaker v1 named
 
 accessible class net/minecraft/client/toast/ToastManager$Entry
+accessible class net/minecraft/client/render/RenderPhase$LineWidth
+accessible field net/minecraft/client/render/VertexConsumerProvider$Immediate currentLayer Ljava/util/Optional;
 
 transitive-inject-interface net/minecraft/util/Identifier io/github/axolotlclient/bridge/util/AxoIdentifier
 transitive-inject-interface net/minecraft/client/MinecraftClient io/github/axolotlclient/bridge/AxoMinecraftClient

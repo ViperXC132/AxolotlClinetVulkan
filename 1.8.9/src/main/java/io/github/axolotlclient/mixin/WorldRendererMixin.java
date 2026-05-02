@@ -22,10 +22,10 @@
 
 package io.github.axolotlclient.mixin;
 
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.sky.SkyboxManager;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.render.world.WorldRenderer;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.living.player.PlayerEntity;
@@ -80,7 +80,7 @@ public abstract class WorldRendererMixin {
 	@ModifyArg(method = "renderBlockOutline", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/GL11;glLineWidth(F)V"), remap = false)
 	public float axolotlclient$OutlineWidth(float width) {
 		if (AxolotlClient.config().enableCustomOutlines.get() && AxolotlClient.config().outlineWidth.get() > 1) {
-			return 1.0F + AxolotlClient.config().outlineWidth.get();
+			return width + AxolotlClient.config().outlineWidth.get() - 1f;
 		}
 		return width;
 	}

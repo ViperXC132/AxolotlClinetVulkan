@@ -31,6 +31,7 @@ import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.state.level.BlockOutlineRenderState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(LevelRenderer.class)
 public abstract class WorldRendererMixin {
@@ -42,5 +43,13 @@ public abstract class WorldRendererMixin {
 			i = AxolotlClient.config().outlineColor.get().toInt();
 		}
 		original.call(instance, poseStack, vertexConsumer, d, e, f, blockOutlineRenderState, i, g);
+	}
+
+	@ModifyArg(method = "renderBlockOutline", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;renderHitOutline(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;DDDLnet/minecraft/client/renderer/state/level/BlockOutlineRenderState;IF)V"), index = 7)
+	private float outlineWidth(float width) {
+		if (AxolotlClient.config().enableCustomOutlines.get()) {
+			return width + AxolotlClient.config().outlineWidth.get() - 1f;
+		}
+		return width;
 	}
 }

@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.OptionalDouble;
 
 import com.mojang.blaze3d.texture.NativeImage;
 import io.github.axolotlclient.AxolotlClientCommon;
@@ -41,6 +42,9 @@ import net.minecraft.util.Identifier;
 import org.apache.commons.lang3.StringUtils;
 
 public class Util {
+
+	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+	public static OptionalDouble lineWidthModifier = OptionalDouble.empty();
 
 	public static Text formatFromCodes(String formattedString) {
 		MutableText text = Text.empty();
@@ -98,11 +102,11 @@ public class Util {
 		try {
 			NativeImageBackedTexture texture;
 			var previous = MinecraftClient.getInstance().getTextureManager().getOrDefault(id, null);
-			if (previous == null || (previous instanceof NativeImageBackedTexture tex && (tex.getImage().getHeight() != graphics.getHeight() || tex.getImage().getWidth() != graphics.getWidth()))) {
+			if (previous == null || (previous instanceof NativeImageBackedTexture tex && (tex.getImage() == null || tex.getImage().getHeight() != graphics.getHeight() || tex.getImage().getWidth() != graphics.getWidth()))) {
 				texture = new NativeImageBackedTexture(NativeImage.read(graphics.getPixelData()));
 				MinecraftClient.getInstance().getTextureManager().registerTexture(id, texture);
 			} else {
-				texture = (NativeImageBackedTexture) MinecraftClient.getInstance().getTextureManager().getTexture(id);
+				texture = (NativeImageBackedTexture) previous;
 				for (int x = 0; x < graphics.getWidth(); x++) {
 					for (int y = 0; y < graphics.getHeight(); y++) {
 						texture.getImage().setPixelColor(x, y, graphics.getPixelColor(x, y));

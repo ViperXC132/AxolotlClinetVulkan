@@ -35,6 +35,7 @@
 		"KeyboardInputMixin",
 		"KeyboardMixin",
 		"LightmapManagerMixin",
+		"LineWidthRenderPhaseMixin",
 		"LivingEntityMixin",
 		"LivingEntityRendererMixin",
 		"MinecraftClientAccessor",

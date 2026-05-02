@@ -99,7 +99,8 @@ public abstract class AxolotlClientConfigCommon {
 	public final BooleanOption hideChat = new BooleanOption("hide_chat", false);
 
 	public final BooleanOption enableCustomOutlines = new BooleanOption("enabled", false);
-	public final ColorOption outlineColor = new ColorOption("color", Color.parse("#DD000000"));
+	public final ColorOption outlineColor = new ColorOption("color", new Color(0x66000000));
+	public final IntegerOption outlineWidth = new IntegerOption("outlineWidth", 1, 1, 10);
 
 	public final BooleanOption customWindowTitle = new BooleanOption("customWindowTitle", true, this::updateWindowTitle);
 
@@ -154,6 +155,7 @@ public abstract class AxolotlClientConfigCommon {
 
 		outlines.add(enableCustomOutlines);
 		outlines.add(outlineColor);
+		outlines.add(outlineWidth);
 
 		rendering.add(timeChanger);
 

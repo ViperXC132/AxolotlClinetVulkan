@@ -61,8 +61,6 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 	public final BooleanOption rawMouseInput = new BooleanOption("rawMouseInput", false, v ->
 		WindowAccess.getInstance().setRawMouseMotion(v));
 
-	public final IntegerOption outlineWidth = new IntegerOption("outlineWidth", 1, 1, 10);
-
 	public final GenericOption openCredits = new GenericOption("Credits", "Open Credits",
 		() -> Minecraft.getInstance()
 			.openScreen(new CreditsScreen(Minecraft.getInstance().screen)));
@@ -115,8 +113,6 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 			cloudHeight,
 			flatItems,
 			inventoryPotionEffectOffset);
-
-		outlines.add(outlineWidth);
 
 		titles.add(scaleTitles, titlePadding);
 		rendering.add(titles);

@@ -22,9 +22,22 @@
 
 package io.github.axolotlclient.mixin;
 
+import java.util.OptionalDouble;
+
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.util.Util;
+import net.minecraft.block.BlockState;
 import net.minecraft.client.render.LightmapTextureManager;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -54,6 +67,19 @@ public abstract class WorldRendererMixin {
 			args.set(7, g);
 			args.set(8, b);
 			args.set(9, a);
+		}
+	}
+
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;drawBlockOutline(Lnet/minecraft/client/util/math/MatrixStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/entity/Entity;DDDLnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;)V"))
+	private void renderBlockOutline(WorldRenderer instance, MatrixStack matrices, VertexConsumer consumer, Entity entity, double offsetX, double offsetY, double offsetZ, BlockPos blockPos, BlockState blockState, Operation<Void> original, @Local VertexConsumerProvider.Immediate provider) {
+		if (AxolotlClient.config().enableCustomOutlines.get()) {
+			provider.draw(RenderLayer.LINES);
+		}
+		original.call(instance, matrices, consumer, entity, offsetX, offsetY, offsetZ, blockPos, blockState);
+		if (AxolotlClient.config().enableCustomOutlines.get()) {
+			Util.lineWidthModifier = OptionalDouble.of(AxolotlClient.config().outlineWidth.get());
+			provider.draw(RenderLayer.LINES);
+			Util.lineWidthModifier = OptionalDouble.empty();
 		}
 	}
 
