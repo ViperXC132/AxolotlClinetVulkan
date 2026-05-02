@@ -24,6 +24,7 @@ package io.github.axolotlclient.mixin;
 
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.sky.SkyboxManager;
+import io.github.axolotlclient.util.DrawUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.render.world.WorldRenderer;
@@ -91,8 +92,10 @@ public abstract class WorldRendererMixin {
 	}
 
 	@Inject(method = "renderBlockOutline", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/platform/GlStateManager;color4f(FFFF)V", shift = At.Shift.AFTER))
-	public void axolotlclient$customOutlineColor(PlayerEntity playerEntity, HitResult hitResult, int i, float f, CallbackInfo ci) {
+	public void axolotlclient$customOutlineColor(PlayerEntity camera, HitResult hitResult, int i, float tickDelta, CallbackInfo ci) {
 		if (AxolotlClient.config().enableCustomOutlines.get()) {
+			DrawUtil.drawOutlines(camera, hitResult, tickDelta, world);
+
 			GlStateManager.clearColor();
 
 			int color = AxolotlClient.config().outlineColor.get().toInt();
@@ -103,4 +106,6 @@ public abstract class WorldRendererMixin {
 			GlStateManager.color4f(r, g, b, a);
 		}
 	}
+
+
 }

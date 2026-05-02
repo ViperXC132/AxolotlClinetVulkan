@@ -29,16 +29,18 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.util.DrawUtil;
 import io.github.axolotlclient.util.Util;
 import net.minecraft.block.BlockState;
-import net.minecraft.client.render.LightmapTextureManager;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
@@ -54,6 +56,9 @@ import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
 @Mixin(WorldRenderer.class)
 public abstract class WorldRendererMixin {
+
+	@Shadow
+	private @Nullable ClientWorld world;
 
 	@ModifyArgs(method = "drawBlockOutline", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/WorldRenderer;drawShapeOutline(Lnet/minecraft/client/util/math/MatrixStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/util/shape/VoxelShape;DDDFFFF)V"))
 	private void axolotlclient$customOutlineColor(Args args) {
@@ -81,6 +86,11 @@ public abstract class WorldRendererMixin {
 			provider.draw(RenderLayer.LINES);
 			Util.lineWidthModifier = OptionalDouble.empty();
 		}
+	}
+
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderLayer;getLines()Lnet/minecraft/client/render/RenderLayer;", ordinal = 0))
+	private void renderOutlineFill(DeltaTracker tracker, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f modelViewMatrix, Matrix4f projectionMatrix, CallbackInfo ci, @Local VertexConsumerProvider.Immediate immediate, @Local MatrixStack stack, @Local BlockPos pos, @Local BlockState state) {
+		DrawUtil.drawOutlines(immediate, camera.getFocusedEntity(), camera.getPos(), stack, pos, state, world);
 	}
 
 	@Inject(method = "renderWeather", at = @At("HEAD"), cancellable = true)

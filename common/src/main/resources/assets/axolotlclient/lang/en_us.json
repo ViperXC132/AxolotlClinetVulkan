@@ -987,5 +987,7 @@
 	"time_changer.preset.noon": "Preset: Noon",
 	"time_changer.preset.night": "Preset: Night",
 	"time_changer.preset.midnight": "Preset: Midnight",
-	"time_changer.set_preset": "Set"
+	"time_changer.set_preset": "Set",
+	"block_outlines.fill": "Fill",
+	"block_outlines.fill_color": "Fill Color"
 }

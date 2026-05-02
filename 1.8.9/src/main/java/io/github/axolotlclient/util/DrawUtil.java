@@ -22,8 +22,11 @@
 
 package io.github.axolotlclient.util;
 
+import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.render.TextRenderer;
@@ -31,7 +34,13 @@ import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.render.vertex.BufferBuilder;
 import net.minecraft.client.render.vertex.DefaultVertexFormat;
 import net.minecraft.client.render.vertex.Tesselator;
+import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.resource.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.world.HitResult;
+import org.lwjgl.opengl.GL11;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
@@ -379,5 +388,71 @@ public class DrawUtil extends GuiElement {
 		bufferBuilder.vertex(x, y, 0.0F).texture(u, v).nextVertex();
 		tesselator.end();
 		GlStateManager.color4f(1, 1, 1, 1);
+	}
+
+	public static void drawOutlines(PlayerEntity camera, HitResult hitResult, double tickDelta, ClientWorld world) {
+		if (AxolotlClient.config().enableCustomOutlines.get() && AxolotlClient.config().outlineFill.get()) {
+			BlockPos blockPos = hitResult.getPos();
+			Block block = world.getBlockState(blockPos).getBlock();
+			if (block.getMaterial() != Material.AIR && world.getWorldBorder().contains(blockPos)) {
+				block.updateShape(world, blockPos);
+
+				double x = camera.prevX + (camera.x - camera.prevX) * tickDelta;
+				double y = camera.prevY + (camera.y - camera.prevY) * tickDelta;
+				double z = camera.prevZ + (camera.z - camera.prevZ) * tickDelta;
+				Box box = block.getOutlineShape(world, blockPos);
+				var color = AxolotlClient.config().outlineFillColor.get();
+				var r = color.getRed();
+				var g = color.getGreen();
+				var b = color.getBlue();
+				var a = color.getAlpha();
+				var tess = Tesselator.getInstance();
+				var consumer = tess.getBuffer();
+
+				GlStateManager.disableTexture();
+				GlStateManager.depthMask(false);
+				consumer.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_COLOR);
+				float expand = 0.002F;
+				fillOutlineQuads(consumer, (float) (box.minX - expand - x), (float) (box.maxX + expand - x),
+					(float) (box.minY - expand - y), (float) (box.maxY + expand - y),
+					(float) (box.minZ - expand - z), (float) (box.maxZ + expand - z),
+					a, r, g, b);
+				tess.end();
+				GlStateManager.depthMask(true);
+				GlStateManager.enableTexture();
+			}
+		}
+	}
+
+	private static void fillOutlineQuads(BufferBuilder consumer, float x1, float x2, float y1, float y2, float z1, float z2, int a, int r, int g, int b) {
+		consumer.vertex(x2, y1, z1).color(r, g, b, a).nextVertex();
+		consumer.vertex(x1, y1, z1).color(r, g, b, a).nextVertex();
+		consumer.vertex(x1, y2, z1).color(r, g, b, a).nextVertex();
+		consumer.vertex(x2, y2, z1).color(r, g, b, a).nextVertex();
+
+		consumer.vertex(x1, y1, z2).color(r, g, b, a).nextVertex();
+		consumer.vertex(x2, y1, z2).color(r, g, b, a).nextVertex();
+		consumer.vertex(x2, y2, z2).color(r, g, b, a).nextVertex();
+		consumer.vertex(x1, y2, z2).color(r, g, b, a).nextVertex();
+
+		consumer.vertex(x1, y2, z2).color(r, g, b, a).nextVertex();
+		consumer.vertex(x1, y2, z1).color(r, g, b, a).nextVertex();
+		consumer.vertex(x1, y1, z1).color(r, g, b, a).nextVertex();
+		consumer.vertex(x1, y1, z2).color(r, g, b, a).nextVertex();
+
+		consumer.vertex(x2, y2, z1).color(r, g, b, a).nextVertex();
+		consumer.vertex(x2, y2, z2).color(r, g, b, a).nextVertex();
+		consumer.vertex(x2, y1, z2).color(r, g, b, a).nextVertex();
+		consumer.vertex(x2, y1, z1).color(r, g, b, a).nextVertex();
+
+		consumer.vertex(x2, y1, z1).color(r, g, b, a).nextVertex();
+		consumer.vertex(x2, y1, z2).color(r, g, b, a).nextVertex();
+		consumer.vertex(x1, y1, z2).color(r, g, b, a).nextVertex();
+		consumer.vertex(x1, y1, z1).color(r, g, b, a).nextVertex();
+
+		consumer.vertex(x2, y2, z2).color(r, g, b, a).nextVertex();
+		consumer.vertex(x2, y2, z1).color(r, g, b, a).nextVertex();
+		consumer.vertex(x1, y2, z1).color(r, g, b, a).nextVertex();
+		consumer.vertex(x1, y2, z2).color(r, g, b, a).nextVertex();
 	}
 }

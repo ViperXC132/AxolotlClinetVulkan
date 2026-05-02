@@ -31,14 +31,17 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.sky.SkyboxManager;
+import io.github.axolotlclient.util.DrawUtil;
 import io.github.axolotlclient.util.Util;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.BlockPos;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -62,6 +65,9 @@ public abstract class WorldRendererMixin {
 	@Shadow
 	@Final
 	private MinecraftClient client;
+
+	@Shadow
+	private @Nullable ClientWorld world;
 
 	@Inject(method = "renderSky", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$renderSky(MatrixStack matrices, Matrix4f projectionMatrix, float tickDelta, Camera preStep, boolean bl,
@@ -105,6 +111,11 @@ public abstract class WorldRendererMixin {
 			provider.draw(RenderLayer.LINES);
 			Util.lineWidthModifier = OptionalDouble.empty();
 		}
+	}
+
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/RenderLayer;getLines()Lnet/minecraft/client/render/RenderLayer;", ordinal = 0))
+	private void renderOutlineFill(MatrixStack stack, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f projectionMatrix, CallbackInfo ci, @Local VertexConsumerProvider.Immediate immediate, @Local BlockPos pos, @Local BlockState state) {
+		DrawUtil.drawOutlines(immediate, camera.getFocusedEntity(), camera.getPos(), stack, pos, state, world);
 	}
 
 	@Inject(method = "renderWeather", at = @At("HEAD"), cancellable = true)

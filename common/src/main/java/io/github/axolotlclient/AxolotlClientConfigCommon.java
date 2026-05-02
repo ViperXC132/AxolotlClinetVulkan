@@ -28,6 +28,7 @@ import java.util.Locale;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
+import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.*;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
@@ -100,7 +101,9 @@ public abstract class AxolotlClientConfigCommon {
 
 	public final BooleanOption enableCustomOutlines = new BooleanOption("enabled", false);
 	public final ColorOption outlineColor = new ColorOption("color", new Color(0x66000000));
-	public final IntegerOption outlineWidth = new IntegerOption("outlineWidth", 1, 1, 10);
+	public final IntegerOption outlineWidth = new IntegerOption("outlineWidth", 1, 1, 15);
+	public final BooleanOption outlineFill = new BooleanOption("block_outlines.fill", false);
+	public final ColorOption outlineFillColor = new ColorOption("block_outlines.fill_color", Colors.WINE_RED.withAlpha(165));
 
 	public final BooleanOption customWindowTitle = new BooleanOption("customWindowTitle", true, this::updateWindowTitle);
 
@@ -155,7 +158,7 @@ public abstract class AxolotlClientConfigCommon {
 
 		outlines.add(enableCustomOutlines);
 		outlines.add(outlineColor);
-		outlines.add(outlineWidth);
+		outlines.add(outlineWidth, outlineFill, outlineFillColor);
 
 		rendering.add(timeChanger);
 

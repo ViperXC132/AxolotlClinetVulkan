@@ -22,11 +22,26 @@
 
 package io.github.axolotlclient.util;
 
+import com.mojang.blaze3d.pipeline.DepthStencilState;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.rendertype.LayeringTransform;
+import net.minecraft.client.renderer.rendertype.OutputTarget;
+import net.minecraft.client.renderer.rendertype.RenderSetup;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.state.level.BlockOutlineRenderState;
+import net.minecraft.client.renderer.state.level.LevelRenderState;
+import net.minecraft.resources.Identifier;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
@@ -73,5 +88,62 @@ public class DrawUtil {
 
 	public static int drawString(GuiGraphicsExtractor graphics, String text, int x, int y, Color color, boolean shadow) {
 		return drawString(graphics, text, x, y, color.toInt(), shadow);
+	}
+
+	private static final RenderType QUADS = RenderType.create("blockoutline_quads", RenderSetup.builder(RenderPipeline.builder(RenderPipelines.GUI_SNIPPET)
+			.withLocation(Identifier.fromNamespaceAndPath(AxolotlClientCommon.MODID, "blockoutline_quads"))
+			.withDepthStencilState(DepthStencilState.DEFAULT).build())
+		.setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
+		.setOutputTarget(OutputTarget.ITEM_ENTITY_TARGET).createRenderSetup());
+
+	public static void drawOutlines(MultiBufferSource.BufferSource bufferSource, PoseStack poseStack, LevelRenderState levelRenderState, BlockOutlineRenderState state) {
+		if (AxolotlClient.config().enableCustomOutlines.get() && AxolotlClient.config().outlineFill.get()) {
+			var shape = state.shape();
+			var matrix = poseStack.last();
+			var color = AxolotlClient.config().outlineFillColor.get().toInt();
+			var pos = levelRenderState.cameraRenderState.pos;
+			var blockPos = state.pos();
+			var x = blockPos.getX() - pos.x();
+			var y = blockPos.getY() - pos.y();
+			var z = blockPos.getZ() - pos.z();
+			var consumer = bufferSource.getBuffer(QUADS);
+			shape.forAllBoxes((x1, y1, z1, x2, y2, z2) ->
+				fillOutlineQuads(consumer, matrix, (float) (x1 + x), (float) (x2 + x),
+					(float) (y1 + y), (float) (y2 + y),
+					(float) (z1 + z), (float) (z2 + z),
+					color));
+		}
+	}
+
+	private static void fillOutlineQuads(VertexConsumer consumer, PoseStack.Pose matrix, float x1, float x2, float y1, float y2, float z1, float z2, int color) {
+		consumer.addVertex(matrix, x2, y1, z1).setColor(color);
+		consumer.addVertex(matrix, x1, y1, z1).setColor(color);
+		consumer.addVertex(matrix, x1, y2, z1).setColor(color);
+		consumer.addVertex(matrix, x2, y2, z1).setColor(color);
+
+		consumer.addVertex(matrix, x1, y1, z2).setColor(color);
+		consumer.addVertex(matrix, x2, y1, z2).setColor(color);
+		consumer.addVertex(matrix, x2, y2, z2).setColor(color);
+		consumer.addVertex(matrix, x1, y2, z2).setColor(color);
+
+		consumer.addVertex(matrix, x1, y2, z2).setColor(color);
+		consumer.addVertex(matrix, x1, y2, z1).setColor(color);
+		consumer.addVertex(matrix, x1, y1, z1).setColor(color);
+		consumer.addVertex(matrix, x1, y1, z2).setColor(color);
+
+		consumer.addVertex(matrix, x2, y2, z1).setColor(color);
+		consumer.addVertex(matrix, x2, y2, z2).setColor(color);
+		consumer.addVertex(matrix, x2, y1, z2).setColor(color);
+		consumer.addVertex(matrix, x2, y1, z1).setColor(color);
+
+		consumer.addVertex(matrix, x2, y1, z1).setColor(color);
+		consumer.addVertex(matrix, x2, y1, z2).setColor(color);
+		consumer.addVertex(matrix, x1, y1, z2).setColor(color);
+		consumer.addVertex(matrix, x1, y1, z1).setColor(color);
+
+		consumer.addVertex(matrix, x2, y2, z2).setColor(color);
+		consumer.addVertex(matrix, x2, y2, z1).setColor(color);
+		consumer.addVertex(matrix, x1, y2, z1).setColor(color);
+		consumer.addVertex(matrix, x1, y2, z2).setColor(color);
 	}
 }
