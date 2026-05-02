@@ -28,7 +28,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
@@ -59,6 +58,7 @@ import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.options.KeyBinding;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.resource.Identifier;
 import net.minecraft.text.Formatting;

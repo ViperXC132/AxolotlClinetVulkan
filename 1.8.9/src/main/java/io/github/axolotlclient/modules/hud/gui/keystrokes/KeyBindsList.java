@@ -25,7 +25,6 @@ package io.github.axolotlclient.modules.hud.gui.keystrokes;
 import java.util.List;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.ButtonWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.Element;
@@ -37,6 +36,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.options.GameOptions;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.resource.language.I18n;
 
 @Environment(EnvType.CLIENT)

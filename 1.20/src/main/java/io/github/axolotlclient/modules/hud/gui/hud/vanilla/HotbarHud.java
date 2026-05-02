@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
@@ -42,7 +43,7 @@ import net.minecraft.util.Identifier;
 
 public class HotbarHud extends TextHudEntry {
 
-	public static final Identifier ID = new Identifier("axolotlclient", "hotbarhud");
+	public static final Identifier ID = new Identifier(AxolotlClientCommon.MODID, "hotbarhud");
 	private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
 	public static final Identifier ICONS_TEXTURE = new Identifier("textures/gui/icons.png");
 

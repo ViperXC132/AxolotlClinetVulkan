@@ -28,6 +28,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.api.requests.ChannelRequest;
 import io.github.axolotlclient.api.types.Persistence;
 import net.minecraft.client.gui.components.*;
@@ -157,7 +158,7 @@ public class CreateChannelScreen extends Screen {
 			}
 			slider.visible = !slider.visible;
 			text.visible = !slider.visible;
-		}, true).sprite(Identifier.fromNamespaceAndPath("axolotlclient", "cursor"), 8, 8).size(20, 20).build();
+		}, true).sprite(Identifier.fromNamespaceAndPath(AxolotlClientCommon.MODID, "cursor"), 8, 8).size(20, 20).build();
 		var assembly = LinearLayout.horizontal().spacing(2);
 		assembly.addChild(slider);
 		assembly.addChild(textButton);

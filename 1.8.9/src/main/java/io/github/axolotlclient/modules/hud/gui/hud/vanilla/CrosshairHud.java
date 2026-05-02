@@ -24,7 +24,6 @@ package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 
 import java.util.List;
 
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
@@ -45,6 +44,7 @@ import net.minecraft.block.EnderChestBlock;
 import net.minecraft.block.HopperBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.HitResult;
 import net.minecraft.world.World;

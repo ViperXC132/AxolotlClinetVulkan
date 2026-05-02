@@ -25,13 +25,14 @@ package io.github.axolotlclient.modules.auth;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.render.platform.GlStateManager;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import lombok.Getter;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.EntryListWidget;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.resource.Identifier;
 
 public class AccountsListWidget extends EntryListWidget {
@@ -92,8 +93,8 @@ public class AccountsListWidget extends EntryListWidget {
 	@Environment(EnvType.CLIENT)
 	public static class Entry extends DrawUtil implements EntryListWidget.Entry {
 
-		private static final Identifier checkmark = new Identifier("axolotlclient", "textures/check.png");
-		private static final Identifier warningSign = new Identifier("axolotlclient", "textures/warning.png");
+		private static final Identifier checkmark = new Identifier(AxolotlClientCommon.MODID, "textures/check.png");
+		private static final Identifier warningSign = new Identifier(AxolotlClientCommon.MODID, "textures/warning.png");
 
 		private final AccountsScreen screen;
 		@Getter

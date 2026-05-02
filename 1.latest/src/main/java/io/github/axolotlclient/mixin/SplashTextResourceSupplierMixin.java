@@ -31,6 +31,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Share;
 import com.llamalad7.mixinextras.sugar.ref.LocalRef;
+import io.github.axolotlclient.AxolotlClientCommon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.SplashManager;
 import net.minecraft.network.chat.Component;
@@ -46,7 +47,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(SplashManager.class)
 public abstract class SplashTextResourceSupplierMixin {
 	@Unique
-	private static final Identifier EXTRA_SPLASHES = Identifier.fromNamespaceAndPath("axolotlclient", "texts/splashes.txt");
+	private static final Identifier EXTRA_SPLASHES = Identifier.fromNamespaceAndPath(AxolotlClientCommon.MODID, "texts/splashes.txt");
 
 	@Inject(method = "prepare(Lnet/minecraft/server/packs/resources/ResourceManager;Lnet/minecraft/util/profiling/ProfilerFiller;)Ljava/util/List;", at = @At("HEAD"))
 	private void addCustomSplashesLoad(ResourceManager resourceManager, ProfilerFiller profiler, CallbackInfoReturnable<List<Component>> cir, @Share("axolotlclient_splashes") LocalRef<BufferedReader> reader) {

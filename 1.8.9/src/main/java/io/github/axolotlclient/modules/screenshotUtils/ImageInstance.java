@@ -72,7 +72,7 @@ public interface ImageInstance {
 	@SuppressWarnings("UnstableApiUsage")
 	record LocalImpl(Identifier id, BufferedImage image, String filename, Path location) implements Local {
 		public LocalImpl(BufferedImage image, String filename, Path location) {
-			this(new Identifier("gallery_local_" + Hashing.sha256().hashUnencodedChars(location.toString().toLowerCase(Locale.ROOT).replaceAll("[./]", "_"))),
+			this(new Identifier(AxolotlClientCommon.MODID, "gallery_local_" + Hashing.sha256().hashUnencodedChars(location.toString().toLowerCase(Locale.ROOT).replaceAll("[./]", "_"))),
 				image, filename, location);
 			register(id(), image());
 		}
@@ -91,7 +91,7 @@ public interface ImageInstance {
 	record RemoteImpl(Identifier id, BufferedImage image, String filename, String uploader, Instant sharedAt,
 					  String url) implements Remote {
 		public RemoteImpl(BufferedImage image, String filename, String uploader, Instant sharedAt, String url) {
-			this(new Identifier("axolotlclient", "gallery_remote_" + Hashing.sha256().hashUnencodedChars(url.toLowerCase(Locale.ROOT).replaceAll("[./]", "_"))),
+			this(new Identifier(AxolotlClientCommon.MODID, "gallery_remote_" + Hashing.sha256().hashUnencodedChars(url.toLowerCase(Locale.ROOT).replaceAll("[./]", "_"))),
 				image, filename, uploader, sharedAt, url
 			);
 			register(id(), image());

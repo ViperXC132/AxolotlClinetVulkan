@@ -24,6 +24,7 @@ package io.github.axolotlclient.modules.auth;
 
 import java.util.List;
 
+import io.github.axolotlclient.AxolotlClientCommon;
 import lombok.Getter;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -68,9 +69,9 @@ public class AccountsListWidget extends ObjectSelectionList<AccountsListWidget.E
 	public static class Entry extends ObjectSelectionList.Entry<AccountsListWidget.Entry> {
 
 		private static final Identifier checkmark =
-			Identifier.fromNamespaceAndPath("axolotlclient", "textures/check.png");
+			Identifier.fromNamespaceAndPath(AxolotlClientCommon.MODID, "textures/check.png");
 		private static final Identifier warningSign =
-			Identifier.fromNamespaceAndPath("axolotlclient", "textures/warning.png");
+			Identifier.fromNamespaceAndPath(AxolotlClientCommon.MODID, "textures/warning.png");
 
 		private final AccountsScreen screen;
 		@Getter

@@ -22,9 +22,6 @@
 
 package io.github.axolotlclient.modules.hud.gui.hud;
 
-import net.minecraft.client.render.platform.GLX;
-import net.minecraft.client.render.platform.GlStateManager;
-import net.minecraft.client.render.platform.Lighting;
 import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.events.types.PlayerDirectionChangeEvent;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
@@ -33,6 +30,9 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.living.player.LocalClientPlayerEntity;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
+import net.minecraft.client.render.platform.GLX;
+import net.minecraft.client.render.platform.GlStateManager;
+import net.minecraft.client.render.platform.Lighting;
 import net.minecraft.resource.Identifier;
 
 /**

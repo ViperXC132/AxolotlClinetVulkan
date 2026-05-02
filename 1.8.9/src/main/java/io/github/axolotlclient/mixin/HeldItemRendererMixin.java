@@ -22,9 +22,9 @@
 
 package io.github.axolotlclient.mixin;
 
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
 import net.minecraft.client.render.ItemInHandRenderer;
+import net.minecraft.client.render.platform.GlStateManager;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.util.UUIDHelper;
@@ -44,6 +43,7 @@ import io.github.axolotlclient.util.notifications.Notifications;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.resource.language.I18n;
 
 public class ImageScreen extends Screen {

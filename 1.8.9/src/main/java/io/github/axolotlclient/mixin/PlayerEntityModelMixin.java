@@ -22,8 +22,8 @@
 
 package io.github.axolotlclient.mixin;
 
-import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.render.model.entity.PlayerModel;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.entity.Entity;
 import org.lwjgl.opengl.GL11;
 import org.objectweb.asm.Opcodes;

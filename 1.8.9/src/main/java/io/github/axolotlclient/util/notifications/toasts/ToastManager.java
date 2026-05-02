@@ -27,7 +27,6 @@ import java.util.Deque;
 import java.util.List;
 
 import com.google.common.collect.Queues;
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoWindow;
 import io.github.axolotlclient.util.Util;
@@ -35,6 +34,7 @@ import lombok.Getter;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.util.math.MathHelper;
 import net.ornithemc.osl.lifecycle.api.client.MinecraftClientEvents;
 import org.apache.commons.lang3.mutable.MutableBoolean;

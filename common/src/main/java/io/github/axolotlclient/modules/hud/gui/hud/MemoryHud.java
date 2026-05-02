@@ -24,6 +24,7 @@ package io.github.axolotlclient.modules.hud.gui.hud;
 
 import java.util.List;
 
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
@@ -80,7 +81,7 @@ public class MemoryHud extends TextHudEntry {
 		}
 	}
 
-	public static final AxoIdentifier ID = AxoIdentifier.of("axolotlclient", "memoryhud");
+	public static final AxoIdentifier ID = AxoIdentifier.of(AxolotlClientCommon.MODID, "memoryhud");
 
 	protected final EnumOption<Justification> justification = new EnumOption<>("justification", Justification.class,
 		Justification.CENTER);

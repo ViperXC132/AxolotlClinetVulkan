@@ -23,17 +23,19 @@
 package io.github.axolotlclient.mixin;
 
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.bridge.events.types.WorldLoadEvent;
 import io.github.axolotlclient.modules.rpc.DiscordRPC;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
 import net.minecraft.client.gui.screen.DownloadingTerrainScreen;
 import net.minecraft.client.world.ClientWorld;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -51,11 +53,9 @@ public abstract class MinecraftClientMixin {
 		}
 	}
 
-	@Inject(method = "getVersionType", at = @At("HEAD"), cancellable = true)
-	private void axolotlclient$noVersionType(CallbackInfoReturnable<String> cir) {
-		if (FabricLoader.getInstance().getModContainer("axolotlclient").isPresent()) {
-			cir.setReturnValue(FabricLoader.getInstance().getModContainer("axolotlclient").get().getMetadata().getVersion().getFriendlyString());
-		}
+	@Redirect(method = "<init>", at = @At(value = "FIELD", target = "Lnet/minecraft/client/RunArgs$Game;versionType:Ljava/lang/String;", opcode = Opcodes.GETFIELD))
+	private String axolotlclient$noVersionType(RunArgs.Game instance) {
+		return AxolotlClientCommon.VERSION;
 	}
 
 	@Inject(method = "stop", at = @At("HEAD"))

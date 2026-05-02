@@ -34,10 +34,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import net.minecraft.client.render.platform.GlStateManager;
-import net.minecraft.client.render.platform.Lighting;
-import net.minecraft.client.render.vertex.DefaultVertexFormat;
-import net.minecraft.client.render.vertex.Tesselator;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
@@ -62,6 +58,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.TextRenderer;
+import net.minecraft.client.render.platform.GlStateManager;
+import net.minecraft.client.render.platform.Lighting;
+import net.minecraft.client.render.vertex.DefaultVertexFormat;
+import net.minecraft.client.render.vertex.Tesselator;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.resource.Identifier;
 import net.minecraft.text.Text;
@@ -186,11 +186,11 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 		var importButton = new SpriteButton(I18n.translate("skins.manage.import.local"), btn -> {
 			btn.active = false;
 			SkinImportUtil.openImportSkinDialog().thenAccept(this::onFileDrop).thenRun(() -> btn.active = true);
-		}, new Identifier("axolotlclient", "textures/gui/sprites/folder.png"));
+		}, new Identifier(AxolotlClientCommon.MODID, "textures/gui/sprites/folder.png"));
 		var downloadButton = new SpriteButton(I18n.translate("skins.manage.import.online"), btn -> {
 			btn.active = false;
 			promptForSkinDownload();
-		}, new Identifier("axolotlclient", "textures/gui/sprites/download.png"));
+		}, new Identifier(AxolotlClientCommon.MODID, "textures/gui/sprites/download.png"));
 		if (width - (capesTab.getX() + capesTab.getWidth()) > 28) {
 			importButton.setX(width - importButton.getWidth() - 2);
 			downloadButton.setX(importButton.getX() - downloadButton.getWidth() - 2);
@@ -610,8 +610,8 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 			var asset = widget.getFocusedAsset();
 			if (asset != null) {
 				if (asset instanceof Skin skin) {
-					var wideSprite = new Identifier("axolotlclient", "textures/gui/sprites/wide.png");
-					var slimSprite = new Identifier("axolotlclient", "textures/gui/sprites/slim.png");
+					var wideSprite = new Identifier(AxolotlClientCommon.MODID, "textures/gui/sprites/wide.png");
+					var slimSprite = new Identifier(AxolotlClientCommon.MODID, "textures/gui/sprites/slim.png");
 					var slimText = I18n.translate("skins.manage.variant.classic");
 					var wideText = I18n.translate("skins.manage.variant.slim");
 					actionButtons.add(new SpriteButton(skin.classicVariant() ? wideText : slimText, btn -> {
@@ -640,7 +640,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 							AxoText.translatable("skins.manage.delete.confirm.desc_active") :
 							AxoText.translatable("skins.manage.delete.confirm.desc")
 						).br$color(Colors.RED.toInt())).getFormattedString(), 0));
-					}, new Identifier("axolotlclient", "textures/gui/sprites/delete.png")));
+					}, new Identifier(AxolotlClientCommon.MODID, "textures/gui/sprites/delete.png")));
 				}
 				if (asset instanceof Asset.Online online && online.supportsDownload() && !(asset instanceof Asset.Local)) {
 					this.actionButtons.add(new SpriteButton(I18n.translate("skins.manage.download"), btn -> {
@@ -649,7 +649,7 @@ public class SkinManagementScreen extends io.github.axolotlclient.AxolotlClientC
 							refreshCurrentList();
 							btn.active = true;
 						});
-					}, new Identifier("axolotlclient", "textures/gui/sprites/download.png")));
+					}, new Identifier(AxolotlClientCommon.MODID, "textures/gui/sprites/download.png")));
 				}
 			}
 			if (label != null) {

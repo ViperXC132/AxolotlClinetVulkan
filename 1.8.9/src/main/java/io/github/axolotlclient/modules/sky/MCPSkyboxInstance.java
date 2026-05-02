@@ -23,12 +23,12 @@
 package io.github.axolotlclient.modules.sky;
 
 import com.google.gson.JsonObject;
+import io.github.axolotlclient.util.Util;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.render.vertex.BufferBuilder;
 import net.minecraft.client.render.vertex.DefaultVertexFormat;
 import net.minecraft.client.render.vertex.Tesselator;
-import io.github.axolotlclient.util.Util;
-import net.minecraft.client.Minecraft;
 import net.minecraft.resource.Identifier;
 
 public class MCPSkyboxInstance extends SkyboxInstance {

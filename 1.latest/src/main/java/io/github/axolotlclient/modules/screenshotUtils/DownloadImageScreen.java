@@ -24,6 +24,7 @@ package io.github.axolotlclient.modules.screenshotUtils;
 
 import java.util.function.Consumer;
 
+import io.github.axolotlclient.AxolotlClientCommon;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.gui.Font;
@@ -42,7 +43,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 
 public class DownloadImageScreen extends Screen {
-	private static final Identifier SPRITE = Identifier.fromNamespaceAndPath("axolotlclient", "go");
+	private static final Identifier SPRITE = Identifier.fromNamespaceAndPath(AxolotlClientCommon.MODID, "go");
 
 	private final Screen parent;
 

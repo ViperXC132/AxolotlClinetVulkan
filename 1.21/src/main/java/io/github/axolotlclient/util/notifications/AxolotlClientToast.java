@@ -41,7 +41,7 @@ import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class AxolotlClientToast extends DrawUtil implements Toast {
-	private static final Identifier BACKGROUND_SPRITE = Identifier.of("axolotlclient", "toast/axolotlclient");
+	private static final Identifier BACKGROUND_SPRITE = Identifier.of(AxolotlClientCommon.MODID, "toast/axolotlclient");
 	private static final int DISPLAY_TIME_MILLIS = 5000;
 	private static final int MAX_LINE_SIZE = 200;
 	private static final int LINE_SPACING = 12;

@@ -30,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.texture.NativeImage;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
@@ -49,7 +50,7 @@ import static io.github.axolotlclient.modules.hud.util.DrawUtil.*;
 
 public class PackDisplayHud extends TextHudEntry {
 
-	public static final Identifier ID = new Identifier("axolotlclient", "packdisplayhud");
+	public static final Identifier ID = new Identifier(AxolotlClientCommon.MODID, "packdisplayhud");
 	public final List<PackWidget> widgets = new ArrayList<>();
 	private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
 	private PackWidget placeholder;

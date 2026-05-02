@@ -23,9 +23,9 @@
 package io.github.axolotlclient.mixin;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClient;
 import net.minecraft.client.render.entity.ItemEntityRenderer;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.resource.model.BakedModel;
 import net.minecraft.entity.ItemEntity;
 import org.spongepowered.asm.mixin.Mixin;

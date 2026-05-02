@@ -24,6 +24,7 @@ package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 
 import java.util.List;
 
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
@@ -35,7 +36,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.resources.Identifier;
 
 public class DebugCountersHud extends TextHudEntry {
-	public static final Identifier ID = Identifier.fromNamespaceAndPath("axolotlclient", "debugcountershud");
+	public static final Identifier ID = Identifier.fromNamespaceAndPath(AxolotlClientCommon.MODID, "debugcountershud");
 	private final BooleanOption showCCount = new BooleanOption("debugcounters.ccount", true);
 	private final BooleanOption showECount = new BooleanOption("debugcounters.ecount", false);
 	private final BooleanOption showPCount = new BooleanOption("debugcounters.pcount", false);

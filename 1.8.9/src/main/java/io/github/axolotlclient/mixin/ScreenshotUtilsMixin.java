@@ -25,8 +25,8 @@ package io.github.axolotlclient.mixin;
 import java.io.File;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import net.minecraft.client.render.pipeline.RenderTarget;
 import net.minecraft.client.Screenshot;
+import net.minecraft.client.render.pipeline.RenderTarget;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

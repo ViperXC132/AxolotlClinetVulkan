@@ -26,8 +26,8 @@ import java.util.Collection;
 import java.util.List;
 
 import io.github.axolotlclient.modules.particles.Particles;
-import net.minecraft.client.entity.particle.Particle;
 import net.minecraft.client.ParticleManager;
+import net.minecraft.client.entity.particle.Particle;
 import net.minecraft.entity.particle.ParticleType;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;

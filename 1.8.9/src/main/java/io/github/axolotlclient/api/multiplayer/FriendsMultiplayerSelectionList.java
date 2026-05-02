@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 
 import com.google.common.hash.Hashing;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.EntryListWidget;
 import io.github.axolotlclient.api.types.PkSystem;
@@ -51,6 +50,7 @@ import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.options.ServerListEntry;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.render.texture.DynamicTexture;
 import net.minecraft.client.render.texture.TextureUtil;
 import net.minecraft.client.resource.language.I18n;

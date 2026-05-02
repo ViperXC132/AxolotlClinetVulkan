@@ -28,7 +28,6 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.IntegerOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.ButtonWidget;
@@ -46,6 +45,7 @@ import lombok.Getter;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.options.GameOptions;
 import net.minecraft.client.render.TextRenderer;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;

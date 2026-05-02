@@ -22,7 +22,6 @@
 
 package io.github.axolotlclient.modules.screenshotUtils;
 
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.MathUtil;
@@ -31,6 +30,7 @@ import io.github.axolotlclient.util.notifications.toasts.ToastManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.render.TextRenderer;
+import net.minecraft.client.render.platform.GlStateManager;
 import org.jetbrains.annotations.NotNull;
 
 public class ScreenshotToast implements Toast {

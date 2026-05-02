@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
@@ -37,6 +36,7 @@ import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.render.texture.DynamicTexture;
 import net.minecraft.client.resource.pack.ResourcePack;
 import net.minecraft.resource.Identifier;
@@ -44,7 +44,7 @@ import net.ornithemc.osl.resource.loader.api.ModResourcePack;
 
 public class PackDisplayHud extends TextHudEntry {
 
-	public static final Identifier ID = new Identifier("axolotlclient", "packdisplayhud");
+	public static final Identifier ID = new Identifier(AxolotlClientCommon.MODID, "packdisplayhud");
 
 	private final List<PackWidget> widgets = new ArrayList<>();
 	private final List<ResourcePack> packs = new ArrayList<>();

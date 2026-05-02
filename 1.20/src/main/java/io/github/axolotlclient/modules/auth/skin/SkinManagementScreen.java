@@ -160,11 +160,11 @@ public class SkinManagementScreen extends Screen {
 		var importButton = new SpriteButton(Text.translatable("skins.manage.import.local"), btn -> {
 			btn.active = false;
 			SkinImportUtil.openImportSkinDialog().thenAccept(this::filesDragged).thenRun(() -> btn.active = true);
-		}, new Identifier("axolotlclient", "textures/gui/sprites/folder.png"));
+		}, new Identifier(AxolotlClientCommon.MODID, "textures/gui/sprites/folder.png"));
 		var downloadButton = new SpriteButton(Text.translatable("skins.manage.import.online"), btn -> {
 			btn.active = false;
 			promptForSkinDownload();
-		}, new Identifier("axolotlclient", "textures/gui/sprites/download.png"));
+		}, new Identifier(AxolotlClientCommon.MODID, "textures/gui/sprites/download.png"));
 		if (width - (capesTab.getX() + capesTab.getWidth()) > 28) {
 			importButton.setX(width - importButton.getWidth() - 2);
 			downloadButton.setX(importButton.getX() - downloadButton.getWidth() - 2);
@@ -571,8 +571,8 @@ public class SkinManagementScreen extends Screen {
 			var asset = widget.getFocusedAsset();
 			if (asset != null) {
 				if (asset instanceof Skin skin) {
-					var wideSprite = new Identifier("axolotlclient", "textures/gui/sprites/wide.png");
-					var slimSprite = new Identifier("axolotlclient", "textures/gui/sprites/slim.png");
+					var wideSprite = new Identifier(AxolotlClientCommon.MODID, "textures/gui/sprites/wide.png");
+					var slimSprite = new Identifier(AxolotlClientCommon.MODID, "textures/gui/sprites/slim.png");
 					var slimText = Text.translatable("skins.manage.variant.classic");
 					var wideText = Text.translatable("skins.manage.variant.slim");
 					actionButtons.add(new SpriteButton(skin.classicVariant() ? wideText : slimText, btn -> {
@@ -601,7 +601,7 @@ public class SkinManagementScreen extends Screen {
 							Text.translatable("skins.manage.delete.confirm.desc_active") :
 							Text.translatable("skins.manage.delete.confirm.desc")
 						).br$color(Colors.RED.toInt())));
-					}, new Identifier("axolotlclient", "textures/gui/sprites/delete.png")));
+					}, new Identifier(AxolotlClientCommon.MODID, "textures/gui/sprites/delete.png")));
 				}
 				if (asset instanceof Asset.Online online && online.supportsDownload() && !(asset instanceof Asset.Local)) {
 					this.actionButtons.add(new SpriteButton(Text.translatable("skins.manage.download"), btn -> {
@@ -610,7 +610,7 @@ public class SkinManagementScreen extends Screen {
 							refreshCurrentList();
 							btn.active = true;
 						});
-					}, new Identifier("axolotlclient", "textures/gui/sprites/download.png")));
+					}, new Identifier(AxolotlClientCommon.MODID, "textures/gui/sprites/download.png")));
 				}
 			}
 			if (label != null) {

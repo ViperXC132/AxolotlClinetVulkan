@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import net.minecraft.client.render.platform.GlStateManager;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.DoubleOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.ButtonWidget;
@@ -41,6 +41,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.util.DrawUtil;
 import io.github.axolotlclient.api.requests.ChannelRequest;
 import io.github.axolotlclient.api.types.Persistence;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.resource.Identifier;
 
@@ -196,7 +197,7 @@ public class CreateChannelScreen extends io.github.axolotlclient.AxolotlClientCo
 				GlStateManager.blendFunc(770, 771);
 				this.drawTexture(this.getX(), this.getY(), 0, 46 + k * 20, this.getWidth() / 2, this.getHeight());
 				this.drawTexture(this.getX() + this.getWidth() / 2, this.getY(), 200 - this.getWidth() / 2, 46 + k * 20, this.getWidth() / 2, this.getHeight());
-				client.getTextureManager().bind(new Identifier("axolotlclient", "textures/gui/sprites/cursor.png"));
+				client.getTextureManager().bind(new Identifier(AxolotlClientCommon.MODID, "textures/gui/sprites/cursor.png"));
 				drawTexture(getX() + getWidth() / 2 - 4, getY() + getHeight() / 2 - 4,
 					8, 8, 8, 8, 8, 8, 8, 8);
 

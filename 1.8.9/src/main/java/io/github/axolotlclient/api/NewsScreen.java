@@ -24,12 +24,12 @@ package io.github.axolotlclient.api;
 
 import java.util.List;
 
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.ClickableWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.VanillaButtonWidget;
 import io.github.axolotlclient.api.requests.GlobalDataRequest;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.system.SoundManager;
 import net.minecraft.util.math.MathHelper;

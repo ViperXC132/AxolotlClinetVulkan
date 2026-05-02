@@ -30,10 +30,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
-import net.minecraft.client.render.platform.GlStateManager;
-import net.minecraft.client.render.vertex.BufferBuilder;
-import net.minecraft.client.render.vertex.DefaultVertexFormat;
-import net.minecraft.client.render.vertex.Tesselator;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.requests.FriendRequest;
@@ -47,6 +43,10 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.EntryListWidget;
 import net.minecraft.client.render.TextRenderer;
+import net.minecraft.client.render.platform.GlStateManager;
+import net.minecraft.client.render.vertex.BufferBuilder;
+import net.minecraft.client.render.vertex.DefaultVertexFormat;
+import net.minecraft.client.render.vertex.Tesselator;
 import net.minecraft.client.resource.language.I18n;
 import org.lwjgl.opengl.GL11;
 

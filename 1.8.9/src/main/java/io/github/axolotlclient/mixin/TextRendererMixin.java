@@ -29,13 +29,14 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
+import io.github.axolotlclient.AxolotlClientCommon;
+import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.render.TextRenderer;
 import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.render.vertex.BufferBuilder;
 import net.minecraft.client.render.vertex.DefaultVertexFormat;
 import net.minecraft.client.render.vertex.Tesselator;
-import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.render.TextRenderer;
 import net.minecraft.resource.Identifier;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -50,7 +51,7 @@ public abstract class TextRendererMixin {
 	// Pain at its finest
 
 	@Unique
-	private final Identifier texture_g = new Identifier("axolotlclient", "textures/font/g_breve_capital.png");
+	private final Identifier texture_g = new Identifier(AxolotlClientCommon.MODID, "textures/font/g_breve_capital.png");
 	@Shadow
 	public int fontHeight;
 	@Shadow

@@ -102,7 +102,7 @@ public class SkyResourceManager extends AbstractCommonModule implements SimpleSy
 
 	@Override
 	public @NotNull Identifier getFabricId() {
-		return new Identifier("axolotlclient", "custom_skies");
+		return new Identifier(AxolotlClientCommon.MODID, "custom_skies");
 	}
 
 	@Override

@@ -25,8 +25,6 @@ package io.github.axolotlclient.util.notifications;
 import java.util.List;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.client.render.platform.GlStateManager;
-import net.minecraft.client.render.platform.Lighting;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
@@ -36,12 +34,14 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.TextRenderer;
+import net.minecraft.client.render.platform.GlStateManager;
+import net.minecraft.client.render.platform.Lighting;
 import net.minecraft.resource.Identifier;
 import org.jetbrains.annotations.Nullable;
 
 @Environment(EnvType.CLIENT)
 public class AxolotlClientToast extends DrawUtil implements Toast {
-	private static final Identifier BACKGROUND_SPRITE = new Identifier("axolotlclient", "textures/gui/sprites/toast/axolotlclient.png");
+	private static final Identifier BACKGROUND_SPRITE = new Identifier(AxolotlClientCommon.MODID, "textures/gui/sprites/toast/axolotlclient.png");
 	private static final NineSlice SPRITE_SCALING = new NineSlice(160, 64, new Border(17, 30, 4, 4), false);
 	private static final int DISPLAY_TIME_MILLIS = 5000;
 	private static final int MAX_LINE_SIZE = 200;

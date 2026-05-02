@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.api.types.PkSystem;
 import io.github.axolotlclient.api.types.User;
 import io.github.axolotlclient.modules.auth.Auth;
@@ -34,6 +33,7 @@ import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.gui.widget.EntryListWidget;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.text.Formatting;
 
 public class UserListWidget extends EntryListWidget {

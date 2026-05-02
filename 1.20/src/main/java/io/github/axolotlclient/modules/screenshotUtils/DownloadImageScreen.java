@@ -24,6 +24,7 @@ package io.github.axolotlclient.modules.screenshotUtils;
 
 import java.util.function.Supplier;
 
+import io.github.axolotlclient.AxolotlClientCommon;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screen.Screen;
@@ -35,7 +36,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
 public class DownloadImageScreen extends Screen {
-	private static final Identifier SPRITE = new Identifier("axolotlclient", "textures/gui/sprites/go.png");
+	private static final Identifier SPRITE = new Identifier(AxolotlClientCommon.MODID, "textures/gui/sprites/go.png");
 
 	private final Screen parent;
 

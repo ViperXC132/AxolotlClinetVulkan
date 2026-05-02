@@ -22,13 +22,13 @@
 
 package io.github.axolotlclient.bridge.impl;
 
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.resource.Identifier;
 
 public interface AxoSpriteImpl extends AxoSprite {

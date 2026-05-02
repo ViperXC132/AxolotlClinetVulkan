@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.google.gson.JsonSyntaxException;
-import net.minecraft.client.render.shaders.Uniform;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
@@ -36,6 +35,7 @@ import io.github.axolotlclient.mixin.ShaderEffectAccessor;
 import io.github.axolotlclient.modules.AbstractModule;
 import lombok.Getter;
 import net.minecraft.client.render.PostChain;
+import net.minecraft.client.render.shaders.Uniform;
 import net.minecraft.client.resource.Resource;
 import net.minecraft.client.resource.metadata.ResourceMetadataSection;
 import net.minecraft.resource.Identifier;

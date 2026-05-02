@@ -25,13 +25,13 @@ package io.github.axolotlclient.api;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.render.TextRenderer;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.resource.language.I18n;
 
 public class ContextMenu {

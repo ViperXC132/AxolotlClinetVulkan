@@ -70,7 +70,7 @@ public interface ImageInstance {
 
 	record LocalImpl(Identifier id, NativeImage image, String filename, Path location) implements Local {
 		public LocalImpl(NativeImage image, String filename, Path location) {
-			this(Identifier.fromNamespaceAndPath("axolotlclient", "gallery_local_" + Hashing.sha256().hashUnencodedChars(location.toString().toLowerCase(Locale.ROOT).replaceAll("[./]", "_"))),
+			this(Identifier.fromNamespaceAndPath(AxolotlClientCommon.MODID, "gallery_local_" + Hashing.sha256().hashUnencodedChars(location.toString().toLowerCase(Locale.ROOT).replaceAll("[./]", "_"))),
 				image, filename, location);
 			register(id(), image());
 		}
@@ -88,7 +88,7 @@ public interface ImageInstance {
 	record RemoteImpl(Identifier id, NativeImage image, String filename, String uploader, Instant sharedAt,
 					  String url) implements Remote {
 		public RemoteImpl(NativeImage image, String filename, String uploader, Instant sharedAt, String url) {
-			this(Identifier.fromNamespaceAndPath("axolotlclient", "gallery_remote_" + Hashing.sha256().hashUnencodedChars(url.toLowerCase(Locale.ROOT).replaceAll("[./]", "_"))),
+			this(Identifier.fromNamespaceAndPath(AxolotlClientCommon.MODID, "gallery_remote_" + Hashing.sha256().hashUnencodedChars(url.toLowerCase(Locale.ROOT).replaceAll("[./]", "_"))),
 				image, filename, uploader, sharedAt, url
 			);
 			register(id(), image());

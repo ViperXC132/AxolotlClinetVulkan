@@ -25,6 +25,7 @@ package io.github.axolotlclient.modules.auth;
 import java.util.List;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.axolotlclient.AxolotlClientCommon;
 import lombok.Getter;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -67,8 +68,8 @@ public class AccountsListWidget extends AlwaysSelectedEntryListWidget<AccountsLi
 	@Environment(EnvType.CLIENT)
 	public static class Entry extends AlwaysSelectedEntryListWidget.Entry<AccountsListWidget.Entry> {
 
-		private static final Identifier checkmark = new Identifier("axolotlclient", "textures/check.png");
-		private static final Identifier warningSign = new Identifier("axolotlclient", "textures/warning.png");
+		private static final Identifier checkmark = new Identifier(AxolotlClientCommon.MODID, "textures/check.png");
+		private static final Identifier warningSign = new Identifier(AxolotlClientCommon.MODID, "textures/warning.png");
 
 		private final AccountsScreen screen;
 		@Getter

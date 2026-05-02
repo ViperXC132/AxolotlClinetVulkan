@@ -24,15 +24,15 @@ package io.github.axolotlclient.modules.hud.util;
 
 import java.util.function.Supplier;
 
-import net.minecraft.client.render.platform.GlStateManager;
-import net.minecraft.client.render.vertex.BufferBuilder;
-import net.minecraft.client.render.vertex.DefaultVertexFormat;
-import net.minecraft.client.render.vertex.Tesselator;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.PostChain;
+import net.minecraft.client.render.platform.GlStateManager;
+import net.minecraft.client.render.vertex.BufferBuilder;
+import net.minecraft.client.render.vertex.DefaultVertexFormat;
+import net.minecraft.client.render.vertex.Tesselator;
 import org.lwjgl.opengl.GL11;
 
 /**

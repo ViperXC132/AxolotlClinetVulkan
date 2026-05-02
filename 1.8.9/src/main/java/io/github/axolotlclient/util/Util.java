@@ -32,8 +32,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.function.Supplier;
 
-import net.minecraft.client.render.platform.GLX;
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Graphics;
@@ -42,6 +40,8 @@ import io.github.axolotlclient.mixin.DynamicTextureAccessor;
 import io.github.axolotlclient.mixin.MinecraftClientAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.Window;
+import net.minecraft.client.render.platform.GLX;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.render.texture.DynamicTexture;
 import net.minecraft.client.render.texture.TextureUtil;
 import net.minecraft.resource.Identifier;
@@ -146,7 +146,7 @@ public class Util {
 	}
 
 	public static Identifier getTexture(Graphics graphics, String name) {
-		Identifier id = new Identifier("axolotlclient", name.toLowerCase(Locale.ROOT));
+		Identifier id = new Identifier(AxolotlClientCommon.MODID, name.toLowerCase(Locale.ROOT));
 		try {
 			DynamicTexture texture;
 			var previous = Minecraft.getInstance().getTextureManager().get(id);

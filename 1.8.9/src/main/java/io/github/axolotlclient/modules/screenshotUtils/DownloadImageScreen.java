@@ -22,16 +22,17 @@
 
 package io.github.axolotlclient.modules.screenshotUtils;
 
-import net.minecraft.client.render.platform.GlStateManager;
+import io.github.axolotlclient.AxolotlClientCommon;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.resource.Identifier;
 
 public class DownloadImageScreen extends Screen {
-	private static final Identifier SPRITE = new Identifier("axolotlclient", "textures/gui/sprites/go.png");
+	private static final Identifier SPRITE = new Identifier(AxolotlClientCommon.MODID, "textures/gui/sprites/go.png");
 
 	private final Screen parent;
 

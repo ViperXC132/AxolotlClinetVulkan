@@ -93,7 +93,7 @@ public class Util {
 	}
 
 	public static Identifier getTexture(Graphics graphics, String name) {
-		Identifier id = Identifier.fromNamespaceAndPath("axolotlclient", "graphics_" + name.toLowerCase(Locale.ROOT));
+		Identifier id = Identifier.fromNamespaceAndPath(AxolotlClientCommon.MODID, "graphics_" + name.toLowerCase(Locale.ROOT));
 		try {
 			DynamicTexture texture;
 			boolean reuse = textures.containsKey(id);

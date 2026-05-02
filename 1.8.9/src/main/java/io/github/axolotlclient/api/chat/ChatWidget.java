@@ -29,7 +29,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.ChatsSidebar;
 import io.github.axolotlclient.api.ContextMenu;
@@ -46,6 +45,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.EntryListWidget;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;

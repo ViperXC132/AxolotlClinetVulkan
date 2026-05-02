@@ -88,7 +88,7 @@ public interface ImageInstance {
 	record RemoteImpl(Identifier id, NativeImage image, String filename, String uploader, Instant sharedAt,
 					  String url) implements Remote {
 		public RemoteImpl(NativeImage image, String filename, String uploader, Instant sharedAt, String url) {
-			this(new Identifier("axolotlclient", "gallery_remote_" + Hashing.sha256().hashUnencodedChars(url.toLowerCase(Locale.ROOT).replaceAll("[./]", "_"))),
+			this(new Identifier(AxolotlClientCommon.MODID, "gallery_remote_" + Hashing.sha256().hashUnencodedChars(url.toLowerCase(Locale.ROOT).replaceAll("[./]", "_"))),
 				image, filename, uploader, sharedAt, url
 			);
 			register(id(), image());

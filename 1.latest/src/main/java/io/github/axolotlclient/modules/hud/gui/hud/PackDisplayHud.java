@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.mojang.blaze3d.platform.NativeImage;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
@@ -51,7 +52,7 @@ import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawString;
 
 public class PackDisplayHud extends TextHudEntry {
 
-	public static final Identifier ID = Identifier.fromNamespaceAndPath("axolotlclient", "packdisplayhud");
+	public static final Identifier ID = Identifier.fromNamespaceAndPath(AxolotlClientCommon.MODID, "packdisplayhud");
 	public final List<PackWidget> widgets = new ArrayList<>();
 	private final BooleanOption iconsOnly = new BooleanOption("iconsonly", false);
 	private final Minecraft client = (Minecraft) super.client;

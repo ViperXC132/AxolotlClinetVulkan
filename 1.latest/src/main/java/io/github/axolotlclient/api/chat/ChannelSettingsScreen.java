@@ -29,6 +29,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.api.requests.ChannelRequest;
 import io.github.axolotlclient.api.types.Channel;
 import io.github.axolotlclient.api.types.Persistence;
@@ -163,7 +164,7 @@ public class ChannelSettingsScreen extends Screen {
 			}
 			slider.visible = !slider.visible;
 			text.visible = !slider.visible;
-		}, true).sprite(Identifier.fromNamespaceAndPath("axolotlclient", "cursor"), 8, 8).size(20, 20).build();
+		}, true).sprite(Identifier.fromNamespaceAndPath(AxolotlClientCommon.MODID, "cursor"), 8, 8).size(20, 20).build();
 		LinearLayout assembly = LinearLayout.horizontal().spacing(2);
 		assembly.addChild(slider);
 		assembly.addChild(textButton);

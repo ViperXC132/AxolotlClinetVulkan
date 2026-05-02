@@ -33,7 +33,7 @@ import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.ClickableWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.TextFieldWidget;
-import io.github.axolotlclient.AxolotlClientConfig.impl.ui.rounded.util.CommonTexts;
+import io.github.axolotlclient.AxolotlClientConfig.impl.util.CommonTexts;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.rounded.util.StyleColors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.VanillaButtonWidget;
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
@@ -161,7 +161,7 @@ public class CropImageScreen extends io.github.axolotlclient.AxolotlClientConfig
 				AxolotlClientCommon.getInstance().getNotificationProvider().addStatus("gallery.image.crop.copy.failure", "gallery.image.crop.save.copy.description");
 			}
 		}));
-		addDrawableChild(new VanillaButtonWidget(width / 2 - 150 / 2, footerLine3Y, 150, 20, CommonTexts.BACK, btn -> closeScreen()));
+		addDrawableChild(new VanillaButtonWidget(width / 2 - 150 / 2, footerLine3Y, 150, 20, CommonTexts.back(), btn -> closeScreen()));
 	}
 
 	@Override

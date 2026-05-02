@@ -27,6 +27,7 @@ import java.util.List;
 
 import com.google.common.hash.Hashing;
 import com.mojang.blaze3d.texture.NativeImage;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.bridge.PlatformDispatch;
 import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
 import io.github.axolotlclient.bridge.render.AxoSprite;
@@ -140,7 +141,7 @@ public abstract class PlatformDispatchMixin {
 			img = NativeImage.read(serverEntry.getFavicon());
 		}
 		final var icon = new NativeImageBackedTexture(img);
-		final var iconId = new Identifier("axolotlclient",
+		final var iconId = new Identifier(AxolotlClientCommon.MODID,
 			serverEntry == null ? "worlds/" + Hashing.sha1().hashUnencodedChars(((MinecraftServerAccessor) minecraft.getServer()).getStorageSource().getDirectoryName()) + "/icon" :
 				"servers/" + Hashing.sha1().hashUnencodedChars(minecraft.getCurrentServerEntry().address) + "/icon"
 		);

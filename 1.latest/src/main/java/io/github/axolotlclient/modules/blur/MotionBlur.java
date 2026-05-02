@@ -24,6 +24,7 @@ package io.github.axolotlclient.modules.blur;
 
 import com.mojang.blaze3d.resource.CrossFrameResourcePool;
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.FloatOption;
@@ -41,7 +42,7 @@ public class MotionBlur extends AbstractModule {
 	public final FloatOption strength = new FloatOption("strength", 50F, 1F, 99F);
 	public final BooleanOption inGuis = new BooleanOption("inGuis", false);
 	public final OptionCategory category = OptionCategory.create("motionBlur");
-	private final Identifier postChainId = Identifier.fromNamespaceAndPath("axolotlclient", "motion_blur");
+	private final Identifier postChainId = Identifier.fromNamespaceAndPath(AxolotlClientCommon.MODID, "motion_blur");
 
 	public static float getBlur() {
 		return getInstance().strength.get() / 100F;

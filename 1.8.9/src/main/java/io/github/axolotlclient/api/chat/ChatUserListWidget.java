@@ -25,7 +25,6 @@ package io.github.axolotlclient.api.chat;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.ContextMenu;
 import io.github.axolotlclient.api.requests.ChannelRequest;
@@ -40,6 +39,7 @@ import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.gui.widget.EntryListWidget;
+import net.minecraft.client.render.platform.GlStateManager;
 
 public class ChatUserListWidget extends EntryListWidget {
 

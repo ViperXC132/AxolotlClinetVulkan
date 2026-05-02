@@ -25,7 +25,6 @@ package io.github.axolotlclient.modules.blur;
 import java.io.IOException;
 import java.io.InputStream;
 
-import net.minecraft.client.render.shaders.Uniform;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
@@ -43,6 +42,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.render.PostChain;
+import net.minecraft.client.render.shaders.Uniform;
 import net.minecraft.client.resource.Resource;
 import net.minecraft.client.resource.metadata.ResourceMetadataSection;
 import net.minecraft.resource.Identifier;

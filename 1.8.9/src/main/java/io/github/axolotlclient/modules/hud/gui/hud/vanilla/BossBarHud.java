@@ -24,8 +24,6 @@ package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 
 import java.util.List;
 
-import net.minecraft.client.gui.BossBar;
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
@@ -37,7 +35,9 @@ import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.util.ClientColors;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.BossBar;
 import net.minecraft.client.gui.GuiElement;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.resource.Identifier;
 
 /**

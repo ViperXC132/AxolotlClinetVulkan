@@ -28,6 +28,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.api.requests.ChannelRequest;
 import io.github.axolotlclient.api.types.Persistence;
 import net.minecraft.client.gui.GuiGraphics;
@@ -158,7 +159,7 @@ public class CreateChannelScreen extends Screen {
 			@Override
 			protected void drawWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
 				super.drawWidget(graphics, mouseX, mouseY, delta);
-				graphics.drawTexture(new Identifier("axolotlclient", "textures/gui/sprites/cursor.png"),
+				graphics.drawTexture(new Identifier(AxolotlClientCommon.MODID, "textures/gui/sprites/cursor.png"),
 					getX() + getWidth() / 2 - 4, getY() + getHeight() / 2 - 4,
 					8, 8, 0, 0, 8, 8, 8, 8);
 

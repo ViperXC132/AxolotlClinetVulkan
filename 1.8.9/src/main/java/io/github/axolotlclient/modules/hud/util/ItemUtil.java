@@ -22,14 +22,14 @@
 
 package io.github.axolotlclient.modules.hud.util;
 
+import lombok.experimental.UtilityClass;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.render.TextRenderer;
 import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.render.platform.Lighting;
 import net.minecraft.client.render.vertex.BufferBuilder;
 import net.minecraft.client.render.vertex.DefaultVertexFormat;
 import net.minecraft.client.render.vertex.Tesselator;
-import lombok.experimental.UtilityClass;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.render.TextRenderer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Formatting;
 

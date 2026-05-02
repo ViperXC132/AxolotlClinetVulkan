@@ -23,6 +23,7 @@
 package io.github.axolotlclient.bridge.impl;
 
 import com.mojang.brigadier.CommandDispatcher;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.bridge.commands.AxoClientCmdSrcStack;
 import io.github.axolotlclient.bridge.events.Events;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
@@ -50,7 +51,7 @@ public class Bridge {
 
 			@Override
 			public Identifier getFabricId() {
-				return Identifier.of("axolotlclient", "bridge/resource_listener");
+				return Identifier.of(AxolotlClientCommon.MODID, "bridge/resource_listener");
 			}
 		});
 

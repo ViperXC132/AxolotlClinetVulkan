@@ -24,6 +24,7 @@ package io.github.axolotlclient.modules.screenshotUtils;
 
 import java.util.function.Consumer;
 
+import io.github.axolotlclient.AxolotlClientCommon;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.font.TextRenderer;
@@ -43,7 +44,7 @@ import net.minecraft.util.Identifier;
 
 @SuppressWarnings("DataFlowIssue")
 public class DownloadImageScreen extends Screen {
-	private static final Identifier SPRITE = Identifier.of("axolotlclient", "go");
+	private static final Identifier SPRITE = Identifier.of(AxolotlClientCommon.MODID, "go");
 
 	private final Screen parent;
 

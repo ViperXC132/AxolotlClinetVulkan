@@ -27,7 +27,6 @@ import java.util.Base64;
 import java.util.List;
 
 import com.google.common.hash.Hashing;
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.AxolotlClientConfig.impl.util.GraphicsImpl;
 import io.github.axolotlclient.bridge.PlatformDispatch;
 import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
@@ -42,6 +41,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.handler.ClientQueryPacketHandler;
+import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.network.Connection;
 import net.minecraft.network.NetworkProtocol;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;

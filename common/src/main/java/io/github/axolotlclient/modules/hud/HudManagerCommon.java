@@ -146,7 +146,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 			saveHudDependencyLinks();
 		}));
 		hudCategory.add(new GenericOption("hud.custom_entry", "hud.custom_entry.add", () -> {
-			CustomHudEntry entry = new CustomHudEntry(AxoIdentifier.of("axolotlclient", "custom_hud/" + UUID.randomUUID()));
+			CustomHudEntry entry = new CustomHudEntry(AxoIdentifier.of(AxolotlClientCommon.MODID, "custom_hud/" + UUID.randomUUID()));
 			entry.setEnabled(true);
 			entry.init();
 			entry.onBoundsUpdate();
@@ -261,7 +261,7 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 					if (values.containsKey("id")) {
 						id = AxoIdentifier.parse((String) values.get("id"));
 					} else {
-						id = AxoIdentifier.of("axolotlclient", "custom_hud/" + UUID.randomUUID());
+						id = AxoIdentifier.of(AxolotlClientCommon.MODID, "custom_hud/" + UUID.randomUUID());
 					}
 					CustomHudEntry entry = new CustomHudEntry(id);
 					entry.getAllOptions().getOptions().forEach(opt -> {

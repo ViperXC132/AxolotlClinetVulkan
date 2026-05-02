@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.llamalad7.mixinextras.sugar.Local;
-import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.APIOptions;
@@ -99,7 +99,7 @@ public abstract class TitleScreenMixin extends Screen {
 			int buttonY = 10;
 			if (APIOptions.getInstance().updateNotifications.get() &&
 				data.success() &&
-				data.latestVersion().isNewerThan(AxolotlClient.VERSION)) {
+				data.latestVersion().isNewerThan(AxolotlClientCommon.VERSION)) {
 				ButtonWidget newVersion = new ButtonWidget(182, width - 90, buttonY, 80, 20, I18n.translate("api.new_version_available"));
 				this.buttons.add(newVersion);
 				buttons.add(newVersion);
@@ -172,13 +172,9 @@ public abstract class TitleScreenMixin extends Screen {
 
 	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/TitleScreen;drawString(Lnet/minecraft/client/render/TextRenderer;Ljava/lang/String;III)V", ordinal = 0))
 	public void axolotlclient$customBranding(TitleScreen instance, TextRenderer textRenderer, String s, int x, int y, int color) {
-		if (FabricLoader.getInstance().getModContainer("axolotlclient").isPresent()) {
-			instance.drawString(textRenderer,
-				"Minecraft 1.8.9/AxolotlClient " + AxolotlClient.VERSION,
-				x, y, color);
-		} else {
-			instance.drawString(textRenderer, s, x, y, color);
-		}
+		instance.drawString(textRenderer,
+			"Minecraft 1.8.9/AxolotlClient " + AxolotlClientCommon.VERSION,
+			x, y, color);
 	}
 
 	@Inject(method = "<init>",
@@ -186,7 +182,7 @@ public abstract class TitleScreenMixin extends Screen {
 			target = "Ljava/io/BufferedReader;readLine()Ljava/lang/String;", remap = false))
 	private void axolotlclient$customSplashTexts(CallbackInfo ci, @Local List<String> list) throws IOException {
 		try (InputStream input = Minecraft.getInstance().getResourceManager()
-			.getResource(new Identifier("axolotlclient", "texts/splashes.txt")).asStream()) {
+			.getResource(new Identifier(AxolotlClientCommon.MODID, "texts/splashes.txt")).asStream()) {
 			list.addAll(IOUtils.readLines(input));
 		}
 	}

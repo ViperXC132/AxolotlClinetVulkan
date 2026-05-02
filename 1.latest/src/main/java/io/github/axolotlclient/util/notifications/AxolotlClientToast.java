@@ -39,7 +39,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class AxolotlClientToast implements Toast {
-	private static final Identifier BACKGROUND_SPRITE = Identifier.fromNamespaceAndPath("axolotlclient", "toast/axolotlclient");
+	private static final Identifier BACKGROUND_SPRITE = Identifier.fromNamespaceAndPath(AxolotlClientCommon.MODID, "toast/axolotlclient");
 	private static final int DISPLAY_TIME_MILLIS = 5000;
 	private static final int MAX_LINE_SIZE = 200;
 	private static final int LINE_SPACING = 12;

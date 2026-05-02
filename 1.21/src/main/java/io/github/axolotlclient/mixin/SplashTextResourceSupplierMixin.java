@@ -26,6 +26,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
 
+import io.github.axolotlclient.AxolotlClientCommon;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.resource.SplashTextResourceSupplier;
 import net.minecraft.resource.ResourceManager;
@@ -40,7 +41,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(SplashTextResourceSupplier.class)
 public class SplashTextResourceSupplierMixin {
 	@Unique
-	private static final Identifier EXTRA_SPLASHES = Identifier.of("axolotlclient", "texts/splashes.txt");
+	private static final Identifier EXTRA_SPLASHES = Identifier.of(AxolotlClientCommon.MODID, "texts/splashes.txt");
 
 	@Inject(method = "apply(Ljava/util/List;Lnet/minecraft/resource/ResourceManager;Lnet/minecraft/util/profiler/Profiler;)V", at = @At("HEAD"))
 	private void axolotlclient$addCustomSplashes(List<String> list, ResourceManager resourceManager, Profiler profiler, CallbackInfo ci) {

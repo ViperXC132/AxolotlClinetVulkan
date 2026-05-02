@@ -25,8 +25,7 @@ package io.github.axolotlclient.modules.hud.gui.hud.vanilla;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.render.platform.GlStateManager;
-import net.minecraft.client.render.platform.Lighting;
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.entry.TextHudEntry;
@@ -35,12 +34,14 @@ import io.github.axolotlclient.modules.hud.util.DrawPosition;
 import io.github.axolotlclient.modules.hud.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.ItemUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.render.platform.GlStateManager;
+import net.minecraft.client.render.platform.Lighting;
 import net.minecraft.entity.living.player.PlayerEntity;
 import net.minecraft.resource.Identifier;
 
 public class HotbarHud extends TextHudEntry {
 
-	public static final Identifier ID = new Identifier("axolotlclient", "hotbarhud");
+	public static final Identifier ID = new Identifier(AxolotlClientCommon.MODID, "hotbarhud");
 	private static final Identifier WIDGETS_TEXTURE = new Identifier("textures/gui/widgets.png");
 
 	private final Minecraft client = (Minecraft) super.client;

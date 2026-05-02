@@ -20,7 +20,6 @@
 		"ConfigVanillaButtonWidgetMixin",
 		"ConfirmScreenMixin",
 		"ControlsOptionsScreenMixin",
-		"DebugHudMixin",
 		"DownloadingTerrainScreenMixin",
 		"DynamicTextureAccessor",
 		"EmitterParticleMixin",

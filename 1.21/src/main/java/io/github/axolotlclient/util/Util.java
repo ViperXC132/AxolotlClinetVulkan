@@ -98,7 +98,7 @@ public class Util {
 	}
 
 	public static Identifier getTexture(Graphics graphics, String name) {
-		Identifier id = Identifier.of("axolotlclient", "graphics_" + name.toLowerCase(Locale.ROOT));
+		Identifier id = Identifier.of(AxolotlClientCommon.MODID, "graphics_" + name.toLowerCase(Locale.ROOT));
 		try {
 			NativeImageBackedTexture texture;
 			var previous = MinecraftClient.getInstance().getTextureManager().getOrDefault(id, null);

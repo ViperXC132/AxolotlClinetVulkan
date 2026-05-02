@@ -22,10 +22,10 @@
 
 package io.github.axolotlclient.modules.auth;
 
-import net.minecraft.client.render.platform.GlStateManager;
 import io.github.axolotlclient.api.API;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.platform.GlStateManager;
 
 public class AuthWidget extends ButtonWidget {
 
