@@ -28,7 +28,7 @@ import io.github.axolotlclient.api.ContextMenuScreen;
 import io.github.axolotlclient.api.handlers.ChatHandler;
 import io.github.axolotlclient.api.requests.ChannelRequest;
 import io.github.axolotlclient.api.types.Channel;
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import io.github.axolotlclient.util.DrawUtil;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;

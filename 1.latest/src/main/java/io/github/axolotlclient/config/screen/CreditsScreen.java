@@ -29,7 +29,7 @@ import java.util.function.Supplier;
 
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.credits.Credits;
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import io.github.axolotlclient.util.DrawUtil;
 import io.github.axolotlclient.util.ClientColors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;

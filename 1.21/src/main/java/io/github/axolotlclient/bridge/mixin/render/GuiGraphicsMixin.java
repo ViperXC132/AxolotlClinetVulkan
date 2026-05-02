@@ -29,7 +29,7 @@ import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.bridge.util.AxoText;
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import io.github.axolotlclient.util.DrawUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.GuiGraphics;

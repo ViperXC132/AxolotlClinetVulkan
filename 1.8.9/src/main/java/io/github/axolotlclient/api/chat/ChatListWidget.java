@@ -32,7 +32,7 @@ import io.github.axolotlclient.api.ContextMenuScreen;
 import io.github.axolotlclient.api.requests.ChannelRequest;
 import io.github.axolotlclient.api.types.Channel;
 import io.github.axolotlclient.api.types.Relation;
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import io.github.axolotlclient.util.DrawUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;

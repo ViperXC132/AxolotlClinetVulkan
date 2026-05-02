@@ -27,7 +27,7 @@ import java.util.List;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.ClickableWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.VanillaButtonWidget;
 import io.github.axolotlclient.api.requests.GlobalDataRequest;
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import io.github.axolotlclient.util.DrawUtil;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.resource.language.I18n;

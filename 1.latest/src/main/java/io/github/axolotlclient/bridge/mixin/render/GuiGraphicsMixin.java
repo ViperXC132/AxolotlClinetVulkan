@@ -28,7 +28,7 @@ import io.github.axolotlclient.bridge.render.AxoFont;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.bridge.util.AxoText;
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import io.github.axolotlclient.util.DrawUtil;
 import io.github.axolotlclient.util.HorizontalGradientRectangleRenderState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;

@@ -20,7 +20,7 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.hud.util;
+package io.github.axolotlclient.util;
 
 import java.util.function.Supplier;
 

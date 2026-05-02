@@ -40,7 +40,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.util.ConfigStyles;
 import io.github.axolotlclient.bridge.impl.AxoRenderContextImpl;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
 import io.github.axolotlclient.modules.hud.gui.layout.Justification;
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import io.github.axolotlclient.util.DrawUtil;
 import lombok.Getter;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.options.GameOptions;

@@ -27,7 +27,7 @@ import java.util.List;
 import com.google.common.collect.ImmutableList;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import io.github.axolotlclient.util.DrawUtil;
 import io.github.axolotlclient.util.notifications.toasts.Toast;
 import io.github.axolotlclient.util.notifications.toasts.ToastManager;
 import net.fabricmc.api.EnvType;

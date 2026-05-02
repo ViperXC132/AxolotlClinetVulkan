@@ -20,9 +20,10 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.hud.util;
+package io.github.axolotlclient.util;
 
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
+import io.github.axolotlclient.modules.hud.util.Rectangle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.render.TextRenderer;

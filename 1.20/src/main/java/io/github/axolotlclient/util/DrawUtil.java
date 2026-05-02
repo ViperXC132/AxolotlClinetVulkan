@@ -20,11 +20,12 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.hud.util;
+package io.github.axolotlclient.util;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
+import io.github.axolotlclient.modules.hud.util.Rectangle;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.GuiGraphics;

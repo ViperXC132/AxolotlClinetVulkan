@@ -24,7 +24,7 @@ package io.github.axolotlclient.mixin;
 
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.ButtonWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.VanillaButtonWidget;
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import io.github.axolotlclient.util.DrawUtil;
 import io.github.axolotlclient.util.ButtonWidgetTextures;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resource.Identifier;

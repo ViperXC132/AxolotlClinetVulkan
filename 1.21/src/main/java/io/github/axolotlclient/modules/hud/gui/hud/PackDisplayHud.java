@@ -46,7 +46,7 @@ import net.minecraft.text.Text;
 import net.minecraft.text.component.TranslatableComponent;
 import net.minecraft.util.Identifier;
 
-import static io.github.axolotlclient.modules.hud.util.DrawUtil.*;
+import static io.github.axolotlclient.util.DrawUtil.*;
 
 public class PackDisplayHud extends TextHudEntry {
 

@@ -36,7 +36,7 @@ import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.AbstractHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
-import io.github.axolotlclient.modules.hud.util.RenderUtil;
+import io.github.axolotlclient.util.RenderUtil;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.Util;
 import net.minecraft.block.AbstractChestBlock;
@@ -53,7 +53,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.joml.Matrix4fStack;
 
-import static io.github.axolotlclient.modules.hud.util.DrawUtil.fillRect;
+import static io.github.axolotlclient.util.DrawUtil.fillRect;
 
 /**
  * This implementation of Hud modules is based on KronHUD.

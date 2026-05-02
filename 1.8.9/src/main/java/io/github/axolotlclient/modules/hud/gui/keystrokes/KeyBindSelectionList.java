@@ -33,7 +33,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.ButtonWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.Element;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.ElementListWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.VanillaButtonWidget;
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import io.github.axolotlclient.util.DrawUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;

@@ -33,8 +33,8 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.Plain
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.VanillaButtonWidget;
 import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.credits.Credits;
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
-import io.github.axolotlclient.modules.hud.util.RenderUtil;
+import io.github.axolotlclient.util.DrawUtil;
+import io.github.axolotlclient.util.RenderUtil;
 import io.github.axolotlclient.util.ClientColors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;

@@ -26,7 +26,7 @@ import java.util.List;
 
 import com.google.common.collect.ImmutableList;
 import io.github.axolotlclient.AxolotlClientCommon;
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import io.github.axolotlclient.util.DrawUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;

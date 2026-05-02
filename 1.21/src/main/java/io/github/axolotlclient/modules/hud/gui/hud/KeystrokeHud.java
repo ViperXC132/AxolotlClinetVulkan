@@ -64,7 +64,7 @@ import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
-import static io.github.axolotlclient.modules.hud.util.DrawUtil.*;
+import static io.github.axolotlclient.util.DrawUtil.*;
 
 /**
  * This implementation of Hud modules is based on KronHUD.

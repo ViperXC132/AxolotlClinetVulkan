@@ -20,13 +20,14 @@
  * For more information, see the LICENSE file.
  */
 
-package io.github.axolotlclient.modules.hud.util;
+package io.github.axolotlclient.util;
 
 import java.util.function.Supplier;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
+import io.github.axolotlclient.modules.hud.util.Rectangle;
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.render.GameRenderer;

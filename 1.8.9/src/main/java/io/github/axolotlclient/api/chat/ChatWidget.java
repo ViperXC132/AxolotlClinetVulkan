@@ -38,7 +38,7 @@ import io.github.axolotlclient.api.requests.ChannelRequest;
 import io.github.axolotlclient.api.types.Channel;
 import io.github.axolotlclient.api.types.ChatMessage;
 import io.github.axolotlclient.modules.auth.Auth;
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import io.github.axolotlclient.util.DrawUtil;
 import io.github.axolotlclient.util.ClientColors;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;

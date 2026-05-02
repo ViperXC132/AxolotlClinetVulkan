@@ -34,7 +34,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.requests.FriendRequest;
 import io.github.axolotlclient.api.requests.UserRequest;
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import io.github.axolotlclient.util.DrawUtil;
 import io.github.axolotlclient.util.MathUtil;
 import io.github.axolotlclient.util.Watcher;
 import net.fabricmc.loader.api.FabricLoader;

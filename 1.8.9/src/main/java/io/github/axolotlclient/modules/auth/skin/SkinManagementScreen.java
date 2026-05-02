@@ -48,7 +48,7 @@ import io.github.axolotlclient.bridge.util.AxoText;
 import io.github.axolotlclient.modules.auth.Account;
 import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.auth.MSApi;
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import io.github.axolotlclient.util.DrawUtil;
 import io.github.axolotlclient.util.ButtonWidgetTextures;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.Watcher;

@@ -45,7 +45,7 @@ import io.github.axolotlclient.modules.hud.gui.keystrokes.KeystrokePositioningSc
 import io.github.axolotlclient.modules.hud.gui.keystrokes.KeystrokesScreen;
 import io.github.axolotlclient.modules.hud.gui.layout.Justification;
 import io.github.axolotlclient.modules.hud.util.DrawPosition;
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import io.github.axolotlclient.util.DrawUtil;
 import io.github.axolotlclient.modules.hud.util.Rectangle;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.GsonHelper;
@@ -65,8 +65,8 @@ import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
-import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawCenteredString;
-import static io.github.axolotlclient.modules.hud.util.DrawUtil.drawString;
+import static io.github.axolotlclient.util.DrawUtil.drawCenteredString;
+import static io.github.axolotlclient.util.DrawUtil.drawString;
 
 /**
  * This implementation of Hud modules is based on KronHUD.

@@ -25,7 +25,7 @@ package io.github.axolotlclient.modules.hud;
 import com.mojang.blaze3d.platform.InputUtil;
 import io.github.axolotlclient.AxolotlClientConfig.impl.util.ConfigStyles;
 import io.github.axolotlclient.modules.hud.gui.component.HudEntry;
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import io.github.axolotlclient.util.DrawUtil;
 import io.github.axolotlclient.util.ClientColors;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.MinecraftClient;

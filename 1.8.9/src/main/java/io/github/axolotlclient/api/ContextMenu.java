@@ -25,7 +25,7 @@ package io.github.axolotlclient.api;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.github.axolotlclient.modules.hud.util.DrawUtil;
+import io.github.axolotlclient.util.DrawUtil;
 import io.github.axolotlclient.util.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
