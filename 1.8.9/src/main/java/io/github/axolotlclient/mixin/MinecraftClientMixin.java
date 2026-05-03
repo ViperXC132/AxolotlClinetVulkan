@@ -153,11 +153,6 @@ public abstract class MinecraftClientMixin {
 		DiscordRPC.getInstance().setWorld(worldFileName);
 	}
 
-	@Inject(method = "stop", at = @At("HEAD"))
-	public void axolotlclient$stop(CallbackInfo ci) {
-		DiscordRPC.getInstance().shutdown();
-	}
-
 	@Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;getEventDWheel()I"), remap = false)
 	public int axolotlclient$onScroll() {
 		int amount = Mouse.getEventDWheel();

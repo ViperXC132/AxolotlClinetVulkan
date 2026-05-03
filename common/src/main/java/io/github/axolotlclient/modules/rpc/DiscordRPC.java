@@ -32,6 +32,7 @@ import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringArrayOption;
+import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.modules.AbstractCommonModule;
 import io.github.axolotlclient.util.CommonUtil;
 import io.github.axolotlclient.util.Logger;
@@ -77,10 +78,12 @@ public class DiscordRPC extends AbstractCommonModule {
 			enabled.setForceOff(true, "crash");
 		}
 		AxolotlClientCommon.getInstance().getConfig().addCategory(category);
+		Events.CLIENT_STOP.register(this::shutdown);
 	}
 
 	public void tick() {
 		if (!running && !starting && enabled.get()) {
+			starting = true;
 			ThreadExecuter.scheduleTask(this::initRPC);
 		}
 		if (running) {
@@ -88,7 +91,7 @@ public class DiscordRPC extends AbstractCommonModule {
 		}
 	}
 
-	public void shutdown() {
+	private void shutdown() {
 		if (running) {
 			setRichPresence(null);
 			ipcClient.close();
@@ -144,7 +147,7 @@ public class DiscordRPC extends AbstractCommonModule {
 	}
 
 	private synchronized void initRPC() {
-		if (enabled.get() && !starting) {
+		if (enabled.get() && !starting && !running) {
 			starting = true;
 			if (ipcClient == null) {
 				ipcClient = new IPCClient(CLIENT_ID);
@@ -192,12 +195,16 @@ public class DiscordRPC extends AbstractCommonModule {
 				});
 			}
 			try {
+				running = true;
 				ipcClient.connect();
 				logger.info("Started RPC");
-				running = true;
 			} catch (Exception e) {
 				logger.warn("Failed to start RPC", e);
+				try {
+					ipcClient.close();
+				} catch (Throwable ignored) {}
 				enabled.set(false);
+				running = false;
 			}
 			starting = false;
 		}

@@ -26,7 +26,6 @@ import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.bridge.events.types.WorldLoadEvent;
 import io.github.axolotlclient.modules.blur.MenuBlur;
-import io.github.axolotlclient.modules.rpc.DiscordRPC;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
@@ -57,11 +56,6 @@ public abstract class MinecraftClientMixin {
 	@Redirect(method = "<init>", at = @At(value = "FIELD", target = "Lnet/minecraft/client/RunArgs$Game;versionType:Ljava/lang/String;", opcode = Opcodes.GETFIELD))
 	private String axolotlclient$noVersionType(RunArgs.Game instance) {
 		return AxolotlClientCommon.VERSION;
-	}
-
-	@Inject(method = "stop", at = @At("HEAD"))
-	private void axolotlclient$stop(CallbackInfo ci) {
-		DiscordRPC.getInstance().shutdown();
 	}
 
 	@Inject(method = "setScreen", at = @At("HEAD"))
