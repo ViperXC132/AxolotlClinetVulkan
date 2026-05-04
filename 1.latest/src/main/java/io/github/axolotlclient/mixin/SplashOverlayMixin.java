@@ -27,14 +27,9 @@ import java.util.function.IntSupplier;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.api.API;
-import io.github.axolotlclient.modules.auth.Auth;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.LoadingOverlay;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = LoadingOverlay.class)
 public abstract class SplashOverlayMixin {
@@ -45,13 +40,5 @@ public abstract class SplashOverlayMixin {
 			return AxolotlClient.config().loadingScreenColor.get().toInt();
 		}
 		return original.call(instance);
-	}
-
-	@Inject(method = "extractRenderState", at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/client/Minecraft;setOverlay(Lnet/minecraft/client/gui/screens/Overlay;)V"))
-	private void onReloadFinish(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-		if (!API.getInstance().isSocketConnected() && !Auth.getInstance().getCurrent().isOffline()) {
-			API.getInstance().startup(Auth.getInstance().getCurrent());
-		}
 	}
 }
