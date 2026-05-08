@@ -42,7 +42,6 @@ import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.Util;
 import net.minecraft.client.AttackIndicatorStatus;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -174,6 +173,9 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		if (client.gui.getDebugOverlay().showDebugScreen() && !overridesF3()) {
 			return;
 		}
+		if (isHidden()) {
+			return;
+		}
 
 		graphics.pose().pushMatrix();
 		scale(graphics);
@@ -207,18 +209,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			fillRenderType(graphics, blend, x + (getWidth() / 2), y + (getHeight() / 2) - 1, 5, 1, color);
 			fillRenderType(graphics, blend, x + (getWidth() / 2) - 1, y + (getHeight() / 2) - 6, 1, 5, color);
 			fillRenderType(graphics, blend, x + (getWidth() / 2) - 1, y + (getHeight() / 2), 1, 5, color);
-		} else if (type.equals(Crosshair.DIRECTION)) {
-			Camera camera = this.client.gameRenderer.getMainCamera();
-			Matrix4fStack matrixStack = RenderSystem.getModelViewStack();
-			matrixStack.pushMatrix();
-			matrixStack.translate(client.getWindow().getGuiScaledWidth() / 2F, client.getWindow().getGuiScaledHeight() / 2F,
-				0);
-			matrixStack.rotateX(-camera.xRot() * 0.017453292F);
-			matrixStack.rotateY(camera.yRot() * 0.017453292F);
-			matrixStack.scale(-getScale(), -getScale(), -getScale());
-			client.gui.getDebugOverlay().render3dCrosshair(client.gameRenderer.getGameRenderState().levelRenderState.cameraRenderState, client.gameRenderer.getGameRenderState().windowRenderState.guiScale);
-			matrixStack.popMatrix();
-		} else if (isTex) {
+		} else if (!type.equals(Crosshair.DIRECTION) && isTex) {
 			if (type.equals(Crosshair.TEXTURE)) {
 				// Draw crosshair
 				graphics.blitSprite(renderType(blend), CROSSHAIR_TEXTURE,
@@ -276,6 +267,25 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			}
 		}
 		graphics.pose().popMatrix();
+	}
+
+	public void renderDirectionCrosshair() {
+		if (type.get() != Crosshair.DIRECTION) {
+			return;
+		}
+		if (!client.options.getCameraType().isFirstPerson() && !showInF5.get()) {
+			return;
+		}
+		if (client.gui.getDebugOverlay().showDebugScreen() && !overridesF3()) {
+			return;
+		}
+
+		Matrix4fStack matrixStack = RenderSystem.getModelViewStack();
+		matrixStack.pushMatrix();
+		var scaleModifier = getScale() < 1 ? 0 : (int) ((getScale() - 1f) * 15f);
+		client.gui.getDebugOverlay().render3dCrosshair(client.gameRenderer.getGameRenderState().levelRenderState.cameraRenderState,
+			client.gameRenderer.getGameRenderState().windowRenderState.guiScale + scaleModifier);
+		matrixStack.popMatrix();
 	}
 
 	private RenderPipeline renderType(boolean blend) {

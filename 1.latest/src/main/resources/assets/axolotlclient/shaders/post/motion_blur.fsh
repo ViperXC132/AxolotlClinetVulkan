@@ -16,5 +16,4 @@ void main() {
 	// Copied three letters from a stackoverflow question (mix), but that's all I needed to create motion blur.
 	// https://stackoverflow.com/questions/37913286/glsl-motion-blur-post-processing-2-textures-going-to-the-shader-are-the-same
     fragColor = mix(texture(InSampler, texCoord), texture(PrevSampler, texCoord), BlendFactor);
-	//fragColor.a = 1.0;
 }

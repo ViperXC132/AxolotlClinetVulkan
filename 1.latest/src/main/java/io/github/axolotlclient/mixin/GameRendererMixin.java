@@ -28,9 +28,12 @@ import com.mojang.blaze3d.resource.CrossFrameResourcePool;
 import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.blur.MotionBlur;
+import io.github.axolotlclient.modules.hud.HudManager;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.CrosshairHud;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.state.OptionsRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.util.profiling.Profiler;
 import org.objectweb.asm.Opcodes;
@@ -73,7 +76,7 @@ public abstract class GameRendererMixin {
 	@Inject(method = "bobView",
 		at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack;translate(FFF)V"))
 	private void axolotlclient$minimalViewBob(CameraRenderState cameraState, PoseStack matrices, CallbackInfo ci, @Local(name = "bob") LocalFloatRef bob,
-											  @Local(name = "backwardsInterpolatedWalkDistance") LocalFloatRef backwardsInterpolatedWalkDistance) {
+	                                          @Local(name = "backwardsInterpolatedWalkDistance") LocalFloatRef backwardsInterpolatedWalkDistance) {
 		if (AxolotlClient.config().minimalViewBob.get()) {
 			backwardsInterpolatedWalkDistance.set(backwardsInterpolatedWalkDistance.get() / 2f);
 			bob.set(bob.get() / 2);
@@ -86,6 +89,16 @@ public abstract class GameRendererMixin {
 	private void axolotlclient$noHurtCam(CameraRenderState cameraState, PoseStack poseStack, CallbackInfo ci) {
 		if (AxolotlClient.config().noHurtCam.get()) {
 			ci.cancel();
+		}
+	}
+
+	@Inject(method = "renderLevel", at = @At("TAIL"))
+	private void renderDirectionCrosshair(DeltaTracker deltaTracker, CallbackInfo ci, @Local(name = "optionsState") OptionsRenderState optionsState) {
+		if (!optionsState.hideGui) {
+			var hud = (CrosshairHud) HudManager.getInstance().get(CrosshairHud.ID);
+			if (hud.isEnabled()) {
+				hud.renderDirectionCrosshair();
+			}
 		}
 	}
 }
