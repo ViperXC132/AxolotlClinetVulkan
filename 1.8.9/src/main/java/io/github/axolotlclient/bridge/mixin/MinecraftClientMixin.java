@@ -55,7 +55,6 @@ import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardScore;
 import net.minecraft.scoreboard.team.Team;
 import net.minecraft.text.Text;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -189,11 +188,6 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	@Override
 	public AxoResourceManager br$getResourceManager() {
 		return getResourceManager();
-	}
-
-	@Override
-	public void execute(@NotNull Runnable command) {
-		this.executeTask(command);
 	}
 
 	@Override

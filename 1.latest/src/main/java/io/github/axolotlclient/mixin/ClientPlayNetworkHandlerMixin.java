@@ -22,6 +22,9 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.bridge.events.Events;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.protocol.game.ClientboundSetTimePacket;
@@ -33,8 +36,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ClientPacketListener.class)
 public abstract class ClientPlayNetworkHandlerMixin {
 
-	@Inject(method = "handleSetTime", at = @At("HEAD"))
+	@Inject(method = "handleSetTime", at = @At(value = "HEAD"))
 	private void axolotlclient$onWorldUpdate(ClientboundSetTimePacket packet, CallbackInfo ci) {
 		Events.UPDATE_TIME.invoker().accept(packet.gameTime());
 	}
+
+	@WrapOperation(method = "handleSetTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/game/ClientboundSetTimePacket;gameTime()J"))
+	private long getTime(ClientboundSetTimePacket instance, Operation<Long> original) {
+		if (AxolotlClient.config().timeChangerEnabled.get()) {
+			instance.clockUpdates().clear();
+			return AxolotlClient.config().customTime.get();
+		}
+		return original.call(instance);
+	}
+
 }

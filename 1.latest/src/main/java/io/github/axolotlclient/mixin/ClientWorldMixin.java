@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
 import io.github.axolotlclient.modules.hypixel.HypixelMods;
@@ -33,7 +35,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ClientLevel.class)
@@ -51,11 +52,10 @@ public abstract class ClientWorldMixin {
 		}
 	}
 
-	@ModifyArg(method = "setTimeFromServer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel$ClientLevelData;setGameTime(J)V"))
-	public long axolotlclient$timeChanger(long time) {
-		if (AxolotlClient.config().timeChangerEnabled.get()) {
-			return AxolotlClient.config().customTime.get();
+	@WrapOperation(method = "tickTime", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/ClientLevel$ClientLevelData;setGameTime(J)V"))
+	private void noTimeTickWithTimeChanger(ClientLevel.ClientLevelData instance, long time, Operation<Void> original) {
+		if (!AxolotlClient.config().timeChangerEnabled.get()) {
+			original.call(instance, time);
 		}
-		return time;
 	}
 }
