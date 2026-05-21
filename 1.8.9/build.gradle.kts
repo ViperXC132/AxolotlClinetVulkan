@@ -131,47 +131,24 @@ publishing {
 	}
 }
 
-tasks.modrinth {
-	dependsOn(tasks.getByName("remapJar"))
+publishMods {
+	file.set(tasks.remapJar.flatMap { it.archiveFile })
+	additionalFiles.from(tasks.remapSourcesJar.flatMap { it.archiveFile })
+	changelog.set(rootProject.layout.buildDirectory.file("changelog").get().asFile.readText())
+	type.set(STABLE)
+	modLoaders.add("ornithe")
+
+
+	modrinth {
+		accessToken.set(providers.environmentVariable("MODRINTH_TOKEN"))
+		projectId.set("p2rxzX0q")
+		minecraftVersions.set(listOf(minecraftVersion))
+		requires { slug = "fabric-api" }
+	}
+
+	// CurseForge doesn't support Ornithe
 }
 
-modrinth {
-	token = System.getenv("MODRINTH_TOKEN")
-	projectId = "p2rxzX0q"
-	versionNumber = "${project.version}"
-	versionType = "release"
-	uploadFile = tasks.remapJar.get()
-	gameVersions.set(listOf(minecraftVersion))
-	loaders.set(listOf("ornithe"))
-	additionalFiles.set(listOf(tasks.remapSourcesJar))
-	dependencies {
-		required.project("osl")
-		required.project("moehreag-legacy-lwjgl3")
-	}
-
-	// Changelog fetching: Credit LambdAurora.
-	// https://github.com/LambdAurora/LambDynamicLights/blob/1ef85f486084873b5d97b8a08df72f57859a3295/build.gradle#L145
-	// License: MIT
-	val changelogText = file("../CHANGELOG.md").readText()
-	val regexVersion =
-		((project.version) as String).split("+")[0].replace("\\.".toRegex(), "\\.").replace("\\+".toRegex(), "+")
-	val changelogRegex = "###? ${regexVersion}\\n\\n(( *- .+\\n)+)".toRegex()
-	val matcher = changelogRegex.find(changelogText)
-
-	if (matcher != null) {
-		var changelogContent = matcher.groups[1]?.value
-
-		val changelogLines = changelogText.split("\n")
-		val linkRefRegex = "^\\[([A-z0-9 _\\-/+.]+)]: ".toRegex()
-		for (line in changelogLines.reversed()) {
-			if ((linkRefRegex.matches(line)))
-				changelogContent += "\n" + line
-			else break
-		}
-		changelog = changelogContent
-	} else {
-		afterEvaluate {
-			tasks.modrinth.configure { isEnabled = false }
-		}
-	}
+tasks.getByName("publishModrinth") {
+	dependsOn(rootProject.tasks.getByName("generateVersionChangelog"))
 }

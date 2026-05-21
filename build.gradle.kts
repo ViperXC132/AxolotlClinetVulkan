@@ -3,7 +3,7 @@ import kotlin.io.path.*
 
 plugins {
 	id("io.freefair.lombok") version "9.2.0" apply false
-	id("com.modrinth.minotaur") version "2.+" apply false
+	id("me.modmuss50.mod-publish-plugin") version "1.1.0" apply false
 	id("com.gradleup.shadow") version "9.3.1" apply false
 	id("dev.yumi.gradle.licenser") version "2.0.+"
 	id("net.fabricmc.fabric-loom-remap") version "1.16.+" apply false
@@ -57,7 +57,7 @@ subprojects {
 	apply(plugin = "java")
 	apply(plugin = "maven-publish")
 	apply(plugin = "io.freefair.lombok")
-	if (project.name != "common") apply(plugin = "com.modrinth.minotaur")
+	if (project.name != "common") apply(plugin = "me.modmuss50.mod-publish-plugin")
 	apply(plugin = "dev.yumi.gradle.licenser")
 
 	extensions.getByType(JavaPluginExtension::class).withSourcesJar()
@@ -119,7 +119,7 @@ subprojects {
 	tasks.register("publishUnstable") {
 		if (project.version.toString().contains("beta") || project.version.toString()
 				.contains("alpha")) {
-			dependsOn("publishToMavenLocal")
+			dependsOn("publish")
 		} else {
 			actions.add {
 				println("Project doesn't use an -alpha or -beta version, not publishing unstable.")

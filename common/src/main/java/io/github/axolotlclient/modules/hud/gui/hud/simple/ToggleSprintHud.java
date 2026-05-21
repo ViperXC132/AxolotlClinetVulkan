@@ -50,8 +50,8 @@ import lombok.Getter;
 public class ToggleSprintHud extends SimpleTextHudEntry {
 
 	public static final AxoIdentifier ID = AxoIdentifier.of("kronhud", "togglesprint");
-	public final ForceableBooleanOption toggleSneak = new ForceableBooleanOption("toggleSneak", false);
-	private final BooleanOption toggleSprint = new BooleanOption("toggleSprint", false);
+	public final ForceableBooleanOption toggleSneak = new ForceableBooleanOption("toggleSneak", true);
+	private final BooleanOption toggleSprint = new BooleanOption("toggleSprint", true);
 	private final BooleanOption randomPlaceholder = new BooleanOption("randomPlaceholder", false);
 	private final StringOption placeholder = new StringOption("placeholder", "No keys pressed");
 	private final BooleanOption hideInsteadOfPlaceholder = new BooleanOption("togglesprint.hide_instead_of_placeholder", true);

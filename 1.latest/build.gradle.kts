@@ -4,7 +4,7 @@ plugins {
 	id("net.fabricmc.fabric-loom")
 }
 
-val minecraft = "26.1.2"
+val minecraftVersion = "26.1.2"
 val minecraftFriendly = "26.1"
 val modmenu = "18.0.0-alpha.8"
 val fapi = "0.147.0+26.1.2"
@@ -30,7 +30,7 @@ repositories {
 }
 
 dependencies {
-	minecraft("com.mojang:minecraft:$minecraft")
+	minecraft("com.mojang:minecraft:$minecraftVersion")
 	implementation("net.fabricmc:fabric-loader:${project.property("fabric_loader")}")
 
 	implementation("net.fabricmc.fabric-api:fabric-api:$fapi")
@@ -106,46 +106,35 @@ publishing {
 	}
 }
 
-tasks.modrinth {
-	dependsOn(tasks.getByName("jar"))
+afterEvaluate {
+	tasks.getByName("publishModrinth") {
+		dependsOn(rootProject.tasks.getByName("generateVersionChangelog"))
+	}
+	tasks.getByName("publishCurseforge") {
+		dependsOn(rootProject.tasks.getByName("generateVersionChangelog"))
+	}
 }
 
-modrinth {
-	token = System.getenv("MODRINTH_TOKEN")
-	projectId = "p2rxzX0q"
-	versionNumber = "${project.version}"
-	versionType = "release"
-	uploadFile = tasks.jar.get()
-	gameVersions.set(listOf(minecraft))
-	loaders.set(listOf("quilt", "fabric"))
-	additionalFiles.set(listOf(tasks.sourcesJar))
-	dependencies {
-		required.project("fabric-api")
+publishMods {
+	file.set(tasks.jar.flatMap { it.archiveFile })
+	additionalFiles.from(tasks.sourcesJar.flatMap { it.archiveFile })
+	changelog.set(rootProject.layout.buildDirectory.file("changelog").get().asFile.readText())
+	type.set(STABLE)
+	modLoaders.add("fabric")
+
+
+	modrinth {
+		accessToken.set(providers.environmentVariable("MODRINTH_TOKEN"))
+		projectId.set("p2rxzX0q")
+		minecraftVersions.set(listOf(minecraftVersion))
+		requires { slug = "fabric-api" }
 	}
 
-	// Changelog fetching: Credit LambdAurora.
-	// https://github.com/LambdAurora/LambDynamicLights/blob/1ef85f486084873b5d97b8a08df72f57859a3295/build.gradle#L145
-	// License: MIT
-	val changelogText = file("../CHANGELOG.md").readText()
-	val regexVersion =
-		((project.version) as String).split("+")[0].replace("\\.".toRegex(), "\\.").replace("\\+".toRegex(), "+")
-	val changelogRegex = "###? ${regexVersion}\\n\\n(( *- .+\\n)+)".toRegex()
-	val matcher = changelogRegex.find(changelogText)
-
-	if (matcher != null) {
-		var changelogContent = matcher.groups[1]?.value
-
-		val changelogLines = changelogText.split("\n")
-		val linkRefRegex = "^\\[([A-z0-9 _\\-/+.]+)]: ".toRegex()
-		for (line in changelogLines.reversed()) {
-			if ((linkRefRegex.matches(line)))
-				changelogContent += "\n" + line
-			else break
-		}
-		changelog = changelogContent
-	} else {
-		afterEvaluate {
-			tasks.modrinth.configure {enabled = false}
-		}
+	curseforge {
+		accessToken.set(providers.environmentVariable("CURSEFORGE_TOKEN"))
+		minecraftVersions.set(listOf(minecraftVersion))
+		projectId.set("809392")
+		requires { slug = "fabric-api" }
+		clientRequired = true
 	}
 }
