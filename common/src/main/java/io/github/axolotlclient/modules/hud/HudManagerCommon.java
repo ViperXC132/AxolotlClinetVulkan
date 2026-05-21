@@ -467,4 +467,6 @@ public abstract class HudManagerCommon extends AbstractCommonModule implements P
 	protected abstract void openScreen();
 
 	protected abstract void addExtraHud();
+
+	public abstract void closeScreen();
 }

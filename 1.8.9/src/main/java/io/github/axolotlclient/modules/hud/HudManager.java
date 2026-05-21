@@ -23,6 +23,7 @@
 package io.github.axolotlclient.modules.hud;
 
 import io.github.axolotlclient.AxolotlClient;
+import io.github.axolotlclient.AxolotlClientConfig.impl.ui.Screen;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.modules.hud.gui.hud.ChatHud;
 import io.github.axolotlclient.modules.hud.gui.hud.KeystrokeHud;
@@ -81,5 +82,20 @@ public class HudManager extends HudManagerCommon {
 			super.render(context, delta);
 		}
 		mc.profiler.pop();
+	}
+
+	@Override
+	public void closeScreen() {
+		var screen = Minecraft.getInstance().screen;
+		if (screen instanceof Screen) {
+			try {
+				var method = Screen.class.getDeclaredMethod("closeScreen");
+				method.setAccessible(true);
+				method.invoke(screen);
+				return;
+			} catch (Throwable ignored) {
+			}
+		}
+		Minecraft.getInstance().openScreen(null);
 	}
 }

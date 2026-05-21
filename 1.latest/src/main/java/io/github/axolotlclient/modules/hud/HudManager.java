@@ -68,4 +68,12 @@ public class HudManager extends HudManagerCommon {
 		}
 		mc.pop();
 	}
+
+	@Override
+	public void closeScreen() {
+		var screen = Minecraft.getInstance().screen;
+		if (screen != null) {
+			screen.onClose();
+		}
+	}
 }
