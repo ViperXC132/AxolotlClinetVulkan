@@ -119,6 +119,7 @@ publishMods {
 		projectId.set("p2rxzX0q")
 		minecraftVersions.set(listOf(minecraftVersion))
 		requires { slug = "fabric-api" }
+		embeds { slug = "axolotlclient-rendering" }
 	}
 
 	curseforge {

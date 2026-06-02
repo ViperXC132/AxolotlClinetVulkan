@@ -34,7 +34,7 @@ public class CursorType {
 
 	private static CursorType currentCursor = DEFAULT;
 
-	public void select() {
+	public synchronized void select() {
 		if (this != currentCursor) {
 			currentCursor = this;
 			WindowAccess.getInstance().setCursor(this.handle);

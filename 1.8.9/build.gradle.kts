@@ -6,7 +6,7 @@ plugins {
 val minecraftVersion = "1.8.9"
 val featherBuild = "1"
 val lwjglVersion = "3.4.1"
-val legacyLwjgl3 = "1.2.11"
+val legacyLwjgl3 = "1.4.0-beta.10"
 val osl = "0.18.0"
 base.archivesName = "AxolotlClient"
 group = project.property("maven_group")!!
@@ -36,8 +36,7 @@ dependencies {
 
 	modImplementation("net.fabricmc:fabric-loader:${project.property("fabric_loader")}")
 
-	modImplementation("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+$minecraftVersion")
-	include("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+$minecraftVersion")
+	include(modImplementation("io.github.axolotlclient:AxolotlClient-config:${project.property("config")}+$minecraftVersion")!!)
 	modImplementation(include("io.github.axolotlclient:AxolotlClient-config-rounded:${project.property("config")}+$minecraftVersion")!!)
 
 	ploceus.dependOsl(osl)
@@ -50,7 +49,7 @@ dependencies {
 
 	compileOnly("org.lwjgl:lwjgl-sdl:$lwjglVersion")
 
-	modImplementation("io.github.moehreag:legacy-lwjgl3:$legacyLwjgl3+$minecraftVersion")
+	modImplementation("io.github.moehreag:legacy-lwjgl3:$legacyLwjgl3")
 
 	include(implementation("org.lwjgl", "lwjgl-tinyfd", lwjglVersion))
 	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-linux"))
@@ -85,13 +84,9 @@ tasks.processResources {
 }
 
 tasks.runClient {
-	// might not be set
-	if (project.properties["native_glfw"] == "true") {
-		val glfwPath = project.properties.getOrDefault("native_glfw_path", "/usr/lib/libglfw.so")
-		jvmArgs("-Dorg.lwjgl.glfw.libname=$glfwPath")
-	}
 	classpath(sourceSets.getByName("test").runtimeClasspath)
 	jvmArgs("-XX:+AllowEnhancedClassRedefinition", "-XX:+IgnoreUnrecognizedVMOptions")
+	environment("LEGACY_LWJGL3_USE_SDL", "true")
 }
 
 tasks.withType(JavaCompile::class).configureEach {
@@ -144,6 +139,7 @@ publishMods {
 		projectId.set("p2rxzX0q")
 		minecraftVersions.set(listOf(minecraftVersion))
 		requires { slug = "fabric-api" }
+		embeds { slug = "axolotlclient-rendering" }
 	}
 
 	// CurseForge doesn't support Ornithe

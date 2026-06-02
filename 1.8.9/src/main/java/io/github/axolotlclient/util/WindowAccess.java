@@ -25,10 +25,7 @@ package io.github.axolotlclient.util;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.util.ArrayList;
-import java.util.List;
 
-import net.ornithemc.osl.lifecycle.api.client.MinecraftClientEvents;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.sdl.SDLMouse;
 
@@ -91,9 +88,10 @@ public sealed abstract class WindowAccess permits WindowAccess.GLFWAccess, Windo
 	}
 
 	private static WindowAccess create() {
-		if (isGlfwAvailable()) {
+		var sdl_selected = Boolean.getBoolean("legacy_lwjgl3.use_sdl") || System.getenv("LEGACY_LWJGL3_USE_SDL") != null;
+		if (isGlfwAvailable() && !sdl_selected) {
 			return new GLFWAccess();
-		} else if (isSdlAvailable()) {
+		} else if (isSdlAvailable() && sdl_selected) {
 			return new SDLAccess();
 		}
 		return new NoOpAccess();
@@ -123,15 +121,11 @@ public sealed abstract class WindowAccess permits WindowAccess.GLFWAccess, Windo
 	}
 
 	final static class SDLAccess extends WindowAccess {
-		private final List<Long> createdCursors = new ArrayList<>(20);
-
-		SDLAccess() {
-			MinecraftClientEvents.STOP.register(mc -> createdCursors.forEach(SDLMouse::SDL_DestroyCursor));
-		}
+		private static final long ARROW_CURSOR = SDLMouse.SDL_CreateSystemCursor(SDLMouse.SDL_SYSTEM_CURSOR_DEFAULT);
 
 		@Override
 		public long createCursor(Cursor cursor) {
-			var c = SDLMouse.SDL_CreateSystemCursor(switch (cursor) {
+			return SDLMouse.SDL_CreateSystemCursor(switch (cursor) {
 				case RESIZE_ALL -> SDLMouse.SDL_SYSTEM_CURSOR_MOVE;
 				case ARROW -> SDLMouse.SDL_SYSTEM_CURSOR_DEFAULT;
 				case RESIZE_NWSE -> SDLMouse.SDL_SYSTEM_CURSOR_NWSE_RESIZE;
@@ -143,15 +137,11 @@ public sealed abstract class WindowAccess permits WindowAccess.GLFWAccess, Windo
 				case NOT_ALLOWED -> SDLMouse.SDL_SYSTEM_CURSOR_NOT_ALLOWED;
 				case RESIZE_EW -> SDLMouse.SDL_SYSTEM_CURSOR_EW_RESIZE;
 			});
-			createdCursors.add(c);
-			return c;
 		}
 
 		@Override
 		public void setCursor(long cursor) {
-			if (cursor != 0) {
-				SDLMouse.SDL_SetCursor(cursor);
-			}
+			SDLMouse.SDL_SetCursor(cursor != 0 ? cursor : ARROW_CURSOR);
 		}
 
 		@Override
