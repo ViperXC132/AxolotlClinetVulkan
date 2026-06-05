@@ -1,5 +1,9 @@
 ## Changelog:
 
+### 3.2.0
+
+- (26.x) drop integration with WorldHost
+
 ### 3.1.10
 
 - add screenshot cropping

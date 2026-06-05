@@ -22,7 +22,7 @@
 
 package io.github.axolotlclient.api.worldhost;
 
-/*import java.util.Collection;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -47,11 +47,11 @@ import net.minecraft.client.gui.screens.ConnectScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.resolver.ServerAddress;
-import net.minecraft.network.chat.Component;*/
+import net.minecraft.network.chat.Component;
 
-public class AxolotlClientWorldHostPlugin /*implements WorldHostPlugin*/ {
+public class AxolotlClientWorldHostPlugin implements WorldHostPlugin {
 
-	/*static AxolotlClientWorldHostPlugin Instance;
+	static AxolotlClientWorldHostPlugin Instance;
 	private final FriendAdder friendAdder = new AxolotlClientFriendAdder();
 
 	public AxolotlClientWorldHostPlugin() {
@@ -244,5 +244,5 @@ public class AxolotlClientWorldHostPlugin /*implements WorldHostPlugin*/ {
 		public int maxValidNameLength() {
 			return 36;
 		}
-	}*/
+	}
 }

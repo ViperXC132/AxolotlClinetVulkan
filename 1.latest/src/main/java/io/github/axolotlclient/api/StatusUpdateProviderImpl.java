@@ -64,10 +64,6 @@ public class StatusUpdateProviderImpl implements StatusUpdateProvider {
 			}
 			return StatusUpdate.inGameUnknown(entry.name);
 		} else if (mc.getSingleplayerServer() != null) {
-			var worldHostStatus = WorldHostStatusProvider.getWHStatusDescription();
-			if (worldHostStatus != null) {
-				return StatusUpdate.worldHostStatusUpdate(worldHostStatus);
-			}
 			var e4mcStatus = E4mcStatusProvider.getStatusDescription();
 			if (e4mcStatus != null) {
 				return StatusUpdate.e4mcStatusUpdate(e4mcStatus);

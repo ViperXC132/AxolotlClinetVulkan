@@ -78,6 +78,9 @@ subprojects {
 		if (project.name == "common") {
 			enabled = false
 		}
+		val projectVersion = project.version
+		val buildDir = project.layout.buildDirectory.dir("libs").get()
+		val rootProject = rootProject
 		actions.addLast {
 			val outDir = rootProject.projectDir.resolve("builds").toPath()
 			outDir.createDirectories()
@@ -89,11 +92,11 @@ subprojects {
 				val oldName = old.fileName.toString()
 				val oldVer = oldName.substringBefore("+")
 				val mcVer = oldName.substring(oldName.indexOf("+") + 1, oldName.length - 4).removeSuffix("-sources")
-				if (!project.version.toString().contains(mcVer)) {
+				if (!projectVersion.toString().contains(mcVer)) {
 					return@forEach
 				}
 				// check if it's the current version, if it is we don't archive it
-				if (project.version.toString().contains(oldVer.substring(oldVer.indexOf("-") + 1))) {
+				if (projectVersion.toString().contains(oldVer.substring(oldVer.indexOf("-") + 1))) {
 					return@forEach
 				}
 				archiveDir.createDirectories()
@@ -108,8 +111,8 @@ subprojects {
 					}
 				}
 			}
-			project.layout.buildDirectory.dir("libs").get().asFileTree.files.forEach { file ->
-				if (file.name.contains(project.version.toString())) {
+			buildDir.asFileTree.files.forEach { file ->
+				if (file.name.contains(projectVersion.toString())) {
 					file.toPath().copyTo(outDir.resolve(file.name.toString()), overwrite = true)
 				}
 			}
