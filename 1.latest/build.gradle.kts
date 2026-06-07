@@ -114,7 +114,7 @@ afterEvaluate {
 publishMods {
 	file.set(tasks.jar.flatMap { it.archiveFile })
 	additionalFiles.from(tasks.sourcesJar.flatMap { it.archiveFile })
-	changelog.set(rootProject.layout.buildDirectory.file("changelog").get().asFile.readText())
+	changelog.set(rootProject.layout.buildDirectory.file("changelog").map { it.asFile.readText() })
 	type.set(STABLE)
 	modLoaders.add("fabric")
 

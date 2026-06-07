@@ -129,7 +129,7 @@ publishing {
 publishMods {
 	file.set(tasks.remapJar.flatMap { it.archiveFile })
 	additionalFiles.from(tasks.remapSourcesJar.flatMap { it.archiveFile })
-	changelog.set(rootProject.layout.buildDirectory.file("changelog").get().asFile.readText())
+	changelog.set(rootProject.layout.buildDirectory.file("changelog").map { it.asFile.readText() })
 	type.set(STABLE)
 	modLoaders.add("ornithe")
 
