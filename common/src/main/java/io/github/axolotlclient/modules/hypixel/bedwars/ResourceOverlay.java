@@ -29,16 +29,20 @@ import java.util.function.Function;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
+import io.github.axolotlclient.bridge.BridgeVersion;
 import io.github.axolotlclient.bridge.item.AxoItem;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import io.github.axolotlclient.bridge.item.AxoItems;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.BoxHudEntry;
+import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
 import io.github.axolotlclient.modules.hud.util.DefaultOptions;
 import io.github.axolotlclient.util.ItemUtil;
 
-public class ResourceOverlay extends BoxHudEntry {
+public class ResourceOverlay extends BoxHudEntry implements DynamicallyPositionable {
 	public final static AxoIdentifier ID = AxoIdentifier.of(AxolotlClientCommon.MODID, "bedwars_resources");
 	private static final List<AxoItem> RESOURCES = List.of(AxoItems.IRON_INGOT, AxoItems.GOLD_INGOT, AxoItems.DIAMOND, AxoItems.EMERALD);
 	private static final Map<AxoItem, Integer> PLACEHOLDER = Map.of(
@@ -49,6 +53,7 @@ public class ResourceOverlay extends BoxHudEntry {
 	);
 	private final BooleanOption renderWhenRelevant = new BooleanOption(ID.br$getPath() + ".renderWhenRelevant", true);
 	private final BooleanOption hideIfEmpty = DefaultOptions.getHideIfEmpty();
+	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
 	private final BedwarsMod mod;
 
 	public ResourceOverlay(BedwarsMod mod) {
@@ -88,6 +93,13 @@ public class ResourceOverlay extends BoxHudEntry {
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
+		if (BridgeVersion.V26_1.isCurrent()) {
+			if (client.br$getWorld() == null) {
+				var pos = getContentPos();
+				context.br$drawCenteredString(getName(), pos.x() + getContentWidth() / 2, pos.y() + getContentHeight() / 2 - context.br$getFont().br$getFontHeight() / 2, -1);
+				return;
+			}
+		}
 		draw(context, PLACEHOLDER::get);
 	}
 
@@ -99,8 +111,14 @@ public class ResourceOverlay extends BoxHudEntry {
 	@Override
 	public List<Option<?>> getConfigurationOptions() {
 		List<Option<?>> options = super.getConfigurationOptions();
+		options.add(anchor);
 		options.add(hideIfEmpty);
 		options.add(renderWhenRelevant);
 		return options;
+	}
+
+	@Override
+	public AnchorPoint getAnchor() {
+		return anchor.get();
 	}
 }
