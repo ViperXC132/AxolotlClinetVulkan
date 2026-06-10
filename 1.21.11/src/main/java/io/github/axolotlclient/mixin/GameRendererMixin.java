@@ -22,12 +22,17 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.resource.CrossFrameResourcePool;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.blur.MotionBlur;
+import io.github.axolotlclient.modules.zoom.Zoom;
+import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -48,6 +53,26 @@ public abstract class GameRendererMixin {
 	@Shadow
 	@Final
 	private CrossFrameResourcePool resourcePool;
+
+	@Shadow
+	public abstract boolean isPanoramicMode();
+
+	@WrapOperation(method = "getFov", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;lerp(FFF)F"))
+	private float disableDynamicFov(float delta, float start, float end, Operation<Float> original) {
+		if (!AxolotlClient.config().dynamicFOV.get()) {
+			return 1.0f;
+		}
+		return original.call(delta, start, end);
+	}
+
+	@WrapMethod(method = "getFov")
+	private float getFov(Camera camera, float partialTick, boolean useFovSetting, Operation<Float> original) {
+		if (this.isPanoramicMode()) {
+			return original.call(camera, partialTick, useFovSetting);
+		}
+		Zoom.getInstance().update();
+		return Zoom.getInstance().getFov(original.call(camera, partialTick, useFovSetting), partialTick);
+	}
 
 
 	@Inject(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/GameRenderer;postEffectId:Lnet/minecraft/resources/Identifier;", ordinal = 0, opcode = Opcodes.GETFIELD))
