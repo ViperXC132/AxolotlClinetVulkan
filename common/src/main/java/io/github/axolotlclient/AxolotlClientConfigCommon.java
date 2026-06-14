@@ -61,8 +61,8 @@ public abstract class AxolotlClientConfigCommon {
 		public boolean showButton() {
 			return false;
 		}
-	}
 
+	}
 	public enum TabBadgeMode {
 		BEFORE_NAME,
 		BEFORE_NAME_ALIGNED,
@@ -72,6 +72,7 @@ public abstract class AxolotlClientConfigCommon {
 		public String toString() {
 			return "tab_badge_mode." + super.toString().toLowerCase(Locale.ROOT);
 		}
+
 	}
 
 	// options
@@ -106,6 +107,7 @@ public abstract class AxolotlClientConfigCommon {
 	public final ColorOption outlineFillColor = new ColorOption("block_outlines.fill_color", Colors.WINE_RED.withAlpha(165));
 
 	public final BooleanOption customWindowTitle = new BooleanOption("customWindowTitle", true, this::updateWindowTitle);
+	public final BooleanOption confirmDisconnect = new BooleanOption("confirm_disconnect", false);
 
 	public final OptionCategory general = OptionCategory.create("general");
 	public final OptionCategory nametagOptions = OptionCategory.create("nametagOptions");
@@ -148,6 +150,7 @@ public abstract class AxolotlClientConfigCommon {
 		general.add(datetimeFormat);
 		general.add(titleScreenOptionButtonMode);
 		general.add(gameMenuScreenOptionButtonMode);
+		general.add(confirmDisconnect);
 
 		timeChanger.add(timeChangerEnabled);
 		timeChanger.add(customTime);

@@ -989,5 +989,9 @@
 	"time_changer.preset.midnight": "Preset: Midnight",
 	"time_changer.set_preset": "Set",
 	"block_outlines.fill": "Fill",
-	"block_outlines.fill_color": "Fill Color"
+	"block_outlines.fill_color": "Fill Color",
+	"confirm_disconnect": "Confirm Disconnect",
+	"confirm_disconnect.tooltip": "Confirm Disconnections from Servers",
+	"confirm_disconnect.title": "Confirm Disconnection",
+	"confirm_disconnect.message": "Do you want to disconnect from the server?"
 }

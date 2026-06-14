@@ -25,7 +25,10 @@ package io.github.axolotlclient.mixin;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.sugar.Local;
+import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.API;
@@ -38,6 +41,7 @@ import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.layouts.GridLayout;
+import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.RenderPipelines;
@@ -63,19 +67,19 @@ public abstract class GameMenuScreenMixin extends Screen {
 			int buttonY = height - 30;
 			if (APIOptions.getInstance().addShortcutButtons.get()) {
 				addRenderableWidget(Button.builder(Component.translatable("api.friends"),
-						button -> minecraft.gui.setScreen(new FriendsScreen(this)))
+						_ -> minecraft.gui.setScreen(new FriendsScreen(this)))
 					.bounds(10, buttonY, 75, 20).build());
 				buttonY -= 25;
 			}
 			addRenderableWidget(Button.builder(Component.translatable("api.chats"),
-					button -> minecraft.gui.setScreen(new ChatsSidebar(this)))
+					_ -> minecraft.gui.setScreen(new ChatsSidebar(this)))
 				.bounds(10, buttonY, 75, 20).build());
 		}
 		if (AxolotlClientConfigCommon.instance().gameMenuScreenOptionButtonMode.get().showButton()) {
 			addRenderableWidget(new Button(widget.getX() + widget.getWidth(),
 				widget.getY() + 50, 20, 20,
 				Component.empty(),
-				button -> minecraft.gui.setScreen(new HudEditScreen(this)), Supplier::get) {
+				_ -> minecraft.gui.setScreen(new HudEditScreen(this)), Supplier::get) {
 				@Override
 				public void extractContents(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
 					extractDefaultSprite(graphics);
@@ -94,5 +98,16 @@ public abstract class GameMenuScreenMixin extends Screen {
 			}
 			onPress.onPress(buttonWidget);
 		};
+	}
+
+	@WrapMethod(method = "lambda$createPauseMenu$11")
+	private void confirmDisconnect(Button button, Operation<Void> original) {
+		if (AxolotlClient.config().confirmDisconnect.get()) {
+			minecraft.gui.setScreen(new ConfirmScreen(confirmed -> {
+				if (confirmed) original.call(button);
+			}, Component.translatable("confirm_disconnect.title"), Component.translatable("confirm_disconnect.message")));
+		} else {
+			original.call(button);
+		}
 	}
 }

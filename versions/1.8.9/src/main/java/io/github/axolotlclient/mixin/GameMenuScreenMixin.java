@@ -24,6 +24,9 @@ package io.github.axolotlclient.mixin;
 
 import java.util.Objects;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.APIOptions;
@@ -34,6 +37,7 @@ import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
 import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import io.github.axolotlclient.util.FeatureDisablerCommon;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -115,6 +119,17 @@ public abstract class GameMenuScreenMixin extends Screen {
 			minecraft.openScreen(new ChatsSidebar(this));
 		} else if (button.id == 134) {
 			minecraft.openScreen(new FriendsScreen(this));
+		}
+	}
+
+	@WrapMethod(method = "buttonClicked")
+	private void confirmDisconnect(ButtonWidget button, Operation<Void> original) {
+		if (button.id == 1 && AxolotlClient.config().confirmDisconnect.get()) {
+			minecraft.openScreen(new ConfirmScreen((confirmed, i) -> {
+				if (confirmed) original.call(button);
+			}, I18n.translate("confirm_disconnect.title"), I18n.translate("confirm_disconnect.message"), 0));
+		} else {
+			original.call(button);
 		}
 	}
 }

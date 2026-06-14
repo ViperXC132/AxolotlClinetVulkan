@@ -25,6 +25,9 @@ package io.github.axolotlclient.mixin;
 import java.util.Objects;
 import java.util.function.Supplier;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.ChatsSidebar;
@@ -32,6 +35,7 @@ import io.github.axolotlclient.api.FriendsScreen;
 import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
 import io.github.axolotlclient.modules.hypixel.HypixelMods;
+import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.GameMenuScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -87,5 +91,16 @@ public abstract class GameMenuScreenMixin extends Screen {
 			}
 			onPress.onPress(buttonWidget);
 		};
+	}
+
+	@WrapMethod(method = "onDisconnect")
+	private void confirmDisconnect(Operation<Void> original) {
+		if (AxolotlClient.config().confirmDisconnect.get()) {
+			client.setScreen(new ConfirmScreen(confirmed -> {
+				if (confirmed) original.call();
+			}, Text.translatable("confirm_disconnect.title"), Text.translatable("confirm_disconnect.message")));
+		} else {
+			original.call();
+		}
 	}
 }
