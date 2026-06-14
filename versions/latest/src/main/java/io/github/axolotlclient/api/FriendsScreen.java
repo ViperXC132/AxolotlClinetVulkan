@@ -28,7 +28,11 @@ import io.github.axolotlclient.api.requests.FriendRequest;
 import io.github.axolotlclient.api.util.AlphabeticalComparator;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.CommonButtons;
+import net.minecraft.client.gui.components.FriendsButton;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.friends.FriendsOverlayScreen;
+import net.minecraft.client.gui.screens.options.OnlineOptionsScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
@@ -41,6 +45,7 @@ public class FriendsScreen extends Screen {
 
 	private Button chatButton, removeButton, onlineTab, allTab, pendingTab, blockedTab;
 	private Button denyButton, acceptButton, unblockButton, cancelButton;
+	private FriendsButton vanillaFriendsButton;
 
 	private Tab current = Tab.ONLINE;
 
@@ -111,6 +116,15 @@ public class FriendsScreen extends Screen {
 				list.stream().sorted((u1, u2) -> new AlphabeticalComparator().compare(u1.getName(), u2.getName()))
 					.toList()));
 		}
+
+		vanillaFriendsButton = this.addRenderableWidget(
+			CommonButtons.friends(
+				20,
+				_ -> OnlineOptionsScreen.confirmFriendsListEnabled(this.minecraft, () -> this.minecraft.gui.setScreen(new FriendsOverlayScreen(this)), this),
+				!this.minecraft.isDemo()
+			)
+		);
+		vanillaFriendsButton.setPosition(width - 30, 10);
 
 		this.addRenderableWidget(blockedTab = Button.builder(Component.translatable("api.friends.tab.blocked"),
 				button -> minecraft.gui.setScreen(
@@ -246,6 +260,13 @@ public class FriendsScreen extends Screen {
 	public void select(UserListWidget.UserListEntry entry) {
 		this.widget.setSelected(entry);
 		this.updateButtonActivationStates();
+	}
+
+	@Override
+	public void tick() {
+		if (this.minecraft.getPlayerSocialManager().isFriendListEnabled() && vanillaFriendsButton != null) {
+			vanillaFriendsButton.refreshIncomingRequestCount();
+		}
 	}
 
 	public enum Tab {

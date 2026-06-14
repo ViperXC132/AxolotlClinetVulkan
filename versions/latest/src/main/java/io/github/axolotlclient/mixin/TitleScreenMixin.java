@@ -24,6 +24,8 @@ package io.github.axolotlclient.mixin;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
 import com.mojang.realmsclient.gui.screens.RealmsNotificationsScreen;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
@@ -39,6 +41,9 @@ import io.github.axolotlclient.modules.hud.HudEditScreen;
 import io.github.axolotlclient.util.ThreadExecuter;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.FriendsButton;
+import net.minecraft.client.gui.components.SpriteIconButton;
+import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
@@ -58,6 +63,9 @@ public abstract class TitleScreenMixin extends Screen {
 	@Nullable
 	private RealmsNotificationsScreen realmsNotificationsScreen;
 
+	@Shadow
+	private FriendsButton friends;
+
 	protected TitleScreenMixin() {
 		super(Component.empty());
 	}
@@ -72,10 +80,14 @@ public abstract class TitleScreenMixin extends Screen {
 		if (APIOptions.getInstance().addShortcutButtons.get()) {
 			int shortcutButtonY = leftButtonY;
 			Runnable addApiButtons = () -> minecraft.execute(() -> {
-				addRenderableWidget(Button.builder(Component.translatable("api.friends"),
-					w -> minecraft.gui.setScreen(new FriendsScreen(this))).bounds(10, shortcutButtonY, 50, 20).build());
+				var bY = shortcutButtonY;
+				if (!AxolotlClient.config().titleScreenFriendsButtonMode.get().isIcon()) {
+					addRenderableWidget(Button.builder(Component.translatable("api.friends"),
+						_ -> minecraft.gui.setScreen(new FriendsScreen(this))).bounds(10, bY, 50, 20).build());
+					bY += 24;
+				}
 				addRenderableWidget(Button.builder(Component.translatable("api.chats"),
-					w -> minecraft.gui.setScreen(new ChatListScreen(this))).bounds(10, shortcutButtonY + 24, 50, 20).build());
+					_ -> minecraft.gui.setScreen(new ChatListScreen(this))).bounds(10, bY, 50, 20).build());
 			});
 			if (API.getInstance().isSocketConnected()) {
 				addApiButtons.run();
@@ -96,7 +108,7 @@ public abstract class TitleScreenMixin extends Screen {
 			}
 			if (APIOptions.getInstance().displayNotes.get() &&
 				data.success() && !data.notes().isEmpty()) {
-				addRenderableWidget(Button.builder(Component.translatable("api.notes"), buttonWidget ->
+				addRenderableWidget(Button.builder(Component.translatable("api.notes"), _ ->
 						minecraft.gui.setScreen(new NewsScreen(this)))
 					.bounds(width - 90, buttonY, 80, 20).build());
 			}
@@ -117,7 +129,7 @@ public abstract class TitleScreenMixin extends Screen {
 	private Button.Builder axolotlclient$noRealmsbutOptionsButton(Component message, Button.OnPress onPress, Operation<Button.Builder> original) {
 		if (AxolotlClientConfigCommon.instance().titleScreenOptionButtonMode.get().showButton()) {
 			message = Component.translatable("config");
-			onPress = buttonWidget -> minecraft.gui.setScreen(new HudEditScreen(this));
+			onPress = _ -> minecraft.gui.setScreen(new HudEditScreen(this));
 		}
 		return original.call(message, onPress);
 	}
@@ -133,5 +145,19 @@ public abstract class TitleScreenMixin extends Screen {
 		if (AxolotlClientConfigCommon.instance().titleScreenOptionButtonMode.get().showButton()) {
 			cir.setReturnValue(false);
 		}
+	}
+
+	@WrapOperation(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/TitleScreen;addRenderableWidget(Lnet/minecraft/client/gui/components/events/GuiEventListener;)Lnet/minecraft/client/gui/components/events/GuiEventListener;", ordinal = 3))
+	private GuiEventListener modifyButtons(TitleScreen instance, GuiEventListener listener, Operation<GuiEventListener> original, @Local(name = "language") SpriteIconButton language, @Local(name = "accessibility") SpriteIconButton accessibility, @Local(name = "topPos") LocalIntRef topPos) {
+		if (!AxolotlClient.config().titleScreenFriendsButtonMode.get().isIcon()) {
+			topPos.set(topPos.get() + 12-24);
+			language.setPosition(this.width / 2 - 100 - 24, topPos.get());
+			accessibility.setPosition(this.width / 2 + 104, topPos.get());
+			removeWidget(friends);
+			if (listener instanceof Button options) {
+				options.setY(topPos.get());
+			}
+		}
+		return original.call(instance, listener);
 	}
 }

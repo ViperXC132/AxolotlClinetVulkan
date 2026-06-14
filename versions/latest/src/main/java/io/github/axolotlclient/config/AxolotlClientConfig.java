@@ -24,6 +24,7 @@ package io.github.axolotlclient.config;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
@@ -32,6 +33,7 @@ import io.github.axolotlclient.AxolotlClientConfig.api.ui.ConfigUI;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.ColorOption;
+import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.StringArrayOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.RecreatableScreen;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
@@ -41,12 +43,27 @@ import io.github.axolotlclient.config.screen.ProfilesScreen;
 import io.github.axolotlclient.mixin.OverlayTextureAccessor;
 import io.github.axolotlclient.util.ClientColors;
 import io.github.axolotlclient.util.options.GenericOption;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 
 public class AxolotlClientConfig extends AxolotlClientConfigCommon {
+	@Getter @AllArgsConstructor
+	public enum TitleScreenFriendsButtonMode {
+		ICON(true),
+		BUTTON(false),
+		;
+		private final boolean isIcon;
+
+
+		@Override
+		public String toString() {
+			return "title_screen_friends_button_mode."+ super.toString().toLowerCase(Locale.ROOT);
+		}
+	}
+
 	public final BooleanOption lowShield = new BooleanOption("lowShield", false);
 
 	public final BooleanOption customLoadingScreenColor = new BooleanOption("custom_loading_bg_color", false);
@@ -56,12 +73,15 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 		Minecraft.getInstance().gui.setScreen(new CreditsScreen(Minecraft.getInstance().gui.screen()))
 	);
 
+	public final EnumOption<TitleScreenFriendsButtonMode> titleScreenFriendsButtonMode = new EnumOption<>("title_screen_friends_button_mode", TitleScreenFriendsButtonMode.class, TitleScreenFriendsButtonMode.ICON);
+
 	@Getter
 	private final List<Option<?>> options = new ArrayList<>();
 
 	public AxolotlClientConfig() {
 		general.add(customLoadingScreenColor);
 		general.add(loadingScreenColor);
+		general.add(titleScreenFriendsButtonMode);
 		general.add(openCredits);
 
 		ConfigUI.getInstance().runWhenLoaded(() -> {

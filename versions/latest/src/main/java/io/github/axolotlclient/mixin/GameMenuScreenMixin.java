@@ -78,7 +78,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 		if (AxolotlClientConfigCommon.instance().gameMenuScreenOptionButtonMode.get().showButton()) {
 			addRenderableWidget(new Button(widget.getX() + widget.getWidth(),
 				widget.getY() + 50, 20, 20,
-				Component.empty(),
+				Component.translatable("config"),
 				_ -> minecraft.gui.setScreen(new HudEditScreen(this)), Supplier::get) {
 				@Override
 				public void extractContents(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
@@ -102,10 +102,10 @@ public abstract class GameMenuScreenMixin extends Screen {
 
 	@WrapMethod(method = "lambda$createPauseMenu$11")
 	private void confirmDisconnect(Button button, Operation<Void> original) {
-		if (AxolotlClient.config().confirmDisconnect.get()) {
+		if (minecraft.getCurrentServer() != null && AxolotlClient.config().confirmDisconnect.get()) {
 			minecraft.gui.setScreen(new ConfirmScreen(confirmed -> {
 				if (confirmed) original.call(button);
-			}, Component.translatable("confirm_disconnect.title"), Component.translatable("confirm_disconnect.message")));
+			}, Component.translatable("confirm_disconnect.title"), Component.translatable("confirm_disconnect.message", minecraft.getCurrentServer().ip)));
 		} else {
 			original.call(button);
 		}

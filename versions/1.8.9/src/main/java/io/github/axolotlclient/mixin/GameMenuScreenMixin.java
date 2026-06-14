@@ -124,10 +124,11 @@ public abstract class GameMenuScreenMixin extends Screen {
 
 	@WrapMethod(method = "buttonClicked")
 	private void confirmDisconnect(ButtonWidget button, Operation<Void> original) {
-		if (button.id == 1 && AxolotlClient.config().confirmDisconnect.get()) {
+		if (button.id == 1 && minecraft.getCurrentServerEntry() != null && AxolotlClient.config().confirmDisconnect.get()) {
 			minecraft.openScreen(new ConfirmScreen((confirmed, i) -> {
 				if (confirmed) original.call(button);
-			}, I18n.translate("confirm_disconnect.title"), I18n.translate("confirm_disconnect.message"), 0));
+				else minecraft.openScreen(this);
+			}, I18n.translate("confirm_disconnect.title"), I18n.translate("confirm_disconnect.message", minecraft.getCurrentServerEntry().ip), 0));
 		} else {
 			original.call(button);
 		}

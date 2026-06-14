@@ -23,6 +23,7 @@
 		"FeatureRendererDispatcherMixin",
 		"FeatureRendererDispatcherPreparedFrameMixin",
 		"FireworkParticlesMixin",
+		"FriendsOverlayScreenMixin",
 		"GameMenuScreenMixin",
 		"GameOptionsMixin",
 		"GameRendererAccessor",
