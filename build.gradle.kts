@@ -69,7 +69,7 @@ subprojects {
 	}
 
 	license {
-		rule(file("../HEADER"))
+		rule(rootProject.file("HEADER"))
 		include("**/*.java")
 	}
 
@@ -80,9 +80,10 @@ subprojects {
 		}
 		val projectVersion = project.version
 		val buildDir = project.layout.buildDirectory.dir("libs").get()
-		val rootProject = rootProject
+		val rootProjectDir = rootProject.projectDir
+		val synchronizer = Unit
 		actions.addLast {
-			val outDir = rootProject.projectDir.resolve("builds").toPath()
+			val outDir = rootProjectDir.resolve("builds").toPath()
 			outDir.createDirectories()
 			val archiveDir = outDir.resolve("archive")
 			outDir.listDirectoryEntries().forEach { old ->
@@ -101,7 +102,7 @@ subprojects {
 				}
 				archiveDir.createDirectories()
 				val versionArchive = archiveDir.resolve("$oldVer.zip")
-				synchronized(rootProject) {
+				synchronized(synchronizer) {
 					(if (versionArchive.notExists()) {
 						FileSystems.newFileSystem(versionArchive, mapOf("create" to "true"))
 					} else {

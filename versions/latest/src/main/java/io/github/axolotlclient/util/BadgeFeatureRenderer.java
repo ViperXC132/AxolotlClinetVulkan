@@ -2,6 +2,8 @@ package io.github.axolotlclient.util;
 
 import java.util.List;
 
+import com.mojang.blaze3d.pipeline.DepthStencilState;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
 import io.github.axolotlclient.AxolotlClientCommon;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.feature.FeatureFrameContext;
@@ -19,7 +21,9 @@ import org.jspecify.annotations.NullMarked;
 public class BadgeFeatureRenderer extends RenderTypeFeatureRenderer<BadgeFeatureRenderer.Submit> {
 	public static final FeatureRendererType<Submit> TYPE = FeatureRendererType.create("AxolotlClient Badge");
 	private static final RenderType TEXTURED_TYPE = RenderType.create("axolotlclient_textured_quads",
-		RenderSetup.builder(RenderPipelines.GUI_TEXTURED)
+		RenderSetup.builder(RenderPipeline.builder(RenderPipelines.GUI_TEXTURED_SNIPPET)
+				.withLocation(Identifier.fromNamespaceAndPath(AxolotlClientCommon.MODID, "pipeline/badge"))
+				.withDepthStencilState(DepthStencilState.DEFAULT).build())
 			.withTexture("Sampler0", (Identifier) AxolotlClientCommon.BADGE_PATH)
 			.setTextureTransform(TextureTransform.DEFAULT_TEXTURING)
 			.createRenderSetup());

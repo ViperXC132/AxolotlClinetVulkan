@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(FeatureRenderDispatcher.PreparedFrame.class)
 public abstract class FeatureRendererDispatcherPreparedFrameMixin {
 	@Shadow
-	protected abstract void executePhase(FeatureRenderPhase<?> par1, FeatureFrameContext par2);
+	protected abstract void executePhase(FeatureRenderPhase<?> phase, FeatureFrameContext context);
 
 	@Shadow
 	private FeatureFrameContext context;
