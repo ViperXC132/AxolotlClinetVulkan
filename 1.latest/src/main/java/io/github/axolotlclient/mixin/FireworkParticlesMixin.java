@@ -37,7 +37,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(FireworkParticles.Starter.class)
-public class FireworkParticlesMixin {
+public abstract class FireworkParticlesMixin {
 
 	@WrapOperation(method = "createParticle", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/ParticleEngine;createParticle(Lnet/minecraft/core/particles/ParticleOptions;DDDDDD)Lnet/minecraft/client/particle/Particle;"))
 	private Particle fixDisregardingNullability(ParticleEngine instance, ParticleOptions particleData, double x, double y, double z, double xSpeed, double ySpeed, double zSpeed, Operation<Particle> original, @Share("created_particle") LocalRef<Particle> c) {

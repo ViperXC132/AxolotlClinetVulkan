@@ -185,15 +185,15 @@ public class ChatWidget extends ObjectSelectionList<ChatWidget.ChatLine> {
 					builder.entry(Component.translatable("api.friends.chat"),
 						buttonWidget -> ChannelRequest.getOrCreateDM(origin.sender()).whenCompleteAsync(
 							(channel, throwable) -> client.execute(
-								() -> client.setScreen(new ChatScreen(screen.getParent(), channel))))).spacer();
+								() -> client.gui.setScreen(new ChatScreen(screen.getParent(), channel))))).spacer();
 				}
 				builder.entry(Component.translatable("api.chat.report.message"), buttonWidget -> {
-					Screen previous = client.screen;
-					client.setScreen(new ConfirmScreen(b -> {
+					Screen previous = client.gui.screen();
+					client.gui.setScreen(new ConfirmScreen(b -> {
 						if (b) {
 							ChatHandler.getInstance().reportMessage(origin);
 						}
-						client.setScreen(previous);
+						client.gui.setScreen(previous);
 					}, Component.translatable("api.channels.confirm_report"), Component.translatable("api.channels.confirm_report.desc", origin.content())));
 				}).spacer().entry(Component.translatable("action.copy"), buttonWidget -> client.keyboardHandler.setClipboard(origin.content()));
 				screen.setContextMenu(builder.build());

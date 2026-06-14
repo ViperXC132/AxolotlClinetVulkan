@@ -36,7 +36,7 @@ public class AuthWidget extends Button.Plain {
 	public AuthWidget(int x, int y) {
 		super(x, y, Minecraft.getInstance().font.width(Auth.getInstance().getCurrent().getName()) + 28, 20,
 			Component.literal("    " + Auth.getInstance().getCurrent().getName()),
-			buttonWidget -> Minecraft.getInstance().setScreen(new AccountsScreen(Minecraft.getInstance().screen)),
+			buttonWidget -> Minecraft.getInstance().gui.setScreen(new AccountsScreen(Minecraft.getInstance().gui.screen())),
 			DEFAULT_NARRATION
 		);
 	}

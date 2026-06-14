@@ -63,19 +63,19 @@ public abstract class GameMenuScreenMixin extends Screen {
 			int buttonY = height - 30;
 			if (APIOptions.getInstance().addShortcutButtons.get()) {
 				addRenderableWidget(Button.builder(Component.translatable("api.friends"),
-						button -> minecraft.setScreen(new FriendsScreen(this)))
+						button -> minecraft.gui.setScreen(new FriendsScreen(this)))
 					.bounds(10, buttonY, 75, 20).build());
 				buttonY -= 25;
 			}
 			addRenderableWidget(Button.builder(Component.translatable("api.chats"),
-					button -> minecraft.setScreen(new ChatsSidebar(this)))
+					button -> minecraft.gui.setScreen(new ChatsSidebar(this)))
 				.bounds(10, buttonY, 75, 20).build());
 		}
 		if (AxolotlClientConfigCommon.instance().gameMenuScreenOptionButtonMode.get().showButton()) {
 			addRenderableWidget(new Button(widget.getX() + widget.getWidth(),
 				widget.getY() + 50, 20, 20,
 				Component.empty(),
-				button -> minecraft.setScreen(new HudEditScreen(this)), Supplier::get) {
+				button -> minecraft.gui.setScreen(new HudEditScreen(this)), Supplier::get) {
 				@Override
 				public void extractContents(@NonNull GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
 					extractDefaultSprite(graphics);

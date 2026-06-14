@@ -93,7 +93,7 @@ public class ResourceOverlay extends BoxHudEntry implements DynamicallyPositiona
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
-		if (BridgeVersion.V26_1.isCurrent()) {
+		if (BridgeVersion.is26OrLater()) {
 			if (client.br$getWorld() == null) {
 				var pos = getContentPos();
 				context.br$drawCenteredString(getName(), pos.x() + getContentWidth() / 2, pos.y() + getContentHeight() / 2 - context.br$getFont().br$getFontHeight() / 2, -1);

@@ -40,7 +40,7 @@ public abstract class KeyboardInputMixin {
 
 		ToggleSprintHud hud = (ToggleSprintHud) HudManager.getInstance().get(ToggleSprintHud.ID);
 		if (hud.isEnabled()) {
-			shift |= hud.getSneakToggled().get() && Minecraft.getInstance().screen == null;
+			shift |= hud.getSneakToggled().get() && Minecraft.getInstance().gui.screen() == null;
 			sprint |= hud.getSprintToggled().get();
 		}
 		return original.call(up, down, left, right, jump, shift, sprint);

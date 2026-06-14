@@ -56,7 +56,7 @@ public abstract class SubtitleOverlayMixin {
 			var lineHeight = 9;
 			var h = (int) audibleSubtitles.stream().filter(s -> s.getClosest(position) != null).count() * (lineHeight + 1) + 2;
 			var w = width + 4;
-			if (!(Minecraft.getInstance().screen instanceof HudEditScreen)) {
+			if (!(Minecraft.getInstance().gui.screen() instanceof HudEditScreen)) {
 				var updated = false;
 				if (h != subtitlesHud.getContentHeight()) {
 					subtitlesHud.setContentHeight(h);

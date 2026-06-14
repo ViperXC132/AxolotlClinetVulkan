@@ -6,9 +6,9 @@ plugins {
 	id("me.modmuss50.mod-publish-plugin") version "1.1.0" apply false
 	id("com.gradleup.shadow") version "9.3.1" apply false
 	id("dev.yumi.gradle.licenser") version "2.0.+"
-	id("net.fabricmc.fabric-loom-remap") version "1.16.+" apply false
-	id("net.fabricmc.fabric-loom") version "1.16.+" apply false
-	id("ploceus") version "1.16.+" apply false
+	id("net.fabricmc.fabric-loom-remap") version "1.17.+" apply false
+	id("net.fabricmc.fabric-loom") version "1.17.+" apply false
+	id("ploceus") version "1.17.+" apply false
 }
 
 version = "${project.version}"

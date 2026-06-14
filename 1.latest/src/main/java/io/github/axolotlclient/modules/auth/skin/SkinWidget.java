@@ -92,7 +92,7 @@ public class SkinWidget extends AbstractWidget {
 
 		// You might say that using `hashCode()` like this isn't ideal, but in reality it doesn't matter. These objects get freed
 		// correctly by the screen so we mostly only need unique identifiers per widget which `hashCode()` provides.
-		var renderer = SkinRenderer.getOrCreate(minecraft.renderBuffers().bufferSource(), minecraft, "" + hashCode());
+		var renderer = SkinRenderer.getOrCreate(minecraft, "" + hashCode());
 		guiGraphicsExtractor.guiRenderState
 			.addPicturesInPictureState(
 				new SkinRenderState(classic, (Identifier) skinRl, (Identifier) capeRl, this.rotationX, this.rotationY, pivotY, this.getX(), this.getY(), this.getRight(), this.getBottom(), scale, guiGraphicsExtractor.scissorStack.peek(), renderer));

@@ -59,7 +59,7 @@ public class MotionBlur extends AbstractModule {
 	public void render(CrossFrameResourcePool pool) {
 		PostChain shader = client.getShaderManager().getPostChain(postChainId, LevelTargetBundle.MAIN_TARGETS);
 		if (shader != null) {
-			var target = client.getMainRenderTarget();
+			var target = client.gameRenderer.mainRenderTarget();
 			shader.process(target, pool);
 			// Uniform is set in PostPassMixin
 		}

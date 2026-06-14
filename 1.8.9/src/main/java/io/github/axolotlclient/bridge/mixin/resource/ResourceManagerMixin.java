@@ -24,13 +24,13 @@ package io.github.axolotlclient.bridge.mixin.resource;
 
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 
 import io.github.axolotlclient.bridge.resource.AxoResource;
 import io.github.axolotlclient.bridge.resource.AxoResourceManager;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
-import io.github.moehreag.searchInResources.SearchableResourceManager;
 import net.minecraft.client.resource.Resource;
 import net.minecraft.client.resource.manager.ResourceManager;
 import net.minecraft.resource.Identifier;
@@ -43,11 +43,13 @@ public interface ResourceManagerMixin extends AxoResourceManager {
 	@Shadow
 	Resource getResource(Identifier identifier) throws IOException;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	default Map<AxoIdentifier, AxoResource> br$listResources(String namespace, String prefix, Predicate<AxoIdentifier> filter) {
 		// this cast is maybe not ideal
-		return (Map<AxoIdentifier, AxoResource>) (Object) ((SearchableResourceManager) this).findResources(namespace, prefix, filter::test);
+		var map = net.ornithemc.osl.resource.loader.api.resource.manager.ResourceManager.client().findResources(namespace, prefix, t -> filter.test(new Identifier(t.namespace(), t.identifier())));
+		HashMap<AxoIdentifier, AxoResource> other = new HashMap<>(map.size());
+		map.forEach((id, resource) -> other.put(new Identifier(id.namespace(), id.identifier()), (Resource) resource));
+		return other;
 	}
 
 	@Override

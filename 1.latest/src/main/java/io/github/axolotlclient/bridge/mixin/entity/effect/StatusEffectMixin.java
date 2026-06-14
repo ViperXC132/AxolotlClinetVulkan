@@ -26,7 +26,7 @@ import io.github.axolotlclient.bridge.entity.effect.AxoStatusEffect;
 import io.github.axolotlclient.bridge.impl.AxoSpriteImpl;
 import io.github.axolotlclient.bridge.render.AxoSprite;
 import io.github.axolotlclient.bridge.util.AxoText;
-import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.effect.MobEffect;
@@ -44,7 +44,7 @@ public abstract class StatusEffectMixin implements AxoStatusEffect {
 		return (AxoSpriteImpl) (minecraft, guiGraphics, x, y, w, h, color) ->
 			guiGraphics.blitSprite(
 				RenderPipelines.GUI_TEXTURED,
-				Gui.getMobEffectSprite(holder),
+				Hud.getMobEffectSprite(holder),
 				x, y, w, h, color
 			);
 	}

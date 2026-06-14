@@ -57,11 +57,11 @@ public class PostPassMixin {
 		return i;
 	}
 
-	@Inject(method = "lambda$addToFrame$1", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/CommandEncoder;mapBuffer(Lcom/mojang/blaze3d/buffers/GpuBuffer;ZZ)Lcom/mojang/blaze3d/buffers/GpuBuffer$MappedView;"))
-	private void addUniforms(ResourceHandle<?> resourceHandle, GpuBufferSlice gpuBufferSlice, Map<?, ?> map, CallbackInfo ci, @Local(name = "commandEncoder") CommandEncoder commandEncoder) {
+	@Inject(method = "lambda$addToFrame$1", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/buffers/GpuBuffer;map(ZZ)Lcom/mojang/blaze3d/buffers/GpuBufferSlice$MappedView;"))
+	private void addUniforms(ResourceHandle<?> outputHandle, GpuBufferSlice shaderOrthoMatrix, Map<?, ?> targets, CallbackInfo ci, @Local(name = "commandEncoder") CommandEncoder commandEncoder) {
 		if (customUniforms.containsKey("BlurConfig")) {
 			var buf = customUniforms.get("BlurConfig");
-			try (GpuBuffer.MappedView mappedView = commandEncoder.mapBuffer(buf, false, true)) {
+			try (var mappedView = buf.map(false, true)) {
 				Std140Builder std140Builder = Std140Builder.intoBuffer(mappedView.data());
 				std140Builder.putFloat(MotionBlur.getBlur());
 			}

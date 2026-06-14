@@ -23,56 +23,23 @@
 package io.github.axolotlclient.util;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 import com.mojang.blaze3d.platform.NativeImage;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Graphics;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.StringUtil;
 import org.apache.commons.lang3.StringUtils;
 
 public class Util {
 	private static final Map<Identifier, DynamicTexture> textures = new HashMap<>();
-
-	public static Component formatFromCodes(String formattedString) {
-		MutableComponent text = Component.empty();
-		String[] arr = formattedString.split("§");
-
-		List<ChatFormatting> modifiers = new ArrayList<>();
-		for (int i = 0, length = arr.length; i < length; i++) {
-			String s = arr[i];
-			if (s.isEmpty()) {
-				continue;
-			} else if (i == 0) {
-				text.append(s);
-				continue;
-			}
-			ChatFormatting formatting = ChatFormatting.getByCode(s.charAt(0));
-			if (formatting != null && formatting.isFormat()) {
-				modifiers.add(formatting);
-			}
-			MutableComponent part = Component.literal(formatting != null ? s.substring(1) : s);
-			if (formatting != null) {
-				part.withStyle(formatting);
-
-				if (!modifiers.isEmpty()) {
-					modifiers.forEach(part::withStyle);
-					if (formatting.equals(ChatFormatting.RESET)) {
-						modifiers.clear();
-					}
-				}
-			}
-			text.append(part);
-		}
-		return text;
-	}
 
 	public static void sendChatMessage(String msg) {
 		msg = StringUtil.trimChatMessage(StringUtils.normalizeSpace(msg.trim()));
@@ -85,7 +52,7 @@ public class Util {
 	}
 
 	public static void addMessageToChatHud(Component msg) {
-		Minecraft.getInstance().gui.getChat().addClientSystemMessage(msg);
+		Minecraft.getInstance().gui.hud.getChat().addClientSystemMessage(msg);
 	}
 
 	public static Identifier getTexture(GraphicsOption option) {

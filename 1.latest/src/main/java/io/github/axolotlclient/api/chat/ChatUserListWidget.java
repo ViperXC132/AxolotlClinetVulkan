@@ -155,7 +155,7 @@ public class ChatUserListWidget extends ObjectSelectionList<ChatUserListWidget.U
 					if (!channel.isDM()) {
 						menu.entry(Component.translatable("api.friends.chat"), buttonWidget ->
 							ChannelRequest.getOrCreateDM(user).whenCompleteAsync((channel, throwable) ->
-								client.execute(() -> client.setScreen(new ChatScreen(screen.getParent(), channel))))).spacer();
+								client.execute(() -> client.gui.setScreen(new ChatScreen(screen.getParent(), channel))))).spacer();
 					}
 					if (user.getRelation() != Relation.BLOCKED) {
 						if (user.getRelation() != Relation.FRIEND) {

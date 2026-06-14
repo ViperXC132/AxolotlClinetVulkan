@@ -37,10 +37,10 @@ public class Notifications implements NotificationProvider {
 	}
 
 	public void addStatus(Component title, Component description) {
-		Minecraft.getInstance().getToastManager().addToast(AxolotlClientToast.multiline(Minecraft.getInstance(), title, description));
+		Minecraft.getInstance().gui.toastManager().addToast(AxolotlClientToast.multiline(Minecraft.getInstance(), title, description));
 	}
 
 	public void addStatus(Toast toast) {
-		Minecraft.getInstance().getToastManager().addToast(toast);
+		Minecraft.getInstance().gui.toastManager().addToast(toast);
 	}
 }

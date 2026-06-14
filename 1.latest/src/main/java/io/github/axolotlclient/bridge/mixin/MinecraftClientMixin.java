@@ -73,9 +73,6 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	public Options options;
 
 	@Shadow
-	public abstract boolean isSingleplayer();
-
-	@Shadow
 	public abstract ServerData getCurrentServer();
 
 	@Shadow
@@ -87,9 +84,6 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	private User user;
 
 	@Shadow
-	public Screen screen;
-
-	@Shadow
 	public abstract ResourceManager getResourceManager();
 
 	@Shadow
@@ -98,6 +92,9 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 
 	@Shadow
 	public abstract Entity getCameraEntity();
+
+	@Shadow
+	public abstract boolean hasSingleplayerServer();
 
 	@Override
 	public @Nullable AxoPlayer br$getPlayer() {
@@ -123,7 +120,7 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 
 	@Override
 	public boolean br$isLocalServer() {
-		return isSingleplayer();
+		return hasSingleplayerServer();
 	}
 
 	@Override
@@ -153,7 +150,7 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 
 	@Override
 	public void br$sendToClient(AxoText msg) {
-		gui.getChat().addClientSystemMessage((Component) msg);
+		gui.hud.getChat().addClientSystemMessage((Component) msg);
 	}
 
 	@Override
@@ -173,7 +170,8 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 
 	@Override
 	public void br$reinitScreen() {
-		if (screen != null) {
+		if (gui.screen() != null) {
+			var screen = gui.screen();
 			screen.init(screen.width, screen.height);
 		}
 	}
@@ -185,12 +183,12 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 
 	@Override
 	public Object br$getScreen() {
-		return screen;
+		return gui.screen();
 	}
 
 	@Override
 	public void br$notifyLevelRenderer() {
-		levelRenderer.needsUpdate();
+
 	}
 
 	@Override

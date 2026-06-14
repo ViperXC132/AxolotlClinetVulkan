@@ -39,9 +39,7 @@ public abstract class ShieldSpecialRendererMixin {
 	@Inject(method = "submit(Lnet/minecraft/core/component/DataComponentMap;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;IIZI)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeCollector;submitModel(Lnet/minecraft/client/model/Model;Ljava/lang/Object;Lcom/mojang/blaze3d/vertex/PoseStack;IIILnet/minecraft/client/resources/model/sprite/SpriteId;Lnet/minecraft/client/resources/model/sprite/SpriteGetter;ILnet/minecraft/client/renderer/feature/ModelFeatureRenderer$CrumblingOverlay;)V", ordinal = 0))
 	private void axolotlclient$lowShield(DataComponentMap components, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, int overlayCoords, boolean hasFoil, int outlineColor, CallbackInfo ci) {
 		if (AxolotlClient.config().lowShield.get()
-			&& Minecraft.getInstance().options.getCameraType().isFirstPerson()
-			/*&& (itemDisplayContext.equals(ItemDisplayContext.FIRST_PERSON_LEFT_HAND)
-			|| itemDisplayContext.equals(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND))*/) {
+			&& Minecraft.getInstance().options.getCameraType().isFirstPerson()) {
 			poseStack.translate(0, 0.2F, 0);
 		}
 	}

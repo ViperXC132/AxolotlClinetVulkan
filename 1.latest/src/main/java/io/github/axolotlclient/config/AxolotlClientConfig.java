@@ -53,7 +53,7 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 	public final ColorOption loadingScreenColor = new ColorOption("loadingBgColor", new Color(239, 50, 61, 255));
 
 	public final GenericOption openCredits = new GenericOption("Credits", "Open Credits", () ->
-		Minecraft.getInstance().setScreen(new CreditsScreen(Minecraft.getInstance().screen))
+		Minecraft.getInstance().gui.setScreen(new CreditsScreen(Minecraft.getInstance().gui.screen()))
 	);
 
 	@Getter
@@ -75,9 +75,9 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 					ConfigUI.getInstance().setStyle(s.split("\\.")[1]);
 
 					AxoMinecraftClient.getInstance().execute(() -> {
-						Screen newScreen = RecreatableScreen.tryRecreate(Minecraft.getInstance().screen);
+						Screen newScreen = RecreatableScreen.tryRecreate(Minecraft.getInstance().gui.screen());
 						if (newScreen != null) {
-							Minecraft.getInstance().setScreen(newScreen);
+							Minecraft.getInstance().gui.setScreen(newScreen);
 						}
 					});
 				}) {
@@ -96,7 +96,7 @@ public class AxolotlClientConfig extends AxolotlClientConfigCommon {
 		rendering.add(lowShield);
 
 		general.add(new GenericOption("profiles.title", "profiles.configure", () ->
-			Minecraft.getInstance().setScreen(new ProfilesScreen(Minecraft.getInstance().screen))), false);
+			Minecraft.getInstance().gui.setScreen(new ProfilesScreen(Minecraft.getInstance().gui.screen()))), false);
 	}
 
 	@Override

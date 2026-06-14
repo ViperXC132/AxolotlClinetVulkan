@@ -170,7 +170,7 @@ public class GalleryScreen extends Screen {
 			}
 			footer.addChild(switchTab.width(buttonWidth).build());
 		}
-		footer.addChild(Button.builder(Component.translatable("gallery.download_external"), b -> minecraft.setScreen(new DownloadImageScreen(this)))
+		footer.addChild(Button.builder(Component.translatable("gallery.download_external"), b -> minecraft.gui.setScreen(new DownloadImageScreen(this)))
 			.width(buttonWidth).build());
 		footer.addChild(Button.builder(CommonComponents.GUI_BACK, b -> onClose())
 			.width(buttonWidth).build());
@@ -194,7 +194,7 @@ public class GalleryScreen extends Screen {
 		});
 		Tab.SHARED.loadingCache().clear();
 		Watcher.close(watcher);
-		minecraft.setScreen(parent);
+		minecraft.gui.setScreen(parent);
 	}
 
 	private void setTab(Tab<?> tab) {
@@ -258,7 +258,7 @@ public class GalleryScreen extends Screen {
 
 		@Override
 		public void onPress(@NonNull InputWithModifiers inputWithModifiers) {
-			minecraft.setScreen(ImageScreen.create(GalleryScreen.this, load(), false));
+			minecraft.gui.setScreen(ImageScreen.create(GalleryScreen.this, load(), false));
 		}
 
 		@Override

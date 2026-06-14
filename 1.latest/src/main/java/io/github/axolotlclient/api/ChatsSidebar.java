@@ -172,7 +172,7 @@ public class ChatsSidebar extends Screen implements ContextMenuScreen {
 	}
 
 	private void close() {
-		minecraft.setScreen(parent);
+		minecraft.gui.setScreen(parent);
 		if (chatWidget != null) {
 			chatWidget.remove();
 		}

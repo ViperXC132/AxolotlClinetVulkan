@@ -91,7 +91,7 @@ public class ScreenshotUtils extends AbstractModule {
 				try {
 					ImageInstance instance = new ImageInstance.LocalImpl(file);
 					//noinspection ResultOfMethodCallIgnored
-					client.submit(() -> client.setScreen(ImageScreen.create(null, CompletableFuture.completedFuture(instance), true)));
+					client.submit(() -> client.gui.setScreen(ImageScreen.create(null, CompletableFuture.completedFuture(instance), true)));
 				} catch (Exception ignored) {
 					io.github.axolotlclient.util.Util.addMessageToChatHud(Component.translatable("screenshot.gallery.view.error"));
 				}
@@ -114,14 +114,14 @@ public class ScreenshotUtils extends AbstractModule {
 	@Override
 	public void init() {
 		category.add(enabled, mode, autoExec, new GenericOption("imageViewer", "openViewer", () ->
-			client.setScreen(new GalleryScreen(client.screen))), toastBorderColor);
+			client.gui.setScreen(new GalleryScreen(client.gui.screen()))), toastBorderColor);
 
 		AxolotlClient.config().general.add(category);
 		screenshotCropBinding.br$registerOnConsumeClick(() ->
-			Screenshot.takeScreenshot(client.getMainRenderTarget(), img -> {
+			Screenshot.takeScreenshot(client.gameRenderer.mainRenderTarget(), img -> {
 				var instance = new ImageInstance.Memory(img);
-				var parent = client.screen;
-				client.setScreen(new CropImageScreen(parent, instance, true));
+				var parent = client.gui.screen();
+				client.gui.setScreen(new CropImageScreen(parent, instance, true));
 			}));
 	}
 

@@ -109,7 +109,7 @@ public class InventoryHud extends BoxHudEntry implements DynamicallyPositionable
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
-		if (BridgeVersion.V26_1.isCurrent()) {
+		if (BridgeVersion.is26OrLater()) {
 			if (client.br$getWorld() == null) {
 				var pos = getContentPos();
 				graphics.br$drawCenteredString(getName(), pos.x() + getContentWidth() / 2, pos.y() + getContentHeight() / 2, -1);

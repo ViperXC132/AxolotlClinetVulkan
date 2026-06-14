@@ -45,7 +45,7 @@ public class AxoGraphicsWidget extends GraphicsWidget {
 
 	@Override
 	public void onPress(InputWithModifiers input) {
-		Minecraft.getInstance().setScreen(new AxoGraphicsEditorScreen(Minecraft.getInstance().screen, this.option));
+		Minecraft.getInstance().gui.setScreen(new AxoGraphicsEditorScreen(Minecraft.getInstance().gui.screen(), this.option));
 	}
 
 	public static class AxoGraphicsEditorScreen extends GraphicsEditorScreen {

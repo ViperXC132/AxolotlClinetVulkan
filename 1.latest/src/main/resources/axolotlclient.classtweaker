@@ -2,8 +2,8 @@ classTweaker v1 official
 
 accessible class net/minecraft/client/gui/GuiGraphicsExtractor$ScissorStack
 accessible class net/minecraft/client/gui/components/PlayerTabOverlay$ScoreDisplayEntry
-accessible class net/minecraft/client/gui/Gui$HeartType
-accessible class net/minecraft/client/Minecraft$GameLoadCookie
+accessible class net/minecraft/client/gui/Hud$HeartType
+accessible class net/minecraft/client/GameLoadCookie
 accessible method net/minecraft/client/renderer/rendertype/RenderType create (Ljava/lang/String;Lnet/minecraft/client/renderer/rendertype/RenderSetup;)Lnet/minecraft/client/renderer/rendertype/RenderType;
 accessible class net/minecraft/client/gui/components/toasts/ToastManager$ToastInstance
 accessible class net/minecraft/client/gui/components/SubtitleOverlay$Subtitle

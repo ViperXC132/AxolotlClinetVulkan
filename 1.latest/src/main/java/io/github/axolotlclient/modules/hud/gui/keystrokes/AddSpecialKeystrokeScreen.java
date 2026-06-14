@@ -62,7 +62,6 @@ public class AddSpecialKeystrokeScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		//noinspection DataFlowIssue
-		minecraft.setScreen(lastScreen);
+		minecraft.gui.setScreen(lastScreen);
 	}
 }

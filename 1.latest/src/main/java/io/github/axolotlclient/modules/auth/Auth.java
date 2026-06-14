@@ -26,6 +26,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import com.mojang.authlib.minecraft.UserApiService;
+import com.mojang.authlib.yggdrasil.FriendsService;
 import com.mojang.authlib.yggdrasil.ProfileResult;
 import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import io.github.axolotlclient.AxolotlClient;
@@ -47,6 +48,7 @@ import net.minecraft.client.User;
 import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.social.PlayerSocialManager;
+import net.minecraft.client.gui.screens.social.RemoteFriendListUpdateHandler;
 import net.minecraft.client.multiplayer.ProfileKeyPairManager;
 import net.minecraft.client.multiplayer.chat.report.ReportEnvironment;
 import net.minecraft.client.multiplayer.chat.report.ReportingContext;
@@ -62,7 +64,7 @@ public class Auth extends Accounts implements Module {
 	public final BooleanOption showButton = new BooleanOption("auth.showButton", false);
 	public final BooleanOption skinManagerAnimations = new BooleanOption("skins.manage.animations", true);
 	private final Minecraft mc = Minecraft.getInstance();
-	private final GenericOption viewAccounts = new GenericOption("viewAccounts", "clickToOpen", () -> mc.setScreen(new AccountsScreen(mc.screen)));
+	private final GenericOption viewAccounts = new GenericOption("viewAccounts", "clickToOpen", () -> mc.gui.setScreen(new AccountsScreen(mc.gui.screen())));
 	private final Set<String> loadingTexture = new HashSet<>();
 	private final Map<String, Identifier> textures = new WeakHashMap<>();
 	@Getter
@@ -105,21 +107,30 @@ public class Auth extends Accounts implements Module {
 				API.getInstance().shutdown();
 				var mcAccessor = (MinecraftClientAccessor) mc;
 				mcAccessor.axolotlclient$setSession(new User(account.getName(), UUIDHelper.fromUndashed(account.getUuid()), account.getAuthToken(), Optional.empty(), Optional.empty()));
+				YggdrasilAuthenticationService authService;
 				UserApiService service;
 				if (account.isOffline()) {
-					service = UserApiService.OFFLINE;
+					authService = YggdrasilAuthenticationService.createOffline(mc.getProxy());
 				} else {
-					service = new YggdrasilAuthenticationService(mc.getProxy()).createUserApiService(mc.getUser().getAccessToken());
+					authService = new YggdrasilAuthenticationService(mc.getProxy());
 				}
+				service = authService.createUserApiService(mc.getUser().getAccessToken());
+				FriendsService friendsService = authService.createFriendsService(mc.getUser().getAccessToken());
+				RemoteFriendListUpdateHandler updateHandler = new RemoteFriendListUpdateHandler(friendsService, mc);
+				mcAccessor.axolotlclient$setRemoteFriendListUpdateHandler(updateHandler);
 				mcAccessor.axolotlclient$setUserApiService(service);
 				var sourceAccessor = (DownloadedPackSourceAccessor) mc.getDownloadedPackSource();
 				((ServerPackManagerAccessor) sourceAccessor.axolotlclient$getManager())
 					.axolotlclient$setDownloader(sourceAccessor.axolotlclient$createDownloader(sourceAccessor.axolotlcleint$getDownloadQueue(), mc::schedule, mc.getUser(), mc.getProxy()));
-				mcAccessor.axolotlclient$setSocialInteractionsManager(new PlayerSocialManager(mc, service));
+				var socialManager = new PlayerSocialManager(mc, service, friendsService, updateHandler);
+				if (socialManager.isFriendListEnabled()) {
+					updateHandler.start();
+				}
+				mcAccessor.axolotlclient$setSocialInteractionsManager(socialManager);
 				mcAccessor.axolotlclient$setPlayerKeyPairManager(ProfileKeyPairManager.create(service, mc.getUser(), mc.gameDirectory.toPath()));
 				mcAccessor.axolotlclient$setChatReportingContext(ReportingContext.create(ReportEnvironment.local(), service));
 				mcAccessor.axolotlclient$setProfileFuture(CompletableFuture.supplyAsync(() -> mc.services().sessionService().fetchProfile(mc.getUser().getProfileId(), true), Util.nonCriticalIoPool()));
-				((SplashManagerAccessor) mc.getSplashManager()).setUser(mc.getUser());
+				((SplashManagerAccessor) mc.gui.splashManager()).setUser(mc.getUser());
 				save();
 				current = account;
 				Notifications.getInstance().addStatus(Component.translatable("auth.notif.title"), Component.translatable("auth.notif.login.successful", current.getName()));
@@ -132,22 +143,22 @@ public class Auth extends Accounts implements Module {
 
 	@Override
 	CompletableFuture<Account> showAccountsExpiredScreen(Account account) {
-		Screen current = mc.screen;
+		Screen current = mc.gui.screen();
 		var fut = new CompletableFuture<Account>();
-		mc.execute(() -> mc.setScreen(new ConfirmScreen((bl) -> {
+		mc.execute(() -> mc.gui.setScreen(new ConfirmScreen((bl) -> {
 			if (bl) {
 				msApi.startDeviceAuth().thenRun(() -> fut.complete(account));
 			} else {
 				fut.cancel(true);
 			}
-			mc.setScreen(current);
+			mc.gui.setScreen(current);
 		}, Component.translatable("auth"), Component.translatable("auth.accountExpiredNotice", account.getName()))));
 		return fut;
 	}
 
 	@Override
 	void displayDeviceCode(DeviceFlowData data) {
-		mc.execute(() -> mc.setScreen(new DeviceCodeDisplayScreen(mc.screen, data)));
+		mc.execute(() -> mc.gui.setScreen(new DeviceCodeDisplayScreen(mc.gui.screen(), data)));
 	}
 
 	private void loadTexture(String uuid) {

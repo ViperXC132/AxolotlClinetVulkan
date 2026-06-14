@@ -43,7 +43,7 @@ public class HudManager extends HudManagerCommon {
 
 	@Override
 	protected void openScreen() {
-		Minecraft.getInstance().setScreen(new HudEditScreen());
+		Minecraft.getInstance().gui.setScreen(new HudEditScreen());
 	}
 
 	@Override
@@ -63,7 +63,7 @@ public class HudManager extends HudManagerCommon {
 	public void render(AxoRenderContext context, float delta) {
 		final var mc = Profiler.get();
 		mc.push("Hud render");
-		if (!(Minecraft.getInstance().screen instanceof HudEditScreen)) {
+		if (!(Minecraft.getInstance().gui.screen() instanceof HudEditScreen)) {
 			super.render(context, delta);
 		}
 		mc.pop();
@@ -71,7 +71,7 @@ public class HudManager extends HudManagerCommon {
 
 	@Override
 	public void closeScreen() {
-		var screen = Minecraft.getInstance().screen;
+		var screen = Minecraft.getInstance().gui.screen();
 		if (screen != null) {
 			screen.onClose();
 		}

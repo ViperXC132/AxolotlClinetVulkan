@@ -77,7 +77,7 @@ public class KeystrokesScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		this.minecraft.setScreen(this.screen);
+		this.minecraft.gui.setScreen(this.screen);
 		hud.saveKeystrokes();
 	}
 

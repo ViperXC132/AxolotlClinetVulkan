@@ -58,35 +58,35 @@ public class APIOptions extends Options {
 
 		openPrivacyNoteScreen = () -> {
 			var fut = new CompletableFuture<Boolean>();
-			var parent = client.screen;
-			client.execute(() -> client.setScreen(new PrivacyNoticeScreen(parent, fut)));
+			var parent = client.gui.screen();
+			client.execute(() -> client.gui.setScreen(new PrivacyNoticeScreen(parent, fut)));
 			return fut;
 		};
 		KeyBinds.getInstance().registerWithSimpleAction(
 			new KeyMapping("api.chats.sidebar.open", InputConstants.KEY_O, KeyBinds.CATEGORY_AXOLOTLCLIENT), () -> {
 				if (API.getInstance().isAuthenticated()) {
-					var parent = client.screen;
-					client.execute(() -> client.setScreen(new ChatsSidebar(parent)));
+					var parent = client.gui.screen();
+					client.execute(() -> client.gui.setScreen(new ChatsSidebar(parent)));
 				}
 			});
 		category.add(
 			new GenericOption("viewFriends", "clickToOpen", () -> {
-				var parent = client.screen;
-				client.execute(() -> client.setScreen(new FriendsScreen(parent)));
+				var parent = client.gui.screen();
+				client.execute(() -> client.gui.setScreen(new FriendsScreen(parent)));
 			}));
 		category.add(
 			new GenericOption("viewChats", "clickToOpen", () -> {
-				var parent = client.screen;
-				client.execute(() -> client.setScreen(new ChatListScreen(parent)));
+				var parent = client.gui.screen();
+				client.execute(() -> client.gui.setScreen(new ChatListScreen(parent)));
 			}));
 		category.add(new GenericOption("api.channels.invites.view", "clickToOpen", () -> {
-			var parent = client.screen;
-			client.execute(() -> client.setScreen(new ChannelInvitesScreen(parent)));
+			var parent = client.gui.screen();
+			client.execute(() -> client.gui.setScreen(new ChannelInvitesScreen(parent)));
 		}));
 		account.add(new GenericOption("api.account.usernames", "clickToOpen",
 			() -> {
-				var parent = client.screen;
-				client.execute(() -> client.setScreen(new UsernameManagementScreen(parent)));
+				var parent = client.gui.screen();
+				client.execute(() -> client.gui.setScreen(new UsernameManagementScreen(parent)));
 			}
 		));
 		account.add(new GenericOption("api.account.export", "api.account.export_data", () -> ThreadExecuter.scheduleTask(() -> {
@@ -105,8 +105,8 @@ public class APIOptions extends Options {
 			}
 		})));
 		account.add(new GenericOption("api.account.delete", "api.account.delete_account", () -> {
-			Screen previous = client.screen;
-			client.setScreen(new ConfirmScreen(b -> {
+			Screen previous = client.gui.screen();
+			client.gui.setScreen(new ConfirmScreen(b -> {
 				if (b) {
 					if (!API.getInstance().isAuthenticated()) {
 						API.getInstance().getNotificationProvider().addStatus("api.account.deletion.failure", "api.error.unauthenticated");
@@ -124,14 +124,14 @@ public class APIOptions extends Options {
 						});
 					}
 				}
-				client.setScreen(previous);
+				client.gui.setScreen(previous);
 			}, Component.translatable("api.account.confirm_deletion"),
 				Component.translatable("api.account.confirm_deletion.desc")
 			));
 		}));
 		Consumer<Boolean> consumer = settingUpdated;
 		settingUpdated = b -> {
-			if (client.screen instanceof ConfigScreen) {
+			if (client.gui.screen() instanceof ConfigScreen) {
 				consumer.accept(b);
 			}
 		};

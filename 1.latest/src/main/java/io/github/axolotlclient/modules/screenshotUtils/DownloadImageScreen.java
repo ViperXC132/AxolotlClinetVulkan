@@ -75,7 +75,7 @@ public class DownloadImageScreen extends Screen {
 				if (url.isEmpty()) {
 					return;
 				}
-				minecraft.setScreen(ImageScreen.create(this, ImageShare.getInstance().downloadImage(url), true));
+				minecraft.gui.setScreen(ImageScreen.create(this, ImageShare.getInstance().downloadImage(url), true));
 			}, true)
 			.sprite(SPRITE, 20, 20)
 			.width(20).build()).setPosition(width / 2 + 100 + 4, height / 2 - 10);
@@ -89,7 +89,7 @@ public class DownloadImageScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		minecraft.setScreen(parent);
+		minecraft.gui.setScreen(parent);
 	}
 
 
@@ -192,6 +192,13 @@ public class DownloadImageScreen extends Screen {
 
 		public <T extends LayoutElement> T addToContents(T child) {
 			return this.contentsFrame.addChild(child);
+		}
+
+		@Override
+		public void removeChildren() {
+			headerFrame.removeChildren();
+			contentsFrame.removeChildren();
+			footerFrame.removeChildren();
 		}
 	}
 }

@@ -3,6 +3,12 @@
 ### 3.2.0
 
 - (26.x) drop integration with WorldHost
+- port to 26.2
+- update 1.21.11
+- fix some bugs
+- implement block outline options
+- add timechanger presets
+- add option to include armor for hit overlay
 
 ### 3.1.10
 

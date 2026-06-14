@@ -35,7 +35,7 @@ import net.minecraft.item.ItemStack;
 import net.ornithemc.osl.keybinds.api.KeyBindingEvents;
 import net.ornithemc.osl.lifecycle.api.client.MinecraftClientEvents;
 import net.ornithemc.osl.networking.api.client.ClientConnectionEvents;
-import net.ornithemc.osl.resource.loader.api.ResourceLoaderEvents;
+import net.ornithemc.osl.resource.loader.api.client.ClientResourceLoaderEvents;
 import org.jetbrains.annotations.Nullable;
 
 public class Bridge {
@@ -72,7 +72,7 @@ public class Bridge {
 		MinecraftClientEvents.READY.register(minecraft -> Events.CLIENT_READY.invoker().run());
 		MinecraftClientEvents.STOP.register(minecraft -> Events.CLIENT_STOP.invoker().run());
 		MinecraftClientEvents.TICK_END.register(minecraft -> Events.TICK.invoker().run());
-		ResourceLoaderEvents.END_RESOURCE_RELOAD.register(() -> Events.END_RESOURCE_RELOAD.invoker().run());
+		ClientResourceLoaderEvents.END_RESOURCE_RELOAD.register((manager, ctx) -> Events.END_RESOURCE_RELOAD.invoker().run());
 		ClientConnectionEvents.DISCONNECT.register(mc -> Events.DISCONNECT.invoker().run());
 	}
 

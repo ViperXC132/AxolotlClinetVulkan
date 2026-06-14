@@ -64,7 +64,7 @@ public class ArrowHud extends TextHudEntry {
 	private final BooleanOption hideIfEmpty = DefaultOptions.getHideIfEmpty();
 
 	private int arrows = 0;
-	private AxoItemStack currentArrow = BridgeVersion.V26_1.isCurrent() ? null : AxoItemStack.of(AxoItems.ARROW);
+	private AxoItemStack currentArrow = BridgeVersion.is26OrLater() ? null : AxoItemStack.of(AxoItems.ARROW);
 
 	public ArrowHud() {
 		super(20, 22, true);
@@ -104,7 +104,7 @@ public class ArrowHud extends TextHudEntry {
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
-		if (BridgeVersion.V26_1.isCurrent()) {
+		if (BridgeVersion.is26OrLater()) {
 			if (client.br$getWorld() == null) {
 				var pos = getContentPos();
 				graphics.br$drawCenteredString(getName(), pos.x() + getContentWidth() / 2, pos.y() + getContentHeight() / 2, textColor.get());

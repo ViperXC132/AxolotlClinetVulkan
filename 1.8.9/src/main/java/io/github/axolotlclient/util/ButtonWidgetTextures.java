@@ -30,7 +30,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.render.texture.DynamicTexture;
 import net.minecraft.client.render.texture.TextureUtil;
 import net.minecraft.resource.Identifier;
-import net.ornithemc.osl.resource.loader.api.ResourceLoaderEvents;
+import net.ornithemc.osl.resource.loader.api.client.ClientResourceLoaderEvents;
 
 /**
  * This utility allows us to separate the texture atlas parts in order to be able to make use of nine-slicing
@@ -39,7 +39,7 @@ public class ButtonWidgetTextures {
 	private static Identifier disabledTexture, activeTexture, hoveredTexture;
 
 	static {
-		ResourceLoaderEvents.END_RESOURCE_RELOAD.register(() -> {
+		ClientResourceLoaderEvents.END_RESOURCE_RELOAD.register((manager, ctx) -> {
 			Minecraft.getInstance().getTextureManager().close(disabledTexture);
 			Minecraft.getInstance().getTextureManager().close(activeTexture);
 			Minecraft.getInstance().getTextureManager().close(hoveredTexture);

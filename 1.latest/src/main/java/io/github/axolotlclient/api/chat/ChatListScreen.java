@@ -59,9 +59,9 @@ public class ChatListScreen extends Screen implements ContextMenuScreen {
 		ChatListWidget dms = addRenderableWidget(new ChatListWidget(this, width, height, width / 2 + 5, 55, 150, height - 105, Channel::isDM));
 
 		addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, buttonWidget ->
-			minecraft.setScreen(parent)).bounds(this.width / 2 + 5, this.height - 40, 150, 20).build());
+			minecraft.gui.setScreen(parent)).bounds(this.width / 2 + 5, this.height - 40, 150, 20).build());
 		addRenderableWidget(Button.builder(Component.translatable("api.chat.groups.create"), buttonWidget ->
-				minecraft.setScreen(new CreateChannelScreen(this)))
+				minecraft.gui.setScreen(new CreateChannelScreen(this)))
 			.bounds(this.width / 2 - 155, this.height - 40, 150, 20).build());
 		ChannelRequest.getChannelList().whenCompleteAsync((list, t) -> {
 			groups.addChannels(list);

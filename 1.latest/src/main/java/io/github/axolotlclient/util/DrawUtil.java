@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.util;
 
+import java.util.function.Function;
+
 import com.mojang.blaze3d.pipeline.DepthStencilState;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -33,15 +35,13 @@ import io.github.axolotlclient.modules.hud.util.Rectangle;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.rendertype.LayeringTransform;
 import net.minecraft.client.renderer.rendertype.OutputTarget;
 import net.minecraft.client.renderer.rendertype.RenderSetup;
 import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.state.level.BlockOutlineRenderState;
-import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.phys.shapes.VoxelShape;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
@@ -96,19 +96,17 @@ public class DrawUtil {
 		.setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
 		.setOutputTarget(OutputTarget.ITEM_ENTITY_TARGET).createRenderSetup());
 
-	public static void drawOutlines(MultiBufferSource.BufferSource bufferSource, PoseStack poseStack, LevelRenderState levelRenderState, BlockOutlineRenderState state) {
+	public static void drawOutlines(Function<RenderType, VertexConsumer> bufferSource, PoseStack.Pose pose, VoxelShape shape) {
 		if (AxolotlClient.config().enableCustomOutlines.get() && AxolotlClient.config().outlineFill.get()) {
-			var shape = state.shape();
-			var matrix = poseStack.last();
 			var color = AxolotlClient.config().outlineFillColor.get().toInt();
-			var pos = levelRenderState.cameraRenderState.pos;
-			var blockPos = state.pos();
-			var x = blockPos.getX() - pos.x();
-			var y = blockPos.getY() - pos.y();
-			var z = blockPos.getZ() - pos.z();
-			var consumer = bufferSource.getBuffer(QUADS);
+			//var pos = levelRenderState.cameraRenderState.pos;
+			//var blockPos = state.pos();
+			var x = 0;//blockPos.getX() - pos.x();
+			var y = 0;//blockPos.getY() - pos.y();
+			var z = 0;//blockPos.getZ() - pos.z();
+			var consumer = bufferSource.apply(QUADS);
 			shape.forAllBoxes((x1, y1, z1, x2, y2, z2) ->
-				fillOutlineQuads(consumer, matrix, (float) (x1 + x), (float) (x2 + x),
+				fillOutlineQuads(consumer, pose, (float) (x1 + x), (float) (x2 + x),
 					(float) (y1 + y), (float) (y2 + y),
 					(float) (z1 + z), (float) (z2 + z),
 					color));

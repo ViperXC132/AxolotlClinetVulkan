@@ -380,7 +380,7 @@ public class FriendsMultiplayerSelectionList extends ObjectSelectionList<Friends
 				guiGraphicsExtractor.setTooltipForNextFrame(Lists.transform(this.onlinePlayersTooltip, Component::getVisualOrderText), mouseX, mouseY);
 			}
 
-			if (this.minecraft.options.touchscreen().get() || hovering) {
+			if (hovering) {
 				int l = mouseX - getContentX();
 				if (this.canJoin()) {
 					guiGraphicsExtractor.fill(getContentX(), getContentY(), getContentX() + ICON_WIDTH, getContentY() + ICON_HEIGHT, -1601138544);
@@ -542,7 +542,7 @@ public class FriendsMultiplayerSelectionList extends ObjectSelectionList<Friends
 		public void extractContent(GuiGraphicsExtractor guiGraphicsExtractor, int mouseX, int mouseY, boolean hovering, float partialTick) {
 			int i = getContentYMiddle() - 9 / 2;
 			String string = LoadingDotsText.get(Util.getMillis());
-			guiGraphicsExtractor.text(this.minecraft.font, string, this.minecraft.screen.width / 2 - this.minecraft.font.width(string) / 2, i, -8355712);
+			guiGraphicsExtractor.text(this.minecraft.font, string, guiGraphicsExtractor.guiWidth() / 2 - this.minecraft.font.width(string) / 2, i, -8355712);
 		}
 
 		@Override

@@ -52,7 +52,7 @@ public record HorizontalGradientRectangleRenderState(RenderPipeline pipeline,
 	}
 
 	public void submit() {
-		Minecraft.getInstance().gameRenderer.getGameRenderState().guiRenderState.addGuiElement(this);
+		Minecraft.getInstance().gameRenderer.gameRenderState().guiRenderState.addGuiElement(this);
 	}
 
 	@Override

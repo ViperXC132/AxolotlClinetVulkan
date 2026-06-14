@@ -67,7 +67,7 @@ public abstract class JoinMulitplayerScreenMixin extends Screen {
 
 			}).width(100).build()).active = false;
 			var friends = buttons.addChild(Button.builder(Component.translatable("api.servers.friends", "..."),
-				button -> minecraft.setScreen(new FriendsMultiplayerScreen(this.lastScreen))).width(100).build());
+				button -> minecraft.gui.setScreen(new FriendsMultiplayerScreen(this.lastScreen))).width(100).build());
 			FriendRequest.getInstance().getOnlineFriendCount().thenAccept(count -> friends.setMessage(Component.translatable("api.servers.friends", count)));
 		} else {
 			original.call(instance, message, font);

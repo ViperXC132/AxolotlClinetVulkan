@@ -69,7 +69,7 @@ public class StatusUpdateProviderImpl implements StatusUpdateProvider {
 			}
 			return StatusUpdate.inGameUnknown(mc.getSingleplayerServer().getWorldData().getLevelName());
 		}
-		Screen current = mc.screen;
+		Screen current = mc.gui.screen();
 		if (current instanceof TitleScreen) {
 			return StatusUpdate.online(StatusUpdate.MenuId.MAIN_MENU);
 		} else if (current instanceof JoinMultiplayerScreen) {

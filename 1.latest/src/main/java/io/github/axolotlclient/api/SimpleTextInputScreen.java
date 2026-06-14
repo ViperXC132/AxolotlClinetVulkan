@@ -49,13 +49,13 @@ public class SimpleTextInputScreen extends Screen {
 	public void init() {
 		addRenderableWidget(input = new EditBox(font, width / 2 - 100, height / 2 - 10, 200, 20, inputLabel));
 
-		addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, button -> minecraft.setScreen(parent))
+		addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, button -> minecraft.gui.setScreen(parent))
 			.bounds(width / 2 - 155, height - 50, 150, 20).build());
 		var done = addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> {
 			if (!input.getValue().isBlank()) {
 				consumer.accept(input.getValue());
 			}
-			minecraft.setScreen(parent);
+			minecraft.gui.setScreen(parent);
 		}).bounds(width / 2 + 5, height - 50, 150, 20).build());
 		input.setResponder(s -> done.active = !s.isBlank());
 		done.active = false;

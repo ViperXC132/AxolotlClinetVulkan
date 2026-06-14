@@ -22,13 +22,17 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.bridge.events.types.WorldLoadEvent;
 import io.github.axolotlclient.modules.auth.Auth;
+import io.github.axolotlclient.modules.screenshotUtils.ScreenshotUtils;
 import net.minecraft.SharedConstants;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.main.GameConfig;
 import net.minecraft.client.multiplayer.ClientLevel;
 import org.objectweb.asm.Opcodes;
@@ -49,7 +53,7 @@ public abstract class MinecraftClientMixin {
 		}
 	}
 
-	@Redirect(method = "<init>", at = @At(value = "FIELD", target = "Lnet/minecraft/client/main/GameConfig$GameData;versionType:Ljava/lang/String;", opcode = Opcodes.GETFIELD))
+	@Redirect(method = "<init>", at = @At(value = "FIELD", target = "Lnet/minecraft/client/main/GameConfig$GameData;launchVersion:Ljava/lang/String;", opcode = Opcodes.GETFIELD))
 	private String axolotlclient$noVersionType(GameConfig.GameData instance) {
 		return AxolotlClientCommon.VERSION;
 	}
@@ -68,6 +72,15 @@ public abstract class MinecraftClientMixin {
 	private void onLoadingScreenOpen(GameConfig gameConfig, CallbackInfo ci) {
 		if (!API.getInstance().isSocketConnected() && !Auth.getInstance().getCurrent().isOffline()) {
 			API.getInstance().startup(Auth.getInstance().getCurrent());
+		}
+	}
+
+	@Inject(method = "handleGlobalKeyPress", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Options;keyScreenshot:Lnet/minecraft/client/KeyMapping;", opcode = Opcodes.GETFIELD), cancellable = true)
+	private void actionForScreenshotCropKey(InputConstants.Key key, boolean controlDown, CallbackInfoReturnable<Boolean> cir) {
+		var mapping = (KeyMapping) ScreenshotUtils.getInstance().screenshotCropBinding;
+		if (mapping.matches(key)) {
+			mapping.br$click();
+			cir.setReturnValue(true);
 		}
 	}
 }

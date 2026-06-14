@@ -147,7 +147,7 @@ public class PlayerHud extends PlayerHudCommon {
 		Minecraft mc = Minecraft.getInstance();
 		EntityRenderDispatcher entityRenderDispatcher = mc.getEntityRenderDispatcher();
 		if (renderer == null)
-			renderer = new PlayerHudEntityRenderer(mc.renderBuffers().bufferSource(), entityRenderDispatcher);
+			renderer = new PlayerHudEntityRenderer(entityRenderDispatcher);
 		EntityRenderer<@NotNull LivingEntity, @NotNull LivingEntityRenderState> entityRenderer = (EntityRenderer<@NotNull LivingEntity, @NotNull LivingEntityRenderState>) entityRenderDispatcher.getRenderer(livingEntity);
 		if (reusedPlayerRendererState == null) {
 			reusedPlayerRendererState = entityRenderer.createRenderState();

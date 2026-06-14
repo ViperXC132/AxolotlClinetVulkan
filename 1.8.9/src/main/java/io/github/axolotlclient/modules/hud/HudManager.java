@@ -87,14 +87,9 @@ public class HudManager extends HudManagerCommon {
 	@Override
 	public void closeScreen() {
 		var screen = Minecraft.getInstance().screen;
-		if (screen instanceof Screen) {
-			try {
-				var method = Screen.class.getDeclaredMethod("closeScreen");
-				method.setAccessible(true);
-				method.invoke(screen);
-				return;
-			} catch (Throwable ignored) {
-			}
+		if (screen instanceof Screen s) {
+			s.closeScreen();
+			return;
 		}
 		Minecraft.getInstance().openScreen(null);
 	}

@@ -60,9 +60,9 @@ public class ScrollableTooltips extends AbstractModule {
 	}
 
 	public boolean onScroll(boolean reverse) {
-		if (client.screen instanceof AbstractContainerScreen<?> screen) {
-			if ((Minecraft.getInstance().screen instanceof CreativeModeInventoryScreen)
-				&& ((CreativeModeInventoryScreen) Minecraft.getInstance().screen)
+		if (client.gui.screen() instanceof AbstractContainerScreen<?> screen) {
+			if ((Minecraft.getInstance().gui.screen() instanceof CreativeModeInventoryScreen)
+				&& ((CreativeModeInventoryScreen) Minecraft.getInstance().gui.screen())
 				.getSelectedTab() != BuiltInRegistries.CREATIVE_MODE_TAB.getValue(CreativeModeTabs.INVENTORY)) {
 				return false;
 			}

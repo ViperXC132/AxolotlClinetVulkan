@@ -70,7 +70,7 @@ public class FilterListConfigurationScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		this.minecraft.setScreen(this.parent);
+		this.minecraft.gui.setScreen(this.parent);
 		filtersList.apply();
 		AxolotlClientCommon.getInstance().saveConfig();
 	}

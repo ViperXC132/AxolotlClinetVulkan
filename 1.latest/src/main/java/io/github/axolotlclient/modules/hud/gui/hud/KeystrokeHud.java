@@ -83,9 +83,9 @@ public class KeystrokeHud extends TextHudEntry implements ProfileAware {
 	private final ColorOption pressedBackgroundColor = new ColorOption("heldbackgroundcolor", new Color(0x64FFFFFF));
 	private final ColorOption pressedOutlineColor = new ColorOption("heldoutlinecolor", ClientColors.BLACK);
 
-	private final GenericOption keystrokesOption = new GenericOption("keystrokes", "keystrokes.configure", () -> client.setScreen(new KeystrokesScreen(KeystrokeHud.this, client.screen)));
+	private final GenericOption keystrokesOption = new GenericOption("keystrokes", "keystrokes.configure", () -> client.gui.setScreen(new KeystrokesScreen(KeystrokeHud.this, client.gui.screen())));
 	private final GenericOption configurePositions = new GenericOption("keystrokes.positions", "keystrokes.positions.configure",
-		() -> client.setScreen(new KeystrokePositioningScreen(client.screen, this)));
+		() -> client.gui.setScreen(new KeystrokePositioningScreen(client.gui.screen(), this)));
 	private final IntegerOption animationTime = new IntegerOption("keystrokes.animation_time", 100, 0, 500);
 	public ArrayList<Keystroke> keystrokes;
 

@@ -89,7 +89,7 @@ public class ProfilesScreen extends Screen implements RecreatableScreen {
 	@Override
 	public void onClose() {
 		Profiles.getInstance().saveProfiles();
-		minecraft.setScreen(parent);
+		minecraft.gui.setScreen(parent);
 	}
 
 	@Override

@@ -112,7 +112,7 @@ public class KeyBindsList extends ContainerObjectSelectionList<KeyBindsList.Entr
 		KeyEntry(final KeystrokeHud.Keystroke key) {
 			this.key = key;
 			this.name = key.getKey().getTranslatedKeyMessage();
-			this.configureButton = Button.builder(CONFIGURE_BUTTON_TITLE, button -> minecraft.setScreen(new ConfigureKeyBindScreen(keyBindsScreen, keyBindsScreen.hud, key, false)))
+			this.configureButton = Button.builder(CONFIGURE_BUTTON_TITLE, button -> minecraft.gui.setScreen(new ConfigureKeyBindScreen(keyBindsScreen, keyBindsScreen.hud, key, false)))
 				.bounds(0, 0, 75, 20)
 				.build();
 			this.removeButton = Button.builder(REMOVE_BUTTON_TITLE, b -> {
@@ -159,15 +159,15 @@ public class KeyBindsList extends ContainerObjectSelectionList<KeyBindsList.Entr
 		private final Button addButton, addSpecialButton, addCustomButton;
 
 		public NewEntry() {
-			this.addButton = Button.builder(Component.translatable("keystrokes.stroke.add"), button -> minecraft.setScreen(new ConfigureKeyBindScreen(keyBindsScreen,
+			this.addButton = Button.builder(Component.translatable("keystrokes.stroke.add"), button -> minecraft.gui.setScreen(new ConfigureKeyBindScreen(keyBindsScreen,
 					keyBindsScreen.hud, keyBindsScreen.hud.newStroke(), true)))
 				.bounds(0, 0, 100, 20)
 				.build();
 			this.addSpecialButton = Button.builder(Component.translatable("keystrokes.stroke.add.special"),
-					button -> minecraft.setScreen(new AddSpecialKeystrokeScreen(keyBindsScreen, keyBindsScreen.hud)))
+					button -> minecraft.gui.setScreen(new AddSpecialKeystrokeScreen(keyBindsScreen, keyBindsScreen.hud)))
 				.width(100).build();
 			this.addCustomButton = Button.builder(Component.translatable("keystrokes.stroke.add.custom"),
-					button -> minecraft.setScreen(new ConfigureKeyBindScreen(keyBindsScreen, keyBindsScreen.hud, keyBindsScreen.hud.newCustomStroke(), true)))
+					button -> minecraft.gui.setScreen(new ConfigureKeyBindScreen(keyBindsScreen, keyBindsScreen.hud, keyBindsScreen.hud.newCustomStroke(), true)))
 				.width(100).build();
 		}
 

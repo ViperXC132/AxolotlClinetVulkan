@@ -112,8 +112,7 @@ public class SkinManagementScreen extends Screen {
 			.bounds(width / 2 - 75, height - headerHeight / 2 - 10, 150, 20).build();
 
 		var loadingPlaceholder = new LoadingDotsWidget(getFont(), Component.translatable("skins.loading"));
-		loadingPlaceholder.setRectangle(width, contentHeight, 0,
-			headerHeight);
+		loadingPlaceholder.setPosition(width/2 - loadingPlaceholder.getWidth()/2, height/2 - loadingPlaceholder.getHeight()/2);
 		addRenderableWidget(loadingPlaceholder);
 		addRenderableWidget(back);
 
@@ -199,7 +198,7 @@ public class SkinManagementScreen extends Screen {
 			addWidgets.run();
 		}).exceptionally(t -> {
 			if (t.getCause() instanceof CancellationException) {
-				minecraft.setScreen(parent);
+				minecraft.gui.setScreen(parent);
 				return null;
 			}
 			AxolotlClientCommon.getInstance().getLogger().error("Failed to load skins!", t);
@@ -215,7 +214,7 @@ public class SkinManagementScreen extends Screen {
 	}
 
 	private void promptForSkinDownload() {
-		minecraft.setScreen(new SimpleTextInputScreen(this, Component.translatable("skins.manage.import.online"), Component.translatable("skins.manage.import.online.input"), s ->
+		minecraft.gui.setScreen(new SimpleTextInputScreen(this, Component.translatable("skins.manage.import.online"), Component.translatable("skins.manage.import.online.input"), s ->
 			UUIDHelper.ensureUuidOpt(s).thenAcceptAsync(o -> {
 				if (o.isPresent()) {
 					AxolotlClientCommon.getInstance().getLogger().info("Downloading skin of {} ({})", s, o.get());
@@ -432,7 +431,7 @@ public class SkinManagementScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		minecraft.setScreen(parent);
+		minecraft.gui.setScreen(parent);
 	}
 
 	private SkinListWidget getCurrentList() {
@@ -583,8 +582,8 @@ public class SkinManagementScreen extends Screen {
 				if (asset instanceof Asset.Local local) {
 					this.actionButtons.add(new SpriteButton(Component.translatable("skins.manage.delete"), btn -> {
 						btn.active = false;
-						minecraft.setScreen(new ConfirmScreen(confirmed -> {
-							minecraft.setScreen(new LoadingScreen(getTitle(), Component.translatable("menu.working")));
+						minecraft.gui.setScreen(new ConfirmScreen(confirmed -> {
+							minecraft.gui.setScreen(new LoadingScreen(getTitle(), Component.translatable("menu.working")));
 							if (confirmed) {
 								try {
 									Files.delete(local.file());
@@ -594,7 +593,7 @@ public class SkinManagementScreen extends Screen {
 									AxolotlClientCommon.getInstance().getLogger().warn("Failed to delete: ", e);
 								}
 							}
-							minecraft.setScreen(SkinManagementScreen.this);
+							minecraft.gui.setScreen(SkinManagementScreen.this);
 							btn.active = true;
 						}, Component.translatable("skins.manage.delete.confirm"), (asset.active() ?
 							Component.translatable("skins.manage.delete.confirm.desc_active") :
@@ -633,10 +632,10 @@ public class SkinManagementScreen extends Screen {
 					Consumer<CompletableFuture<MSApi.MCProfile>> consumer = f ->
 						f.thenAcceptAsync(p -> {
 							cachedProfile = p;
-							if (minecraft.screen == SkinManagementScreen.this) {
+							if (minecraft.gui.screen() == SkinManagementScreen.this) {
 								refreshCurrentList();
 							} else {
-								minecraft.execute(() -> minecraft.setScreen(SkinManagementScreen.this));
+								minecraft.execute(() -> minecraft.gui.setScreen(SkinManagementScreen.this));
 							}
 						}).exceptionally(t -> {
 							AxolotlClientCommon.getInstance().getLogger().warn("Failed to equip asset!", t);
@@ -644,8 +643,8 @@ public class SkinManagementScreen extends Screen {
 							return null;
 						});
 					if (asset instanceof Skin && !(current.getSkin() instanceof Skin.Local)) {
-						minecraft.setScreen(new ConfirmScreen(confirmed -> {
-							minecraft.setScreen(new LoadingScreen(getTitle(), TEXT_EQUIPPING));
+						minecraft.gui.setScreen(new ConfirmScreen(confirmed -> {
+							minecraft.gui.setScreen(new LoadingScreen(getTitle(), TEXT_EQUIPPING));
 							if (confirmed) {
 								consumer.accept(download(current.getSkin()).thenCompose(a -> widget.equip()));
 							} else {
@@ -766,7 +765,7 @@ public class SkinManagementScreen extends Screen {
 			}
 
 			public void submit() {
-				Minecraft.getInstance().gameRenderer.getGameRenderState().guiRenderState.addGuiElement(this);
+				Minecraft.getInstance().gameRenderer.gameRenderState().guiRenderState.addGuiElement(this);
 			}
 
 			@Override

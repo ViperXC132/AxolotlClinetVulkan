@@ -114,13 +114,13 @@ public class ChannelSettingsScreen extends Screen {
 		layout.addToContents(content);
 
 		LinearLayout footer = LinearLayout.horizontal().spacing(8);
-		footer.addChild(Button.builder(CommonComponents.GUI_CANCEL, widget -> minecraft.setScreen(parent)).build());
+		footer.addChild(Button.builder(CommonComponents.GUI_CANCEL, widget -> minecraft.gui.setScreen(parent)).build());
 		footer.addChild(Button.builder(CommonComponents.GUI_DONE, widget -> {
 			ChannelRequest.updateChannel(channel.getId(), nameField.getValue(),
 				Persistence.of(persistence.getValue(), count.get().get(), duration.get().get()),
 				Arrays.stream(namesInput.getValue().split(",")).filter(s -> !s.isEmpty()).map(UUIDHelper::ensureUuid)
 					.map(CompletableFuture::join).toArray(String[]::new));
-			minecraft.setScreen(parent);
+			minecraft.gui.setScreen(parent);
 		}).build());
 		layout.addToFooter(footer);
 

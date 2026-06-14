@@ -162,9 +162,9 @@ public class ConfigureKeyBindScreen extends Screen {
 		var row4 = LinearLayout.horizontal().spacing(8);
 		row4.defaultCellSetting().alignHorizontallyCenter();
 		row4.addChild(Button.builder(Component.translatable("keystrokes.stroke.configure_key"), b ->
-			minecraft.setScreen(new KeyBindSelectionScreen(this, stroke))).width(150).build());
+			minecraft.gui.setScreen(new KeyBindSelectionScreen(this, stroke))).width(150).build());
 		row4.addChild(Button.builder(Component.translatable("keystrokes.stroke.configure_position"), b ->
-			minecraft.setScreen(new KeystrokePositioningScreen(this, hud, stroke))).width(150).build());
+			minecraft.gui.setScreen(new KeystrokePositioningScreen(this, hud, stroke))).width(150).build());
 		buttonsFrame.addChild(row4);
 		body.addChild(buttonsFrame);
 
@@ -205,7 +205,7 @@ public class ConfigureKeyBindScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		minecraft.setScreen(parent);
+		minecraft.gui.setScreen(parent);
 		hud.saveKeystrokes();
 	}
 }

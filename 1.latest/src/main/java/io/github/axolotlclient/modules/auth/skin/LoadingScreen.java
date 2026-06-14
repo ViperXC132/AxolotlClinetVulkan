@@ -38,13 +38,11 @@ public class LoadingScreen extends Screen {
 	@Override
 	protected void init() {
 		int headerHeight = 33;
-		int contentHeight = height - headerHeight * 2;
 		StringWidget titleWidget = new StringWidget(width / 2 - font.width(getTitle()) / 2, headerHeight / 2 - font.lineHeight / 2, font.width(getTitle()), font.lineHeight, getTitle(), getFont());
 		addRenderableWidget(titleWidget);
 
 		var loadingPlaceholder = new LoadingDotsWidget(getFont(), description);
-		loadingPlaceholder.setRectangle(width, contentHeight, 0,
-			headerHeight);
+		loadingPlaceholder.setPosition(width/2 - loadingPlaceholder.getWidth()/2, height/2 - loadingPlaceholder.getHeight()/2);
 		addRenderableWidget(loadingPlaceholder);
 	}
 }

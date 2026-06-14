@@ -59,11 +59,11 @@ public class DebugCountersHud extends TextHudEntry {
 
 		int xEnd = lineX + 50;
 		if (showCCount.get()) {
-			xEnd = Math.max(xEnd, DrawUtil.drawString(graphics, client.levelRenderer.getSectionStatistics(), lineX, lineY, textColor.get().toInt(), shadow.get()));
+			xEnd = Math.max(xEnd, DrawUtil.drawString(graphics, client.levelExtractor.sectionStatistics(), lineX, lineY, textColor.get().toInt(), shadow.get()));
 			lineY += 10;
 		}
 		if (showECount.get()) {
-			xEnd = Math.max(xEnd, DrawUtil.drawString(graphics, client.levelRenderer.getEntityStatistics(), lineX, lineY, textColor.get().toInt(), shadow.get()));
+			xEnd = Math.max(xEnd, DrawUtil.drawString(graphics, client.levelExtractor.entityStatistics(), lineX, lineY, textColor.get().toInt(), shadow.get()));
 			lineY += 10;
 		}
 		if (showPCount.get()) {

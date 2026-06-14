@@ -55,12 +55,12 @@ public class AddOfflineScreen extends Screen {
 		addRenderableWidget(
 			nameInput = new EditBox(font, width / 2 - 100, height / 2 - 10, 200, 20, Component.empty()));
 
-		addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, button -> minecraft.setScreen(parent))
+		addRenderableWidget(Button.builder(CommonComponents.GUI_CANCEL, button -> minecraft.gui.setScreen(parent))
 			.bounds(width / 2 - 155, height - 50, 150, 20).build());
 		addRenderableWidget(Button.builder(CommonComponents.GUI_DONE, button -> {
 			Auth.getInstance()
 				.addAccount(new Account(nameInput.getValue(), UUID.randomUUID().toString(), Account.OFFLINE_TOKEN));
-			minecraft.setScreen(parent);
+			minecraft.gui.setScreen(parent);
 		}).bounds(width / 2 + 5, height - 50, 150, 20).build());
 	}
 }

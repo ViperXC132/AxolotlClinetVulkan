@@ -22,46 +22,29 @@
 
 package io.github.axolotlclient.mixin;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.github.axolotlclient.AxolotlClient;
-import io.github.axolotlclient.util.DrawUtil;
 import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.state.level.BlockOutlineRenderState;
-import net.minecraft.client.renderer.state.level.LevelRenderState;
-import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LevelRenderer.class)
 public abstract class WorldRendererMixin {
 
-	@WrapOperation(method = "renderBlockOutline", at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/client/renderer/LevelRenderer;renderHitOutline(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;DDDLnet/minecraft/client/renderer/state/level/BlockOutlineRenderState;IF)V", ordinal = 1))
-	private void axolotlclient$customOutlineColor(LevelRenderer instance, PoseStack poseStack, VertexConsumer vertexConsumer, double d, double e, double f, BlockOutlineRenderState blockOutlineRenderState, int i, float g, Operation<Void> original) {
+	@ModifyArg(method = "submitBlockOutline", at = @At(value = "INVOKE",
+		target = "Lnet/minecraft/client/renderer/LevelRenderer;submitHitOutline(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/rendertype/RenderType;Lnet/minecraft/client/renderer/state/level/BlockOutlineRenderState;IFZ)V", ordinal = 1), index = 4)
+	private int axolotlclient$customOutlineColor(int par5) {
 		if (AxolotlClient.config().enableCustomOutlines.get()) {
-			i = AxolotlClient.config().outlineColor.get().toInt();
+			return AxolotlClient.config().outlineColor.get().toInt();
 		}
-		original.call(instance, poseStack, vertexConsumer, d, e, f, blockOutlineRenderState, i, g);
+		return par5;
 	}
 
-	@ModifyArg(method = "renderBlockOutline", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;renderHitOutline(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;DDDLnet/minecraft/client/renderer/state/level/BlockOutlineRenderState;IF)V"), index = 7)
+	@ModifyArg(method = "submitBlockOutline", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/LevelRenderer;submitHitOutline(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/SubmitNodeCollector;Lnet/minecraft/client/renderer/rendertype/RenderType;Lnet/minecraft/client/renderer/state/level/BlockOutlineRenderState;IFZ)V"), index = 5)
 	private float outlineWidth(float width) {
 		if (AxolotlClient.config().enableCustomOutlines.get()) {
 			return width + AxolotlClient.config().outlineWidth.get() - 1f;
 		}
 		return width;
-	}
-
-	@Inject(method = "renderBlockOutline", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/state/level/CameraRenderState;pos:Lnet/minecraft/world/phys/Vec3;", opcode = Opcodes.GETFIELD))
-	private void renderOutlineFill(MultiBufferSource.BufferSource bufferSource, PoseStack poseStack, boolean onlyTranslucentBlocks, LevelRenderState levelRenderState, CallbackInfo ci, @Local(name = "state") BlockOutlineRenderState state) {
-		DrawUtil.drawOutlines(bufferSource, poseStack, levelRenderState, state);
 	}
 }

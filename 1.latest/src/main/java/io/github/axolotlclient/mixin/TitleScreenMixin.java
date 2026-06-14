@@ -73,9 +73,9 @@ public abstract class TitleScreenMixin extends Screen {
 			int shortcutButtonY = leftButtonY;
 			Runnable addApiButtons = () -> minecraft.execute(() -> {
 				addRenderableWidget(Button.builder(Component.translatable("api.friends"),
-					w -> minecraft.setScreen(new FriendsScreen(this))).bounds(10, shortcutButtonY, 50, 20).build());
+					w -> minecraft.gui.setScreen(new FriendsScreen(this))).bounds(10, shortcutButtonY, 50, 20).build());
 				addRenderableWidget(Button.builder(Component.translatable("api.chats"),
-					w -> minecraft.setScreen(new ChatListScreen(this))).bounds(10, shortcutButtonY + 24, 50, 20).build());
+					w -> minecraft.gui.setScreen(new ChatListScreen(this))).bounds(10, shortcutButtonY + 24, 50, 20).build());
 			});
 			if (API.getInstance().isSocketConnected()) {
 				addApiButtons.run();
@@ -97,7 +97,7 @@ public abstract class TitleScreenMixin extends Screen {
 			if (APIOptions.getInstance().displayNotes.get() &&
 				data.success() && !data.notes().isEmpty()) {
 				addRenderableWidget(Button.builder(Component.translatable("api.notes"), buttonWidget ->
-						minecraft.setScreen(new NewsScreen(this)))
+						minecraft.gui.setScreen(new NewsScreen(this)))
 					.bounds(width - 90, buttonY, 80, 20).build());
 			}
 		}));
@@ -113,11 +113,11 @@ public abstract class TitleScreenMixin extends Screen {
 
 	@WrapOperation(method = "createNormalMenuOptions",
 		at = @At(value = "INVOKE",
-			target = "Lnet/minecraft/client/gui/components/Button;builder(Lnet/minecraft/network/chat/Component;Lnet/minecraft/client/gui/components/Button$OnPress;)Lnet/minecraft/client/gui/components/Button$Builder;", ordinal = 2))
+			target = "Lnet/minecraft/client/gui/components/Button;builder(Lnet/minecraft/network/chat/Component;Lnet/minecraft/client/gui/components/Button$OnPress;)Lnet/minecraft/client/gui/components/Button$Builder;", ordinal = 3))
 	private Button.Builder axolotlclient$noRealmsbutOptionsButton(Component message, Button.OnPress onPress, Operation<Button.Builder> original) {
 		if (AxolotlClientConfigCommon.instance().titleScreenOptionButtonMode.get().showButton()) {
 			message = Component.translatable("config");
-			onPress = buttonWidget -> minecraft.setScreen(new HudEditScreen(this));
+			onPress = buttonWidget -> minecraft.gui.setScreen(new HudEditScreen(this));
 		}
 		return original.call(message, onPress);
 	}

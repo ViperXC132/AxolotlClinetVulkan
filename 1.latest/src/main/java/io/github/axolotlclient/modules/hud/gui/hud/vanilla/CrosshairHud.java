@@ -36,6 +36,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
+import io.github.axolotlclient.mixin.GameRendererAccessor;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.AbstractHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
@@ -170,7 +171,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		if (!client.options.getCameraType().isFirstPerson() && !showInF5.get()) {
 			return;
 		}
-		if (client.gui.getDebugOverlay().showDebugScreen() && !overridesF3()) {
+		if (client.gui.hud.getDebugOverlay().showDebugScreen() && !overridesF3()) {
 			return;
 		}
 		if (isHidden()) {
@@ -199,7 +200,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 
 		// Need to not enable blend while the debug HUD is open because it does weird stuff. Why? no idea.
 		boolean blend = ClientColors.ARGB.opaque(color.toInt()) == ClientColors.WHITE.toInt() && !type.equals(Crosshair.DIRECTION) && applyBlend.get()
-			&& !client.gui.getDebugOverlay().showDebugScreen();
+			&& !client.gui.hud.getDebugOverlay().showDebugScreen();
 
 		boolean isTex = type.equals(Crosshair.TEXTURE) || type.equals(Crosshair.CUSTOM);
 		if (type.equals(Crosshair.DOT)) {
@@ -276,15 +277,15 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		if (!client.options.getCameraType().isFirstPerson() && !showInF5.get()) {
 			return;
 		}
-		if (client.gui.getDebugOverlay().showDebugScreen() && !overridesF3()) {
+		if (client.gui.hud.getDebugOverlay().showDebugScreen() && !overridesF3()) {
 			return;
 		}
 
 		Matrix4fStack matrixStack = RenderSystem.getModelViewStack();
 		matrixStack.pushMatrix();
 		var scaleModifier = getScale() < 1 ? 0 : (int) ((getScale() - 1f) * 15f);
-		client.gui.getDebugOverlay().render3dCrosshair(client.gameRenderer.getGameRenderState().levelRenderState.cameraRenderState,
-			client.gameRenderer.getGameRenderState().windowRenderState.guiScale + scaleModifier);
+		((GameRendererAccessor) client.gameRenderer).getDebugCrosshairRenderer().render(client.gameRenderer.gameRenderState().levelRenderState.cameraRenderState,
+			client.gameRenderer.gameRenderState().windowRenderState.guiScale + scaleModifier);
 		matrixStack.popMatrix();
 	}
 

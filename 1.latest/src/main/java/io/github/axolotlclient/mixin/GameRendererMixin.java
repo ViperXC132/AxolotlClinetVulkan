@@ -52,12 +52,16 @@ public abstract class GameRendererMixin {
 	private CrossFrameResourcePool resourcePool;
 
 
+	@Shadow
+	@Final
+	private Minecraft minecraft;
+
 	@Inject(method = "render", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/GameRenderer;postEffectId:Lnet/minecraft/resources/Identifier;", ordinal = 0, opcode = Opcodes.GETFIELD))
 	public void axolotlclient$worldMotionBlur(DeltaTracker tracker, boolean renderLevel, CallbackInfo ci) {
 		axolotlclient$motionBlur(tracker, renderLevel, null);
 	}
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/SubmitNodeStorage;endFrame()V"))
+	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/render/GuiRenderer;endFrame()V"))
 	public void axolotlclient$motionBlur(DeltaTracker tracker, boolean renderLevel, CallbackInfo ci) {
 		if (ci != null && !MotionBlur.getInstance().inGuis.get()) {
 			return;
@@ -94,7 +98,7 @@ public abstract class GameRendererMixin {
 
 	@Inject(method = "renderLevel", at = @At("TAIL"))
 	private void renderDirectionCrosshair(DeltaTracker deltaTracker, CallbackInfo ci, @Local(name = "optionsState") OptionsRenderState optionsState) {
-		if (!optionsState.hideGui) {
+		if (!this.minecraft.gui.hud.isHidden()) {
 			var hud = (CrosshairHud) HudManager.getInstance().get(CrosshairHud.ID);
 			if (hud.isEnabled()) {
 				hud.renderDirectionCrosshair();

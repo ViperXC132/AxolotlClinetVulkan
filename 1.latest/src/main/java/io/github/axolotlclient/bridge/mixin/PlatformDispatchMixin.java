@@ -128,7 +128,7 @@ public abstract class PlatformDispatchMixin {
 	 */
 	@Overwrite
 	public static void autoBoop$openFiltersScreen(List<String> filters) {
-		Minecraft.getInstance().setScreen(new FilterListConfigurationScreen(filters, Minecraft.getInstance().screen));
+		Minecraft.getInstance().gui.setScreen(new FilterListConfigurationScreen(filters, Minecraft.getInstance().gui.screen()));
 	}
 
 	/**
@@ -137,6 +137,6 @@ public abstract class PlatformDispatchMixin {
 	 */
 	@Overwrite
 	public static void bedwars$sessionstats$openEntryConfigScreen() {
-		Minecraft.getInstance().setScreen(new SessionStatsHudEntryConfigScreen(Minecraft.getInstance().screen));
+		Minecraft.getInstance().gui.setScreen(new SessionStatsHudEntryConfigScreen(Minecraft.getInstance().gui.screen()));
 	}
 }

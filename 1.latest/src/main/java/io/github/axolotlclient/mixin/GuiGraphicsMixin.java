@@ -48,7 +48,7 @@ public abstract class GuiGraphicsMixin {
 	private void axolotlclient$scrollableTooltipsX(Font font, List<ClientTooltipComponent> list, int x, int y, ClientTooltipPositioner clientTooltipPositioner, @Nullable Identifier resourceLocation, Operation<Void> original) {
 		if (ScrollableTooltips.getInstance().enabled.get()) {
 			Minecraft mc = Minecraft.getInstance();
-			if ((!(mc.screen instanceof CreativeModeInventoryScreen c)) || c.isInventoryOpen()) {
+			if ((!(mc.gui.screen() instanceof CreativeModeInventoryScreen c)) || c.isInventoryOpen()) {
 				if (recursionDepth == 0) {
 					x += ScrollableTooltips.getInstance().tooltipOffsetX;
 					y += ScrollableTooltips.getInstance().tooltipOffsetY;

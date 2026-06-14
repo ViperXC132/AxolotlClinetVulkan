@@ -98,11 +98,11 @@ public class ChatScreen extends Screen implements ContextMenuScreen {
 		input.setMaxLength(1024);
 
 		if (channel.getOwner().equals(API.getInstance().getSelf())) {
-			addRenderableWidget(Button.builder(Component.translatable("api.channel.configure"), b -> minecraft.setScreen(new ChannelSettingsScreen(this, channel)))
+			addRenderableWidget(Button.builder(Component.translatable("api.channel.configure"), b -> minecraft.gui.setScreen(new ChannelSettingsScreen(this, channel)))
 				.bounds(width - 60, 5, 50, 20).build());
 		}
 
-		this.addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, button -> this.minecraft.setScreen(this.parent))
+		this.addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, button -> this.minecraft.gui.setScreen(this.parent))
 			.bounds(this.width / 2 - 75, this.height - 28, 150, 20)
 			.build()
 		);

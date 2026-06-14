@@ -136,7 +136,7 @@ public class HudEntryWidget implements Renderable, GuiEventListener, NarratableE
 		if (keyCode == InputConstants.KEY_SPACE) {
 			moving = true;
 		} else if (keyCode == InputConstants.KEY_RETURN || keyCode == InputConstants.KEY_NUMPADENTER) {
-			mc.setScreen(ConfigStyles.createScreen(mc.screen, entry.getCategory()));
+			mc.gui.setScreen(ConfigStyles.createScreen(mc.gui.screen(), entry.getCategory()));
 		} else if (keyCode == InputConstants.KEY_DELETE) {
 			entry.setEnabled(false);
 		} else {

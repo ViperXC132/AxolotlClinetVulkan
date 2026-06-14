@@ -55,7 +55,7 @@ public class NewsScreen extends Screen {
 	@Override
 	protected void init() {
 		GlobalDataRequest.get().thenAccept(data -> addRenderableWidget(new NewsWidget(25, 35, width - 50, height - 100, Component.literal(data.notes().trim().replaceAll("([^\n])\n([^\n])", "$1 $2")))));
-		addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, buttonWidget -> minecraft.setScreen(parent)).bounds(width / 2 - 100, height - 45, 200, 20).build());
+		addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, buttonWidget -> minecraft.gui.setScreen(parent)).bounds(width / 2 - 100, height - 45, 200, 20).build());
 	}
 
 	private class NewsWidget extends AbstractTextAreaWidget {

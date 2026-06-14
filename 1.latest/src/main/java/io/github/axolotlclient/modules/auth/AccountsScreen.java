@@ -81,7 +81,7 @@ public class AccountsScreen extends Screen {
 			.bounds(this.width / 2 - 154, this.height - 52, 100, 20).build());
 
 		addRenderableWidget(skinsButton = Button.builder(Component.translatable("skins.manage"),
-				btn -> minecraft.setScreen(new SkinManagementScreen(
+				btn -> minecraft.gui.setScreen(new SkinManagementScreen(
 					this, accountsListWidget.getSelected().getAccount())))
 			.bounds(this.width / 2 - 50, this.height - 52, 100, 20).build());
 
@@ -89,12 +89,12 @@ public class AccountsScreen extends Screen {
 			if (!Auth.getInstance().allowOfflineAccounts()) {
 				initMSAuth();
 			} else {
-				minecraft.setScreen(new ConfirmScreen(result -> {
+				minecraft.gui.setScreen(new ConfirmScreen(result -> {
 					if (!result) {
-						minecraft.setScreen(this);
+						minecraft.gui.setScreen(this);
 						initMSAuth();
 					} else {
-						minecraft.setScreen(new AddOfflineScreen(this));
+						minecraft.gui.setScreen(new AddOfflineScreen(this));
 					}
 				}, Component.translatable("auth.add.choose"), Component.empty(),
 					Component.translatable("auth.add.offline"),
@@ -118,7 +118,7 @@ public class AccountsScreen extends Screen {
 			Button.builder(Component.translatable("auth.refresh"), button -> refreshAccount())
 				.bounds(this.width / 2 - 154, this.height - 28, 100, 20).build());
 
-		this.addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, button -> this.minecraft.setScreen(this.parent))
+		this.addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, button -> this.minecraft.gui.setScreen(this.parent))
 			.bounds(this.width / 2 + 4 + 50, this.height - 28, 100, 20).build());
 		updateButtonActivationStates();
 	}
@@ -147,7 +147,7 @@ public class AccountsScreen extends Screen {
 	}
 
 	private void refresh() {
-		this.minecraft.setScreen(new AccountsScreen(this.parent));
+		this.minecraft.gui.setScreen(new AccountsScreen(this.parent));
 	}
 
 	private void login() {

@@ -195,7 +195,7 @@ public abstract class PlatformImplInternalMixin {
 	 */
 	@Overwrite
 	public static int tickCount() {
-		return Minecraft.getInstance().gui.getGuiTicks();
+		return Minecraft.getInstance().gui.hud.getGuiTicks();
 	}
 
 	/**
@@ -229,7 +229,7 @@ public abstract class PlatformImplInternalMixin {
 	 */
 	@Overwrite
 	public static void setTabListHeader(AxoText text) {
-		Minecraft.getInstance().gui.getTabList().setHeader((Component) text);
+		Minecraft.getInstance().gui.hud.getTabList().setHeader((Component) text);
 	}
 
 	/**

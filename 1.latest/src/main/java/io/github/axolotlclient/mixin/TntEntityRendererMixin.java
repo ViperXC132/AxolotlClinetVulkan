@@ -65,7 +65,6 @@ public abstract class TntEntityRendererMixin extends EntityRenderer<PrimedTnt, T
 				(Component) TntTime.getInstance().getFuseTime(state.fuseRemainingInTicks),
 				!state.isDiscrete,
 				state.lightCoords,
-				state.distanceToCameraSq,
 				camera
 			);
 			state.nameTagAttachment = prevAttachment;

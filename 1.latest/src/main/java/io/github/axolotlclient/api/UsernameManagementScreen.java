@@ -77,7 +77,7 @@ public class UsernameManagementScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		minecraft.setScreen(parent);
+		minecraft.gui.setScreen(parent);
 	}
 
 	private class UsernameListWidget extends ContainerObjectSelectionList<UsernameListWidget.UsernameListEntry> {
@@ -109,12 +109,12 @@ public class UsernameManagementScreen extends Screen {
 					AccountUsernameRequest.post(name.getName(), name.isPub());
 				}).width(100).build();
 				delete = Button.builder(Component.translatable("api.account.usernames.delete"),
-					w -> minecraft.setScreen(new ConfirmScreen(b -> {
+					w -> minecraft.gui.setScreen(new ConfirmScreen(b -> {
 						if (b) {
 							AccountUsernameRequest.delete(name.getName())
 								.thenRun(() -> UsernameListWidget.this.removeEntry(this));
 						}
-						minecraft.setScreen(UsernameManagementScreen.this);
+						minecraft.gui.setScreen(UsernameManagementScreen.this);
 					}, Component.translatable("api.account.confirm_deletion"),
 						Component.translatable(
 							"api.account.usernames.delete.desc")

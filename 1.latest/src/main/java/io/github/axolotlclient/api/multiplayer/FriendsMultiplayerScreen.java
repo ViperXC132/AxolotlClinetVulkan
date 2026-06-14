@@ -70,7 +70,7 @@ public class FriendsMultiplayerScreen extends Screen {
 		var headerRow = header.addChild(LinearLayout.horizontal()).spacing(4);
 		headerRow.defaultCellSetting().alignHorizontallyCenter();
 		headerRow.addChild(Button.builder(Component.translatable("api.servers"), button ->
-			minecraft.setScreen(new JoinMultiplayerScreen(lastScreen))).width(100).build());
+			minecraft.gui.setScreen(new JoinMultiplayerScreen(lastScreen))).width(100).build());
 		headerRow.addChild(friendsCountButton);
 		friendsCountButton.setWidth(100);
 		friendsCountButton.active = false;
@@ -91,10 +91,10 @@ public class FriendsMultiplayerScreen extends Screen {
 		this.selectButton = linearLayout2.addChild(Button.builder(Component.translatable("selectServer.select"), buttonx -> this.joinSelectedServer()).width(100).build());
 		linearLayout2.addChild(Button.builder(Component.translatable("selectServer.direct"), buttonx -> {
 			this.editingServer = new ServerData(I18n.get("selectServer.defaultName"), "", ServerData.Type.OTHER);
-			this.minecraft.setScreen(new DirectJoinServerScreen(this, this::directJoinCallback, this.editingServer));
+			this.minecraft.gui.setScreen(new DirectJoinServerScreen(this, this::directJoinCallback, this.editingServer));
 		}).width(100).build());
 		linearLayout2.addChild(Button.builder(Component.translatable("api.friends"), buttonx ->
-			this.minecraft.setScreen(new FriendsScreen(this))).width(100).build());
+			this.minecraft.gui.setScreen(new FriendsScreen(this))).width(100).build());
 		linearLayout3.addChild(Button.builder(Component.translatable("selectServer.edit"), buttonx -> {
 		}).width(74).build()).active = false;
 		linearLayout3.addChild(Button.builder(Component.translatable("selectServer.delete"), buttonx -> {
@@ -118,7 +118,7 @@ public class FriendsMultiplayerScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		this.minecraft.setScreen(this.lastScreen);
+		this.minecraft.gui.setScreen(this.lastScreen);
 	}
 
 	@Override
@@ -142,7 +142,7 @@ public class FriendsMultiplayerScreen extends Screen {
 	}
 
 	private void refreshServerList() {
-		this.minecraft.setScreen(new FriendsMultiplayerScreen(this.lastScreen));
+		this.minecraft.gui.setScreen(new FriendsMultiplayerScreen(this.lastScreen));
 	}
 
 	private void directJoinCallback(boolean confirmed) {
@@ -158,7 +158,7 @@ public class FriendsMultiplayerScreen extends Screen {
 				this.join(serverData);
 			}
 		} else {
-			this.minecraft.setScreen(this);
+			this.minecraft.gui.setScreen(this);
 		}
 	}
 

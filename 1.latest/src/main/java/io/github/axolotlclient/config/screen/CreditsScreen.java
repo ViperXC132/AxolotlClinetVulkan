@@ -105,7 +105,7 @@ public class CreditsScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		minecraft.setScreen(parent);
+		minecraft.gui.setScreen(parent);
 		stopBGM();
 	}
 
@@ -161,7 +161,7 @@ public class CreditsScreen extends Screen {
 		public Credit(String name, String... things) {
 			this.name = name;
 			this.things = things;
-			c = new Button(0, 0, 200, 20, Component.literal(name), buttonWidget -> minecraft.setScreen(new CreditOverlay(this)), Supplier::get) {
+			c = new Button(0, 0, 200, 20, Component.literal(name), buttonWidget -> minecraft.gui.setScreen(new CreditOverlay(this)), Supplier::get) {
 				private final Component hoveredMessage = getMessage().copy().withColor(ClientColors.SELECTOR_RED.toInt());
 
 				@Override
@@ -209,7 +209,7 @@ public class CreditsScreen extends Screen {
 
 		@Override
 		public void onClose() {
-			minecraft.setScreen(CreditsScreen.this);
+			minecraft.gui.setScreen(CreditsScreen.this);
 		}
 
 		@Override

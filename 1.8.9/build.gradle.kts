@@ -6,8 +6,8 @@ plugins {
 val minecraftVersion = "1.8.9"
 val featherBuild = "1"
 val lwjglVersion = "3.4.1"
-val legacyLwjgl3 = "1.4.0-beta.10"
-val osl = "0.18.0"
+val legacyLwjgl3 = "1.4.0-beta.11"
+val osl = "0.19.1"
 base.archivesName = "AxolotlClient"
 group = project.property("maven_group")!!
 version = "${project.property("version")}+$minecraftVersion"
@@ -44,8 +44,6 @@ dependencies {
 	modImplementation("com.terraformersmc:modmenu:0.4.0+mc1.8.9")
 
 	api(include(project(path = ":common", configuration = "shadow"))!!)
-
-	modApi(include("io.github.moehreag:search-in-resources:1.1.0+1.8.9")!!)
 
 	compileOnly("org.lwjgl:lwjgl-sdl:$lwjglVersion")
 

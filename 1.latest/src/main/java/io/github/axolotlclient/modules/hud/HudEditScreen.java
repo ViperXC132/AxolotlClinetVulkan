@@ -164,15 +164,15 @@ public class HudEditScreen extends Screen {
 		this.addRenderableWidget(Button.builder(Component.translatable("hud.clientOptions"),
 			_ -> {
 				Screen screen = ConfigStyles.createScreen(this, AxolotlClient.getInstance().getConfigManager().getRoot());
-				minecraft.setScreen(screen);
+				minecraft.gui.setScreen(screen);
 			}).bounds(width / 2 - 75, height / 2 - 10, 150, 20).build());
 
 		if (parent != null)
-			addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, _ -> minecraft.setScreen(parent))
+			addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, _ -> minecraft.gui.setScreen(parent))
 				.bounds(width / 2 - 75, height - 50 + 22, 150, 20).build());
 		else
 			addRenderableWidget(Button.builder(Component.translatable("close"),
-					_ -> minecraft.setScreen(null))
+					_ -> minecraft.gui.setScreen(null))
 				.bounds(width / 2 - 75, height - 50 + 22, 150, 20).build());
 	}
 
@@ -201,7 +201,7 @@ public class HudEditScreen extends Screen {
 		} else if (event.button() == 1) {
 			entry.ifPresent(abstractHudEntry -> {
 				Screen screen = ConfigStyles.createScreen(this, abstractHudEntry.getCategory());
-				minecraft.setScreen(screen);
+				minecraft.gui.setScreen(screen);
 			});
 		}
 		return value;

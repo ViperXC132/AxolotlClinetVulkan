@@ -58,7 +58,7 @@ public class SessionStatsHudEntryConfigScreen extends Screen {
 
 	@Override
 	public void onClose() {
-		minecraft.setScreen(parent);
+		minecraft.gui.setScreen(parent);
 		AxolotlClientCommon.getInstance().saveConfig();
 	}
 

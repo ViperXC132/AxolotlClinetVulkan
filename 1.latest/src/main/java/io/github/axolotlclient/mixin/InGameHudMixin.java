@@ -41,6 +41,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.client.gui.components.ChatComponent;
 import net.minecraft.client.gui.components.PlayerTabOverlay;
 import net.minecraft.network.chat.Component;
@@ -55,14 +56,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Gui.class)
+@Mixin(Hud.class)
 public abstract class InGameHudMixin {
 
 	@Shadow
 	@Final
 	private Minecraft minecraft;
 
-	@Inject(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractEffects(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"))
+	@Inject(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Hud;extractEffects(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"))
 	private void onHudRender(GuiGraphicsExtractor guiGraphicsExtractor, DeltaTracker deltaTracker, CallbackInfo ci) {
 		if (!(AxoMinecraftClient.getInstance().br$getScreen() instanceof HudEditScreen)) {
 			HudManager.getInstance().render(guiGraphicsExtractor, deltaTracker.getGameTimeDeltaTicks());
@@ -81,7 +82,7 @@ public abstract class InGameHudMixin {
 	public void axolotlclient$renderCrosshair(GuiGraphicsExtractor graphics, DeltaTracker tracker, CallbackInfo ci) {
 		CrosshairHud hud = (CrosshairHud) HudManager.getInstance().get(CrosshairHud.ID);
 		if (HudManager.getInstance().hudsEnabled() && hud != null && hud.isEnabled()) {
-			if (minecraft.gui.getDebugOverlay().showDebugScreen() && !hud.overridesF3()) {
+			if (minecraft.gui.hud.getDebugOverlay().showDebugScreen() && !hud.overridesF3()) {
 				return;
 			}
 			hud.renderCrosshair(graphics);
@@ -113,8 +114,8 @@ public abstract class InGameHudMixin {
 	}
 
 	@WrapOperation(method = "extractHearts", at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/client/gui/Gui;extractHeart(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Gui$HeartType;IIZZZ)V"))
-	public void axolotlclient$displayHardcoreHearts(Gui instance, GuiGraphicsExtractor graphics, Gui.HeartType type, int x, int y, boolean hardcore, boolean blinking, boolean half, Operation<Void> original) {
+		target = "Lnet/minecraft/client/gui/Hud;extractHeart(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Hud$HeartType;IIZZZ)V"))
+	public void axolotlclient$displayHardcoreHearts(Hud instance, GuiGraphicsExtractor graphics, Hud.HeartType type, int x, int y, boolean hardcore, boolean blinking, boolean half, Operation<Void> original) {
 		//noinspection OptionalGetWithoutIsPresent
 		boolean hardcoreMod = BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().inGame() &&
 			BedwarsMod.getInstance().hardcoreHearts.get() &&
@@ -141,7 +142,7 @@ public abstract class InGameHudMixin {
 	}
 
 	@WrapOperation(method = "extractPlayerHealth", at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/client/gui/Gui;extractArmor(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/world/entity/player/Player;IIII)V"))
+		target = "Lnet/minecraft/client/gui/Hud;extractArmor(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/world/entity/player/Player;IIII)V"))
 	private void axolotlclient$dontShowArmor(GuiGraphicsExtractor graphics, Player player, int y, int uncappedMaxHealth, int cappedMaxHealth, int x, Operation<Void> original) {
 		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().inGame() &&
 			!BedwarsMod.getInstance().displayArmor.get()) {
@@ -155,8 +156,8 @@ public abstract class InGameHudMixin {
 		return !AxolotlClient.config().hideChat.get();
 	}
 
-	@WrapOperation(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractHotbarAndDecorations(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"))
-	private void customHotbar(Gui instance, GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, Operation<Void> original) {
+	@WrapOperation(method = "extractRenderState", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Hud;extractHotbarAndDecorations(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/DeltaTracker;)V"))
+	private void customHotbar(Hud instance, GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, Operation<Void> original) {
 		HotbarHud hud = (HotbarHud) HudManager.getInstance().get(HotbarHud.ID);
 		if (!hud.isHidden()) {
 			graphics.br$pushMatrix();

@@ -58,7 +58,7 @@ public class DeviceCodeDisplayScreen extends Screen {
 		this.qrCode = Util.getTexture(data.getQrCode(), "device_auth_" + data.getUserCode());
 		data.setStatusConsumer(s -> {
 			if (s.equals("auth.finished")) {
-				minecraft.execute(() -> minecraft.setScreen(parent));
+				minecraft.execute(() -> minecraft.gui.setScreen(parent));
 			}
 			working = true;
 			clearWidgets();

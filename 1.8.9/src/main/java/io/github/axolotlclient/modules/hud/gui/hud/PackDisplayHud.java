@@ -40,7 +40,7 @@ import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.render.texture.DynamicTexture;
 import net.minecraft.client.resource.pack.ResourcePack;
 import net.minecraft.resource.Identifier;
-import net.ornithemc.osl.resource.loader.api.ModResourcePack;
+import net.ornithemc.osl.resource.loader.impl.resource.pack.ModContainerResourcePack;
 
 public class PackDisplayHud extends TextHudEntry {
 
@@ -58,7 +58,7 @@ public class PackDisplayHud extends TextHudEntry {
 	public void setPacks(List<ResourcePack> packs) {
 		widgets.clear();
 		this.packs.clear();
-		this.packs.addAll(packs.stream().filter(p -> !(p instanceof ModResourcePack)).toList());
+		this.packs.addAll(packs.stream().filter(p -> !(p instanceof ModContainerResourcePack)).toList());
 	}
 
 	@Override

@@ -120,7 +120,7 @@ public class BossBarHud extends TextHudEntry {
 	}
 
 	public void setBossBars() {
-		bossBars = ((BossBarHudAccessor) client.gui.getBossOverlay()).axolotlclient$getBossBars();
+		bossBars = ((BossBarHudAccessor) client.gui.hud.getBossOverlay()).axolotlclient$getBossBars();
 		if (bossBars != null) {
 			if (bossBars.isEmpty()) {
 				// Just leave it alone, it's not rendering anyway

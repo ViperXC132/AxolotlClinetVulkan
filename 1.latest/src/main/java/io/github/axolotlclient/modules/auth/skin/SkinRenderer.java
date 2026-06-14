@@ -31,14 +31,15 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
+import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.model.player.PlayerCapeModel;
-import net.minecraft.client.model.player.PlayerModel;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.util.Unit;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Matrix4fStack;
+import org.jspecify.annotations.NullMarked;
 
 public class SkinRenderer extends PictureInPictureRenderer<SkinRenderState> {
 	private static final Map<String, SkinRenderer> renderers = new ConcurrentHashMap<>();
@@ -48,17 +49,16 @@ public class SkinRenderer extends PictureInPictureRenderer<SkinRenderState> {
 		renderers.clear();
 	}
 
-	public static SkinRenderer getOrCreate(MultiBufferSource.BufferSource bufferSource, Minecraft minecraft, String id) {
-		return renderers.computeIfAbsent(id, _id -> new SkinRenderer(bufferSource, minecraft, id));
+	public static SkinRenderer getOrCreate(Minecraft minecraft, String id) {
+		return renderers.computeIfAbsent(id, _id -> new SkinRenderer(minecraft, id));
 	}
 
-	private PlayerModel classicModel, slimModel;
-	private PlayerCapeModel capeModel;
+	private Model.Simple classicModel, slimModel, capeModel;
 	private final Minecraft minecraft;
 	private final String id;
 
-	private SkinRenderer(MultiBufferSource.BufferSource bufferSource, Minecraft minecraft, String id) {
-		super(bufferSource);
+	private SkinRenderer(Minecraft minecraft, String id) {
+		super();
 		this.minecraft = minecraft;
 		this.id = id;
 	}
@@ -68,15 +68,16 @@ public class SkinRenderer extends PictureInPictureRenderer<SkinRenderState> {
 		return SkinRenderState.class;
 	}
 
+	@NullMarked
 	@Override
-	protected void renderToTexture(SkinRenderState renderState, PoseStack poseStack) {
+	protected void renderToTexture(SkinRenderState renderState, PoseStack poseStack, SubmitNodeCollector collector) {
 		if (classicModel == null && renderState.classicVariant()) {
-			classicModel = new PlayerModel(minecraft.getEntityModels().bakeLayer(ModelLayers.PLAYER), false);
+			classicModel = new Model.Simple(minecraft.getEntityModels().bakeLayer(ModelLayers.PLAYER), RenderTypes::entityTranslucent);
 		}
 		if (slimModel == null && !renderState.classicVariant()) {
-			slimModel = new PlayerModel(minecraft.getEntityModels().bakeLayer(ModelLayers.PLAYER_SLIM), true);
+			this.slimModel = new Model.Simple(minecraft.getEntityModels().bakeLayer(ModelLayers.PLAYER_SLIM), RenderTypes::entityTranslucent);
 		}
-		Minecraft.getInstance().gameRenderer.getLighting().setupFor(Lighting.Entry.PLAYER_SKIN);
+		Minecraft.getInstance().gameRenderer.lighting().setupFor(Lighting.Entry.PLAYER_SKIN);
 		int i = Minecraft.getInstance().getWindow().getGuiScale();
 		Matrix4fStack matrix4fStack = RenderSystem.getModelViewStack();
 		matrix4fStack.pushMatrix();
@@ -85,17 +86,14 @@ public class SkinRenderer extends PictureInPictureRenderer<SkinRenderState> {
 		poseStack.mulPose(Axis.YP.rotationDegrees(-renderState.rotationY()));
 		poseStack.translate(0.0F, -1.6010001F, 0.0F);
 		var model = renderState.classicVariant() ? classicModel : slimModel;
-		RenderType renderType = model.renderType(renderState.skinTexture());
-		model.renderToBuffer(poseStack, this.bufferSource.getBuffer(renderType), 15728880, OverlayTexture.NO_OVERLAY);
+		collector.submitModel(model, Unit.INSTANCE, poseStack, renderState.skinTexture(), 15728880, OverlayTexture.NO_OVERLAY, 0, null);
 		if (renderState.cape() != null) {
 			if (capeModel == null) {
-				capeModel = new PlayerCapeModel(minecraft.getEntityModels().bakeLayer(ModelLayers.PLAYER_CAPE));
+				capeModel = new Model.Simple(minecraft.getEntityModels().bakeLayer(ModelLayers.PLAYER_CAPE), RenderTypes::entityTranslucent);
 			}
-			var type = capeModel.renderType(renderState.cape());
 			poseStack.mulPose(Axis.XP.rotationDegrees(6.0F));
-			capeModel.renderToBuffer(poseStack, bufferSource.getBuffer(type), 15728880, OverlayTexture.NO_OVERLAY);
+			collector.submitModel(capeModel, Unit.INSTANCE, poseStack, renderState.cape(), 15728880, OverlayTexture.NO_OVERLAY, 0, null);
 		}
-		this.bufferSource.endBatch();
 		matrix4fStack.popMatrix();
 	}
 

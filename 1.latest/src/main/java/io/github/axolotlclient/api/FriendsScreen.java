@@ -113,31 +113,31 @@ public class FriendsScreen extends Screen {
 		}
 
 		this.addRenderableWidget(blockedTab = Button.builder(Component.translatable("api.friends.tab.blocked"),
-				button -> minecraft.setScreen(
+				button -> minecraft.gui.setScreen(
 					new FriendsScreen(parent, Tab.BLOCKED))
 			).bounds(this.width / 2 + 24, this.height - 52, 57, 20)
 			.build());
 
 		this.addRenderableWidget(pendingTab = Button.builder(Component.translatable("api.friends.tab.pending"),
-				button -> minecraft.setScreen(
+				button -> minecraft.gui.setScreen(
 					new FriendsScreen(parent, Tab.PENDING))
 			).bounds(this.width / 2 - 34, this.height - 52, 57, 20)
 			.build());
 
 		this.addRenderableWidget(allTab = Button.builder(Component.translatable("api.friends.tab.all"),
-				button -> minecraft.setScreen(
+				button -> minecraft.gui.setScreen(
 					new FriendsScreen(parent, Tab.ALL))
 			).bounds(this.width / 2 - 94, this.height - 52, 57, 20)
 			.build());
 
 		this.addRenderableWidget(onlineTab = Button.builder(Component.translatable("api.friends.tab.online"),
-				button -> minecraft.setScreen(
+				button -> minecraft.gui.setScreen(
 					new FriendsScreen(parent, Tab.ONLINE))
 			).bounds(this.width / 2 - 154, this.height - 52, 57, 20)
 			.build());
 
 		this.addRenderableWidget(Button.builder(Component.translatable("api.friends.add"),
-			button -> minecraft.setScreen(new AddFriendScreen(this))
+			button -> minecraft.gui.setScreen(new AddFriendScreen(this))
 		).bounds(this.width / 2 + 88, this.height - 52, 66, 20).build());
 
 		this.removeButton =
@@ -172,13 +172,13 @@ public class FriendsScreen extends Screen {
 			Button.builder(Component.translatable("api.friends.chat"), button -> openChat())
 				.bounds(this.width / 2 - 154, this.height - 28, 100, 20).build());
 
-		this.addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, button -> this.minecraft.setScreen(this.parent))
+		this.addRenderableWidget(Button.builder(CommonComponents.GUI_BACK, button -> this.minecraft.gui.setScreen(this.parent))
 			.bounds(this.width / 2 + 4 + 50, this.height - 28, 100, 20).build());
 		updateButtonActivationStates();
 	}
 
 	private void refresh() {
-		minecraft.setScreen(new FriendsScreen(parent));
+		minecraft.gui.setScreen(new FriendsScreen(parent));
 	}
 
 	private void denyRequest() {
@@ -239,7 +239,7 @@ public class FriendsScreen extends Screen {
 		if (entry != null) {
 			chatButton.active = false;
 			ChannelRequest.getOrCreateDM(entry.getUser())
-				.thenAccept(c -> minecraft.execute(() -> minecraft.setScreen(new ChatScreen(this, c))));
+				.thenAccept(c -> minecraft.execute(() -> minecraft.gui.setScreen(new ChatScreen(this, c))));
 		}
 	}
 

@@ -23,9 +23,9 @@
 package io.github.axolotlclient.mixin;
 
 import io.github.axolotlclient.AxolotlClient;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.WeatherEffectRenderer;
 import net.minecraft.client.renderer.state.level.WeatherRenderState;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -36,7 +36,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class WeatherEffectRendererMixin {
 	@Inject(method = "extractRenderState", at = @At("HEAD"),
 		cancellable = true)
-	private void noRain(Level level, int i, float f, Vec3 vec3, WeatherRenderState weatherRenderState, CallbackInfo ci) {
+	private void noRain(ClientLevel level, float partialTicks, Vec3 cameraPos, WeatherRenderState renderState, CallbackInfo ci) {
 		if (AxolotlClient.config().noRain.get()) {
 			ci.cancel();
 		}

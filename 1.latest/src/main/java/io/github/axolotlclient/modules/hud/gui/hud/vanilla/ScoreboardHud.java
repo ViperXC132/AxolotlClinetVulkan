@@ -106,9 +106,9 @@ public class ScoreboardHud extends TextHudEntry {
 		//noinspection DataFlowIssue
 		PlayerTeam playerTeam = scoreboard.getPlayersTeam(client.player.getScoreboardName());
 		if (playerTeam != null) {
-			DisplaySlot displaySlot = DisplaySlot.teamColorToSlot(playerTeam.getColor());
-			if (displaySlot != null) {
-				objective = scoreboard.getDisplayObjective(displaySlot);
+			var teamColor = playerTeam.getColor();
+			if (teamColor.isPresent()) {
+				objective = scoreboard.getDisplayObjective(teamColor.get().displaySlot());
 			}
 		}
 

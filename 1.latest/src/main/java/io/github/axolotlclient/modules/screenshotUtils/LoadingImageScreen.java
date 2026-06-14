@@ -86,7 +86,7 @@ public class LoadingImageScreen extends Screen {
 		if (freeOnClose) {
 			future.cancel(false);
 		}
-		minecraft.setScreen(parent);
+		minecraft.gui.setScreen(parent);
 	}
 
 	private void drawHorizontalGradient(GuiGraphicsExtractor guiGraphicsExtractor, int x1, int y1, int y2, int x2) {

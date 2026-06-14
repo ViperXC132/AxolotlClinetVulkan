@@ -161,14 +161,14 @@ public class KeystrokePositioningScreen extends Screen {
 					break;
 				}
 			}
-			entry.ifPresent(stroke -> minecraft.setScreen(new ConfigureKeyBindScreen(this, hud, stroke, false)));
+			entry.ifPresent(stroke -> minecraft.gui.setScreen(new ConfigureKeyBindScreen(this, hud, stroke, false)));
 		}
 		return value;
 	}
 
 	@Override
 	public void onClose() {
-		minecraft.setScreen(parent);
+		minecraft.gui.setScreen(parent);
 		hud.saveKeystrokes();
 	}
 
