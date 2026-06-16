@@ -32,7 +32,6 @@ import io.github.axolotlclient.modules.screenshotUtils.ScreenshotUtils;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.main.GameConfig;
 import net.minecraft.client.multiplayer.ClientLevel;
 import org.objectweb.asm.Opcodes;
