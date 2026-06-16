@@ -45,8 +45,6 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.extract.LevelExtractor;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.entity.Entity;
@@ -87,18 +85,10 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 	public abstract ResourceManager getResourceManager();
 
 	@Shadow
-	@Final
-	public LevelRenderer levelRenderer;
-
-	@Shadow
 	public abstract Entity getCameraEntity();
 
 	@Shadow
 	public abstract boolean hasSingleplayerServer();
-
-	@Shadow
-	@Final
-	public LevelExtractor levelExtractor;
 
 	@Override
 	public @Nullable AxoPlayer br$getPlayer() {
@@ -192,7 +182,7 @@ public abstract class MinecraftClientMixin implements AxoMinecraftClient {
 
 	@Override
 	public void br$notifyLevelRenderer() {
-		levelExtractor.allChanged();
+
 	}
 
 	@Override
