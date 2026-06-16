@@ -23,6 +23,7 @@
 package io.github.axolotlclient.modules.rpc;
 
 import java.time.Instant;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.gson.JsonObject;
 import com.jagrosh.discordipc.IPCClient;
@@ -42,7 +43,7 @@ import io.github.axolotlclient.util.options.ForceableBooleanOption;
 
 public class DiscordRPC extends AbstractCommonModule {
 	private static final long CLIENT_ID = 875835666729152573L;
-	private static boolean running, starting;
+	private static final AtomicBoolean running = new AtomicBoolean(), starting = new AtomicBoolean();
 	private static DiscordRPC Instance;
 	private final OptionCategory category = OptionCategory.create("rpc");
 	private final BooleanOption showActivity = new BooleanOption("showActivity", true);
@@ -82,20 +83,19 @@ public class DiscordRPC extends AbstractCommonModule {
 	}
 
 	public void tick() {
-		if (!running && !starting && enabled.get()) {
-			starting = true;
+		if (!running.get() && !starting.get() && enabled.get()) {
+			starting.set(true);
 			ThreadExecuter.scheduleTask(this::initRPC);
-		}
-		if (running) {
+		} else if (running.get()) {
 			ThreadExecuter.scheduleTask(this::updateRPC);
 		}
 	}
 
 	private void shutdown() {
-		if (running) {
+		if (running.get()) {
 			setRichPresence(null);
 			ipcClient.close();
-			running = false;
+			running.set(false);
 		}
 	}
 
@@ -117,9 +117,9 @@ public class DiscordRPC extends AbstractCommonModule {
 				: (CommonUtil.getCurrentServerAddress() == null ? "Singleplayer" : CommonUtil.getCurrentServerAddress());
 			case "showName" -> client.br$getWorld() == null ? "In the menu"
 				: (client.br$getServerAddress() == null
-				? (CommonUtil.getCurrentServerAddress() == null ? "Singleplayer"
-				: CommonUtil.getCurrentServerAddress())
-				: client.br$getServerName());
+				   ? (CommonUtil.getCurrentServerAddress() == null ? "Singleplayer"
+					  : CommonUtil.getCurrentServerAddress())
+				   : client.br$getServerName());
 			default -> "";
 		};
 
@@ -137,7 +137,7 @@ public class DiscordRPC extends AbstractCommonModule {
 	}
 
 	private void setRichPresence(RichPresence presence) {
-		if (running && ipcClient != null) {
+		if (running.get() && ipcClient != null) {
 			ipcClient.sendRichPresence(presence);
 		}
 	}
@@ -147,8 +147,8 @@ public class DiscordRPC extends AbstractCommonModule {
 	}
 
 	private synchronized void initRPC() {
-		if (enabled.get() && !starting && !running) {
-			starting = true;
+		if (enabled.get() && !starting.get() && !running.get()) {
+			starting.set(true);
 			if (ipcClient == null) {
 				ipcClient = new IPCClient(CLIENT_ID);
 				ipcClient.setListener(new IPCListener() {
@@ -179,34 +179,35 @@ public class DiscordRPC extends AbstractCommonModule {
 
 					@Override
 					public void onReady(IPCClient client) {
+						running.set(true);
 						createRichPresence();
 					}
 
 					@Override
 					public void onClose(IPCClient client, JsonObject json) {
 						logger.info("RPC Closed");
-						running = false;
+						running.set(false);
 					}
 
 					@Override
 					public void onDisconnect(IPCClient client, Throwable t) {
-						running = false;
+						running.set(false);
 					}
 				});
 			}
 			try {
-				running = true;
 				ipcClient.connect();
 				logger.info("Started RPC");
 			} catch (Exception e) {
 				logger.warn("Failed to start RPC", e);
 				try {
 					ipcClient.close();
-				} catch (Throwable ignored) {}
+				} catch (Throwable ignored) {
+				}
 				enabled.set(false);
-				running = false;
+				running.set(false);
 			}
-			starting = false;
+			starting.set(false);
 		}
 	}
 }

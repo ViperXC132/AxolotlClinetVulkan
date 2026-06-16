@@ -24,9 +24,7 @@ package io.github.axolotlclient.mixin;
 
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
-import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.bridge.events.types.WorldLoadEvent;
-import io.github.axolotlclient.modules.auth.Auth;
 import net.minecraft.SharedConstants;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.RunArgs;
@@ -67,12 +65,5 @@ public abstract class MinecraftClientMixin {
 	@Inject(method = "<init>", at = @At("TAIL"))
 	private void ready(RunArgs args, CallbackInfo ci) {
 		io.github.axolotlclient.bridge.events.Events.CLIENT_READY.invoker().run();
-	}
-
-	@Inject(method = "<init>", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/SplashOverlay;<init>(Lnet/minecraft/client/MinecraftClient;Lnet/minecraft/resource/ResourceReload;Ljava/util/function/Consumer;Z)V"))
-	private void onLoadingScreenOpen(RunArgs args, CallbackInfo ci) {
-		if (!API.getInstance().isSocketConnected() && !Auth.getInstance().getCurrent().isOffline()) {
-			API.getInstance().startup(Auth.getInstance().getCurrent());
-		}
 	}
 }

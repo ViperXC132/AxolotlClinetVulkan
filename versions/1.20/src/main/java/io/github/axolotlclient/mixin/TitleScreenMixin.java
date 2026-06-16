@@ -151,4 +151,11 @@ public abstract class TitleScreenMixin extends Screen {
 	private void axolotlclient$noRealmsIcons(CallbackInfoReturnable<Boolean> cir) {
 		cir.setReturnValue(false);
 	}
+
+	@Inject(method = "init", at = @At("HEAD"))
+	private void checkAPIStart(CallbackInfo ci) {
+		if (!API.getInstance().isSocketConnected() && !Auth.getInstance().getCurrent().isOffline()) {
+			API.getInstance().startup(Auth.getInstance().getCurrent());
+		}
+	}
 }
