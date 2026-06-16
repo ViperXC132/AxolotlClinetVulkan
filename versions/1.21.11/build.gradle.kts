@@ -44,7 +44,7 @@ dependencies {
 
 	modImplementation("net.fabricmc.fabric-api:fabric-api:$fapi")
 
-	val configVersion = "3.1.12"
+	val configVersion = project.property("config")
 	modImplementation("io.github.axolotlclient:AxolotlClient-config:$configVersion+$minecraftFriendly")
 	include("io.github.axolotlclient:AxolotlClient-config:$configVersion+$minecraftFriendly")
 	modImplementation(include("io.github.axolotlclient:AxolotlClient-config-rounded:$configVersion+$minecraftFriendly")!!)
