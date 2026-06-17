@@ -4,7 +4,7 @@ plugins {
 	id("net.fabricmc.fabric-loom")
 }
 
-val minecraftVersion = "26.2-rc-2"
+val minecraftVersion = "26.2"
 val minecraftFriendly = "26.2"
 val modmenu = "18.0.0-alpha.8"
 val fapi = "0.152.0+26.2"

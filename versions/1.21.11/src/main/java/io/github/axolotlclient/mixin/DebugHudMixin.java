@@ -22,17 +22,27 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.expression.Expression;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.CrosshairHud;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.DebugScreenOverlay;
+import net.minecraft.client.gui.components.debug.DebugScreenEntries;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(DebugScreenOverlay.class)
 public abstract class DebugHudMixin {
+
+	@Final
+	@Shadow
+	private Minecraft minecraft;
 
 	@Inject(method = "render",
 		at = @At(value = "INVOKE", target = "Lnet/minecraft/util/profiling/ProfilerFiller;pop()V"))
@@ -41,5 +51,15 @@ public abstract class DebugHudMixin {
 		if (hud.isEnabled() && hud.overridesF3()) {
 			hud.render(graphics, 0);
 		}
+	}
+
+	@Expression("0.01 * ?")
+	@ModifyExpressionValue(method = "render3dCrosshair", at = @At(value = "MIXINEXTRAS:EXPRESSION"))
+	private float scale(float original) {
+		CrosshairHud hud = (CrosshairHud) HudManager.getInstance().get(CrosshairHud.ID);
+		if (hud.isEnabled() && (hud.overridesF3() || !minecraft.debugEntries.isCurrentlyEnabled(DebugScreenEntries.THREE_DIMENSIONAL_CROSSHAIR))) {
+			return original * hud.getScale();
+		}
+		return original;
 	}
 }

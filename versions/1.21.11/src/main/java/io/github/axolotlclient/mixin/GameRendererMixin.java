@@ -31,10 +31,13 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.blur.MotionBlur;
+import io.github.axolotlclient.modules.hud.HudManager;
+import io.github.axolotlclient.modules.hud.gui.hud.vanilla.CrosshairHud;
 import io.github.axolotlclient.modules.zoom.Zoom;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.DebugScreenOverlay;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.profiling.Profiler;
@@ -123,5 +126,12 @@ public abstract class GameRendererMixin {
 		if (AxolotlClient.config().noHurtCam.get()) {
 			ci.cancel();
 		}
+	}
+
+	@WrapOperation(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/DebugScreenOverlay;render3dCrosshair(Lnet/minecraft/client/Camera;)V"))
+	private void wrapDirectionCrosshair(DebugScreenOverlay instance, Camera camera, Operation<Void> original) {
+		CrosshairHud hud = (CrosshairHud) HudManager.getInstance().get(CrosshairHud.ID);
+		if (hud.isEnabled() && hud.overridesF3()) return;
+		original.call(instance, camera);
 	}
 }

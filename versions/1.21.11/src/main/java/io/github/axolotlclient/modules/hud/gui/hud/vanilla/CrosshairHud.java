@@ -28,7 +28,6 @@ import com.mojang.blaze3d.pipeline.BlendFunction;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.platform.DestFactor;
 import com.mojang.blaze3d.platform.SourceFactor;
-import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
@@ -37,7 +36,6 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.GraphicsOption;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
-import io.github.axolotlclient.mixin.GameRendererAccessor;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
 import io.github.axolotlclient.modules.hud.gui.entry.AbstractHudEntry;
 import io.github.axolotlclient.modules.hud.gui.layout.AnchorPoint;
@@ -57,7 +55,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.AbstractChestBlock;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
-import org.joml.Matrix4fStack;
 
 /**
  * This implementation of Hud modules is based on KronHUD.
@@ -214,15 +211,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			fillRenderType(graphics, blend, x + (getWidth() / 2) - 1, y + (getHeight() / 2), 1, 5, color);
 		} else if (type.equals(Crosshair.DIRECTION)) {
 			Camera camera = this.client.gameRenderer.getMainCamera();
-			Matrix4fStack matrixStack = RenderSystem.getModelViewStack();
-			matrixStack.pushMatrix();
-			matrixStack.translate(client.getWindow().getGuiScaledWidth() / 2F, client.getWindow().getGuiScaledHeight() / 2F,
-				0);
-			matrixStack.rotateX(-camera.xRot() * 0.017453292F);
-			matrixStack.rotateY(camera.yRot() * 0.017453292F);
-			matrixStack.scale(-getScale(), -getScale(), -getScale());
-			client.gui.getDebugOverlay().render3dCrosshair(((GameRendererAccessor) client.gameRenderer).getCamera());
-			matrixStack.popMatrix();
+			client.gui.getDebugOverlay().render3dCrosshair(camera);
 		} else if (!type.equals(Crosshair.DIRECTION) && isTex) {
 			if (type.equals(Crosshair.TEXTURE)) {
 				// Draw crosshair
