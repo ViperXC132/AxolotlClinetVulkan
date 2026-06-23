@@ -28,6 +28,7 @@ import java.net.http.*;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import io.github.axolotlclient.AxolotlClientCommon;
@@ -72,6 +73,7 @@ public class API {
 	private Future<?> statusUpdateFuture;
 	private final ScheduledExecutorService statusUpdateExecutor;
 	private static final List<BiContainer<Runnable, ListenerType>> afterStartupListeners = new ArrayList<>();
+	private final AtomicBoolean starting = new AtomicBoolean();
 
 	public API(StatusUpdateProvider statusUpdateProvider) {
 		if (Instance != null) {
@@ -436,12 +438,18 @@ public class API {
 
 	private CompletableFuture<?> startupAPI() {
 		if (!isSocketConnected()) {
-
 			if (Constants.TESTING) {
 				return CompletableFuture.failedFuture(new UnsupportedOperationException("API is disabled for testing!"));
 			}
+			if (starting.getAndSet(true)) {
+				return CompletableFuture.completedFuture(null);
+			}
+
 			logger.info("Starting API...");
-			return CompletableFuture.supplyAsync(() -> this.authenticate().join(), ThreadExecuter.service());
+			return CompletableFuture.runAsync(() -> {
+				this.authenticate().join();
+				starting.set(false);
+			}, ThreadExecuter.service());
 		} else {
 			logger.warn("API is already running!");
 		}
