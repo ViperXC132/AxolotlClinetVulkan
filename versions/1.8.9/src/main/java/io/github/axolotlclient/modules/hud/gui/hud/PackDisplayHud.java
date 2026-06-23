@@ -23,6 +23,7 @@
 package io.github.axolotlclient.modules.hud.gui.hud;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -38,9 +39,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.render.platform.GlStateManager;
 import net.minecraft.client.render.texture.DynamicTexture;
-import net.minecraft.client.resource.pack.ResourcePack;
+import net.minecraft.client.render.texture.TextureUtil;
 import net.minecraft.resource.Identifier;
-import net.ornithemc.osl.resource.loader.impl.resource.pack.ModContainerResourcePack;
+import net.ornithemc.osl.resource.loader.api.resource.pack.ResourcePack;
+import net.ornithemc.osl.resource.loader.api.resource.repository.ResourcePackRepository;
 
 public class PackDisplayHud extends TextHudEntry {
 
@@ -55,10 +57,11 @@ public class PackDisplayHud extends TextHudEntry {
 		super(120, 18, true);
 	}
 
-	public void setPacks(List<ResourcePack> packs) {
+	public void setPacks(Collection<ResourcePack> packs) {
+		placeholder = null;
 		widgets.clear();
 		this.packs.clear();
-		this.packs.addAll(packs.stream().filter(p -> !(p instanceof ModContainerResourcePack)).toList());
+		this.packs.addAll(packs.stream().toList());
 	}
 
 	@Override
@@ -69,7 +72,7 @@ public class PackDisplayHud extends TextHudEntry {
 			init();
 
 		int y = pos.y() + 1;
-		for (int i = widgets.size() - 1; i >= 0; i--) { // Badly reverse the order (I'm sure there are better ways to do this)
+		for (int i = widgets.size() - 1; i >= 0; i--) {
 			widgets.get(i).render(pos.x + 1, y);
 			y += 17;
 		}
@@ -83,7 +86,7 @@ public class PackDisplayHud extends TextHudEntry {
 	public void init() {
 		packs.forEach(pack -> {
 			try {
-				if (pack.getIcon() != null) {
+				if (pack.hasResource(ResourcePack.ICON_FILE)) {
 					if (packs.size() == 1) {
 						widgets.add(new PackWidget(pack));
 					} else if (!pack.getName().equalsIgnoreCase("Default")) {
@@ -121,7 +124,7 @@ public class PackDisplayHud extends TextHudEntry {
 			onBoundsUpdate();
 		}
 		if (placeholder == null) {
-			placeholder = new PackWidget(Minecraft.getInstance().getResourcePacks().defaultPack);
+			placeholder = new PackWidget(ResourcePackRepository.clientPackSource().getDefaultResourcePack());
 		}
 		placeholder.render(getContentPos().x + 1, getContentPos().y + 1);
 	}
@@ -147,10 +150,10 @@ public class PackDisplayHud extends TextHudEntry {
 		public PackWidget(ResourcePack pack) {
 			this.name = pack.getName();
 			try {
-				this.texture = new DynamicTexture(pack.getIcon()).getGlId();
+				this.texture = new DynamicTexture(TextureUtil.readImage(pack.getResource(ResourcePack.ICON_FILE))).getGlId();
 			} catch (Exception e) {
 				AxolotlClientCommon.getInstance().getLogger().warn("Pack " + pack.getName()
-					+ " somehow threw an error! Please investigate... Does it have an icon?");
+					+ " somehow threw an error! Please investigate... Does it have an icon?", e);
 			}
 		}
 

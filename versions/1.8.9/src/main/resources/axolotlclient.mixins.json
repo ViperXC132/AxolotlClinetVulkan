@@ -50,7 +50,6 @@
 		"PlayerInventoryScreenMixin",
 		"PlayerListEntryMixin",
 		"PlayerListHudMixin",
-		"ReloadableResourceManagerImplMixin",
 		"RenderDataMixin",
 		"ScreenAccessor",
 		"ScreenMixin",

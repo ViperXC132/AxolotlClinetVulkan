@@ -41,7 +41,6 @@
 		"MinecraftServerAccessor",
 		"ModStatusMixin",
 		"MouseMixin",
-		"MultiPackResourceManagerMixin",
 		"NameTagFeatureRendererMixin",
 		"NameTagFeatureRendererStorageMixin",
 		"NameTagSubmitMixin",

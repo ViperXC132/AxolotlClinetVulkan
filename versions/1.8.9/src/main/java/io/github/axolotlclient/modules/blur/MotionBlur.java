@@ -23,7 +23,6 @@
 package io.github.axolotlclient.modules.blur;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import com.google.gson.JsonSyntaxException;
 import io.github.axolotlclient.AxolotlClient;
@@ -36,10 +35,7 @@ import io.github.axolotlclient.modules.AbstractModule;
 import lombok.Getter;
 import net.minecraft.client.render.PostChain;
 import net.minecraft.client.render.shaders.Uniform;
-import net.minecraft.client.resource.Resource;
-import net.minecraft.client.resource.metadata.ResourceMetadataSection;
 import net.minecraft.resource.Identifier;
-import org.apache.commons.io.IOUtils;
 
 public class MotionBlur extends AbstractModule {
 
@@ -49,7 +45,7 @@ public class MotionBlur extends AbstractModule {
 	public final FloatOption strength = new FloatOption("strength", 50F, 1F, 99F);
 	public final BooleanOption inGuis = new BooleanOption("inGuis", false);
 	public final OptionCategory category = OptionCategory.create("motionBlur");
-	private final Identifier shaderLocation = new Identifier("minecraft:shaders/post/motion_blur.json");
+	private final Identifier shaderLocation = new Identifier("axolotlclient", "shaders/post/motion_blur.json");
 	public PostChain shader;
 	private float currentBlur;
 
@@ -65,14 +61,12 @@ public class MotionBlur extends AbstractModule {
 		category.add(enabled, strength, inGuis);
 
 		AxolotlClient.config().rendering.add(category);
-
-		AxolotlClient.runtimeResources.put(shaderLocation, new MotionBlurShader());
 	}
 
 	public void onUpdate() {
 		if ((shader == null || client.width != lastWidth || client.height != lastHeight) && client.height != 0
 			&& client.width != 0) {
-			currentBlur = getBlur();
+			currentBlur = 0.5f;
 			try {
 				shader = new PostChain(client.getTextureManager(), client.getResourceManager(),
 					client.getRenderTarget(), shaderLocation);
@@ -93,44 +87,5 @@ public class MotionBlur extends AbstractModule {
 
 		lastWidth = client.width;
 		lastHeight = client.height;
-	}
-
-	private static class MotionBlurShader implements Resource {
-
-		@Override
-		public Identifier getLocation() {
-			return null;
-		}
-
-		@Override
-		public InputStream asStream() {
-			return IOUtils.toInputStream(String.format("{" + "    \"targets\": [" + "        \"swap\","
-				+ "        \"previous\"" + "    ]," + "    \"passes\": [" + "        {"
-				+ "            \"name\": \"motion_blur\"," + "            \"intarget\": \"minecraft:main\","
-				+ "            \"outtarget\": \"swap\"," + "            \"auxtargets\": [" + "                {"
-				+ "                    \"name\": \"PrevSampler\"," + "                    \"id\": \"previous\""
-				+ "                }" + "            ]," + "            \"uniforms\": [" + "                {"
-				+ "                    \"name\": \"BlendFactor\"," + "                    \"values\": [ %s ]"
-				+ "                }" + "            ]" + "        }," + "        {"
-				+ "            \"name\": \"blit\"," + "            \"intarget\": \"swap\","
-				+ "            \"outtarget\": \"previous\"" + "        }," + "        {"
-				+ "            \"name\": \"blit\"," + "            \"intarget\": \"swap\","
-				+ "            \"outtarget\": \"minecraft:main\"" + "        }" + "    ]" + "}", getBlur()));
-		}
-
-		@Override
-		public boolean hasMetadata() {
-			return false;
-		}
-
-		@Override
-		public <T extends ResourceMetadataSection> T getMetadata(String key) {
-			return null;
-		}
-
-		@Override
-		public String getSourceName() {
-			return null;
-		}
 	}
 }

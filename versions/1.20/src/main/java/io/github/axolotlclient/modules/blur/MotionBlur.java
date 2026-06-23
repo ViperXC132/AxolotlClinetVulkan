@@ -36,9 +36,7 @@ import io.github.axolotlclient.modules.AbstractModule;
 import lombok.Getter;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gl.ShaderEffect;
-import net.minecraft.resource.Resource;
 import net.minecraft.util.Identifier;
-import org.apache.commons.io.IOUtils;
 
 public class MotionBlur extends AbstractModule {
 
@@ -48,7 +46,7 @@ public class MotionBlur extends AbstractModule {
 	public final FloatOption strength = new FloatOption("strength", 50F, 1F, 99F);
 	public final BooleanOption inGuis = new BooleanOption("inGuis", false);
 	public final OptionCategory category = OptionCategory.create("motionBlur");
-	private final Identifier shaderLocation = new Identifier("minecraft:shaders/post/motion_blur.json");
+	private final Identifier shaderLocation = new Identifier("axolotlclient", "shaders/post/motion_blur.json");
 	private final MinecraftClient client = MinecraftClient.getInstance();
 	public ShaderEffect shader;
 	private float currentBlur;
@@ -65,7 +63,6 @@ public class MotionBlur extends AbstractModule {
 		category.add(enabled, strength, inGuis);
 
 		AxolotlClient.config().rendering.add(category);
-		AxolotlClient.runtimeResources.put(shaderLocation, new MotionBlurShader());
 	}
 
 	public void onUpdate() {
@@ -73,7 +70,7 @@ public class MotionBlur extends AbstractModule {
 			|| MinecraftClient.getInstance().getFramebuffer().textureHeight != lastHeight)
 			&& MinecraftClient.getInstance().getFramebuffer().textureWidth > 0
 			&& MinecraftClient.getInstance().getFramebuffer().textureHeight > 0) {
-			currentBlur = getBlur();
+			currentBlur = 0.5f;
 			try {
 				shader = new ShaderEffect(client.getTextureManager(), client.getResourceManager(),
 					client.getFramebuffer(), shaderLocation);
@@ -95,23 +92,5 @@ public class MotionBlur extends AbstractModule {
 
 		lastWidth = MinecraftClient.getInstance().getFramebuffer().textureWidth;
 		lastHeight = MinecraftClient.getInstance().getFramebuffer().textureHeight;
-	}
-
-	private static class MotionBlurShader extends Resource {
-
-		public MotionBlurShader() {
-			super(MinecraftClient.getInstance().getDefaultResourcePack(), () -> IOUtils.toInputStream(String.format(
-					"{\"targets\": [\"swap\",\"previous\"],\"passes\": [{            \"name\": \"motion_blur\",            \"intarget\": \"minecraft:main\","
-						+ "            \"outtarget\": \"swap\"," + "            \"auxtargets\": [" + "                {"
-						+ "                    \"name\": \"PrevSampler\"," + "                    \"id\": \"previous\""
-						+ "                }" + "            ]," + "            \"uniforms\": [" + "                {"
-						+ "                    \"name\": \"BlendFactor\"," + "                    \"values\": [ %s ]"
-						+ "                }" + "            ]" + "        }," + "        {"
-						+ "            \"name\": \"blit\"," + "            \"intarget\": \"swap\","
-						+ "            \"outtarget\": \"previous\"        }," + "        {"
-						+ "            \"name\": \"blit\"," + "            \"intarget\": \"swap\","
-						+ "            \"outtarget\": \"minecraft:main\"" + "        }" + "    ]" + "}", getBlur()),
-				"utf-8"));
-		}
 	}
 }

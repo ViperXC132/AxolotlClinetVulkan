@@ -22,8 +22,6 @@
 
 package io.github.axolotlclient;
 
-import java.util.HashMap;
-
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.APIOptions;
 import io.github.axolotlclient.api.Options;
@@ -35,6 +33,8 @@ import io.github.axolotlclient.modules.auth.Auth;
 import io.github.axolotlclient.modules.blur.MenuBlur;
 import io.github.axolotlclient.modules.blur.MotionBlur;
 import io.github.axolotlclient.modules.hud.HudManager;
+import io.github.axolotlclient.modules.hud.gui.hud.PackDisplayHud;
+import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
 import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import io.github.axolotlclient.modules.particles.Particles;
 import io.github.axolotlclient.modules.screenshotUtils.ScreenshotUtils;
@@ -44,12 +44,9 @@ import io.github.axolotlclient.modules.unfocusedFpsLimiter.UnfocusedFpsLimiter;
 import io.github.axolotlclient.util.FeatureDisabler;
 import io.github.axolotlclient.util.FeatureDisablerCommon;
 import io.github.axolotlclient.util.notifications.Notifications;
-import net.minecraft.client.resource.Resource;
-import net.minecraft.resource.Identifier;
+import net.ornithemc.osl.resource.loader.api.client.ClientResourceLoaderEvents;
 
 public class AxolotlClient extends AxolotlClientCommon {
-
-	public static final HashMap<Identifier, Resource> runtimeResources = new HashMap<>();
 
 	private void addBuiltinModules() {
 		registerModule(SkyResourceManager.getInstance());
@@ -82,6 +79,14 @@ public class AxolotlClient extends AxolotlClientCommon {
 		getLogger().info("AxolotlClient Initialized");
 
 		Bridge.postInit();
+		ClientResourceLoaderEvents.END_RESOURCE_PACKS_RELOAD.register(resourcePackRepository -> {
+			HypixelAbstractionLayer.getInstance().clearPlayerData();
+
+			PackDisplayHud hud = (PackDisplayHud) HudManager.getInstance().get(PackDisplayHud.ID);
+			if (hud != null) {
+				hud.setPacks(resourcePackRepository.openSelectedPacks());
+			}
+		});
 	}
 
 	@Override

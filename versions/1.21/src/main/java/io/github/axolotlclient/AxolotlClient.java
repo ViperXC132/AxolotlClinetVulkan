@@ -22,8 +22,6 @@
 
 package io.github.axolotlclient;
 
-import java.util.HashMap;
-
 import io.github.axolotlclient.api.API;
 import io.github.axolotlclient.api.APIOptions;
 import io.github.axolotlclient.api.Options;
@@ -41,12 +39,8 @@ import io.github.axolotlclient.util.FeatureDisabler;
 import io.github.axolotlclient.util.FeatureDisablerCommon;
 import io.github.axolotlclient.util.notifications.Notifications;
 import net.fabricmc.api.ClientModInitializer;
-import net.minecraft.resource.Resource;
-import net.minecraft.util.Identifier;
 
 public class AxolotlClient extends AxolotlClientCommon implements ClientModInitializer {
-
-	public static final HashMap<Identifier, Resource> runtimeResources = new HashMap<>();
 
 	private void addBuiltinModules() {
 		registerModule(HudManager.getInstance());

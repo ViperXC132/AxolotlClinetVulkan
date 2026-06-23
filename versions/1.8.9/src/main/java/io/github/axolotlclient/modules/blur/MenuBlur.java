@@ -23,7 +23,6 @@
 package io.github.axolotlclient.modules.blur;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientCommon;
@@ -43,10 +42,7 @@ import net.minecraft.client.gui.GuiElement;
 import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.render.PostChain;
 import net.minecraft.client.render.shaders.Uniform;
-import net.minecraft.client.resource.Resource;
-import net.minecraft.client.resource.metadata.ResourceMetadataSection;
 import net.minecraft.resource.Identifier;
-import org.apache.commons.io.IOUtils;
 
 /**
  * Totally not stolen from Sol.
@@ -61,7 +57,7 @@ public class MenuBlur extends AbstractModule {
 	@Getter
 	private static final MenuBlur Instance = new MenuBlur();
 	public final BooleanOption enabled = new BooleanOption("enabled", false);
-	private final Identifier shaderLocation = new Identifier("minecraft:shaders/post/menu_blur.json");
+	private final Identifier shaderLocation = new Identifier("axolotlclient", "shaders/post/menu_blur.json");
 	private final IntegerOption strength = new IntegerOption("strength", 8, 0, 100);
 	private final IntegerOption fadeTime = new IntegerOption("fadeTime", 1, 0, 10);
 	private final ColorOption bgColor = new ColorOption("bgcolor", new Color(0x64000000));
@@ -81,8 +77,6 @@ public class MenuBlur extends AbstractModule {
 		category.add(enabled, strength, fadeTime, bgColor);
 
 		AxolotlClient.config().rendering.add(category);
-
-		AxolotlClient.runtimeResources.put(shaderLocation, new MenuBlurShader());
 	}
 
 	public boolean renderScreen() {
@@ -143,100 +137,5 @@ public class MenuBlur extends AbstractModule {
 
 	public void onScreenOpen() {
 		openTime = System.currentTimeMillis();
-	}
-
-	private static class MenuBlurShader implements Resource {
-
-		@Override
-		public Identifier getLocation() {
-			return null;
-		}
-
-		@Override
-		public InputStream asStream() {
-			return IOUtils.toInputStream("""
-				{
-				    "targets": [
-				        "swap"
-				    ],
-				    "passes": [
-				        {
-				            "name": "menu_blur",
-				            "intarget": "minecraft:main",
-				            "outtarget": "swap",
-				            "uniforms": [
-				                {
-				                    "name": "BlurDir",
-				                    "values": [ 1.0, 0.0 ]
-				                },
-				                {
-				                    "name": "Radius",
-				                    "values": [ 0.0 ]
-				                }
-				            ]
-				        },
-				        {
-				            "name": "menu_blur",
-				            "intarget": "swap",
-				            "outtarget": "minecraft:main",
-				            "uniforms": [
-				                {
-				                    "name": "BlurDir",
-				                    "values": [ 0.0, 1.0 ]
-				                },
-				                {
-				                    "name": "Radius",
-				                    "values": [ 0.0 ]
-				                }
-				            ]
-				        },
-				        {
-				            "name": "menu_blur",
-				            "intarget": "minecraft:main",
-				            "outtarget": "swap",
-				            "uniforms": [
-				                {
-				                    "name": "BlurDir",
-				                    "values": [ 1.0, 0.0 ]
-				                },
-				                {
-				                    "name": "Radius",
-				                    "values": [ 0.0 ]
-				                }
-				            ]
-				        },
-				        {
-				            "name": "menu_blur",
-				            "intarget": "swap",
-				            "outtarget": "minecraft:main",
-				            "uniforms": [
-				                {
-				                    "name": "BlurDir",
-				                    "values": [ 0.0, 1.0 ]
-				                },
-				                {
-				                    "name": "Radius",
-				                    "values": [ 0.0 ]
-				                }
-				            ]
-				        }
-				    ]
-				}""");
-		}
-
-		@Override
-		public boolean hasMetadata() {
-			return false;
-		}
-
-		@Override
-		public <T extends ResourceMetadataSection> T getMetadata(String key) {
-			return null;
-		}
-
-		@Override
-		public String getSourceName() {
-			return null;
-		}
 	}
 }

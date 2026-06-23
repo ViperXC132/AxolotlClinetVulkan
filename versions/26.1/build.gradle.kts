@@ -7,7 +7,7 @@ plugins {
 val minecraftVersion = "26.1.2"
 val minecraftFriendly = "26.1"
 val modmenu = "18.0.0-alpha.8"
-val fapi = "0.147.0+26.1.2"
+val fapi = "0.153.0+26.1.2"
 group = project.property("maven_group") as String
 version = "${project.property("version")}+$minecraftFriendly"
 base.archivesName = "AxolotlClient"

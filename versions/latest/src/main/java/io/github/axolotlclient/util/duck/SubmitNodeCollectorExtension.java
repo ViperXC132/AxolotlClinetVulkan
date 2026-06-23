@@ -22,8 +22,6 @@
 
 package io.github.axolotlclient.util.duck;
 
-import net.minecraft.client.renderer.feature.phase.SimpleFeatureRenderPhase;
-
 public interface SubmitNodeCollectorExtension {
 	default void axolotlclient$lastNameTagSubmitHasBadge() {
 
@@ -31,9 +29,5 @@ public interface SubmitNodeCollectorExtension {
 
 	default void axolotlclient$lastNameTagSubmitIsLevelHead() {
 
-	}
-
-	default SimpleFeatureRenderPhase axolotlclient$badgePhase() {
-		return null;
 	}
 }

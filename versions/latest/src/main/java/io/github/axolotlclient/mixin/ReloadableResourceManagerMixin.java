@@ -23,24 +23,15 @@
 package io.github.axolotlclient.mixin;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
-import java.util.function.Predicate;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.PackDisplayHud;
 import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.repository.Pack;
-import net.minecraft.server.packs.resources.CloseableResourceManager;
 import net.minecraft.server.packs.resources.ReloadInstance;
 import net.minecraft.server.packs.resources.ReloadableResourceManager;
-import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.util.Unit;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -58,24 +49,5 @@ public abstract class ReloadableResourceManagerMixin {
 		if (hud != null) {
 			hud.update();
 		}
-	}
-
-	@Inject(method = "getResource", at = @At("HEAD"), cancellable = true)
-	private void axolotlclient$getResource(Identifier id, CallbackInfoReturnable<Optional<Resource>> cir) {
-		if (AxolotlClient.runtimeResources.get(id) != null) {
-			cir.setReturnValue(Optional.of(AxolotlClient.runtimeResources.get(id)));
-		}
-	}
-
-	@WrapOperation(method = "listResources", at = @At(value = "INVOKE",
-		target = "Lnet/minecraft/server/packs/resources/CloseableResourceManager;listResources(Ljava/lang/String;Ljava/util/function/Predicate;)Ljava/util/Map;"))
-	private Map<Identifier, Resource> injectResources(CloseableResourceManager instance, String s, Predicate<Identifier> predicate, Operation<Map<Identifier, Resource>> original) {
-		var resources = original.call(instance, s, predicate);
-		AxolotlClient.runtimeResources.forEach((resourceLocation, resource) -> {
-			if (resourceLocation.getPath().startsWith(s) && predicate.test(resourceLocation)) {
-				resources.computeIfAbsent(resourceLocation, l -> resource);
-			}
-		});
-		return resources;
 	}
 }
