@@ -127,7 +127,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 		if (button.id == 1 && minecraft.getCurrentServerEntry() != null && AxolotlClient.config().confirmDisconnect.get()) {
 			minecraft.openScreen(new ConfirmScreen((confirmed, i) -> {
 				if (confirmed) original.call(button);
-				else minecraft.openScreen(this);
+				else minecraft.openScreen(null);
 			}, I18n.translate("confirm_disconnect.title"), I18n.translate("confirm_disconnect.message", minecraft.getCurrentServerEntry().ip), 0));
 		} else {
 			original.call(button);

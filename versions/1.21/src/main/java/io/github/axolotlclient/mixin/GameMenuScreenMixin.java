@@ -103,7 +103,7 @@ public abstract class GameMenuScreenMixin extends Screen {
 		if (client.getCurrentServerEntry() != null && AxolotlClient.config().confirmDisconnect.get()) {
 			client.setScreen(new ConfirmScreen(confirmed -> {
 				if (confirmed) original.call();
-				else client.setScreen(this);
+				else client.setScreen(null);
 			}, Text.translatable("confirm_disconnect.title"), Text.translatable("confirm_disconnect.message", client.getCurrentServerEntry().address)));
 		} else {
 			original.call();
