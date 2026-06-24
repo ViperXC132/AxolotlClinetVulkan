@@ -993,5 +993,6 @@
 	"confirm_disconnect": "Confirm Disconnect",
 	"confirm_disconnect.tooltip": "Confirm Disconnections from Servers",
 	"confirm_disconnect.title": "Confirm Disconnection",
-	"confirm_disconnect.message": "Do you want to disconnect from the server?"
+	"confirm_disconnect.message": "Do you want to disconnect from the server?",
+	"rpc.starting.error": "Failed to start DiscordRPC"
 }
