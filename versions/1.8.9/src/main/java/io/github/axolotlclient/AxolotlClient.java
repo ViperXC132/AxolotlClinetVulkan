@@ -34,7 +34,6 @@ import io.github.axolotlclient.modules.blur.MenuBlur;
 import io.github.axolotlclient.modules.blur.MotionBlur;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.PackDisplayHud;
-import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
 import io.github.axolotlclient.modules.hypixel.HypixelMods;
 import io.github.axolotlclient.modules.particles.Particles;
 import io.github.axolotlclient.modules.screenshotUtils.ScreenshotUtils;
@@ -80,8 +79,6 @@ public class AxolotlClient extends AxolotlClientCommon {
 
 		Bridge.postInit();
 		ClientResourceLoaderEvents.END_RESOURCE_PACKS_RELOAD.register(resourcePackRepository -> {
-			HypixelAbstractionLayer.getInstance().clearPlayerData();
-
 			PackDisplayHud hud = (PackDisplayHud) HudManager.getInstance().get(PackDisplayHud.ID);
 			if (hud != null) {
 				hud.setPacks(resourcePackRepository.openSelectedPacks());

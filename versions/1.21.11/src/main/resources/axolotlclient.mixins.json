@@ -52,7 +52,6 @@
 		"PlayerListHudMixin",
 		"PlayerMixin",
 		"PostPassMixin",
-		"ReloadableResourceManagerMixin",
 		"ScreenMixin",
 		"ScreenshotRecorderMixin",
 		"ServerPackManagerAccessor",

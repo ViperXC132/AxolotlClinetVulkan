@@ -46,6 +46,7 @@ import io.github.axolotlclient.config.profiles.Profiles;
 import io.github.axolotlclient.modules.Module;
 import io.github.axolotlclient.modules.freelook.Freelook;
 import io.github.axolotlclient.modules.hud.ClickInputTracker;
+import io.github.axolotlclient.modules.hypixel.HypixelAbstractionLayer;
 import io.github.axolotlclient.modules.render.BeaconBeam;
 import io.github.axolotlclient.modules.rpc.DiscordRPC;
 import io.github.axolotlclient.modules.tnttime.TntTime;
@@ -179,10 +180,6 @@ public abstract class AxolotlClientCommon {
 		Preconditions.checkState(!initialized);
 		Preconditions.checkState(instance == null);
 
-		Events.END_RESOURCE_RELOAD.register(() -> {
-
-		});
-
 		instance = this;
 		addBuiltinCommonModules();
 
@@ -211,6 +208,7 @@ public abstract class AxolotlClientCommon {
 
 		// register events
 
+		Events.END_RESOURCE_RELOAD.register(() -> HypixelAbstractionLayer.getInstance().clearPlayerData());
 		Events.CLIENT_STOP.register(() -> API.getInstance().shutdown());
 	}
 

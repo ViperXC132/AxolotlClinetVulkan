@@ -51,7 +51,6 @@
 		"PlayerEntityRendererMixin",
 		"PlayerListEntryMixin",
 		"PlayerListHudMixin",
-		"ReloadableResourceManagerMixin",
 		"RenderSystemMixin",
 		"ScreenMixin",
 		"ScreenshotRecorderMixin",

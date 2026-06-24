@@ -1,7 +1,7 @@
 {
 	"required": true,
 	"package": "io.github.axolotlclient.mixin",
-	"compatibilityLevel": "JAVA_21",
+	"compatibilityLevel": "JAVA_25",
 	"client": [
 		"AbstractContainerScreenAccessor",
 		"AddServerScreenMixin",
@@ -51,7 +51,6 @@
 		"PlayerListHudMixin",
 		"PlayerMixin",
 		"PostPassMixin",
-		"ReloadableResourceManagerMixin",
 		"ScreenMixin",
 		"ScreenshotRecorderMixin",
 		"ServerPackManagerAccessor",

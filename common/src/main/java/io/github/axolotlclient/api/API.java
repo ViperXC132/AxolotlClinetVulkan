@@ -90,7 +90,6 @@ public class API {
 		handlers.add(new ChannelInviteHandler());
 		Instance = this;
 		statusUpdateExecutor = Executors.newSingleThreadScheduledExecutor();
-		Runtime.getRuntime().addShutdownHook(new Thread(this::shutdown));
 	}
 
 	public static void addStartupListener(Runnable listener) {
@@ -298,6 +297,7 @@ public class API {
 		}
 		if (statusUpdateFuture != null) {
 			statusUpdateFuture.cancel(true);
+			statusUpdateExecutor.shutdown();
 			statusUpdateFuture = null;
 		}
 		if (isAuthenticated()) {
