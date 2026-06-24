@@ -41,10 +41,11 @@ jobs:
             release-dir: builds/
             release-notes-file: build/changelog
 
-      - name: Publish to Modrinth
-        run: ./gradlew modrinth
+      - name: Publish to Modrinth/CurseForge
+        run: ./gradlew publishMods
         env:
             MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+            CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
 
       - name: Publish to Maven
         run: ./gradlew publish -PowlMavenPassword=${{ secrets.MAVEN_PASSWORD }} -PowlMavenUsername=${{ secrets.MAVEN_USERNAME }}

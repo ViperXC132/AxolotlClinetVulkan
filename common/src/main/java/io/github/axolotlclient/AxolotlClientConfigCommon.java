@@ -28,10 +28,13 @@ import java.util.Locale;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.OptionCategory;
 import io.github.axolotlclient.AxolotlClientConfig.api.util.Color;
+import io.github.axolotlclient.AxolotlClientConfig.api.util.Colors;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.*;
+import io.github.axolotlclient.bridge.events.Events;
 import io.github.axolotlclient.bridge.key.AxoKeybinding;
 import io.github.axolotlclient.bridge.key.AxoKeys;
 import io.github.axolotlclient.util.options.ForceableBooleanOption;
+import io.github.axolotlclient.util.options.GenericOption;
 import net.fabricmc.loader.api.FabricLoader;
 
 public abstract class AxolotlClientConfigCommon {
@@ -58,8 +61,8 @@ public abstract class AxolotlClientConfigCommon {
 		public boolean showButton() {
 			return false;
 		}
-	}
 
+	}
 	public enum TabBadgeMode {
 		BEFORE_NAME,
 		BEFORE_NAME_ALIGNED,
@@ -69,6 +72,7 @@ public abstract class AxolotlClientConfigCommon {
 		public String toString() {
 			return "tab_badge_mode." + super.toString().toLowerCase(Locale.ROOT);
 		}
+
 	}
 
 	// options
@@ -89,15 +93,21 @@ public abstract class AxolotlClientConfigCommon {
 	public final ForceableBooleanOption fullBright = new ForceableBooleanOption("fullBright", false);
 	public final BooleanOption removeVignette = new BooleanOption("removeVignette", false);
 	public final ForceableBooleanOption lowFire = new ForceableBooleanOption("lowFire", false);
+	public final ColorOption hitColor = new ColorOption("hitColor", new Color(0x4DFF0000), this::updateHitColor);
+	public final BooleanOption hitColorOnArmor = new BooleanOption("hit_color_on_armor", false);
 
 	public final BooleanOption minimalViewBob = new BooleanOption("minimalViewBob", false);
 	public final BooleanOption noHurtCam = new BooleanOption("noHurtCam", false);
 	public final BooleanOption hideChat = new BooleanOption("hide_chat", false);
 
 	public final BooleanOption enableCustomOutlines = new BooleanOption("enabled", false);
-	public final ColorOption outlineColor = new ColorOption("color", Color.parse("#DD000000"));
+	public final ColorOption outlineColor = new ColorOption("color", new Color(0x66000000));
+	public final IntegerOption outlineWidth = new IntegerOption("outlineWidth", 1, 1, 15);
+	public final BooleanOption outlineFill = new BooleanOption("block_outlines.fill", false);
+	public final ColorOption outlineFillColor = new ColorOption("block_outlines.fill_color", Colors.WINE_RED.withAlpha(165));
 
 	public final BooleanOption customWindowTitle = new BooleanOption("customWindowTitle", true, this::updateWindowTitle);
+	public final BooleanOption confirmDisconnect = new BooleanOption("confirm_disconnect", false);
 
 	public final OptionCategory general = OptionCategory.create("general");
 	public final OptionCategory nametagOptions = OptionCategory.create("nametagOptions");
@@ -140,12 +150,18 @@ public abstract class AxolotlClientConfigCommon {
 		general.add(datetimeFormat);
 		general.add(titleScreenOptionButtonMode);
 		general.add(gameMenuScreenOptionButtonMode);
+		general.add(confirmDisconnect);
 
 		timeChanger.add(timeChangerEnabled);
 		timeChanger.add(customTime);
+		timeChanger.add(new GenericOption("time_changer.preset.day", "time_changer.set_preset", () -> customTime.set(1000)));
+		timeChanger.add(new GenericOption("time_changer.preset.noon", "time_changer.set_preset", () -> customTime.set(6000)));
+		timeChanger.add(new GenericOption("time_changer.preset.night", "time_changer.set_preset", () -> customTime.set(13000)));
+		timeChanger.add(new GenericOption("time_changer.preset.midnight", "time_changer.set_preset", () -> customTime.set(18000)));
 
 		outlines.add(enableCustomOutlines);
 		outlines.add(outlineColor);
+		outlines.add(outlineWidth, outlineFill, outlineFillColor);
 
 		rendering.add(timeChanger);
 
@@ -157,7 +173,9 @@ public abstract class AxolotlClientConfigCommon {
 			minimalViewBob,
 			noHurtCam,
 			noRain,
-			hideChat
+			hideChat,
+			hitColor,
+			hitColorOnArmor
 		);
 
 		hidden.add(creditsBGM, someNiceBackground, modifyClientBrand, noAltIcons);
@@ -169,6 +187,12 @@ public abstract class AxolotlClientConfigCommon {
 		AxoKeybinding.create(AxoKeys.KEY_UNKNOWN, "toggle_fullbright").br$registerOnConsumeClick(() -> {
 			fullBright.toggle();
 			AxolotlClientCommon.getInstance().saveConfig();
+		});
+
+		Events.TICK.register(() -> {
+			if (hitColor.getOriginal().isChroma()) {
+				updateHitColor(hitColor.get());
+			}
 		});
 	}
 
@@ -197,4 +221,6 @@ public abstract class AxolotlClientConfigCommon {
 	}
 
 	protected abstract void updateWindowTitle(boolean useCustom);
+
+	protected abstract void updateHitColor(Color color);
 }

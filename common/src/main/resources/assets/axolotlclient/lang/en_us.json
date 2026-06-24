@@ -226,7 +226,8 @@
 	"hideTipMessages": "Hide Tip Messages",
 	"hideTipMessages.tooltip": "Hides Tip Messages. Currently only works if you have set your hypixel language to english.",
 	"hitColor": "Hit Color",
-	"hitColor.tooltip": "The Color used for entities when they are being hurt. Chroma does NOT work for this, since the image used gets regenerated every time this is changed.",
+	"hitColor.tooltip": "The Color used for entities when they are being hurt.",
+	"hit_color_on_armor": "Overlay Hit Color on Armor",
 	"horizontal": "Horizontal speed only",
 	"hotbarhud": "Hotbar HUD",
 	"hud": "Hud Options",
@@ -981,5 +982,17 @@
 	"tab_badge_mode.before_ping": "Before Ping",
 	"tab_overlay_hud": "Tab Overlay Hud",
 	"subtitleshud": "Subtitles HUD",
-	"subtitles.entry_background": "Entry Background"
+	"subtitles.entry_background": "Entry Background",
+	"time_changer.preset.day": "Preset: Day",
+	"time_changer.preset.noon": "Preset: Noon",
+	"time_changer.preset.night": "Preset: Night",
+	"time_changer.preset.midnight": "Preset: Midnight",
+	"time_changer.set_preset": "Set",
+	"block_outlines.fill": "Fill",
+	"block_outlines.fill_color": "Fill Color",
+	"confirm_disconnect": "Confirm Disconnect",
+	"confirm_disconnect.tooltip": "Confirm Disconnections from Servers",
+	"confirm_disconnect.title": "Confirm Disconnection",
+	"confirm_disconnect.message": "Do you want to disconnect from the server?",
+	"rpc.starting.error": "Failed to start DiscordRPC"
 }

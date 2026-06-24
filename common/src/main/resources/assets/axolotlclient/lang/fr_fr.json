@@ -226,7 +226,8 @@
 	"hideTipMessages": "Masquer les Messages de Tip",
 	"hideTipMessages.tooltip": "Masque les messages de tip. Ne fonctionne actuellement que si vous avez défini votre langue hypixel en l'anglais.",
 	"hitColor": "Hit Color",
-	"hitColor.tooltip": "La couleur utilisée pour les entités lorsqu'elles sont tapées. Chroma ne fonctionne PAS pour cela, car l'image utilisée est régénérée à chaque fois que cela est modifié.",
+	"hitColor.tooltip": "La couleur utilisée pour les entités lorsqu'elles sont tapées.",
+	"hit_color_on_armor": "Afficher la couleur des coups sur l'armure",
 	"horizontal": "Horizontal Only",
 	"hotbarhud": "Hotbar HUD",
 	"hud": "Options de HUD",
@@ -981,5 +982,16 @@
 	"tab_badge_mode.before_ping": "Avant le ping",
 	"tab_overlay_hud": "HUD de superposition Tab",
 	"subtitleshud": "HUD des sous-titres",
-	"subtitles.entry_background": "Arrière-plan des entrées"
+	"subtitles.entry_background": "Arrière-plan des entrées",
+	"time_changer.preset.day": "Préréglage : Jour",
+	"time_changer.preset.noon": "Préréglage : Midi",
+	"time_changer.preset.night": "Préréglage : Nuit",
+	"time_changer.preset.midnight": "Préréglage : Minuit",
+	"time_changer.set_preset": "Définir",
+	"block_outlines.fill": "Remplissage",
+	"block_outlines.fill_color": "Couleur de remplissage",
+	"confirm_disconnect": "Confirmer la déconnexion",
+	"confirm_disconnect.tooltip": "Demander une confirmation avant de se déconnecter d'un serveur",
+	"confirm_disconnect.title": "Confirmer la déconnexion",
+	"confirm_disconnect.message": "Voulez-vous vous déconnecter du serveur ?"
 }

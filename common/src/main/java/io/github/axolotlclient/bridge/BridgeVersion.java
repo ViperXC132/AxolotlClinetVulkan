@@ -22,6 +22,7 @@
 
 package io.github.axolotlclient.bridge;
 
+import io.github.axolotlclient.AxolotlClientCommon;
 import lombok.Getter;
 import net.fabricmc.loader.api.FabricLoader;
 
@@ -30,7 +31,9 @@ public enum BridgeVersion {
 	V1_8("1.8.9"),
 	V1_20("1.20"),
 	V1_21("1.21"),
-	V26_1("26.1");
+	V1_21_11("1.21.11"),
+	V26_1("26.1"),
+	V26_2("26.2");
 
 	private final String name;
 
@@ -42,7 +45,7 @@ public enum BridgeVersion {
 	// will read the bridge version, which will cause re-entrance errors
 	private static final BridgeVersion VERSION = valueOf(
 		FabricLoader.getInstance()
-			.getModContainer("axolotlclient")
+			.getModContainer(AxolotlClientCommon.MODID)
 			.orElseThrow()
 			.getMetadata()
 			.getCustomValue("axolotlclient:bridge_impl_version")
@@ -56,5 +59,9 @@ public enum BridgeVersion {
 
 	public boolean isCurrent() {
 		return this == version();
+	}
+
+	public static boolean is26OrLater() {
+		return version() == V26_1 || version() == V26_2;
 	}
 }

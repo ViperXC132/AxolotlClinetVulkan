@@ -113,7 +113,7 @@ public class ArmorHud extends TextHudEntry {
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext graphics, float delta) {
-		if (BridgeVersion.V26_1.isCurrent()) {
+		if (BridgeVersion.is26OrLater()) {
 			if (client.br$getWorld() == null) {
 				var w = order.get().isXAxis() ? 20 : 100;
 				var h = order.get().isXAxis() ? 100 : 20;

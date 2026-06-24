@@ -203,5 +203,17 @@ public class ClientColors {
 		private static float from8BitChannel(int value) {
 			return value / 255.0F;
 		}
+
+		public static int invertAlpha(int color) {
+			return color(255 - alpha(color), color);
+		}
+
+		public static int toABGR(final int color) {
+			return color & -16711936 | (color & 0xFF0000) >> 16 | (color & 0xFF) << 16;
+		}
+
+		public static int fromABGR(final int color) {
+			return toABGR(color);
+		}
 	}
 }

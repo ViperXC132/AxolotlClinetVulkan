@@ -24,9 +24,11 @@ package io.github.axolotlclient.modules.hypixel.bedwars;
 
 import java.util.List;
 
+import io.github.axolotlclient.AxolotlClientCommon;
 import io.github.axolotlclient.AxolotlClientConfig.api.options.Option;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.BooleanOption;
 import io.github.axolotlclient.AxolotlClientConfig.impl.options.EnumOption;
+import io.github.axolotlclient.bridge.BridgeVersion;
 import io.github.axolotlclient.bridge.render.AxoRenderContext;
 import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.modules.hud.gui.component.DynamicallyPositionable;
@@ -43,7 +45,7 @@ import io.github.axolotlclient.modules.hypixel.bedwars.upgrades.TrapUpgrade;
  */
 public class TeamUpgradesOverlay extends BoxHudEntry implements DynamicallyPositionable {
 
-	public final static AxoIdentifier ID = AxoIdentifier.of("axolotlclient", "bedwars_teamupgrades");
+	public final static AxoIdentifier ID = AxoIdentifier.of(AxolotlClientCommon.MODID, "bedwars_teamupgrades");
 	private final static TrapUpgrade.TrapType[] trapEdit = {TrapUpgrade.TrapType.MINER_FATIGUE, TrapUpgrade.TrapType.ITS_A_TRAP};
 	private final BooleanOption renderWhenRelevant = new BooleanOption(ID.br$getPath() + ".renderWhenRelevant", true);
 	private final EnumOption<AnchorPoint> anchor = DefaultOptions.getAnchorPoint(this);
@@ -117,6 +119,13 @@ public class TeamUpgradesOverlay extends BoxHudEntry implements DynamicallyPosit
 
 	@Override
 	public void renderPlaceholderComponent(AxoRenderContext context, float delta) {
+		if (BridgeVersion.is26OrLater()) {
+			if (client.br$getWorld() == null) {
+				var pos = getContentPos();
+				context.br$drawCenteredString(getName(), pos.x() + getContentWidth() / 2, pos.y() + getContentHeight() / 2 - context.br$getFont().br$getFontHeight() / 2, -1);
+				return;
+			}
+		}
 		drawOverlay(context, getContentPos(), true);
 	}
 

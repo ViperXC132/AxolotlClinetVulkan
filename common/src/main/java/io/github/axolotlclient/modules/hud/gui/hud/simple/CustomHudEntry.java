@@ -46,6 +46,7 @@ public class CustomHudEntry extends SimpleTextHudEntry {
 		removeEntry = new GenericOption("custom_hud.remove", "custom_hud.remove.label", () -> {
 			HudManagerCommon.getInstance().removeEntry(this.id);
 			HudManagerCommon.getInstance().saveCustomEntries();
+			HudManagerCommon.getInstance().closeScreen();
 		});
 		AxolotlClientConfig.getInstance().register(new ConfigManager() {
 			@Override

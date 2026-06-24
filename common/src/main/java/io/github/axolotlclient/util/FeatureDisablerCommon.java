@@ -41,7 +41,7 @@ public abstract class FeatureDisablerCommon {
 	private static FeatureDisablerCommon instance;
 
 	private static final Supplier<Boolean> NONE = () -> true;
-	protected static final AxoIdentifier CHANNEL_NAME = AxoIdentifier.of("axolotlclient", "block_mods");
+	protected static final AxoIdentifier CHANNEL_NAME = AxoIdentifier.of(AxolotlClientCommon.MODID, "block_mods");
 	// Features that can be disabled on the server's behalf
 	// If something should be added here, feel free to ping us via your favorite way.
 	protected static final HashMap<String, ForceableBooleanOption> FEATURES = CommonUtil.make(() -> {

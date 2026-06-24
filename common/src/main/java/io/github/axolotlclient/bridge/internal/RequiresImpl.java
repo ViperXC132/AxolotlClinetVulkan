@@ -39,5 +39,5 @@ public @interface RequiresImpl {
 
 	BridgeVersion min() default BridgeVersion.V1_8;
 
-	BridgeVersion max() default BridgeVersion.V26_1;
+	BridgeVersion max() default BridgeVersion.V26_2;
 }
