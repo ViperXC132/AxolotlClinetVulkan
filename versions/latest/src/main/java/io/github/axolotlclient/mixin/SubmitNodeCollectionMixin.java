@@ -95,6 +95,7 @@ public abstract class SubmitNodeCollectionMixin implements SubmitNodeCollectorEx
 				var x = nameStartX - 10;
 				((FabricOrderedSubmitNodeCollector) this).submitCustom(SubmitRenderPhases.NAME_TAGS, new BadgeFeatureRenderer.Submit(pose, x, offset));
 			}
+			lastNametagSubmitHasBadge = false;
 		}
 	}
 
