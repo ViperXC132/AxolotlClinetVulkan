@@ -37,7 +37,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ScreenEffectRenderer.class)
 public abstract class InGameOverlayRendererMixin {
 
-	@Inject(method = "lambda$submitFire$0", at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/vertex/PoseStack$Pose;pose()Lorg/joml/Matrix4f;"))
+	@Inject(method = "lambda$submitFire$0", at = @At(value = "INVOKE", target = "Lorg/joml/Matrix4f;translate(FFF)Lorg/joml/Matrix4f;"))
 	private static void axolotlclient$lowFire(TextureAtlasSprite sprite, PoseStack.Pose basePose, VertexConsumer builder, CallbackInfo ci, @Local(name = "pose") Matrix4f pose) {
 		if (AxolotlClient.config().lowFire.get()) {
 			pose.translate(0, -0.2F, 0);
