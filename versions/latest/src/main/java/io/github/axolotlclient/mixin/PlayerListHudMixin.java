@@ -102,7 +102,7 @@ public abstract class PlayerListHudMixin {
 			}
 		}
 		if (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).numericalPing.get())
-			width += (instance.width(String.valueOf(info.getLatency())) - 10);
+			width += instance.width(String.valueOf(info.getLatency())) - 10;
 		return width;
 	}
 
@@ -126,7 +126,8 @@ public abstract class PlayerListHudMixin {
 	private void badgeBeforePing(PlayerTabOverlay instance, GuiGraphicsExtractor graphics, int slotWidth, int xo, int yo, PlayerInfo info, Operation<Void> original) {
 		if (AxolotlClient.config().showBadges.get() && AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_PING
 			&& UserRequest.getOnline(info.getProfile().id().toString())) {
-			graphics.blit(RenderPipelines.GUI_TEXTURED, (Identifier) AxolotlClientCommon.BADGE_PATH, xo + slotWidth - 11 - 9, yo, 0, 0, 8, 8, 8, 8);
+			var pingWidth = (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).numericalPing.get()) ? graphics.br$getFont().br$getWidth(String.valueOf(info.getLatency())) + 1 : 11;
+			graphics.blit(RenderPipelines.GUI_TEXTURED, (Identifier) AxolotlClientCommon.BADGE_PATH, xo + slotWidth - pingWidth - 9, yo, 0, 0, 8, 8, 8, 8);
 		}
 		original.call(instance, graphics, slotWidth, xo, yo, info);
 	}
