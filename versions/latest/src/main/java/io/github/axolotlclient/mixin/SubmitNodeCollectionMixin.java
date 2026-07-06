@@ -31,7 +31,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.FabricOrderedSubmitNodeCollec
 import net.fabricmc.fabric.api.client.rendering.v1.SubmitRenderPhases;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.renderer.OrderedSubmitNodeCollector;
 import net.minecraft.client.renderer.SubmitNodeCollection;
 import net.minecraft.client.renderer.feature.NameTagFeatureRenderer;
 import net.minecraft.client.renderer.feature.phase.SimpleFeatureRenderPhase;
@@ -50,7 +49,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 @Mixin(SubmitNodeCollection.class)
-public abstract class SubmitNodeCollectionMixin implements SubmitNodeCollectorExtension, OrderedSubmitNodeCollector {
+public abstract class SubmitNodeCollectionMixin implements SubmitNodeCollectorExtension {
 
 	@Shadow
 	@Final
