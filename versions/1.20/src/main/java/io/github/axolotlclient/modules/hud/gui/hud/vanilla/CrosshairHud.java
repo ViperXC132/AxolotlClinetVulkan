@@ -185,18 +185,9 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		var type = typeOption instanceof Crosshair ? typeOption : ((TargetCrosshair) typeOption).asCrosshair(defaultType);
 		AttackIndicator indicator = this.client.options.getAttackIndicator().get();
 
-		RenderSystem.enableBlend();
-
 		boolean isTex = type.equals(Crosshair.TEXTURE) || type.equals(Crosshair.CUSTOM);
 		// Need to not enable blend while the debug HUD is open because it does weird stuff. Why? no idea.
-		if (ClientColors.ARGB.opaque(color.toInt()) == ClientColors.WHITE.toInt() && !type.equals(Crosshair.DIRECTION) && applyBlend.get()
-			&& !client.options.debugEnabled) {
-			RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR,
-				GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE,
-				GlStateManager.DestFactor.ZERO);
-		} else {
-			RenderSystem.disableBlend();
-		}
+		setupBlend(ClientColors.ARGB.opaque(color.toInt()) == ClientColors.WHITE.toInt() && !type.equals(Crosshair.DIRECTION) && applyBlend.get());
 
 		if (type.equals(Crosshair.DOT)) {
 			DrawUtil.fillRect(graphics, x + (getWidth() / 2) - 2, y + (getHeight() / 2) - 2, 3, 3, color.toInt());
@@ -263,6 +254,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 				x = (int) ((client.getWindow().getScaledWidth() / getScale()) / 2 - 8);
 				y = (int) ((client.getWindow().getScaledHeight() / getScale()) / 2 - 7 + 16);
 
+				setupBlend(applyBlend.get());
 				if (targetingEntity) {
 					graphics.drawTexture(ICONS_TEXTURE, x, y, 68, 94, 16, 16);
 				} else if (progress < 1.0F) {
@@ -276,6 +268,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			//noinspection DataFlowIssue
 			float progress = this.client.player.getAttackCooldownProgress(0.0F);
 			if (progress != 1.0F) {
+				setupBlend(applyBlend.get() && ClientColors.ARGB.opaque(attackIndicatorForegroundColor.get().toInt()) == ClientColors.WHITE.toInt());
 				RenderUtil.drawRectangle(graphics, getRawX() + (getWidth() / 2) - 6, getRawY() + (getHeight() / 2) + 9,
 					11, 1, attackIndicatorBackgroundColor.get());
 				RenderUtil.drawRectangle(graphics, getRawX() + (getWidth() / 2) - 6, getRawY() + (getHeight() / 2) + 9,
@@ -285,6 +278,17 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		RenderSystem.disableBlend();
 		RenderSystem.defaultBlendFunc();
 		context.br$popMatrix();
+	}
+
+	private void setupBlend(boolean applyBlend) {
+		if (applyBlend) {
+			RenderSystem.enableBlend();
+			RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR,
+				GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE,
+				GlStateManager.DestFactor.ZERO);
+		} else {
+			RenderSystem.disableBlend();
+		}
 	}
 
 	private CrosshairMode getMode() {

@@ -172,6 +172,8 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		if (ClientColors.ARGB.opaque(color.toInt()) == ClientColors.WHITE.toInt() && applyBlend.get()) {
 			GlStateManager.enableBlend();
 			GlStateManager.blendFuncSeparate(775, 769, 1, 0);
+		} else {
+			GlStateManager.disableBlend();
 		}
 
 		int x = getPos().x;

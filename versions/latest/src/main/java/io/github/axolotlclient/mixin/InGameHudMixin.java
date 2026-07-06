@@ -39,7 +39,6 @@ import io.github.axolotlclient.modules.hypixel.bedwars.BedwarsMod;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.Hud;
 import net.minecraft.client.gui.components.ChatComponent;
