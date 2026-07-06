@@ -22,12 +22,29 @@
 
 package io.github.axolotlclient.util.duck;
 
-public interface SubmitNodeCollectorExtension {
-	default void axolotlclient$lastNameTagSubmitHasBadge() {
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 
+public interface SubmitNodeCollectorExtension {
+
+	default void axolotlclient$submitLevelHead(final PoseStack poseStack,
+	                                           final @Nullable Vec3 nameTagAttachment,
+	                                           final int offset,
+	                                           final Component name,
+	                                           final boolean seeThrough,
+	                                           final int lightCoords,
+	                                           final CameraRenderState camera) {
 	}
 
-	default void axolotlclient$lastNameTagSubmitIsLevelHead() {
-
+	default void axolotlclient$submitBadge(final PoseStack poseStack,
+	                                       final @Nullable Vec3 nameTagAttachment,
+	                                       final int offset,
+	                                       final Component name,
+	                                       final boolean seeThrough,
+	                                       final int lightCoords,
+	                                       final CameraRenderState camera) {
 	}
 }
