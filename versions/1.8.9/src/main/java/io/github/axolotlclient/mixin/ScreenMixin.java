@@ -22,12 +22,9 @@
 
 package io.github.axolotlclient.mixin;
 
-import java.net.URI;
-
 import io.github.axolotlclient.modules.blur.MenuBlur;
 import io.github.axolotlclient.modules.screenshotUtils.ScreenshotUtils;
 import io.github.axolotlclient.modules.scrollableTooltips.ScrollableTooltips;
-import io.github.axolotlclient.util.OSUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.inventory.menu.CreativeInventoryScreen;
@@ -67,12 +64,6 @@ public abstract class ScreenMixin {
 	@ModifyConstant(method = "renderTooltip(Ljava/util/List;II)V", constant = @Constant(intValue = 6))
 	public int axolotlclient$noLimit(int constant) {
 		return -(height * 2);
-	}
-
-	@Inject(method = "openLink", at = @At("HEAD"), cancellable = true)
-	public void axolotlclient$openLink(URI link, CallbackInfo ci) {
-		OSUtil.getOS().open(link);
-		ci.cancel();
 	}
 
 	@Inject(method = "handleClickEvent", at = @At(value = "INVOKE", target = "Lnet/minecraft/text/ClickEvent;getAction()Lnet/minecraft/text/ClickEvent$Action;", ordinal = 0), cancellable = true)

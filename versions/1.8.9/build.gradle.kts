@@ -6,11 +6,18 @@ plugins {
 val minecraftVersion = "1.8.9"
 val featherBuild = "1"
 val lwjglVersion = "3.4.1"
-val legacyLwjgl3 = "1.4.0-beta.11"
-val osl = "0.19.1"
+val legacyLwjgl3 = "1.4.0"
+val osl = "0.20.3"
 base.archivesName = "AxolotlClient"
 group = project.property("maven_group")!!
 version = "${project.property("version")}+$minecraftVersion"
+
+repositories {
+	exclusiveContent {
+		forRepository { mavenCentral() }
+		filter { includeGroup("org.lwjgl") }
+	}
+}
 
 loom {
 	accessWidenerPath.set(file("src/main/resources/axolotlclient.classtweaker"))
