@@ -127,7 +127,7 @@ publishMods {
 		minecraftVersions.set(listOf(minecraftVersion))
 		projectId.set("809392")
 		requires { slug = "fabric-api" }
-		clientRequired = true
+		client = true
 	}
 }
 

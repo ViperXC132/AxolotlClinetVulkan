@@ -3,7 +3,7 @@ import kotlin.io.path.*
 
 plugins {
 	id("io.freefair.lombok") version "9.2.0" apply false
-	id("me.modmuss50.mod-publish-plugin") version "1.1.0" apply false
+	id("me.modmuss50.mod-publish-plugin") version "2.0.0" apply false
 	id("com.gradleup.shadow") version "9.3.1" apply false
 	id("dev.yumi.gradle.licenser") version "2.0.+"
 	id("net.fabricmc.fabric-loom-remap") version "1.17.+" apply false
