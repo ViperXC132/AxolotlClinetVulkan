@@ -35,6 +35,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
@@ -111,6 +112,11 @@ public class ProfilesScreen extends Screen implements RecreatableScreen {
 			Profiles.getInstance().iterateAvailable(p -> addEntry(new ProfileEntry(p)));
 			addEntry(SPACER);
 			addEntry(ADD);
+			var presets = Profiles.getInstance().findPresets();
+			if (!presets.isEmpty()) {
+				addEntry(SPACER);
+				presets.forEach(p -> addEntry(new PresetEntry(p)));
+			}
 		}
 
 		@Override
@@ -173,9 +179,9 @@ public class ProfilesScreen extends Screen implements RecreatableScreen {
 				exportButton = Button.builder(EXPORT_BUTTON_TITLE, btn -> {
 					btn.active = false;
 					Profiles.getInstance().exportProfile(profile).thenRun(() -> btn.active = true);
-				}).bounds(0, 0, 50, 20).build();
+				}).width(50).build();
 				loadButton = Button.builder(LOAD_BUTTON_TITLE, btn ->
-					Profiles.getInstance().switchTo(profile)).bounds(0, 0, 50, 20).build();
+					Profiles.getInstance().switchTo(profile)).width(50).build();
 				duplicateButton = Button.builder(DUPLICATE_BUTTON_TITLE, b -> {
 					var dup = Profiles.getInstance().duplicate(profile);
 					double d = (double) ProfilesList.this.maxScrollAmount() - ProfilesList.this.scrollAmount();
@@ -183,14 +189,13 @@ public class ProfilesScreen extends Screen implements RecreatableScreen {
 					entries.add(entries.indexOf(ProfileEntry.this) + 1, new ProfileEntry(dup));
 					replaceEntries(entries);
 					ProfilesList.this.setScrollAmount(ProfilesList.this.maxScrollAmount() - d);
-				}).bounds(0, 0, 50, 20).build();
+				}).width(50).build();
 
 				this.removeButton = Button.builder(REMOVE_BUTTON_TITLE, b -> {
 						removeEntry(this);
 						Profiles.getInstance().remove(profile);
 						refreshScrollAmount();
-					}).bounds(0, 0, 50, 20)
-					.build();
+					}).width(50).build();
 			}
 
 			@Override
@@ -269,6 +274,43 @@ public class ProfilesScreen extends Screen implements RecreatableScreen {
 			@Override
 			public List<? extends GuiEventListener> children() {
 				return List.of(addButton, importButton);
+			}
+		}
+
+		public class PresetEntry extends Entry {
+			private final Button importButton;
+			private final StringWidget label;
+
+			public PresetEntry(Profiles.ProfilePreset preset) {
+				this.importButton = Button.builder(Component.translatable("profiles.profile.import_preset"), btn -> {
+					preset.importProfile();
+					ProfilesList.this.reload();
+					ProfilesList.this.scrollToEntry(PresetEntry.this);
+				}).width(150).build();
+				this.label = new StringWidget(Component.literal(preset.info().name()), getFont());
+				label.setHeight(20);
+			}
+
+			@Override
+			public List<? extends NarratableEntry> narratables() {
+				return List.of(label, importButton);
+			}
+
+			@Override
+			public void extractContent(GuiGraphicsExtractor graphics, int mouseX, int mouseY, boolean hovered, float a) {
+				int i = scrollBarX() - importButton.getWidth() - 4;
+				int j = getContentY() - 2;
+				importButton.setPosition(i, j);
+				importButton.extractRenderState(graphics, mouseX, mouseY, a);
+				i -= label.getWidth();
+				label.setMaxWidth(i - getContentX() - 4, StringWidget.TextOverflow.SCROLLING);
+				label.setPosition(getContentX(), j);
+				label.extractRenderState(graphics, mouseX, mouseY, a);
+			}
+
+			@Override
+			public List<? extends GuiEventListener> children() {
+				return List.of(label, importButton);
 			}
 		}
 	}

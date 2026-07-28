@@ -23,6 +23,7 @@
 package io.github.axolotlclient.config.profiles;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDateTime;
@@ -33,6 +34,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import com.google.common.hash.Hashing;
 import com.google.gson.TypeAdapter;
@@ -41,12 +44,16 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import io.github.axolotlclient.AxolotlClientCommon;
+import io.github.axolotlclient.bridge.AxoMinecraftClient;
+import io.github.axolotlclient.bridge.resource.AxoResource;
 import io.github.axolotlclient.bridge.util.AxoI18n;
+import io.github.axolotlclient.bridge.util.AxoIdentifier;
 import io.github.axolotlclient.util.GsonHelper;
 import io.github.axolotlclient.util.ThreadExecuter;
 import lombok.Setter;
 import net.fabricmc.loader.api.FabricLoader;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.util.tinyfd.TinyFileDialogs;
 
@@ -202,34 +209,7 @@ public class Profiles {
 				);
 				if (files == null) return Collections.emptyList();
 				var imported = Arrays.stream(files.split("\\|")).map(Path::of)
-					.map(p -> {
-						try (var fs = FileSystems.newFileSystem(p)) {
-							var profileInfoPath = fs.getPath(PROFILE_INFO_FILE);
-							if (!Files.exists(profileInfoPath)) {
-								AxolotlClientCommon.getInstance().getLogger().warn("Skipping bad profile file at {}", p);
-								AxolotlClientCommon.getInstance().getNotificationProvider().addStatus("profiles.profile.import.notification.failed", "profiles.profile.import.notification.malformed_profile", p.getFileName());
-								return null;
-							}
-							var profileInfo = GsonHelper.GSON.fromJson(Files.readString(profileInfoPath), ProfileInfo.class);
-							var newProfile = newProfile(profileInfo.name());
-							Files.createDirectories(newProfile.getPath());
-							var fakeRoot = fs.getPath("/profile");
-							Files.walkFileTree(fakeRoot, new SimpleFileVisitor<>() {
-								@Override
-								public @NotNull FileVisitResult visitFile(@NotNull Path file, @NotNull BasicFileAttributes attrs) throws IOException {
-									Files.copy(file, newProfile.getPath().resolve(fakeRoot.relativize(file).toString()));
-									return super.visitFile(file, attrs);
-								}
-							});
-							return newProfile;
-						} catch (Exception e) {
-							AxolotlClientCommon.getInstance().getLogger().warn("Failed to import profile from {}", p, e);
-							AxolotlClientCommon.getInstance().getNotificationProvider()
-								.addStatus("profiles.profile.import.notification.failed",
-									"profiles.profile.import.notification.failed.generic");
-							return null;
-						}
-					}).filter(Objects::nonNull).toList();
+					.map(this::readProfile).filter(Objects::nonNull).toList();
 				saveProfiles();
 				if (!imported.isEmpty()) {
 					var count = imported.size();
@@ -246,6 +226,76 @@ public class Profiles {
 				return imported;
 			}
 		}, ThreadExecuter.service());
+	}
+
+	private @Nullable Profile readProfile(Path p) {
+		try (var fs = FileSystems.newFileSystem(p)) {
+			var profileInfoPath = fs.getPath(PROFILE_INFO_FILE);
+			if (!Files.exists(profileInfoPath)) {
+				AxolotlClientCommon.getInstance().getLogger().warn("Skipping bad profile file at {}", p);
+				AxolotlClientCommon.getInstance().getNotificationProvider().addStatus("profiles.profile.import.notification.failed", "profiles.profile.import.notification.malformed_profile", p.getFileName());
+				return null;
+			}
+			var profileInfo = GsonHelper.GSON.fromJson(Files.readString(profileInfoPath), ProfileInfo.class);
+			var newProfile = newProfile(profileInfo.name());
+			Files.createDirectories(newProfile.getPath());
+			var fakeRoot = fs.getPath("/profile");
+			Files.walkFileTree(fakeRoot, new SimpleFileVisitor<>() {
+				@Override
+				public @NotNull FileVisitResult visitFile(@NotNull Path file, @NotNull BasicFileAttributes attrs) throws IOException {
+					Files.copy(file, newProfile.getPath().resolve(fakeRoot.relativize(file).toString()));
+					return super.visitFile(file, attrs);
+				}
+			});
+			return newProfile;
+		} catch (Exception e) {
+			AxolotlClientCommon.getInstance().getLogger().warn("Failed to import profile from {}:", p, e);
+			AxolotlClientCommon.getInstance().getNotificationProvider()
+				.addStatus("profiles.profile.import.notification.failed",
+					"profiles.profile.import.notification.failed.generic");
+			return null;
+		}
+	}
+
+	public List<ProfilePreset> findPresets() {
+		var mc = AxoMinecraftClient.getInstance();
+		var resourceManager = mc.br$getResourceManager();
+		var presetCandidates = resourceManager.br$listResources(AxolotlClientCommon.MODID, "profiles/presets", id -> id.br$getPath().endsWith(PROFILE_EXPORT_FILE_EXTENSION));
+		List<ProfilePreset> foundPresets = new ArrayList<>();
+		presetCandidates.forEach((id, resource) -> {
+			try (var in = new ZipInputStream(resource.br$asStream())) {
+				ZipEntry entry;
+				do {
+					entry = in.getNextEntry();
+				} while (!entry.getName().equals(PROFILE_INFO_FILE));
+				var profileInfo = GsonHelper.GSON.fromJson(new InputStreamReader(in), ProfileInfo.class);
+				foundPresets.add(new ProfilePreset(profileInfo, id, resource));
+			} catch (IOException e) {
+				AxolotlClientCommon.getInstance().getLogger().warn("Failed to read profile preset from {}", id, e);
+			}
+		});
+		return foundPresets;
+	}
+
+	public record ProfilePreset(ProfileInfo info, AxoIdentifier id, AxoResource resource) {
+		public void importProfile() {
+			var tmp = PROFILES_CONFIG.resolveSibling("tmp").resolve(info.id()+".zip");
+			try {
+				Files.createDirectories(tmp.getParent());
+				Files.copy(resource.br$asStream(), tmp);
+				var profile = Profiles.getInstance().readProfile(tmp);
+				Files.delete(tmp);
+				Files.delete(tmp.getParent());
+				if (profile == null) {
+					return;
+				}
+				Profiles.getInstance().saveProfiles();
+				Profiles.getInstance().switchTo(profile);
+			} catch (IOException e) {
+				AxolotlClientCommon.getInstance().getLogger().warn("Skipping bad profile file at {}, {}:", id(), info().name(), e);
+				AxolotlClientCommon.getInstance().getNotificationProvider().addStatus("profiles.profile.import.notification.failed", "profiles.profile.import.notification.malformed_profile", info().name());
+			}
+		}
 	}
 
 	public static final class Profile {

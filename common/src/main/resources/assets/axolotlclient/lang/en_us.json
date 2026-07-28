@@ -844,7 +844,7 @@
 	"profiles.profile.import": "Import Profiles",
 	"profiles.profile.export": "Export",
 	"profiles.profile.export.notification.failed": "Export Failed",
-	"profiles.profile.export.notification.malformed_profile": "Malformed profile: %s. See the log for more information.",
+	"profiles.profile.import.notification.malformed_profile": "Malformed profile: %s. See the log for more information.",
 	"profiles.profile.export.notification.failed.invalid_destination": "Invalid export destination file.",
 	"profiles.profile.export.notification.failed.generic": "See the log for more information.",
 	"profiles.profile.export.notification.success": "Export Complete",
@@ -994,5 +994,6 @@
 	"confirm_disconnect.tooltip": "Confirm Disconnections from Servers",
 	"confirm_disconnect.title": "Confirm Disconnection",
 	"confirm_disconnect.message": "Do you want to disconnect from the server?",
-	"rpc.starting.error": "Failed to start DiscordRPC"
+	"rpc.starting.error": "Failed to start DiscordRPC",
+	"profiles.profile.import_preset": "Import & Load Preset"
 }

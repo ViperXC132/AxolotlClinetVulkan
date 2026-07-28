@@ -31,6 +31,7 @@ import io.github.axolotlclient.AxolotlClientConfig.impl.ui.TextFieldWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.ElementListWidget;
 import io.github.axolotlclient.AxolotlClientConfig.impl.ui.vanilla.widgets.VanillaButtonWidget;
 import io.github.axolotlclient.config.profiles.Profiles;
+import io.github.axolotlclient.util.DrawUtil;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -85,6 +86,11 @@ public class ProfilesScreen extends io.github.axolotlclient.AxolotlClientConfig.
 			Profiles.getInstance().iterateAvailable(p -> addEntry(new ProfileEntry(p)));
 			addEntry(SPACER);
 			addEntry(ADD);
+			var presets = Profiles.getInstance().findPresets();
+			if (!presets.isEmpty()) {
+				addEntry(SPACER);
+				presets.forEach(p -> addEntry(new PresetEntry(p)));
+			}
 		}
 
 		@Override
@@ -221,6 +227,35 @@ public class ProfilesScreen extends io.github.axolotlclient.AxolotlClientConfig.
 			@Override
 			public List<? extends Element> children() {
 				return List.of(addButton, importButton);
+			}
+		}
+
+		public class PresetEntry extends Entry {
+			private final ButtonWidget importButton;
+			private final String label;
+
+			public PresetEntry(Profiles.ProfilePreset preset) {
+				this.importButton = new VanillaButtonWidget(0, 0, 150, 20, I18n.translate("profiles.profile.import_preset"), btn -> {
+					preset.importProfile();
+					ProfilesList.this.reload();
+					ProfilesList.this.centerScrollOn(PresetEntry.this);
+				});
+				this.label = preset.info().name();
+			}
+
+			@Override
+			public void render(int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
+				int i = getScrollbarPositionX() - importButton.getWidth() - 4;
+				int j = top - 2;
+				importButton.setPosition(i, j);
+				importButton.render(mouseX, mouseY, partialTick);
+				i -= textRenderer.getWidth(label);
+				DrawUtil.drawScrollableText(textRenderer, label, left, top, i - 4, top + height, -1);
+			}
+
+			@Override
+			public List<? extends Element> children() {
+				return List.of(importButton);
 			}
 		}
 	}

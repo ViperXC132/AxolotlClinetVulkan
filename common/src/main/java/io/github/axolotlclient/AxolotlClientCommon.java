@@ -158,6 +158,7 @@ public abstract class AxolotlClientCommon {
 				try {
 					if (Files.exists(p)) {
 						Files.move(p, configFile);
+						break;
 					}
 				} catch (IOException e) {
 					logger.warn("Failed to move config file, it might get reset! ", e);

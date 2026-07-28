@@ -844,7 +844,7 @@
 	"profiles.profile.import": "Importer des profils",
 	"profiles.profile.export": "Exporter",
 	"profiles.profile.export.notification.failed": "Échec de l'exportation",
-	"profiles.profile.export.notification.malformed_profile": "Profil corrompu : %s. Consultez le journal pour plus d'informations.",
+	"profiles.profile.import.notification.malformed_profile": "Profil corrompu : %s. Consultez le journal pour plus d'informations.",
 	"profiles.profile.export.notification.failed.invalid_destination": "Destination d'exportation invalide.",
 	"profiles.profile.export.notification.failed.generic": "Consultez le journal pour plus d'informations.",
 	"profiles.profile.export.notification.success": "Exportation terminée",

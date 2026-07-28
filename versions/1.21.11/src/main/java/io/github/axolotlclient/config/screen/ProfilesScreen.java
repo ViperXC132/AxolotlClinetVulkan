@@ -35,6 +35,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.StringWidget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.layouts.HeaderAndFooterLayout;
 import net.minecraft.client.gui.layouts.LinearLayout;
@@ -111,6 +112,11 @@ public class ProfilesScreen extends Screen implements RecreatableScreen {
 			Profiles.getInstance().iterateAvailable(p -> addEntry(new ProfileEntry(p)));
 			addEntry(SPACER);
 			addEntry(ADD);
+			var presets = Profiles.getInstance().findPresets();
+			if (!presets.isEmpty()) {
+				addEntry(SPACER);
+				presets.forEach(p -> addEntry(new PresetEntry(p)));
+			}
 		}
 
 		@Override
@@ -269,6 +275,43 @@ public class ProfilesScreen extends Screen implements RecreatableScreen {
 			@Override
 			public List<? extends GuiEventListener> children() {
 				return List.of(addButton, importButton);
+			}
+		}
+
+		public class PresetEntry extends Entry {
+			private final Button importButton;
+			private final StringWidget label;
+
+			public PresetEntry(Profiles.ProfilePreset preset) {
+				this.importButton = Button.builder(Component.translatable("profiles.profile.import_preset"), btn -> {
+					preset.importProfile();
+					ProfilesList.this.reload();
+					ProfilesList.this.scrollToEntry(PresetEntry.this);
+				}).width(150).build();
+				this.label = new StringWidget(Component.literal(preset.info().name()), getFont());
+				label.setHeight(20);
+			}
+
+			@Override
+			public List<? extends NarratableEntry> narratables() {
+				return List.of(label, importButton);
+			}
+
+			@Override
+			public void renderContent(GuiGraphics graphics, int mouseX, int mouseY, boolean hovered, float a) {
+				int i = scrollBarX() - importButton.getWidth() - 4;
+				int j = getContentY() - 2;
+				importButton.setPosition(i, j);
+				importButton.render(graphics, mouseX, mouseY, a);
+				i -= label.getWidth();
+				label.setMaxWidth(i - getContentX() - 4, StringWidget.TextOverflow.SCROLLING);
+				label.setPosition(getContentX(), j);
+				label.render(graphics, mouseX, mouseY, a);
+			}
+
+			@Override
+			public List<? extends GuiEventListener> children() {
+				return List.of(label, importButton);
 			}
 		}
 	}
