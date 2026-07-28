@@ -27,6 +27,7 @@ import java.util.function.Supplier;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.AxolotlClient;
 import io.github.axolotlclient.AxolotlClientConfigCommon;
 import io.github.axolotlclient.api.API;
@@ -45,7 +46,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameMenuScreen.class)
@@ -67,17 +67,14 @@ public abstract class GameMenuScreenMixin extends Screen {
 		}
 	}
 
-	@Redirect(method = "initWidgets", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/GameMenuScreen;createLinkConfirmationButton(Lnet/minecraft/text/Text;Ljava/lang/String;)Lnet/minecraft/client/gui/widget/ButtonWidget;", ordinal = 1))
-	private ButtonWidget axolotlclient$addClientOptionsButton(GameMenuScreen instance, Text text, String string) {
+	@WrapOperation(method = "initWidgets", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/GameMenuScreen;createLinkConfirmationButton(Lnet/minecraft/text/Text;Ljava/lang/String;)Lnet/minecraft/client/gui/widget/ButtonWidget;", ordinal = 1))
+	private ButtonWidget axolotlclient$addClientOptionsButton(GameMenuScreen instance, Text text, String string, Operation<ButtonWidget> original) {
 		if (!AxolotlClientConfigCommon.instance().gameMenuScreenOptionButtonMode.get().showButton()) {
-			return createLinkConfirmationButton(text, string);
+			return original.call(instance, text, string);
 		}
 
 		return createButton(Text.translatable("title_short"), () -> new HudEditScreen(this));
 	}
-
-	@Shadow
-	protected abstract ButtonWidget createLinkConfirmationButton(Text par1, String par2);
 
 	@Shadow
 	protected abstract ButtonWidget createButton(Text par1, Supplier<Screen> par2);

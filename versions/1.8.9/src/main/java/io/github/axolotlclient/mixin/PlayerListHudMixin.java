@@ -132,18 +132,18 @@ public abstract class PlayerListHudMixin extends GuiElement {
 		}
 	}
 
-	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;isIntegratedServerRunning()Z"))
-	private boolean axolotlclient$showPlayerHeads$1(Minecraft instance) {
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;isIntegratedServerRunning()Z"))
+	private boolean axolotlclient$showPlayerHeads$1(Minecraft instance, Operation<Boolean> original) {
 		if (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showPlayerHeads.get()) {
-			return instance.isIntegratedServerRunning();
+			return original.call(instance);
 		}
 		return false;
 	}
 
-	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/Connection;isEncrypted()Z"))
-	private boolean axolotlclient$showPlayerHeads$2(Connection instance) {
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/Connection;isEncrypted()Z"))
+	private boolean axolotlclient$showPlayerHeads$2(Connection instance, Operation<Boolean> original) {
 		if (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showPlayerHeads.get()) {
-			return instance.isEncrypted();
+			return original.call(instance);
 		}
 		return false;
 	}
