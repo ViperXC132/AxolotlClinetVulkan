@@ -41,7 +41,8 @@ import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.client.resource.language.I18n;
-import net.ornithemc.osl.keybinds.api.KeyBindingEvents;
+import net.ornithemc.osl.keybinds.api.KeybindEvents;
+import net.ornithemc.osl.keybinds.api.KeybindRegistry;
 import net.ornithemc.osl.lifecycle.api.client.MinecraftClientEvents;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.system.MemoryStack;
@@ -64,7 +65,7 @@ public class APIOptions extends Options {
 			return fut;
 		};
 		KeyBinding openSidebar = new KeyBinding("api.chats.sidebar.open", Keyboard.KEY_O, "category.axolotlclient");
-		KeyBindingEvents.REGISTER_KEYBINDS.register(registry -> registry.register(openSidebar));
+		KeybindEvents.REGISTER_KEYBINDS.register(() -> KeybindRegistry.register(openSidebar));
 		MinecraftClientEvents.TICK_END.register(minecraft -> {
 			if (openSidebar.consumeClick() && API.getInstance().isAuthenticated()) {
 				var parent = client.screen;

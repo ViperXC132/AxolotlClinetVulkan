@@ -178,7 +178,7 @@ public class Profiles {
 						public @NotNull FileVisitResult visitFile(@NotNull Path file, @NotNull BasicFileAttributes attrs) throws IOException {
 							var zipped = fs.getPath("profile").resolve(realRoot.relativize(file).toString());
 							Files.createDirectories(zipped.getParent());
-							Files.copy(file, zipped);
+							Files.copy(file.toAbsolutePath(), zipped);
 							return super.visitFile(file, attrs);
 						}
 					});
@@ -243,18 +243,25 @@ public class Profiles {
 			Files.walkFileTree(fakeRoot, new SimpleFileVisitor<>() {
 				@Override
 				public @NotNull FileVisitResult visitFile(@NotNull Path file, @NotNull BasicFileAttributes attrs) throws IOException {
-					Files.copy(file, newProfile.getPath().resolve(fakeRoot.relativize(file).toString()));
+					var outPath = newProfile.getPath().resolve(fakeRoot.relativize(file).toString());
+					if (!outPath.startsWith(newProfile.getPath())) {
+						throw new AccessDeniedException(file.toString(), profileInfo.name(), null);
+					}
+					Files.copy(file, outPath);
 					return super.visitFile(file, attrs);
 				}
 			});
 			return newProfile;
+		} catch (AccessDeniedException e) {
+			AxolotlClientCommon.getInstance().getLogger().warn("Profile {} tried to escape its directory, aborting import.", p);
+			AxolotlClientCommon.getInstance().getNotificationProvider().addStatus("profiles.profile.import.notification.failed", "profiles.profile.import.notification.malformed_profile", p.getFileName());
 		} catch (Exception e) {
 			AxolotlClientCommon.getInstance().getLogger().warn("Failed to import profile from {}:", p, e);
 			AxolotlClientCommon.getInstance().getNotificationProvider()
 				.addStatus("profiles.profile.import.notification.failed",
 					"profiles.profile.import.notification.failed.generic");
-			return null;
 		}
+		return null;
 	}
 
 	public List<ProfilePreset> findPresets() {
