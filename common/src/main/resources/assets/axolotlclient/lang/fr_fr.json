@@ -993,5 +993,7 @@
 	"confirm_disconnect": "Confirmer la déconnexion",
 	"confirm_disconnect.tooltip": "Demander une confirmation avant de se déconnecter d'un serveur",
 	"confirm_disconnect.title": "Confirmer la déconnexion",
-	"confirm_disconnect.message": "Voulez-vous vous déconnecter du serveur ?"
+	"confirm_disconnect.message": "Voulez-vous vous déconnecter du serveur ?",
+	"rpc.starting.error": "Échec au démarrage de DiscordRPC",
+	"profiles.profile.import_preset": "Importer et charger le préréglage"
 }
