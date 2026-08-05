@@ -242,6 +242,10 @@ public class Profiles {
 			var newProfile = newProfile(profileInfo.name());
 			Files.createDirectories(newProfile.getPath());
 			var fakeRoot = fs.getPath("/profile");
+			if (!Files.exists(fakeRoot)) {
+				AxolotlClientCommon.getInstance().getLogger().debug("Profile is empty!");
+				return newProfile;
+			}
 			Files.walkFileTree(fakeRoot, new SimpleFileVisitor<>() {
 				@Override
 				public @NotNull FileVisitResult visitFile(@NotNull Path file, @NotNull BasicFileAttributes attrs) throws IOException {

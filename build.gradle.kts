@@ -103,12 +103,14 @@ subprojects {
 				archiveDir.createDirectories()
 				val versionArchive = archiveDir.resolve("$oldVer.zip")
 				synchronized(synchronizer) {
-					(if (versionArchive.notExists()) {
-						FileSystems.newFileSystem(versionArchive, mapOf("create" to "true"))
-					} else {
-						FileSystems.newFileSystem(versionArchive)
-					}).use {
-						old.moveTo(it.getPath(oldName))
+					if (old.exists()) {
+						(if (versionArchive.notExists()) {
+							FileSystems.newFileSystem(versionArchive, mapOf("create" to "true"))
+						} else {
+							FileSystems.newFileSystem(versionArchive)
+						}).use {
+							old.moveTo(it.getPath(oldName))
+						}
 					}
 				}
 			}
@@ -122,7 +124,8 @@ subprojects {
 
 	tasks.register("publishUnstable") {
 		if (project.version.toString().contains("beta") || project.version.toString()
-				.contains("alpha")) {
+				.contains("alpha")
+		) {
 			dependsOn("publish")
 		} else {
 			actions.add {
