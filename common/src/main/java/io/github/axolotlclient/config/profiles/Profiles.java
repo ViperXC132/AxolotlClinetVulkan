@@ -120,6 +120,7 @@ public class Profiles {
 		if (!storage.available().contains(profile)) {
 			throw new IllegalArgumentException("Unknown profile!");
 		}
+		AxolotlClientCommon.getInstance().getLogger().debug("Switching to profile {}", profile.name());
 		storage.current = profile;
 		AxolotlClientCommon.getInstance().reloadConfig();
 	}
@@ -237,6 +238,7 @@ public class Profiles {
 				return null;
 			}
 			var profileInfo = GsonHelper.GSON.fromJson(Files.readString(profileInfoPath), ProfileInfo.class);
+			AxolotlClientCommon.getInstance().getLogger().debug("Extracting profile: {}", profileInfo);
 			var newProfile = newProfile(profileInfo.name());
 			Files.createDirectories(newProfile.getPath());
 			var fakeRoot = fs.getPath("/profile");
@@ -244,6 +246,7 @@ public class Profiles {
 				@Override
 				public @NotNull FileVisitResult visitFile(@NotNull Path file, @NotNull BasicFileAttributes attrs) throws IOException {
 					var outPath = newProfile.getPath().resolve(fakeRoot.relativize(file).toString()).normalize();
+					AxolotlClientCommon.getInstance().getLogger().debug("Extracting profile file {} to {}", file, outPath);
 					if (!outPath.startsWith(newProfile.getPath())) {
 						throw new AccessDeniedException(file.toString(), profileInfo.name(), null);
 					}
@@ -251,6 +254,7 @@ public class Profiles {
 					return super.visitFile(file, attrs);
 				}
 			});
+			AxolotlClientCommon.getInstance().getLogger().debug("Extracted profile {}", newProfile.name());
 			return newProfile;
 		} catch (AccessDeniedException e) {
 			AxolotlClientCommon.getInstance().getLogger().warn("Profile {} tried to escape its directory, aborting import.", p);
