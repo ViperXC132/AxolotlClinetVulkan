@@ -45,5 +45,8 @@
 		"axolotlclientconfig": "*",
 		"axolotlclient-common": "*",
 		"legacy-lwjgl3": ">=1.2.11"
+	},
+	"suggests": {
+		"legacy-lwjgl3": ">=1.4.1"
 	}
 }

@@ -6,7 +6,7 @@ plugins {
 val minecraftVersion = "1.8.9"
 val featherBuild = "1"
 val lwjglVersion = "3.4.1"
-val legacyLwjgl3 = "1.4.0"
+val legacyLwjgl3 = "1.4.2"
 val osl = "0.20.3"
 base.archivesName = "AxolotlClient"
 group = project.property("maven_group")!!
@@ -56,12 +56,12 @@ dependencies {
 
 	modImplementation("io.github.moehreag:legacy-lwjgl3:$legacyLwjgl3")
 
-	include(implementation("org.lwjgl", "lwjgl-tinyfd", lwjglVersion))
-	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-linux"))
-	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-windows"))
-	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-macos"))
-	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-windows-arm64"))
-	include(runtimeOnly("org.lwjgl", "lwjgl-tinyfd", lwjglVersion, classifier = "natives-macos-arm64"))
+	include(implementation("org.lwjgl:lwjgl-tinyfd:$lwjglVersion")!!)
+	include(runtimeOnly("org.lwjgl:lwjgl-tinyfd:$lwjglVersion:natives-linux")!!)
+	include(runtimeOnly("org.lwjgl:lwjgl-tinyfd:$lwjglVersion:natives-windows")!!)
+	include(runtimeOnly("org.lwjgl:lwjgl-tinyfd:$lwjglVersion:natives-macos")!!)
+	include(runtimeOnly("org.lwjgl:lwjgl-tinyfd:$lwjglVersion:natives-windows-arm64")!!)
+	include(runtimeOnly("org.lwjgl:lwjgl-tinyfd:$lwjglVersion:natives-macos-arm64")!!)
 
 	api("net.hypixel:mod-api:1.0.2")
 	include(modImplementation("io.github.moehreag.hypixel:mod-api-fabric:1.0.2+build.1+mc1.8.9")!!)

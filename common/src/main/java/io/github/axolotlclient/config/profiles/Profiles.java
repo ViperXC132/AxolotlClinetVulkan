@@ -243,7 +243,7 @@ public class Profiles {
 			Files.walkFileTree(fakeRoot, new SimpleFileVisitor<>() {
 				@Override
 				public @NotNull FileVisitResult visitFile(@NotNull Path file, @NotNull BasicFileAttributes attrs) throws IOException {
-					var outPath = newProfile.getPath().resolve(fakeRoot.relativize(file).toString());
+					var outPath = newProfile.getPath().resolve(fakeRoot.relativize(file).toString()).normalize();
 					if (!outPath.startsWith(newProfile.getPath())) {
 						throw new AccessDeniedException(file.toString(), profileInfo.name(), null);
 					}
