@@ -1,5 +1,11 @@
 ## Changelog:
 
+### 3.2.1
+
+- fix some bugs
+- (1.8.9) allow shaders to run on OpenGL 2.1
+- Implement resource-pack-provided profile presets
+
 ### 3.2.0
 
 - (26.x) drop integration with WorldHost

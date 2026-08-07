@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.simple.ToggleSprintHud;
 import net.minecraft.client.Minecraft;
@@ -29,7 +31,6 @@ import net.minecraft.client.entity.living.player.KeyboardInput;
 import net.minecraft.client.options.KeyBinding;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(KeyboardInput.class)
 public abstract class KeyboardInputMixin {
@@ -39,10 +40,10 @@ public abstract class KeyboardInputMixin {
 	 * @return boolean whether the player should be sneaking or not
 	 * @author moehreag
 	 */
-	@Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/options/KeyBinding;isPressed()Z", ordinal = 5))
-	public boolean axolotlclient$toggleSneak(KeyBinding instance) {
+	@WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/options/KeyBinding;isPressed()Z", ordinal = 5))
+	public boolean axolotlclient$toggleSneak(KeyBinding instance, Operation<Boolean> original) {
 		ToggleSprintHud hud = (ToggleSprintHud) HudManager.getInstance().get(ToggleSprintHud.ID);
 		return hud.isEnabled() && hud.getSneakToggled().get() && Minecraft.getInstance().screen == null
-			|| instance.isPressed();
+			|| original.call(instance);
 	}
 }

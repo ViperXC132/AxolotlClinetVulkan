@@ -72,10 +72,12 @@ public class HypixelAbstractionLayer {
 
 		API.getInstance().get(request).whenComplete((response, throwable) -> {
 			if (response == Response.CLIENT_ERROR || (response != null && response.getStatus() == 0)) {
+				future.complete(Optional.empty());
 				return;
 			}
 			if (response == null) {
 				API.getInstance().getLogger().warn("Failed to process request {}: ", desc, throwable);
+				future.complete(Optional.empty());
 				return;
 			}
 
@@ -89,6 +91,7 @@ public class HypixelAbstractionLayer {
 				);
 			} else if (response.getStatus() != 200 || response.isError()) {
 				API.getInstance().getLogger().debug("Failed to process request {} ({}): {}", desc, response.getStatus(), response.getBody());
+				future.complete(Optional.empty());
 			} else {
 				future.complete(Optional.of(response));
 			}

@@ -22,9 +22,14 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import io.github.axolotlclient.util.duck.SubmitNodeCollectorExtension;
 import net.minecraft.client.renderer.SubmitNodeCollection;
 import net.minecraft.client.renderer.SubmitNodeStorage;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.phys.Vec3;
+import org.jspecify.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
@@ -34,7 +39,12 @@ public abstract class SubmitNodeStorageMixin implements SubmitNodeCollectorExten
 	public abstract SubmitNodeCollection order(int i);
 
 	@Override
-	public void axolotlclient$lastNameTagSubmitHasBadge() {
-		((SubmitNodeCollectorExtension) order(0)).axolotlclient$lastNameTagSubmitHasBadge();
+	public void axolotlclient$submitLevelHead(PoseStack poseStack, @Nullable Vec3 nameTagAttachment, int offset, Component name, boolean seeThrough, int lightCoords, CameraRenderState camera) {
+		((SubmitNodeCollectorExtension) order(0)).axolotlclient$submitLevelHead(poseStack, nameTagAttachment, offset, name, seeThrough, lightCoords, camera);
+	}
+
+	@Override
+	public void axolotlclient$submitBadge(PoseStack poseStack, @Nullable Vec3 nameTagAttachment, int offset, Component name, boolean seeThrough, int lightCoords, CameraRenderState camera) {
+		((SubmitNodeCollectorExtension) order(0)).axolotlclient$submitBadge(poseStack, nameTagAttachment, offset, name, seeThrough, lightCoords, camera);
 	}
 }

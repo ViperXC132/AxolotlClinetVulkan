@@ -22,24 +22,25 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.modules.freelook.Freelook;
 import net.minecraft.client.render.Camera;
 import net.minecraft.entity.living.player.PlayerEntity;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(Camera.class)
 public abstract class RenderDataMixin {
 
-	@Redirect(method = "setup", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/living/player/PlayerEntity;yaw:F", opcode = Opcodes.GETFIELD))
-	private static float axolotlclient$freelook$getYaw(PlayerEntity entity) {
-		return Freelook.getInstance().yaw(entity.yaw);
+	@WrapOperation(method = "setup", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/living/player/PlayerEntity;yaw:F", opcode = Opcodes.GETFIELD))
+	private static float axolotlclient$freelook$getYaw(PlayerEntity instance, Operation<Float> original) {
+		return Freelook.getInstance().yaw(original.call(instance));
 	}
 
-	@Redirect(method = "setup", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/living/player/PlayerEntity;pitch:F", opcode = Opcodes.GETFIELD))
-	private static float axolotlclient$freelook$getPitch(PlayerEntity entity) {
-		return Freelook.getInstance().pitch(entity.pitch);
+	@WrapOperation(method = "setup", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/living/player/PlayerEntity;pitch:F", opcode = Opcodes.GETFIELD))
+	private static float axolotlclient$freelook$getPitch(PlayerEntity instance, Operation<Float> original) {
+		return Freelook.getInstance().pitch(original.call(instance));
 	}
 }

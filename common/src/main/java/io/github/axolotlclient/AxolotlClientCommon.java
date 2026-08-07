@@ -54,6 +54,7 @@ import io.github.axolotlclient.modules.zoom.Zoom;
 import io.github.axolotlclient.util.FeatureDisablerCommon;
 import io.github.axolotlclient.util.Logger;
 import io.github.axolotlclient.util.OSUtil;
+import io.github.axolotlclient.util.compat.BetterTabCompat;
 import io.github.axolotlclient.util.notifications.NotificationProvider;
 import lombok.Getter;
 import net.fabricmc.loader.api.FabricLoader;
@@ -136,6 +137,7 @@ public abstract class AxolotlClientCommon {
 		registerModule(DiscordRPC.getInstance());
 		registerModule(getApiOptions());
 		registerModule(Zoom.getInstance());
+		registerModule(new BetterTabCompat());
 	}
 
 	// init logic
@@ -156,6 +158,7 @@ public abstract class AxolotlClientCommon {
 				try {
 					if (Files.exists(p)) {
 						Files.move(p, configFile);
+						break;
 					}
 				} catch (IOException e) {
 					logger.warn("Failed to move config file, it might get reset! ", e);

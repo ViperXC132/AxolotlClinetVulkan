@@ -60,6 +60,12 @@ public class FriendsScreen extends Screen {
 	}
 
 	@Override
+	protected void extractBlurredBackground(GuiGraphicsExtractor graphics) {
+		if (minecraft.gui.screen() instanceof FriendsOverlayScreen) return;
+		super.extractBlurredBackground(graphics);
+	}
+
+	@Override
 	public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float delta) {
 		super.extractRenderState(graphics, mouseX, mouseY, delta);
 		graphics.centeredText(this.font, this.title, this.width / 2, 15, -1);

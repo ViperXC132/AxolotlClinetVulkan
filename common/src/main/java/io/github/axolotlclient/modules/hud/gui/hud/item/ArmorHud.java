@@ -88,7 +88,7 @@ public class ArmorHud extends TextHudEntry {
 		if (player == null) {
 			return;
 		}
-		if (hideIfEmpty.get() && Stream.concat(Stream.of(player.br$getInventory().br$getMainHand()), player.br$getInventory().br$getArmor().stream()).allMatch(AxoItemStack::br$isEmpty)) {
+		if (hideIfEmpty.get() && Stream.concat(mainHandItemPosition.get() == MainHandItemPosition.DISABLED ? Stream.empty() : Stream.of(player.br$getInventory().br$getMainHand()), player.br$getInventory().br$getArmor().stream()).allMatch(AxoItemStack::br$isEmpty)) {
 			return;
 		}
 		super.render(ctx, delta);

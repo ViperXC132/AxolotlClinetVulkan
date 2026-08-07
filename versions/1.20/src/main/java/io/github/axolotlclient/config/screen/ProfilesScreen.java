@@ -29,6 +29,7 @@ import io.github.axolotlclient.config.profiles.Profiles;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.Selectable;
@@ -36,6 +37,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
+import net.minecraft.client.gui.widget.TextWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.text.CommonTexts;
 import net.minecraft.text.Text;
@@ -92,6 +94,11 @@ public class ProfilesScreen extends Screen implements RecreatableScreen {
 			Profiles.getInstance().iterateAvailable(p -> addEntry(new ProfileEntry(p)));
 			addEntry(SPACER);
 			addEntry(ADD);
+			var presets = Profiles.getInstance().findPresets();
+			if (!presets.isEmpty()) {
+				addEntry(SPACER);
+				presets.forEach(p -> addEntry(new PresetEntry(p)));
+			}
 		}
 
 		@Override
@@ -246,6 +253,54 @@ public class ProfilesScreen extends Screen implements RecreatableScreen {
 			@Override
 			public List<? extends Element> children() {
 				return List.of(addButton, importButton);
+			}
+		}
+
+		public class PresetEntry extends Entry {
+			private final ButtonWidget importButton;
+			private final TextWidget label;
+
+			public PresetEntry(Profiles.ProfilePreset preset) {
+				this.importButton = ButtonWidget.builder(Text.translatable("profiles.profile.import_preset"), btn -> {
+					preset.importProfile();
+					ProfilesList.this.reload();
+					ProfilesList.this.centerScrollOn(PresetEntry.this);
+				}).width(150).build();
+				this.label = new TextWidget(Text.literal(preset.info().name()), textRenderer) {
+					@Override
+					public void drawWidget(GuiGraphics graphics, int mouseX, int mouseY, float delta) {
+						Text text = this.getMessage();
+						TextRenderer textRenderer = this.getTextRenderer();
+						if (textRenderer.getWidth(text) > getWidth()) {
+							drawScrollingText(graphics, textRenderer, 2, -1);
+						} else {
+							graphics.drawShadowedText(textRenderer, text, this.getX(), this.getY() + (this.getHeight() - 9) / 2, this.getTextColor());
+						}
+					}
+				};
+				label.axolotlclientconfig$setHeight(20);
+			}
+
+			@Override
+			public List<? extends Selectable> selectableChildren() {
+				return List.of(label, importButton);
+			}
+
+			@Override
+			public void render(GuiGraphics graphics, int index, int top, int left, int width, int height, int mouseX, int mouseY, boolean hovering, float partialTick) {
+				int i = getScrollbarPositionX() - importButton.getWidth() - 4;
+				int j = top - 2;
+				importButton.setPosition(i, j);
+				importButton.render(graphics, mouseX, mouseY, partialTick);
+				i -= label.getWidth();
+				label.setWidth(i - left - 4);
+				label.setPosition(left, j);
+				label.render(graphics, mouseX, mouseY, partialTick);
+			}
+
+			@Override
+			public List<? extends Element> children() {
+				return List.of(label, importButton);
 			}
 		}
 	}

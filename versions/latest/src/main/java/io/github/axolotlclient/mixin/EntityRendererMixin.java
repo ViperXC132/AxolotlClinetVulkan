@@ -81,7 +81,7 @@ public abstract class EntityRendererMixin {
 				if (level == null) return;
 				Entity entity = level.getEntity(state.id);
 				if (entity instanceof Player player && UserRequest.getOnline(player.getStringUUID())) {
-					((SubmitNodeCollectorExtension) submitNodeCollector).axolotlclient$lastNameTagSubmitHasBadge();
+					((SubmitNodeCollectorExtension) submitNodeCollector).axolotlclient$submitBadge(poseStack, state.nameTagAttachment, offset, state.nameTag, !state.isDiscrete, state.lightCoords, camera);
 				}
 			}
 		}
@@ -103,8 +103,7 @@ public abstract class EntityRendererMixin {
 							y -= 2;
 						}
 
-						submitNodeCollector.submitNameTag(poseStack, state.nameTagAttachment, y, Component.literal(text).withStyle(s -> s.withColor(LevelHead.getInstance().textColor.get().toInt())), !state.isDiscrete, state.lightCoords, camera);
-						((SubmitNodeCollectorExtension) submitNodeCollector).axolotlclient$lastNameTagSubmitIsLevelHead();
+						((SubmitNodeCollectorExtension) submitNodeCollector).axolotlclient$submitLevelHead(poseStack, state.nameTagAttachment, y, Component.literal(text).withStyle(s -> s.withColor(LevelHead.getInstance().textColor.get().toInt())), !state.isDiscrete, state.lightCoords, camera);
 					}
 				} else if (LevelHead.getInstance().enabled.get()) {
 					String text = LevelHead.getInstance().getDisplayString(player.getStringUUID());
@@ -115,8 +114,7 @@ public abstract class EntityRendererMixin {
 						y -= 2;
 					}
 
-					submitNodeCollector.submitNameTag(poseStack, state.nameTagAttachment, y, Component.literal(text).withStyle(s -> s.withColor(LevelHead.getInstance().textColor.get().toInt())), !state.isDiscrete, state.lightCoords, camera);
-					((SubmitNodeCollectorExtension) submitNodeCollector).axolotlclient$lastNameTagSubmitIsLevelHead();
+					((SubmitNodeCollectorExtension) submitNodeCollector).axolotlclient$submitLevelHead(poseStack, state.nameTagAttachment, y, Component.literal(text).withStyle(s -> s.withColor(LevelHead.getInstance().textColor.get().toInt())), !state.isDiscrete, state.lightCoords, camera);
 				}
 			}
 		}

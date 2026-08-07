@@ -48,7 +48,6 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.world.WorldSettings;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Final;
@@ -151,9 +150,9 @@ public abstract class MinecraftClientMixin {
 		DiscordRPC.getInstance().setWorld(worldFileName);
 	}
 
-	@Redirect(method = "tick", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;getEventDWheel()I"), remap = false)
-	public int axolotlclient$onScroll() {
-		int amount = Mouse.getEventDWheel();
+	@WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;getEventDWheel()I"), remap = false)
+	public int axolotlclient$onScroll(Operation<Integer> original) {
+		int amount = original.call();
 		if (amount != 0 && Zoom.getInstance().scroll(amount)) {
 			return 0;
 		}

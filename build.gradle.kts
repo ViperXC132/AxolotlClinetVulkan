@@ -3,7 +3,7 @@ import kotlin.io.path.*
 
 plugins {
 	id("io.freefair.lombok") version "9.2.0" apply false
-	id("me.modmuss50.mod-publish-plugin") version "1.1.0" apply false
+	id("me.modmuss50.mod-publish-plugin") version "2.0.0" apply false
 	id("com.gradleup.shadow") version "9.3.1" apply false
 	id("dev.yumi.gradle.licenser") version "2.0.+"
 	id("net.fabricmc.fabric-loom-remap") version "1.17.+" apply false
@@ -103,12 +103,14 @@ subprojects {
 				archiveDir.createDirectories()
 				val versionArchive = archiveDir.resolve("$oldVer.zip")
 				synchronized(synchronizer) {
-					(if (versionArchive.notExists()) {
-						FileSystems.newFileSystem(versionArchive, mapOf("create" to "true"))
-					} else {
-						FileSystems.newFileSystem(versionArchive)
-					}).use {
-						old.moveTo(it.getPath(oldName))
+					if (old.exists()) {
+						(if (versionArchive.notExists()) {
+							FileSystems.newFileSystem(versionArchive, mapOf("create" to "true"))
+						} else {
+							FileSystems.newFileSystem(versionArchive)
+						}).use {
+							old.moveTo(it.getPath(oldName))
+						}
 					}
 				}
 			}
@@ -122,7 +124,8 @@ subprojects {
 
 	tasks.register("publishUnstable") {
 		if (project.version.toString().contains("beta") || project.version.toString()
-				.contains("alpha")) {
+				.contains("alpha")
+		) {
 			dependsOn("publish")
 		} else {
 			actions.add {

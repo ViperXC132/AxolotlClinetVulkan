@@ -23,7 +23,9 @@
 package io.github.axolotlclient.bridge.mixin.resource;
 
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -48,7 +50,17 @@ public interface ResourceManagerMixin extends AxoResourceManager {
 		// this cast is maybe not ideal
 		var map = net.ornithemc.osl.resource.loader.api.resource.manager.ResourceManager.client().findResources(namespace, prefix, t -> filter.test(new Identifier(t.namespace(), t.identifier())));
 		HashMap<AxoIdentifier, AxoResource> other = new HashMap<>(map.size());
-		map.forEach((id, resource) -> other.put(new Identifier(id.namespace(), id.identifier()), (Resource) resource));
+		map.forEach((id, resource) -> other.put(new Identifier(id.namespace(), id.identifier()), new AxoResource() {
+			@Override
+			public InputStream br$asStream() throws IOException {
+				return resource.open();
+			}
+
+			@Override
+			public BufferedReader br$asReader() throws IOException {
+				return resource.openAsReader();
+			}
+		}));
 		return other;
 	}
 

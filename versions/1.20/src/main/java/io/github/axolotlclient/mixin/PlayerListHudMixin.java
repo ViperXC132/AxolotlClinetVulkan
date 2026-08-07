@@ -100,12 +100,12 @@ public abstract class PlayerListHudMixin {
 			}
 		}
 		if (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).numericalPing.get())
-			width += (instance.getWidth(String.valueOf(entry.getLatency())) - 10);
+			width += instance.getWidth(String.valueOf(entry.getLatency())) - 10;
 		return width;
 	}
 
-	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawShadowedText(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)I"))
-	public int axolotlclient$moveName2(GuiGraphics instance, TextRenderer renderer, Text text, int x, int y, int color, @Local PlayerListEntry entry) {
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawShadowedText(Lnet/minecraft/client/font/TextRenderer;Lnet/minecraft/text/Text;III)I"))
+	public int axolotlclient$moveName2(GuiGraphics instance, TextRenderer renderer, Text text, int x, int y, int color, Operation<Integer> original, @Local PlayerListEntry entry) {
 		if (AxolotlClient.config().showBadges.get() &&
 			(AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_NAME ||
 				AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_NAME_ALIGNED)) {
@@ -117,15 +117,16 @@ public abstract class PlayerListHudMixin {
 				x += 9;
 			}
 		}
-		return instance.drawShadowedText(renderer, text, x, y, color);
+		return original.call(instance, renderer, text, x, y, color);
 	}
 
 	@Inject(method = "renderLatencyIcon", at = @At("HEAD"), cancellable = true)
 	private void axolotlclient$numericalPing(GuiGraphics graphics, int width, int x, int y, PlayerListEntry entry, CallbackInfo ci) {
 		if (AxolotlClient.config().showBadges.get() && AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_PING
 			&& UserRequest.getOnline(entry.getProfile().getId().toString())) {
+			var pingWidth = (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).numericalPing.get()) ? graphics.br$getFont().br$getWidth(String.valueOf(entry.getLatency())) + 1 : 11;
 			RenderSystem.setShaderColor(1, 1, 1, 1);
-			graphics.drawTexture((Identifier) AxolotlClientCommon.BADGE_PATH, x + width - 11 - 9, y, 8, 8, 0, 0, 8, 8, 8, 8);
+			graphics.drawTexture((Identifier) AxolotlClientCommon.BADGE_PATH, x + width - pingWidth - 9, y, 8, 8, 0, 0, 8, 8, 8, 8);
 		}
 		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().customTabList.get()
 			&& BedwarsMod.getInstance().blockLatencyIcon() && (BedwarsMod.getInstance().isWaiting() || BedwarsMod.getInstance().inGame())) {
@@ -135,18 +136,18 @@ public abstract class PlayerListHudMixin {
 		}
 	}
 
-	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;isInSingleplayer()Z"))
-	private boolean showPlayerHeads$1(MinecraftClient instance) {
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;isInSingleplayer()Z"))
+	private boolean showPlayerHeads$1(MinecraftClient instance, Operation<Boolean> original) {
 		if (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showPlayerHeads.get()) {
-			return instance.isInSingleplayer();
+			return original.call(instance);
 		}
 		return false;
 	}
 
-	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;isEncrypted()Z"))
-	private boolean axolotlclient$showPlayerHeads$1(ClientConnection instance) {
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;isEncrypted()Z"))
+	private boolean axolotlclient$showPlayerHeads$1(ClientConnection instance, Operation<Boolean> original) {
 		if (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showPlayerHeads.get()) {
-			return instance.isEncrypted();
+			return original.call(instance);
 		}
 		return false;
 	}

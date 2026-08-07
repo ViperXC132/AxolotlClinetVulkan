@@ -25,6 +25,8 @@ package io.github.axolotlclient.mixin;
 import java.util.Collection;
 import java.util.Queue;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.axolotlclient.modules.particles.Particles;
 import net.minecraft.client.particle.Particle;
@@ -36,11 +38,9 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleType;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -52,7 +52,7 @@ public abstract class ParticleManagerMixin {
 
 	@Inject(method = "addParticle(Lnet/minecraft/particle/ParticleEffect;DDDDDD)Lnet/minecraft/client/particle/Particle;", at = @At(value = "HEAD"), cancellable = true)
 	private void axolotlclient$afterCreation(ParticleEffect parameters, double x, double y, double z, double velocityX,
-											 double velocityY, double velocityZ, CallbackInfoReturnable<Particle> cir) {
+	                                         double velocityY, double velocityZ, CallbackInfoReturnable<Particle> cir) {
 		cachedType = parameters.getType();
 
 		if (!Particles.getInstance().getShowParticle(cachedType)) {
@@ -69,28 +69,25 @@ public abstract class ParticleManagerMixin {
 		}
 	}
 
-	@Redirect(method = "tickParticles", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/ParticleManager;tickParticle(Lnet/minecraft/client/particle/Particle;)V"))
-	private void axolotlclient$removeParticlesWhenRemoved(ParticleManager instance, Particle particle) {
+	@WrapOperation(method = "tickParticles", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/ParticleManager;tickParticle(Lnet/minecraft/client/particle/Particle;)V"))
+	private void axolotlclient$removeParticlesWhenRemoved(ParticleManager instance, Particle particle, Operation<Void> original) {
 		if (!particle.isAlive()) {
 			Particles.getInstance().particleMap.remove(particle);
 		}
-		tickParticle(particle);
+		original.call(instance, particle);
 	}
 
-	@Shadow
-	protected abstract void tickParticle(Particle particle);
-
-	@Redirect(method = "tick", at = @At(value = "INVOKE", target = "Ljava/util/Queue;removeAll(Ljava/util/Collection;)Z"))
-	private boolean axolotlclient$removeEmitterParticlesWhenRemoved(Queue<Particle> instance, Collection<Particle> collection) {
+	@WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Ljava/util/Queue;removeAll(Ljava/util/Collection;)Z"))
+	private boolean axolotlclient$removeEmitterParticlesWhenRemoved(Queue<Particle> instance, Collection<Particle> collection, Operation<Boolean> original) {
 		collection.forEach(particle -> Particles.getInstance().particleMap.remove(particle));
 
-		return instance.removeAll(collection);
+		return original.call(instance, collection);
 	}
 
 	@Inject(method = "renderParticles", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/Particle;buildGeometry(Lcom/mojang/blaze3d/vertex/VertexConsumer;Lnet/minecraft/client/render/Camera;F)V"))
 	private void axolotlclient$applyOptions(MatrixStack matrices, VertexConsumerProvider.Immediate immediate,
-											LightmapTextureManager lightmapTextureManager, Camera camera, float f, CallbackInfo ci,
-											@Local Particle particle) {
+	                                        LightmapTextureManager lightmapTextureManager, Camera camera, float f, CallbackInfo ci,
+	                                        @Local Particle particle) {
 		if (Particles.getInstance().particleMap.containsKey(particle)) {
 			Particles.getInstance().applyOptions(particle);
 		}

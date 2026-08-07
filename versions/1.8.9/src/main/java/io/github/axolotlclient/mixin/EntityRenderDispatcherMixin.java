@@ -22,34 +22,35 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import io.github.axolotlclient.modules.freelook.Freelook;
 import net.minecraft.client.render.entity.EntityRenderDispatcher;
 import net.minecraft.entity.Entity;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(EntityRenderDispatcher.class)
 public abstract class EntityRenderDispatcherMixin {
 
-	@Redirect(method = "prepare", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;yaw:F", opcode = Opcodes.GETFIELD))
-	public float axolotlclient$freelook$yaw(Entity entity) {
-		return Freelook.getInstance().yaw(entity.yaw);
+	@WrapOperation(method = "prepare", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;yaw:F", opcode = Opcodes.GETFIELD))
+	public float axolotlclient$freelook$yaw(Entity instance, Operation<Float> original) {
+		return Freelook.getInstance().yaw(original.call(instance));
 	}
 
-	@Redirect(method = "prepare", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;lastYaw:F", opcode = Opcodes.GETFIELD))
-	public float axolotlclient$freelook$prevYaw(Entity entity) {
-		return Freelook.getInstance().yaw(entity.lastYaw);
+	@WrapOperation(method = "prepare", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;lastYaw:F", opcode = Opcodes.GETFIELD))
+	public float axolotlclient$freelook$prevYaw(Entity instance, Operation<Float> original) {
+		return Freelook.getInstance().yaw(original.call(instance));
 	}
 
-	@Redirect(method = "prepare", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;pitch:F", opcode = Opcodes.GETFIELD))
-	public float axolotlclient$freelook$pitch(Entity entity) {
-		return Freelook.getInstance().pitch(entity.pitch);
+	@WrapOperation(method = "prepare", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;pitch:F", opcode = Opcodes.GETFIELD))
+	public float axolotlclient$freelook$pitch(Entity instance, Operation<Float> original) {
+		return Freelook.getInstance().pitch(original.call(instance));
 	}
 
-	@Redirect(method = "prepare", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;lastPitch:F", opcode = Opcodes.GETFIELD))
-	public float axolotlclient$freelook$prevPitch(Entity entity) {
-		return Freelook.getInstance().pitch(entity.lastPitch);
+	@WrapOperation(method = "prepare", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/Entity;lastPitch:F", opcode = Opcodes.GETFIELD))
+	public float axolotlclient$freelook$prevPitch(Entity instance, Operation<Float> original) {
+		return Freelook.getInstance().pitch(original.call(instance));
 	}
 }

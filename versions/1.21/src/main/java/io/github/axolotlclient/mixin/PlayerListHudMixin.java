@@ -100,7 +100,7 @@ public abstract class PlayerListHudMixin {
 			}
 		}
 		if (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).numericalPing.get()) {
-			width += (instance.getWidth(String.valueOf(entry.getLatency())) - 10);
+			width += instance.getWidth(String.valueOf(entry.getLatency())) - 10;
 		}
 		return width;
 	}
@@ -125,8 +125,9 @@ public abstract class PlayerListHudMixin {
 	private void axolotlclient$numericalPing(GuiGraphics graphics, int width, int x, int y, PlayerListEntry entry, CallbackInfo ci) {
 		if (AxolotlClient.config().showBadges.get() && AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_PING
 			&& UserRequest.getOnline(entry.getProfile().getId().toString())) {
+			var pingWidth = (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).numericalPing.get()) ? graphics.br$getFont().br$getWidth(String.valueOf(entry.getLatency())) + 1 : 11;
 			RenderSystem.setShaderColor(1, 1, 1, 1);
-			graphics.drawTexture((Identifier) AxolotlClientCommon.BADGE_PATH, x + width - 11 - 9, y, 8, 8, 0, 0, 8, 8, 8, 8);
+			graphics.drawTexture((Identifier) AxolotlClientCommon.BADGE_PATH, x + width - pingWidth - 9, y, 8, 8, 0, 0, 8, 8, 8, 8);
 		}
 		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().customTabList.get()
 			&& BedwarsMod.getInstance().blockLatencyIcon() && (BedwarsMod.getInstance().isWaiting() || BedwarsMod.getInstance().inGame())) {

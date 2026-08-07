@@ -91,7 +91,7 @@ public abstract class PlayerListHudMixin extends GuiElement {
 			}
 		}
 		if (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).numericalPing.get())
-			width += (instance.getWidth(String.valueOf(entry.getPing())) - 10);
+			width += instance.getWidth(String.valueOf(entry.getPing())) - 10;
 		return width;
 	}
 
@@ -120,8 +120,9 @@ public abstract class PlayerListHudMixin extends GuiElement {
 	private void axolotlclient$numericalPing(int width, int x, int y, PlayerInfo entry, CallbackInfo ci) {
 		if (AxolotlClient.config().showBadges.get() && AxolotlClient.config().tabBadgeMode.get() == AxolotlClientConfigCommon.TabBadgeMode.BEFORE_PING
 			&& UserRequest.getOnline(entry.getProfile().getId().toString())) {
+			var pingWidth = (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).numericalPing.get()) ? Minecraft.getInstance().textRenderer.br$getWidth(String.valueOf(entry.getPing())) + 1 : 11;
 			axolotlclient$client.getTextureManager().bind((Identifier) AxolotlClientCommon.BADGE_PATH);
-			GuiElement.drawTexture(x + width - 11 - 9, y, 0, 0, 8, 8, 8, 8);
+			GuiElement.drawTexture(x + width - pingWidth - 9, y, 0, 0, 8, 8, 8, 8);
 		}
 		if (BedwarsMod.getInstance().isEnabled() && BedwarsMod.getInstance().customTabList.get() &&
 			BedwarsMod.getInstance().blockLatencyIcon() && (BedwarsMod.getInstance().isWaiting() || BedwarsMod.getInstance().inGame())) {
@@ -131,18 +132,18 @@ public abstract class PlayerListHudMixin extends GuiElement {
 		}
 	}
 
-	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;isIntegratedServerRunning()Z"))
-	private boolean axolotlclient$showPlayerHeads$1(Minecraft instance) {
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;isIntegratedServerRunning()Z"))
+	private boolean axolotlclient$showPlayerHeads$1(Minecraft instance, Operation<Boolean> original) {
 		if (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showPlayerHeads.get()) {
-			return instance.isIntegratedServerRunning();
+			return original.call(instance);
 		}
 		return false;
 	}
 
-	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/Connection;isEncrypted()Z"))
-	private boolean axolotlclient$showPlayerHeads$2(Connection instance) {
+	@WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/Connection;isEncrypted()Z"))
+	private boolean axolotlclient$showPlayerHeads$2(Connection instance, Operation<Boolean> original) {
 		if (((PlayerTabOverlayHud) HudManagerCommon.getInstance().get(PlayerTabOverlayHud.ID)).showPlayerHeads.get()) {
-			return instance.isEncrypted();
+			return original.call(instance);
 		}
 		return false;
 	}

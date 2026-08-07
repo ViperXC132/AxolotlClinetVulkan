@@ -22,6 +22,8 @@
 
 package io.github.axolotlclient.mixin;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import com.llamalad7.mixinextras.sugar.ref.LocalFloatRef;
 import com.mojang.blaze3d.resource.CrossFrameResourcePool;
@@ -32,8 +34,8 @@ import io.github.axolotlclient.modules.hud.HudManager;
 import io.github.axolotlclient.modules.hud.gui.hud.vanilla.CrosshairHud;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.DebugCrosshairRenderer;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.state.OptionsRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.util.profiling.Profiler;
 import org.objectweb.asm.Opcodes;
@@ -97,12 +99,20 @@ public abstract class GameRendererMixin {
 	}
 
 	@Inject(method = "renderLevel", at = @At("TAIL"))
-	private void renderDirectionCrosshair(DeltaTracker deltaTracker, CallbackInfo ci, @Local(name = "optionsState") OptionsRenderState optionsState) {
+	private void renderDirectionCrosshair(DeltaTracker deltaTracker, CallbackInfo ci) {
 		if (!this.minecraft.gui.hud.isHidden()) {
 			var hud = (CrosshairHud) HudManager.getInstance().get(CrosshairHud.ID);
 			if (hud.isEnabled()) {
 				hud.renderDirectionCrosshair();
 			}
+		}
+	}
+
+	@WrapOperation(method = "renderLevel", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/DebugCrosshairRenderer;render(Lnet/minecraft/client/renderer/state/level/CameraRenderState;I)V"))
+	private void checkCustomCrosshair(DebugCrosshairRenderer instance, CameraRenderState cameraState, int guiScale, Operation<Void> original) {
+		var hud = (CrosshairHud) HudManager.getInstance().get(CrosshairHud.ID);
+		if (!hud.isEnabled() || !hud.overridesF3()) {
+			original.call(instance, cameraState, guiScale);
 		}
 	}
 }

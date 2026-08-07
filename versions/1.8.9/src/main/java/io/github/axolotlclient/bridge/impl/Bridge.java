@@ -32,7 +32,8 @@ import io.github.axolotlclient.bridge.impl.commands.CommandsImpl;
 import io.github.axolotlclient.bridge.item.AxoItemStack;
 import net.minecraft.client.options.KeyBinding;
 import net.minecraft.item.ItemStack;
-import net.ornithemc.osl.keybinds.api.KeyBindingEvents;
+import net.ornithemc.osl.keybinds.api.KeybindEvents;
+import net.ornithemc.osl.keybinds.api.KeybindRegistry;
 import net.ornithemc.osl.lifecycle.api.client.MinecraftClientEvents;
 import net.ornithemc.osl.networking.api.client.ClientConnectionEvents;
 import net.ornithemc.osl.resource.loader.api.client.ClientResourceLoaderEvents;
@@ -62,9 +63,9 @@ public class Bridge {
 	}
 
 	public static void init() {
-		KeyBindingEvents.REGISTER_KEYBINDS.register(keyBindingRegistry -> {
+		KeybindEvents.REGISTER_KEYBINDS.register(() -> {
 			Preconditions.checkState(keyBindings != null, "double keybind register");
-			keyBindings.forEach(keyBindingRegistry::register);
+			keyBindings.forEach(KeybindRegistry::register);
 			keyBindings = null;
 		});
 

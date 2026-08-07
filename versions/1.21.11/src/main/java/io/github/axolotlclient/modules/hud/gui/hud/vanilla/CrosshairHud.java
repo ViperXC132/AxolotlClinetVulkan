@@ -198,8 +198,7 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 		AttackIndicatorStatus indicator = this.client.options.attackIndicator().get();
 
 		// Need to not enable blend while the debug HUD is open because it does weird stuff. Why? no idea.
-		boolean blend = ClientColors.ARGB.opaque(color.toInt()) == ClientColors.WHITE.toInt() && !type.equals(Crosshair.DIRECTION) && applyBlend.get()
-			&& !client.gui.getDebugOverlay().showDebugScreen();
+		boolean blend = ClientColors.ARGB.opaque(color.toInt()) == ClientColors.WHITE.toInt() && !type.equals(Crosshair.DIRECTION) && applyBlend.get();
 
 		boolean isTex = type.equals(Crosshair.TEXTURE) || type.equals(Crosshair.CUSTOM);
 		if (type.equals(Crosshair.DOT)) {
@@ -251,11 +250,11 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 				y = (int) ((graphics.guiHeight() / getScale()) / 2 - 7 + 16);
 
 				if (targetingEntity) {
-					graphics.blitSprite(renderType(blend), ATTACK_INDICATOR_FULL, x, y, 16, 16);
+					graphics.blitSprite(renderType(applyBlend.get()), ATTACK_INDICATOR_FULL, x, y, 16, 16);
 				} else if (progress < 1.0F) {
 					int k = (int) (progress * 17.0F);
-					graphics.blitSprite(renderType(blend), ATTACK_INDICATOR_BACKGROUND, x, y, 16, 4);
-					graphics.blitSprite(renderType(blend), ATTACK_INDICATOR_PROGRESS, 16, 4, 0, 0, x, y, k, 4);
+					graphics.blitSprite(renderType(applyBlend.get()), ATTACK_INDICATOR_BACKGROUND, x, y, 16, 4);
+					graphics.blitSprite(renderType(applyBlend.get()), ATTACK_INDICATOR_PROGRESS, 16, 4, 0, 0, x, y, k, 4);
 				}
 			}
 		}
@@ -263,9 +262,10 @@ public class CrosshairHud extends AbstractHudEntry implements DynamicallyPositio
 			//noinspection DataFlowIssue
 			float progress = this.client.player.getAttackStrengthScale(0.0F);
 			if (progress != 1.0F) {
-				fillRenderType(graphics, blend, getRawX() + (getWidth() / 2) - 6, getRawY() + (getHeight() / 2) + 9,
+				var blendIndicator = applyBlend.get() && ClientColors.ARGB.opaque(attackIndicatorForegroundColor.get().toInt()) == ClientColors.WHITE.toInt();
+				fillRenderType(graphics, blendIndicator, getRawX() + (getWidth() / 2) - 6, getRawY() + (getHeight() / 2) + 9,
 					11, 1, attackIndicatorBackgroundColor.get());
-				fillRenderType(graphics, blend, getRawX() + (getWidth() / 2) - 6, getRawY() + (getHeight() / 2) + 9,
+				fillRenderType(graphics, blendIndicator, getRawX() + (getWidth() / 2) - 6, getRawY() + (getHeight() / 2) + 9,
 					(int) (progress * 11), 1, attackIndicatorForegroundColor.get());
 			}
 		}
