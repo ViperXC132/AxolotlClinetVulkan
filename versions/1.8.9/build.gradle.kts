@@ -5,8 +5,8 @@ plugins {
 
 val minecraftVersion = "1.8.9"
 val featherBuild = "1"
-val lwjglVersion = "3.4.1"
-val legacyLwjgl3 = "1.4.2"
+val lwjglVersion = "3.4.2"
+val legacyLwjgl3 = "1.4.3"
 val osl = "0.20.3"
 base.archivesName = "AxolotlClient"
 group = project.property("maven_group")!!
