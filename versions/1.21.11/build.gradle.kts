@@ -47,8 +47,7 @@ dependencies {
 	val configVersion = project.property("config")
 	modImplementation("io.github.axolotlclient:AxolotlClient-config:$configVersion+$minecraftFriendly")
 	include("io.github.axolotlclient:AxolotlClient-config:$configVersion+$minecraftFriendly")
-	modImplementation(include("io.github.axolotlclient:AxolotlClient-config-rounded:$configVersion+$minecraftFriendly")!!)
-
+	
 	modCompileOnly("com.terraformersmc:modmenu:$modmenu")
 
 	api(include(project(path = ":common", configuration = "shadow"))!!)
