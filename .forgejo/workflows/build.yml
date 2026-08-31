@@ -22,7 +22,7 @@ jobs:
 
 
       - name: Build
-        run: run: ./gradlew build collectBuilds --stacktrace --no-daemon -Paxolotlclient.modules.1.21.11=true
+        run: ./gradlew build collectBuilds --stacktrace --no-daemon -Paxolotlclient.modules.1.21.11=true
 
       - name: Upload a Build Artifact
         uses: https://data.forgejo.org/forgejo/upload-artifact@v5
